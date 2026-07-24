@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "coa-raid-intelligence-workbench"
+version = "0.0.1"
+description = "Local Excel + Python + DuckDB workbench for CoA raid planning"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [{name = "CoA Raid Intelligence Workbench"}]
+dependencies = [
+  "duckdb>=1.1,<2",
+  "openpyxl>=3.1,<4",
+  "pydantic>=2.8,<3",
+  "PyYAML>=6,<7",
+  "typer>=0.12,<1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10"]
+
+[project.scripts]
+coa-workbench = "coa_workbench.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

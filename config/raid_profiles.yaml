@@ -1,0 +1,30 @@
+schema_version: 1
+raid_profiles:
+  - code: legacy_v9_25
+    status: legacy_baseline
+    raid_format: "25"
+    target_size: 25
+    target_size_source: fixed
+    role_limits: {}
+    spec_limit: 5
+    class_limit: 3
+    capability_policy: confirmed_or_manual
+    source_note: "Target size and duplicate limits are frozen from the saved v9 controls. Role limits are not yet approved."
+
+  - code: draft_10
+    status: draft_unapproved
+    raid_format: "10"
+    target_size: 10
+    target_size_source: fixed
+    role_limits: {}
+    capability_policy: confirmed_or_manual
+    source_note: "Structural profile only; role/effect limits require owner approval."
+
+  - code: draft_40
+    status: draft_unapproved
+    raid_format: "40"
+    target_size: 40
+    target_size_source: fixed
+    role_limits: {}
+    capability_policy: confirmed_or_manual
+    source_note: "Structural profile only; role/effect limits require owner approval."

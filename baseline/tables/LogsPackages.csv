@@ -1,0 +1,531 @@
+﻿Класс,Специализация,Тип,Фактическая аура,Spell ID,Боев со спеком,Боев с аурой,Покрытие,Специфичность,Охват игроков,Босс-цель,Наблюдаемый тип,Событий от спека,Ранг
+Barbarian,Ancestry,BUFF,Frozen Blades,560821,43,41,0.9534883720930233,1,1,0,raid_buff,245897,1
+Barbarian,Ancestry,BUFF,Tavern Brawl!,804456,43,40,0.9302325581395349,1,1,0,raid_buff,2123,2
+Barbarian,Ancestry,DEBUFF,Frostbite,2119752,43,39,0.9069767441860465,1,0,1,boss_debuff,1217,3
+Barbarian,Ancestry,BUFF,Odyn's Guidance,800476,43,37,0.8604651162790697,1,0.7916666666666666,0,raid_buff,2746,4
+Barbarian,Ancestry,BUFF,Uniting Voice,560946,43,31,0.7209302325581395,1,1,0,raid_buff,27479,5
+Barbarian,Ancestry,BUFF,War Cry,500995,43,30,0.6976744186046512,1,0.91,0,raid_buff,1308,6
+Barbarian,Ancestry,BUFF,Splash Zone,706404,43,28,0.6511627906976745,1,0.9583333333333334,0,raid_buff,13023,7
+Barbarian,Ancestry,DEBUFF,Hodir's Revenge,560125,43,15,0.3488372093023256,1,0,1,boss_debuff,179,8
+Barbarian,Ancestry,DEBUFF,To The Bone,803513,43,12,0.27906976744186046,1,0,1,boss_debuff,364,9
+Barbarian,Ancestry,BUFF,Ramhorn Rage,805804,43,8,0.18604651162790697,1,0.6333333333333333,0,limited,2101,10
+Barbarian,Brutality,DEBUFF,Smashed,706645,101,101,1,0.7307191433945883,0,1,boss_debuff,5050,1
+Barbarian,Brutality,BUFF,Warband,560883,101,89,0.8811881188118812,0.5771034334069962,1,0,raid_buff,10707,2
+Barbarian,Brutality,BUFF,Berserker Aura,560543,101,79,0.7821782178217822,0.5316666666666666,0.75,0,raid_buff,1276,3
+Barbarian,Brutality,DEBUFF,Wounded,570739,101,72,0.7128712871287128,0.9970095693779905,0,0.9166666666666666,boss_debuff,1667,4
+Barbarian,Brutality,DEBUFF,Storm of Steel,800637,101,56,0.5544554455445545,1,0,1,boss_debuff,701,5
+Barbarian,Brutality,DEBUFF,Headbutt,520711,101,55,0.5445544554455446,0.6785714285714286,0,0.9636363636363636,boss_debuff,399,6
+Barbarian,Brutality,DEBUFF,Headlopped,783054,101,43,0.42574257425742573,1,0,1,boss_debuff,1058,7
+Barbarian,Headhunting,DEBUFF,Puncture Wound,804143,25,25,1,1,0,1,boss_debuff,1386,1
+Barbarian,Headhunting,DEBUFF,Gutspiller,806887,25,24,0.96,1,0,1,boss_debuff,694,2
+Barbarian,Headhunting,DEBUFF,Guts Splatter,561333,25,20,0.8,1,0,1,boss_debuff,706,3
+Barbarian,Headhunting,DEBUFF,Berserker Axe,561020,25,19,0.76,1,0,1,boss_debuff,3025,4
+Barbarian,Headhunting,DEBUFF,Rapid Throw,807482,25,3,0.12,1,0,1,boss_debuff,137,5
+Bloodmage,Accursed,DEBUFF,Marrowbite,504553,14,14,1,1,0,1,boss_debuff,577,1
+Bloodmage,Accursed,DEBUFF,Dark Embrace,804854,14,14,1,1,0,1,boss_debuff,102,2
+Bloodmage,Accursed,DEBUFF,Bloodshards,504741,14,7,0.5,1,0,1,boss_debuff,1560,3
+Bloodmage,Accursed,DEBUFF,Hematoma,803392,14,5,0.35714285714285715,1,0,1,boss_debuff,1561,4
+Bloodmage,Accursed,DEBUFF,Crimson Maw,803391,14,5,0.35714285714285715,1,0,1,boss_debuff,101,5
+Bloodmage,Eternal,DEBUFF,Festering Maw,706654,66,66,1,0.8958333333333334,0,1,boss_debuff,5762,1
+Bloodmage,Eternal,DEBUFF,Rotclaw,503484,66,64,0.9696969696969697,1,0,1,boss_debuff,4478,2
+Bloodmage,Eternal,BUFF,Blood Trail,804857,66,56,0.8484848484848485,0.550142170638022,0.8333333333333334,1,raid_buff,66170,3
+Bloodmage,Eternal,DEBUFF,Bare Fangs,801957,66,52,0.7878787878787878,1,0,0.9615384615384616,boss_debuff,406,4
+Bloodmage,Eternal,DEBUFF,Hypovolemic Shock,572412,66,23,0.3484848484848485,0.7668711656441718,0,1,boss_debuff,125,5
+Bloodmage,Eternal,DEBUFF,Blood Howl,800782,66,14,0.21212121212121213,1,0,1,boss_debuff,63,6
+Bloodmage,Eternal,BUFF,Shadow Howl,806177,66,11,0.16666666666666666,1,0.65,0,limited,728,7
+Bloodmage,Fleshweaver,DEBUFF,Vampyr's Kiss,504281,112,109,0.9732142857142857,1,0,1,boss_debuff,1295,1
+Bloodmage,Fleshweaver,DEBUFF,Infuse,681403,112,106,0.9464285714285714,1,0,1,boss_debuff,32605,2
+Bloodmage,Fleshweaver,BUFF,Excess Blood,504101,112,106,0.9464285714285714,1,0.7655677655677655,0,raid_buff,14335,3
+Bloodmage,Fleshweaver,DEBUFF,Sanguine Essence,681399,112,103,0.9196428571428571,1,0,0.970873786407767,boss_debuff,5201,4
+Bloodmage,Fleshweaver,DEBUFF,Crimson Tide,504134,112,94,0.8392857142857143,1,0,0.9893617021276596,boss_debuff,4101,5
+Bloodmage,Fleshweaver,BUFF,Fleshbending,582766,112,84,0.75,1,1,0,raid_buff,176076,6
+Bloodmage,Fleshweaver,BUFF,Greater Bloodthorns,572116,112,83,0.7410714285714286,0.6116734143049932,0.9545454545454546,0,raid_buff,1813,7
+Bloodmage,Fleshweaver,BUFF,Dark Essence,681036,112,81,0.7232142857142857,1,0.9565217391304348,0,raid_buff,67010,8
+Bloodmage,Fleshweaver,DEBUFF,Cursed Blood,803722,112,79,0.7053571428571429,0.9994627988181574,0,1,boss_debuff,7442,9
+Bloodmage,Fleshweaver,BUFF,Red Thirst,520493,112,79,0.7053571428571429,1,1,0,raid_buff,3492,10
+Bloodmage,Fleshweaver,BUFF,Blood-Cursed Weapons,685029,112,74,0.6607142857142857,1,1,0,raid_buff,83822,11
+Bloodmage,Fleshweaver,BUFF,Universal Donor,704238,112,72,0.6428571428571429,1,1,0,raid_buff,47969,12
+Bloodmage,Fleshweaver,BUFF,Arterial Bind,681082,112,46,0.4107142857142857,1,0.6809090909090909,0,limited,3103,13
+Bloodmage,Fleshweaver,BUFF,Blood Veil,572279,112,37,0.33035714285714285,0.8728191000918274,0.25,0,limited,1901,14
+Bloodmage,Fleshweaver,BUFF,Heartbreak,807563,112,33,0.29464285714285715,1,1,0,raid_buff,12839,15
+Bloodmage,Fleshweaver,BUFF,Greater Bloodsoaked Offering,572404,112,29,0.25892857142857145,0.5841584158415841,1,0,raid_buff,590,16
+Bloodmage,Sanguine,DEBUFF,Bloodsore,805592,33,33,1,1,0,1,boss_debuff,5469,1
+Bloodmage,Sanguine,DEBUFF,Blood Parasites,800988,33,33,1,1,0,1,boss_debuff,719,2
+Bloodmage,Sanguine,DEBUFF,Malediction,704120,33,33,1,1,0,1,boss_debuff,470,3
+Bloodmage,Sanguine,DEBUFF,Cardiac Arrest,806946,33,29,0.8787878787878788,1,0,1,boss_debuff,1201,4
+Bloodmage,Sanguine,DEBUFF,Atherann's Anguish,680680,33,25,0.7575757575757576,1,0,1,boss_debuff,3350,5
+Bloodmage,Sanguine,DEBUFF,Agonizing Pain,680744,33,4,0.12121212121212122,1,0,1,boss_debuff,12,6
+Chronomancer,Artificer,DEBUFF,Elder Wand,560128,91,91,1,1,0,1,boss_debuff,39827,1
+Chronomancer,Artificer,DEBUFF,Artificer's Wand,561357,91,91,1,1,0,1,boss_debuff,26322,2
+Chronomancer,Artificer,DEBUFF,Crystal Cannon,704481,91,91,1,1,0,1,boss_debuff,6977,3
+Chronomancer,Artificer,DEBUFF,Past Mistakes,520043,91,86,0.945054945054945,0.6936936936936937,0,1,boss_debuff,462,4
+Chronomancer,Artificer,DEBUFF,Decomposition,802597,91,85,0.9340659340659341,0.6161178509532063,0,1,boss_debuff,1422,5
+Chronomancer,Artificer,DEBUFF,Magic Sensitivity,520177,91,78,0.8571428571428571,1,0,1,boss_debuff,1270,6
+Chronomancer,Artificer,BUFF,Greater Chromie's Wisdom,680307,91,70,0.7692307692307693,0.5040721349621873,1,0,raid_buff,1733,7
+Chronomancer,Artificer,DEBUFF,Thread of Eternity,572127,91,21,0.23076923076923078,1,0,1,boss_debuff,631,8
+Chronomancer,Infinite,DEBUFF,Time Means Nothing,572405,38,38,1,1,0,1,boss_debuff,8623,1
+Chronomancer,Infinite,DEBUFF,Unmake,574345,38,38,1,0.9953307392996109,0,1,boss_debuff,7674,2
+Chronomancer,Infinite,DEBUFF,Timerend,572578,38,38,1,1,0,1,boss_debuff,1348,3
+Chronomancer,Infinite,DEBUFF,Mind Melt,572851,38,36,0.9473684210526315,1,0,1,boss_debuff,3308,4
+Chronomancer,Infinite,DEBUFF,Melt Reality,572835,38,36,0.9473684210526315,1,0,1,boss_debuff,513,5
+Chronomancer,Infinite,DEBUFF,Time Loop,807571,38,22,0.5789473684210527,1,0,1,boss_debuff,668,6
+Chronomancer,Infinite,DEBUFF,Magic Erosion,570060,38,22,0.5789473684210527,1,0,0.8636363636363636,boss_debuff,288,7
+Chronomancer,Infinite,DEBUFF,Gravity Bomb,801281,38,20,0.5263157894736842,0.5957446808510638,0,1,boss_debuff,112,8
+Chronomancer,Infinite,DEBUFF,Destabilize Time,680971,38,5,0.13157894736842105,1,0,1,boss_debuff,38,9
+Chronomancer,Time,BUFF,Accelerated Recovery,501777,56,55,0.9821428571428571,0.9892644623029262,0.9047619047619048,0,raid_buff,16126,1
+Chronomancer,Time,BUFF,Mark of Order,806269,56,48,0.8571428571428571,1,1,0,raid_buff,120127,2
+Chronomancer,Time,BUFF,Renewal,560355,56,36,0.6428571428571429,1,0.4160839160839161,0,limited,1840,3
+Chronomancer,Time,BUFF,Rippling Protection,560394,56,25,0.44642857142857145,1,0.76,0,raid_buff,4825,4
+Chronomancer,Time,BUFF,Protection,560374,56,25,0.44642857142857145,1,0.44,0,limited,3222,5
+Chronomancer,Time,BUFF,The Vast Infinite,706083,56,23,0.4107142857142857,1,1,0,raid_buff,1202,6
+Chronomancer,Time,BUFF,Resilience,560373,56,19,0.3392857142857143,1,0.375,0,limited,1117,7
+Chronomancer,Time,BUFF,Rippling Resilience,560396,56,11,0.19642857142857142,1,0.9047619047619048,0,raid_buff,1545,8
+Chronomancer,Time,BUFF,Overcorrection,561231,56,10,0.17857142857142858,1,0.9183333333333333,0,raid_buff,2052,9
+Cultist,Corruption,DEBUFF,Unrelenting Void,706908,11,11,1,1,0,1,boss_debuff,1649,1
+Cultist,Corruption,DEBUFF,Darkwither,502220,11,11,1,1,0,1,boss_debuff,237,2
+Cultist,Corruption,DEBUFF,Yawning Decay,706910,11,9,0.8181818181818182,1,0,1,boss_debuff,347,3
+Cultist,Corruption,DEBUFF,Psychic Suppression,800432,11,2,0.18181818181818182,1,0,1,boss_debuff,7,4
+Cultist,Dreadnought,DEBUFF,Test of Pride,804412,31,21,0.6774193548387096,1,0,0.8571428571428571,boss_debuff,271,1
+Cultist,Dreadnought,DEBUFF,Horrifying Presence,500723,31,18,0.5806451612903226,1,0,0.9444444444444444,boss_debuff,306,2
+Cultist,Dreadnought,DEBUFF,Eldritch Force,680576,31,8,0.25806451612903225,1,0,1,boss_debuff,208,3
+Cultist,Dreadnought,DEBUFF,Sermon of Dread,620614,31,8,0.25806451612903225,0.8316831683168316,0,0.625,limited,336,4
+Cultist,Godblade,DEBUFF,Touch of the Void,572046,174,171,0.9827586206896551,1,0,0.9883040935672515,boss_debuff,17872,1
+Cultist,Godblade,DEBUFF,Withered,520418,174,166,0.9540229885057471,0.6062756497948016,0,1,boss_debuff,7091,2
+Cultist,Godblade,DEBUFF,Black Prayer,806039,174,166,0.9540229885057471,0.6662248955041289,0,1,boss_debuff,6535,3
+Cultist,Godblade,DEBUFF,Rift,807848,174,165,0.9482758620689655,1,0,0.9878787878787879,boss_debuff,23017,4
+Cultist,Godblade,DEBUFF,Mental Assault,801151,174,160,0.9195402298850575,0.5932055114092003,0,0.98125,boss_debuff,16274,5
+Cultist,Godblade,BUFF,Vision of Doom,520497,174,152,0.8735632183908046,0.8383332189194755,0.4090909090909091,0,limited,12212,6
+Cultist,Godblade,DEBUFF,Vision of Doom,520450,174,151,0.867816091954023,0.8136333109469442,0,0.9139072847682119,boss_debuff,4846,7
+Cultist,Godblade,BUFF,Greater Whispers of C'thun,573067,174,85,0.4885057471264368,0.5412869373101353,1,0,raid_buff,1960,8
+Cultist,Heretic,BUFF,Void-Touched,301982,166,166,1,1,0.9615384615384616,0,raid_buff,90501,1
+Cultist,Heretic,BUFF,Black Blood,804153,166,164,0.9879518072289156,1,0.6172161172161172,0,limited,37666,2
+Cultist,Heretic,BUFF,Forbidden Ritual,502273,166,153,0.9216867469879518,1,0.9545454545454546,0,raid_buff,68181,3
+Cultist,Heretic,BUFF,Void Shield,578115,166,140,0.8433734939759037,0.9666053165853936,0.76,0,raid_buff,50943,4
+Cultist,Heretic,BUFF,Crystalline Reflection,525067,166,77,0.463855421686747,0.9568162574089755,0.52,0,limited,5650,5
+Cultist,Heretic,BUFF,Dark Infusion,570266,166,76,0.4578313253012048,1,0.84,0,raid_buff,16266,6
+Cultist,Heretic,BUFF,Tentacle of Yogg-Saron,802045,166,66,0.39759036144578314,0.9078639744952178,0.8775,0.9242424242424242,raid_buff,34172,7
+Felsworn,Infernal,DEBUFF,Felstrike,802678,122,122,1,1,0,1,boss_debuff,21799,1
+Felsworn,Infernal,DEBUFF,Ruin,805748,122,122,1,0.6905020786696514,0,1,boss_debuff,10796,2
+Felsworn,Infernal,DEBUFF,Bane of Fire,707901,122,105,0.860655737704918,0.9504632929436921,0,1,boss_debuff,2667,3
+Felsworn,Infernal,BUFF,Greater Man'ari Intuition,523495,122,96,0.7868852459016393,0.7860847018150389,0.8076923076923077,0,raid_buff,1819,4
+Felsworn,Infernal,DEBUFF,Felshock,572792,122,86,0.7049180327868853,1,0,0.8604651162790697,boss_debuff,8655,5
+Felsworn,Infernal,DEBUFF,Sargeras Embrace,800355,122,31,0.2540983606557377,1,0,0.9032258064516129,boss_debuff,241,6
+Felsworn,Infernal,DEBUFF,Bane of Chaos,706420,122,29,0.23770491803278687,1,0,0.9655172413793104,boss_debuff,514,7
+Felsworn,Infernal,DEBUFF,Felwrath,520832,122,24,0.19672131147540983,1,0,0.875,boss_debuff,7970,8
+Felsworn,Infernal,BUFF,Slayer's Pact,803343,122,21,0.1721311475409836,0.6061658706035605,0.782608695652174,0,raid_buff,1396,9
+Felsworn,Infernal,DEBUFF,Curse of Argus,707511,122,17,0.13934426229508196,1,0,0.9411764705882353,boss_debuff,993,10
+Felsworn,Infernal,BUFF,Legionfel Pact,804764,122,15,0.12295081967213115,0.9189814814814815,0.9583333333333334,0,raid_buff,794,11
+Felsworn,Slayer,DEBUFF,Fel Blades,300482,36,24,0.6666666666666666,1,0,1,boss_debuff,1534,1
+Felsworn,Slayer,DEBUFF,Whirling Vengeance,806096,36,23,0.6388888888888888,1,0,1,boss_debuff,157,2
+Felsworn,Slayer,DEBUFF,Scars of Suffering,570159,36,9,0.25,1,0,1,boss_debuff,420,3
+Felsworn,Slayer,DEBUFF,Demonic Machinations,806112,36,5,0.1388888888888889,1,0,1,boss_debuff,52,4
+Felsworn,Tyrant,DEBUFF,Doomscar,563271,137,108,0.7883211678832117,1,0,1,boss_debuff,15516,1
+Felsworn,Tyrant,DEBUFF,Expose,300475,137,103,0.7518248175182481,1,0,1,boss_debuff,23649,2
+Felsworn,Tyrant,DEBUFF,Bane of Frailty,707903,137,82,0.5985401459854015,0.8083700440528634,0,0.9878048780487805,boss_debuff,367,3
+Felsworn,Tyrant,DEBUFF,Carve,578317,137,71,0.5182481751824818,1,0,1,boss_debuff,5704,4
+Felsworn,Tyrant,DEBUFF,Sunder,556503,137,66,0.48175182481751827,0.6429548563611491,0,1,boss_debuff,7990,5
+Felsworn,Tyrant,BUFF,Illidari Barrier,300469,137,55,0.40145985401459855,0.8723965565120799,0.8181818181818182,0,raid_buff,12566,6
+Felsworn,Tyrant,DEBUFF,Betray,804220,137,50,0.36496350364963503,1,0,0.86,boss_debuff,580,7
+Felsworn,Tyrant,BUFF,Vengeful Pact,803885,137,47,0.34306569343065696,0.718153251148175,0.9583333333333334,0,raid_buff,2971,8
+Felsworn,Tyrant,BUFF,Greater Illidari Intuition,680308,137,45,0.3284671532846715,0.6489563567362429,0.9642857142857143,0,raid_buff,1026,9
+Felsworn,Tyrant,BUFF,Betrayer,520256,137,27,0.19708029197080293,1,0.782608695652174,0,raid_buff,12843,10
+Felsworn,Tyrant,DEBUFF,Felbane,525001,137,23,0.1678832116788321,0.5789473684210527,0,0.7391304347826086,boss_debuff,66,11
+Felsworn,Tyrant,BUFF,Infernal Whipcrack,805243,137,23,0.1678832116788321,1,0.6538461538461539,0,limited,1372,12
+Felsworn,Tyrant,DEBUFF,Fel Daze,707360,137,19,0.1386861313868613,1,0,1,boss_debuff,1053,13
+Felsworn,Tyrant,DEBUFF,Fel Torpedo,500762,137,15,0.10948905109489052,1,0,0.8666666666666667,boss_debuff,936,14
+Guardian,Gladiator,DEBUFF,Deadly Blow,706808,33,33,1,1,0,1,boss_debuff,2366,1
+Guardian,Gladiator,BUFF,Standard of Supremacy,500299,33,30,0.9090909090909091,0.5077419354838709,0.2,0,limited,787,2
+Guardian,Gladiator,DEBUFF,Battle Rush,501548,33,26,0.7878787878787878,0.6802721088435374,0,0.8846153846153846,boss_debuff,200,3
+Guardian,Gladiator,DEBUFF,Grand Entrance,802874,33,21,0.6363636363636364,0.844776119402985,0,1,boss_debuff,566,4
+Guardian,Gladiator,DEBUFF,Broad Sweep,504182,33,12,0.36363636363636365,0.821917808219178,0,0.8333333333333334,boss_debuff,780,5
+Guardian,Inspiration,BUFF,Hero's March,803524,62,62,1,1,0.845,0,raid_buff,32476,1
+Guardian,Inspiration,DEBUFF,Peril,524610,62,58,0.9354838709677419,0.5444339703487874,0,1,boss_debuff,12706,2
+Guardian,Inspiration,DEBUFF,Glorious Arena,300983,62,58,0.9354838709677419,0.54634487583071,0,1,boss_debuff,1562,3
+Guardian,Inspiration,BUFF,Banner of Conquest,500264,62,52,0.8387096774193549,1,1,0,raid_buff,73697,4
+Guardian,Inspiration,BUFF,Echoes of War,801778,62,50,0.8064516129032258,1,0.98,0,raid_buff,153797,5
+Guardian,Inspiration,BUFF,Banner of Swiftness,800704,62,48,0.7741935483870968,1,1,0,raid_buff,69851,6
+Guardian,Inspiration,DEBUFF,Harrowing Melody,572821,62,46,0.7419354838709677,1,0,1,boss_debuff,1382,7
+Guardian,Inspiration,BUFF,Song of Steel,706410,62,43,0.6935483870967742,1,1,0,raid_buff,19832,8
+Guardian,Inspiration,DEBUFF,Ballad of the Dragonslayer,574364,62,37,0.5967741935483871,1,0,0.7567567567567568,boss_debuff,2482,9
+Guardian,Inspiration,BUFF,Frontliner,505198,62,32,0.5161290322580645,1,1,0,raid_buff,140464,10
+Guardian,Inspiration,BUFF,Champion's Presence,520835,62,27,0.43548387096774194,1,1,0,raid_buff,905,11
+Guardian,Inspiration,DEBUFF,Dissonance,803721,62,21,0.3387096774193548,1,0,1,boss_debuff,1440,12
+Guardian,Inspiration,DEBUFF,Linebreaker,806220,62,16,0.25806451612903225,0.5590551181102362,0,1,boss_debuff,71,13
+Guardian,Inspiration,BUFF,Knight's Song,807460,62,13,0.20967741935483872,1,1,0,raid_buff,57884,14
+Guardian,Inspiration,BUFF,Standard of Recovery,500266,62,13,0.20967741935483872,0.7957559681697612,1,0,raid_buff,2100,15
+Guardian,Vanguard,DEBUFF,Bring Down The Hammer!,705380,27,27,1,1,0,1,boss_debuff,1508,1
+Guardian,Vanguard,DEBUFF,Shield Challenge,500257,27,23,0.8518518518518519,0.9958419958419958,0,0.9130434782608695,boss_debuff,479,2
+Guardian,Vanguard,DEBUFF,Order In The Court,704417,27,16,0.5925925925925926,1,0,1,boss_debuff,760,3
+Guardian,Vanguard,DEBUFF,Valorous Strikes,572714,27,15,0.5555555555555556,1,0,0.8666666666666667,boss_debuff,138,4
+Guardian,Vanguard,DEBUFF,Unyielding Stand,500269,27,14,0.5185185185185185,0.9722222222222222,0,1,boss_debuff,70,5
+Knight of Xoroth,Defiance,DEBUFF,Dread Knight,572860,16,13,0.8125,1,0,1,boss_debuff,2411,1
+Knight of Xoroth,Defiance,DEBUFF,Torn Flesh,800341,16,12,0.75,1,0,1,boss_debuff,798,2
+Knight of Xoroth,Defiance,BUFF,Abyssal Aura,302580,16,10,0.625,1,1,0,raid_buff,7767,3
+Knight of Xoroth,Defiance,DEBUFF,Curse of Xoroth,804169,16,8,0.5,1,0,0.875,boss_debuff,32,4
+Knight of Xoroth,Defiance,DEBUFF,Snarl,800169,16,8,0.5,0.9016393442622951,0,0.75,boss_debuff,110,5
+Knight of Xoroth,Defiance,DEBUFF,Demolished,807522,16,5,0.3125,1,0,0.6,limited,48,6
+Knight of Xoroth,Defiance,BUFF,Legion's Presence,804879,16,3,0.1875,1,0.7272727272727273,0,raid_buff,497,7
+Knight of Xoroth,Hellfire,DEBUFF,Pestilence of Apocalypse,804801,78,71,0.9102564102564102,0.9999295576218653,0.8666666666666667,1,boss_debuff,56780,1
+Knight of Xoroth,Hellfire,DEBUFF,Unleash Apocalypse,560817,78,70,0.8974358974358975,1,0,0.9857142857142858,boss_debuff,3656,2
+Knight of Xoroth,Hellfire,DEBUFF,Doom,802608,78,68,0.8717948717948718,1,0,1,boss_debuff,4410,3
+Knight of Xoroth,Hellfire,DEBUFF,Burst,520666,78,67,0.8589743589743589,1,0,1,boss_debuff,1771,4
+Knight of Xoroth,Hellfire,DEBUFF,Hellmaw,573336,78,56,0.717948717948718,1,0,1,boss_debuff,1208,5
+Knight of Xoroth,Hellfire,DEBUFF,Flames of Xoroth,573448,78,28,0.358974358974359,0.8091639111950873,0,1,boss_debuff,3426,6
+Knight of Xoroth,Hellfire,DEBUFF,Seething Strikes,681268,78,26,0.3333333333333333,1,0,1,boss_debuff,300,7
+Knight of Xoroth,Hellfire,DEBUFF,Rain of Chaos,801006,78,25,0.32051282051282054,1,0,1,boss_debuff,3713,8
+Knight of Xoroth,War,DEBUFF,Rampant,680979,154,154,1,1,0,1,boss_debuff,15369,1
+Knight of Xoroth,War,DEBUFF,Unleash Death,801055,154,148,0.961038961038961,1,0,1,boss_debuff,15622,2
+Knight of Xoroth,War,DEBUFF,Conqueror's Will,520542,154,123,0.7987012987012987,1,0,0.9105691056910569,boss_debuff,2875,3
+Knight of Xoroth,War,DEBUFF,Melt,803334,154,91,0.5909090909090909,0.7904869762174406,0,0.989010989010989,boss_debuff,698,4
+Knight of Xoroth,War,DEBUFF,Dismemberment,705019,154,81,0.525974025974026,0.5279145281240181,0,1,boss_debuff,5040,5
+Knight of Xoroth,War,DEBUFF,Warbringer,803240,154,40,0.2597402597402597,1,0,0.675,limited,4982,6
+Knight of Xoroth,War,DEBUFF,Chains of Malice,803185,154,35,0.22727272727272727,0.7126436781609196,0,0.6857142857142857,limited,124,7
+Knight of Xoroth,War,BUFF,Greater Mark of Korth’azz,680300,154,32,0.2077922077922078,0.7657822506861848,1,0,raid_buff,837,8
+Knight of Xoroth,War,BUFF,Greater Mark of Zeliek,803731,154,28,0.18181818181818182,0.794392523364486,0.925,0,raid_buff,595,9
+Necromancer,Animation,DEBUFF,Crypt Swarm,501886,148,148,1,0.9724602712372078,0,1,boss_debuff,11688,1
+Necromancer,Animation,DEBUFF,Harvest Plague,583256,148,126,0.8513513513513513,0.8867757629367536,0,1,boss_debuff,2005,2
+Necromancer,Animation,DEBUFF,Blight,500459,148,108,0.7297297297297297,0.808303886925795,0,1,boss_debuff,1830,3
+Necromancer,Animation,DEBUFF,Bone Toss,704706,148,101,0.6824324324324325,1,0,0.8514851485148515,boss_debuff,1386,4
+Necromancer,Animation,BUFF,Greater Chill of the Tomb,572177,148,98,0.6621621621621622,0.7541958041958042,0.957427536231884,0,raid_buff,2157,5
+Necromancer,Animation,BUFF,Greater Razorice,572214,148,96,0.6486486486486487,0.9298654652005419,0.9083333333333333,0,raid_buff,29513,6
+Necromancer,Animation,DEBUFF,Frost Breath,807097,148,76,0.5135135135135135,0.7370147621651175,0,1,boss_debuff,1348,7
+Necromancer,Animation,BUFF,Greater Grim Mandate,572790,148,44,0.2972972972972973,0.6349557522123894,0.3507692307692308,0,limited,574,8
+Necromancer,Animation,DEBUFF,Death's Due,807796,148,42,0.28378378378378377,0.678082191780822,0,0.9761904761904762,boss_debuff,99,9
+Necromancer,Animation,BUFF,Greater Foul Mandate,680286,148,36,0.24324324324324326,0.9378378378378378,0.9166666666666666,0,raid_buff,694,10
+Necromancer,Animation,DEBUFF,Fetid Mark,706949,148,15,0.10135135135135136,1,0,0.9333333333333333,boss_debuff,3060,11
+Necromancer,Death,DEBUFF,Crypt Plague,570131,3,3,1,1,0.041666666666666664,1,boss_debuff,889,1
+Necromancer,Death,DEBUFF,Flesh to Worms,501861,3,3,1,1,0.041666666666666664,1,boss_debuff,324,2
+Necromancer,Death,DEBUFF,Expunge,573233,3,3,1,1,0,1,boss_debuff,261,3
+Necromancer,Death,DEBUFF,Festering Decay,806325,3,3,1,1,0,1,boss_debuff,249,4
+Necromancer,Death,DEBUFF,Plague of Undeath,503640,3,3,1,1,0.041666666666666664,1,boss_debuff,108,5
+Necromancer,Death,DEBUFF,Lichplague,802132,3,3,1,1,0.041666666666666664,1,boss_debuff,53,6
+Necromancer,Death,DEBUFF,Parasites,560729,3,2,0.6666666666666666,1,0,1,boss_debuff,107,7
+Necromancer,Rime,DEBUFF,Frozen,804328,56,56,1,1,0,1,boss_debuff,2078,1
+Necromancer,Rime,DEBUFF,Ice Barrage,501997,56,56,1,1,0,0.9821428571428571,boss_debuff,2208,2
+Necromancer,Rime,DEBUFF,Icecrown,706732,56,22,0.39285714285714285,1,0,0.8636363636363636,boss_debuff,1446,3
+Necromancer,Rime,DEBUFF,Decaying Poison,805024,56,20,0.35714285714285715,1,0,1,boss_debuff,3710,4
+Necromancer,Rime,DEBUFF,Soulfreeze,801724,56,16,0.2857142857142857,1,0,1,boss_debuff,1035,5
+Necromancer,Rime,DEBUFF,Necrotic Chain,704860,56,11,0.19642857142857142,1,0,1,boss_debuff,381,6
+Primalist,Geomancy,DEBUFF,Terrasurge,573070,26,23,0.8846153846153846,1,0,1,boss_debuff,308,1
+Primalist,Geomancy,DEBUFF,Seismic Tremor,681114,26,23,0.8846153846153846,1,0,1,boss_debuff,261,2
+Primalist,Geomancy,DEBUFF,Eruption,802335,26,17,0.6538461538461539,1,0,1,boss_debuff,258,3
+Primalist,Grovekeeper,BUFF,Ancient of War,504222,174,157,0.9022988505747126,1,0.2,0,limited,17402,1
+Primalist,Grovekeeper,BUFF,Sacred Grove,800186,174,147,0.8448275862068966,1,0.9615384615384616,0.013605442176870748,raid_buff,23638,2
+Primalist,Grovekeeper,BUFF,Immune Stun/Disorient/Polymorph,803725,174,147,0.8448275862068966,0.9957518022657055,0.6956521739130435,0,limited,7735,3
+Primalist,Grovekeeper,BUFF,Immune Sap/Knockout/Charm,807636,174,147,0.8448275862068966,0.9957518022657055,0.6956521739130435,0,limited,7735,4
+Primalist,Grovekeeper,DEBUFF,Bioerosion,575848,174,146,0.8390804597701149,1,0,1,boss_debuff,16096,5
+Primalist,Grovekeeper,BUFF,Nature's Blessing,807561,174,144,0.8275862068965517,1,0.75,0,raid_buff,44374,6
+Primalist,Grovekeeper,DEBUFF,Earthquake,520745,174,142,0.8160919540229885,0.8103818295627292,0,1,boss_debuff,18125,7
+Primalist,Grovekeeper,DEBUFF,Geode Barrage,502776,174,140,0.8045977011494253,0.6462211035305028,0,0.9714285714285714,boss_debuff,9756,8
+Primalist,Grovekeeper,DEBUFF,Grove Guardian,504825,174,139,0.7988505747126436,0.7092913924267031,0,1,boss_debuff,8298,9
+Primalist,Grovekeeper,BUFF,Grove Guardian,505208,174,139,0.7988505747126436,0.7096450413820675,0.9130434782608695,0,raid_buff,83428,10
+Primalist,Grovekeeper,BUFF,Infused With Power,503719,174,135,0.7758620689655172,1,1,0,raid_buff,210260,11
+Primalist,Grovekeeper,BUFF,Greater Earthen Endurance,570756,174,117,0.6724137931034483,0.6970853573907009,0.9583333333333334,0,raid_buff,2009,12
+Primalist,Grovekeeper,BUFF,Vitality Surge,504215,174,110,0.632183908045977,1,1,0,raid_buff,537260,13
+Primalist,Grovekeeper,BUFF,Heavy Handed,706345,174,98,0.5632183908045977,0.9440242057488654,0.2928571428571428,0,limited,6240,14
+Primalist,Grovekeeper,BUFF,Protective Roar,802782,174,97,0.5574712643678161,0.5579081632653061,0.7391304347826086,0,raid_buff,6561,15
+Primalist,Grovekeeper,DEBUFF,Doused,803514,174,96,0.5517241379310345,1,0,1,boss_debuff,12297,16
+Primalist,Grovekeeper,BUFF,Flourishing Growth,807334,174,93,0.5344827586206896,0.9982553701886381,1,0,raid_buff,45775,17
+Primalist,Grovekeeper,BUFF,Greater Essence of Nature,582261,174,92,0.5287356321839081,0.6634072142546719,1,0,raid_buff,3053,18
+Primalist,Grovekeeper,BUFF,Greater Primal Instinct,680310,174,81,0.46551724137931033,0.5714768502872593,1,0,raid_buff,1691,19
+Primalist,Grovekeeper,BUFF,Primal Awakening,807560,174,52,0.2988505747126437,1,1,0,raid_buff,2617,20
+Primalist,Grovekeeper,BUFF,Earthmother's Empowerment,300739,174,33,0.1896551724137931,1,0.36666666666666664,0,limited,2262,21
+Primalist,Grovekeeper,DEBUFF,Ursoc's Bellow,707735,174,28,0.16091954022988506,0.8092909535452323,0,0.9285714285714286,boss_debuff,331,22
+Primalist,Grovekeeper,BUFF,Bramblepatch,806415,174,23,0.13218390804597702,0.9534883720930233,0.625,0,limited,1558,23
+Primalist,Mountain King,DEBUFF,Raging Earth,681089,42,42,1,1,0,1,boss_debuff,3730,1
+Primalist,Mountain King,DEBUFF,Quake,520463,42,42,1,1,0,1,boss_debuff,3371,2
+Primalist,Mountain King,DEBUFF,Gaze of Theradras,805919,42,35,0.8333333333333334,0.9873150105708245,0,0.9428571428571428,boss_debuff,934,3
+Primalist,Wildwalker,DEBUFF,Torn to Shreds,560313,77,77,1,1,0,1,boss_debuff,8769,1
+Primalist,Wildwalker,DEBUFF,Primal Shred,504684,77,74,0.961038961038961,1,0,1,boss_debuff,2726,2
+Primalist,Wildwalker,DEBUFF,Seismic Crash,503264,77,74,0.961038961038961,0.6321371494987651,0,0.972972972972973,boss_debuff,4351,3
+Primalist,Wildwalker,DEBUFF,Bestial Wrath,572047,77,71,0.922077922077922,1,0,0.971830985915493,boss_debuff,14712,4
+Primalist,Wildwalker,DEBUFF,Earthmother's Precision,555724,77,62,0.8051948051948052,0.728428093645485,0,0.8387096774193549,boss_debuff,2178,5
+Primalist,Wildwalker,DEBUFF,Totemic Crash,547213,77,47,0.6103896103896104,1,0,1,boss_debuff,3420,6
+Primalist,Wildwalker,BUFF,Primal Totem,806694,77,23,0.2987012987012987,1,1,0,raid_buff,1206,7
+Primalist,Wildwalker,DEBUFF,Bring Me Their Bones,806552,77,22,0.2857142857142857,1,0,1,boss_debuff,749,8
+Primalist,Wildwalker,DEBUFF,Rexxar's Might,806562,77,19,0.24675324675324675,1,0,1,boss_debuff,1664,9
+Primalist,Wildwalker,DEBUFF,Rake (Pet),59884,77,17,0.22077922077922077,1,0,1,boss_debuff,635,10
+Primalist,Wildwalker,DEBUFF,Savage Rend,53580,77,11,0.14285714285714285,1,0,1,boss_debuff,97,11
+Primalist,Wildwalker,DEBUFF,Blood for Hakkar!,312525,77,10,0.12987012987012986,0.5454545454545454,0,1,boss_debuff,120,12
+Pyromancer,Draconic,DEBUFF,Draconic Tempest,301212,61,51,0.8360655737704918,0.9982621288921072,0,0.8823529411764706,boss_debuff,6893,1
+Pyromancer,Draconic,DEBUFF,Volcano,807540,61,32,0.5245901639344263,1,0,1,boss_debuff,4844,2
+Pyromancer,Flameweaving,BUFF,Phoenix Shield,706855,128,122,0.953125,0.9850768251563593,1,0,raid_buff,187270,1
+Pyromancer,Flameweaving,BUFF,Phoenix Dive,706854,128,122,0.953125,0.9829059829059829,0.3333333333333333,0,limited,7015,2
+Pyromancer,Flameweaving,BUFF,Shielded by Flames,704277,128,120,0.9375,0.9752714881691665,0.9534632034632035,0,raid_buff,61249,3
+Pyromancer,Flameweaving,BUFF,Inferno,807944,128,120,0.9375,0.9744691004533524,0.5211640211640212,0,limited,8168,4
+Pyromancer,Flameweaving,BUFF,Lucifron's Rage,524624,128,68,0.53125,1,0.3675,0,limited,8303,5
+Pyromancer,Flameweaving,BUFF,Ascension of Executus,1119758,128,44,0.34375,0.7085337128275592,0.6140583554376657,0,limited,28877,6
+Pyromancer,Flameweaving,BUFF,Roaring Pyre,704279,128,17,0.1328125,1,1,0,raid_buff,9970,7
+Pyromancer,Flameweaving,BUFF,Grace of Alexstrasza,803411,128,13,0.1015625,0.7620578778135049,0.52,0,limited,474,8
+Pyromancer,Incineration,DEBUFF,Burned,572626,61,61,1,1,0,1,boss_debuff,10664,1
+Pyromancer,Incineration,DEBUFF,Scorched,680962,61,61,1,1,0,1,boss_debuff,5096,2
+Pyromancer,Incineration,DEBUFF,Blaze,572160,61,61,1,0.5648577768811781,0,1,boss_debuff,2800,3
+Pyromancer,Incineration,DEBUFF,Ignite,502029,61,61,1,1,0,1,boss_debuff,2535,4
+Pyromancer,Incineration,DEBUFF,Infernus,706874,61,61,1,1,0,1,boss_debuff,2381,5
+Pyromancer,Incineration,DEBUFF,Pyroclasm,520826,61,26,0.4262295081967213,1,0,1,boss_debuff,115,6
+Pyromancer,Incineration,DEBUFF,Sulfur Fumes,807224,61,14,0.22950819672131148,1,0,1,boss_debuff,3807,7
+Ranger,Archery,DEBUFF,Serrated Shot,575836,145,139,0.9586206896551724,0.8450218441020925,0,0.9928057553956835,boss_debuff,3675,1
+Ranger,Archery,BUFF,Horn of Perseverance,800088,145,137,0.9448275862068966,0.9507856936276873,1,0,raid_buff,19725,2
+Ranger,Archery,DEBUFF,Toxic Dart,807330,145,111,0.7655172413793103,0.8974358974358975,0,0.8828828828828829,boss_debuff,280,3
+Ranger,Archery,DEBUFF,Pierced,782754,145,108,0.7448275862068966,0.6467211688989389,0,1,boss_debuff,3718,4
+Ranger,Archery,DEBUFF,Weapon Oil,567737,145,106,0.7310344827586207,1,0,1,boss_debuff,16216,5
+Ranger,Archery,DEBUFF,Precision Shot,800578,145,105,0.7241379310344828,1,0,1,boss_debuff,2792,6
+Ranger,Archery,BUFF,Greater Footpad's Adaptation,523513,145,104,0.7172413793103448,0.9668711656441717,0.96,0,raid_buff,2364,7
+Ranger,Archery,DEBUFF,Strike Where It Hurts,567588,145,88,0.6068965517241379,1,0,1,boss_debuff,37429,8
+Ranger,Archery,BUFF,Wild Blessing,681539,145,86,0.593103448275862,0.9430091185410334,0.9555335968379447,0,raid_buff,2482,9
+Ranger,Archery,BUFF,Greater Woodsman's Adaptation,680294,145,70,0.4827586206896552,0.9174698795180722,0.9523809523809523,0,raid_buff,1523,10
+Ranger,Archery,DEBUFF,Hunting Shot,547205,145,51,0.35172413793103446,1,0,0.9019607843137255,boss_debuff,9296,11
+Ranger,Archery,DEBUFF,Uncover Weakness,572178,145,42,0.2896551724137931,0.9784615384615385,0,1,boss_debuff,318,12
+Ranger,Archery,DEBUFF,Nerve Venom,570244,145,27,0.18620689655172415,0.9784891165172855,0,1,boss_debuff,3821,13
+Ranger,Brigand,DEBUFF,Ravage,803864,9,9,1,1,0,1,boss_debuff,1863,1
+Ranger,Brigand,DEBUFF,Barbed Quills,801472,9,8,0.8888888888888888,1,0,1,boss_debuff,3054,2
+Ranger,Brigand,DEBUFF,Dirty Blades,520571,9,6,0.6666666666666666,1,0,1,boss_debuff,406,3
+Ranger,Brigand,DEBUFF,Jagged Edge,567592,9,4,0.4444444444444444,0.9416403785488959,0,1,boss_debuff,597,4
+Ranger,Brigand,DEBUFF,Outmaneuver,557325,9,1,0.1111111111111111,1,0,1,boss_debuff,16,5
+Ranger,Brigand,DEBUFF,'Tactical' Advantage,706749,9,1,0.1111111111111111,1,0,1,boss_debuff,2,6
+Ranger,Farstrider,BUFF,Battle Screech,706399,1,1,1,1,1,0,raid_buff,231,1
+Ranger,Farstrider,DEBUFF,Enchanted Flare,801935,1,1,1,1,0,1,boss_debuff,28,2
+Ranger,Farstrider,DEBUFF,Quel'dorei Poison,586212,1,1,1,1,0,1,boss_debuff,22,3
+Ranger,Farstrider,BUFF,Flower Fantasy,561007,1,1,1,1,0.4,0,limited,67,4
+Reaper,Domination,DEBUFF,Soul Splinter,805720,46,46,1,1,0,1,boss_debuff,9414,1
+Reaper,Domination,DEBUFF,Essence Binder,800437,46,46,1,1,0,1,boss_debuff,2432,2
+Reaper,Domination,BUFF,Spectral Warden,805716,46,41,0.8913043478260869,0.996841155234657,0.4,0,limited,2209,3
+Reaper,Domination,DEBUFF,Intimidated,680339,46,37,0.8043478260869565,1,0,1,boss_debuff,964,4
+Reaper,Domination,DEBUFF,Requiem,572179,46,36,0.782608695652174,1,0,1,boss_debuff,1989,5
+Reaper,Domination,DEBUFF,Writhe,801337,46,36,0.782608695652174,0.989778534923339,0,0.9166666666666666,boss_debuff,581,6
+Reaper,Domination,BUFF,Greater Rite of Resolve,680298,46,19,0.41304347826086957,0.5070754716981132,1,0,raid_buff,430,7
+Reaper,Harvest,DEBUFF,Doomrend,560361,116,116,1,1,0,0.9913793103448276,boss_debuff,7568,1
+Reaper,Harvest,DEBUFF,Scythe Rush,500377,116,86,0.7413793103448276,0.762481089258699,0,0.8604651162790697,boss_debuff,504,2
+Reaper,Harvest,DEBUFF,Soulrend,573320,116,85,0.7327586206896551,0.6521739130434783,0,1,boss_debuff,1215,3
+Reaper,Harvest,DEBUFF,Withering Touch,573071,116,77,0.6637931034482759,0.6736672051696284,0,1,boss_debuff,417,4
+Reaper,Harvest,DEBUFF,Murder,560421,116,61,0.5258620689655172,0.5858657243816254,0,0.9836065573770492,boss_debuff,2487,5
+Reaper,Harvest,DEBUFF,Darkrend Scythe,704256,116,45,0.3879310344827586,1,0,0.9777777777777777,boss_debuff,5269,6
+Reaper,Harvest,DEBUFF,Shudder Scythe,572382,116,39,0.33620689655172414,1,0,1,boss_debuff,1996,7
+Reaper,Harvest,DEBUFF,Blood Frenzy,803039,116,37,0.31896551724137934,1,0,1,boss_debuff,110,8
+Reaper,Harvest,DEBUFF,Deathwind,502994,116,29,0.25,0.5505267843893753,0,1,boss_debuff,3710,9
+Reaper,Harvest,BUFF,Deathwind,502994,116,29,0.25,0.5227352618845764,0.72,0,raid_buff,25280,10
+Reaper,Harvest,DEBUFF,Harvesting Grounds,705413,116,27,0.23275862068965517,1,0,1,boss_debuff,560,11
+Reaper,Harvest,BUFF,Harvesting Grounds,707591,116,27,0.23275862068965517,1,0.84,0,raid_buff,4554,12
+Reaper,Soul,DEBUFF,Deathchaser,573053,20,20,1,1,0,1,boss_debuff,1030,1
+Reaper,Soul,DEBUFF,Weakened Soul,803433,20,20,1,1,0,1,boss_debuff,270,2
+Reaper,Soul,DEBUFF,Chasing Death,807418,20,19,0.95,1,0,1,boss_debuff,189,3
+Reaper,Soul,DEBUFF,Soulrot,804660,20,14,0.7,1,0,1,boss_debuff,2601,4
+Reaper,Soul,DEBUFF,Anima Ambush,705425,20,7,0.35,1,0,0.8571428571428571,boss_debuff,14,5
+Runemaster,Engravement,DEBUFF,Marked: Runic Brand,712323,117,117,1,1,0,1,boss_debuff,6641,1
+Runemaster,Engravement,DEBUFF,Weapon Engraving: Fire,653210,117,113,0.9658119658119658,0.8532816589490638,0,1,boss_debuff,50859,2
+Runemaster,Engravement,BUFF,Power Engraving,500296,117,104,0.8888888888888888,0.7384505477059851,0.5527272727272727,0,limited,9303,3
+Runemaster,Engravement,DEBUFF,Leybreaker,520555,117,68,0.5811965811965812,1,0,1,boss_debuff,3587,4
+Runemaster,Engravement,DEBUFF,Eskhandar's Slow,909665,117,34,0.2905982905982906,0.5382436260623229,0,1,boss_debuff,760,5
+Runemaster,Engravement,DEBUFF,Eskhandar's Rake,909300,117,34,0.2905982905982906,0.5295489891135303,0,1,boss_debuff,681,6
+Runemaster,Engravement,BUFF,Speed Rune,802725,117,34,0.2905982905982906,0.5082939338087988,0.65,0,limited,6343,7
+Runemaster,Engravement,BUFF,Greater Etching of the Dextrous,561241,117,28,0.23931623931623933,0.5460852329038652,0.9230769230769231,0,raid_buff,551,8
+Runemaster,Glyphic,DEBUFF,Ley Mark,504844,59,59,1,1,0,1,boss_debuff,4371,1
+Runemaster,Glyphic,DEBUFF,Unleashed Flame Glyph,520097,59,59,1,0.9994568169473113,0,1,boss_debuff,3680,2
+Runemaster,Glyphic,DEBUFF,Runic Obliteration,805794,59,59,1,1,0,1,boss_debuff,1516,3
+Runemaster,Glyphic,DEBUFF,Overloaded Flame Glyph,520107,59,58,0.9830508474576272,1,0,1,boss_debuff,902,4
+Runemaster,Glyphic,DEBUFF,Frigid Fusion,803225,59,53,0.8983050847457628,0.9997907949790795,0,1,boss_debuff,19116,5
+Runemaster,Glyphic,DEBUFF,Manuscription,525302,59,42,0.711864406779661,1,0,1,boss_debuff,1390,6
+Runemaster,Glyphic,DEBUFF,Weapon Engraving: Arcane,653263,59,28,0.4745762711864407,0.7106666666666667,0,0.9285714285714286,boss_debuff,5863,7
+Runemaster,Riftblade,DEBUFF,Hoarfrost,572737,80,77,0.9625,1,0,1,boss_debuff,2802,1
+Runemaster,Riftblade,DEBUFF,Hoarfrost Checker,572755,80,77,0.9625,1,0,1,boss_debuff,1436,2
+Runemaster,Riftblade,DEBUFF,Palm Sigil: Arcane,807819,80,33,0.4125,0.6071428571428571,0,0.7272727272727273,boss_debuff,68,3
+Starcaller,Moon Guard,DEBUFF,Enduring Moon,572181,27,27,1,1,0,1,boss_debuff,3158,1
+Starcaller,Moon Guard,DEBUFF,Starburst,704796,27,26,0.9629629629629629,1,0,1,boss_debuff,1517,2
+Starcaller,Moon Guard,DEBUFF,Command,804386,27,24,0.8888888888888888,0.9866220735785953,0,0.875,boss_debuff,295,3
+Starcaller,Moon Guard,DEBUFF,Eclipse of Fury,570221,27,8,0.2962962962962963,0.5740740740740741,0,0.5,limited,62,4
+Starcaller,Moon Priest,BUFF,Eclipsing Arrows,574154,102,102,1,1,1,0,raid_buff,30210,1
+Starcaller,Moon Priest,BUFF,Aspect of the Goddess,801401,102,97,0.9509803921568627,1,0.8,0,raid_buff,73038,2
+Starcaller,Moon Priest,BUFF,Moonwater,804735,102,48,0.47058823529411764,1,1,0,raid_buff,165213,3
+Starcaller,Moon Priest,BUFF,Elune's Grace,504027,102,44,0.43137254901960786,1,0.9583333333333334,0,raid_buff,9893,4
+Starcaller,Moon Priest,BUFF,Moonwell,804739,102,44,0.43137254901960786,1,0.575,0,limited,2438,5
+Starcaller,Sentinel,DEBUFF,Starfire Barrage,803264,76,65,0.8552631578947368,1,0,1,boss_debuff,19264,1
+Starcaller,Sentinel,DEBUFF,Exemplary Draw,504005,76,32,0.42105263157894735,1,0,0.96875,boss_debuff,467,2
+Starcaller,Warden,DEBUFF,Astral Combatant,805566,106,78,0.7358490566037735,0.9986389266964807,0,0.9871794871794872,boss_debuff,10272,1
+Starcaller,Warden,DEBUFF,Vengeance,680710,106,57,0.5377358490566038,0.9985185185185185,0,0.9824561403508771,boss_debuff,9436,2
+Starcaller,Warden,DEBUFF,Warden's Strike (Aspect of the Warden),805511,106,54,0.5094339622641509,0.9856057576969213,0,1,boss_debuff,2465,3
+Starcaller,Warden,DEBUFF,Avatar of Vengeance,531757,106,53,0.5,1,0,1,boss_debuff,962,4
+Starcaller,Warden,DEBUFF,Lunar Lance,502339,106,27,0.25471698113207547,0.5421810699588477,0,1,boss_debuff,527,5
+Starcaller,Warden,DEBUFF,Starshatter,707725,106,24,0.22641509433962265,0.7082728592162555,0,1,boss_debuff,976,6
+Stormbringer,Lightning,DEBUFF,Shock,560336,86,86,1,0.9511128775834659,0,1,boss_debuff,4786,1
+Stormbringer,Lightning,DEBUFF,Volt,501409,86,86,1,1,0,1,boss_debuff,2590,2
+Stormbringer,Lightning,DEBUFF,Thorim's Gift,570174,86,85,0.9883720930232558,1,0,1,boss_debuff,2900,3
+Stormbringer,Lightning,DEBUFF,Sparks,706729,86,83,0.9651162790697675,1,0,1,boss_debuff,4003,4
+Stormbringer,Lightning,DEBUFF,Eye of the Storm,807712,86,74,0.8604651162790697,0.7578639356254572,0,1,boss_debuff,2072,5
+Stormbringer,Lightning,BUFF,Greater Call of the Lightning,575846,86,51,0.5930232558139535,0.869467787114846,0.9583333333333334,0,raid_buff,1552,6
+Stormbringer,Lightning,DEBUFF,Thunder Grip,301220,86,38,0.4418604651162791,0.836147877681424,0,1,boss_debuff,3664,7
+Stormbringer,Lightning,DEBUFF,Forked Lightning,804832,86,30,0.3488372093023256,1,0,1,boss_debuff,1828,8
+Stormbringer,Lightning,DEBUFF,Conjure Storm,501420,86,19,0.22093023255813954,0.7496510004653327,0,0.9473684210526315,boss_debuff,1611,9
+Stormbringer,Maelstrom,DEBUFF,Stormflow,572866,24,24,1,1,0,1,boss_debuff,1369,1
+Stormbringer,Maelstrom,DEBUFF,Drowning,806406,24,24,1,1,0,1,boss_debuff,452,2
+Stormbringer,Maelstrom,DEBUFF,Drown,572764,24,24,1,1,0,1,boss_debuff,208,3
+Stormbringer,Maelstrom,DEBUFF,Conduit,806393,24,21,0.875,1,0,1,boss_debuff,3595,4
+Stormbringer,Maelstrom,DEBUFF,Geyser,680352,24,13,0.5416666666666666,1,0,1,boss_debuff,152,5
+Stormbringer,Maelstrom,DEBUFF,Stormcloud,801859,24,13,0.5416666666666666,1,0,1,boss_debuff,77,6
+Stormbringer,Maelstrom,DEBUFF,Stormfury,532751,24,6,0.25,1,0,1,boss_debuff,94,7
+Stormbringer,Wind,BUFF,Kiss of the Clouds,500292,8,8,1,1,1,0,raid_buff,4028,1
+Stormbringer,Wind,DEBUFF,Updraft,570166,8,8,1,1,0,1,boss_debuff,1542,2
+Stormbringer,Wind,DEBUFF,Aeroblast,802750,8,8,1,1,0,1,boss_debuff,300,3
+Stormbringer,Wind,BUFF,Updraft,704202,8,8,1,1,0.8994252873563219,0,raid_buff,13811,4
+Stormbringer,Wind,BUFF,Focal Point,680876,8,6,0.75,1,1,0,raid_buff,6064,5
+Stormbringer,Wind,BUFF,Aerodynamics,806433,8,6,0.75,1,1,0,raid_buff,2516,6
+Stormbringer,Wind,BUFF,Skyfall,807131,8,6,0.75,1,1,0,raid_buff,1739,7
+Stormbringer,Wind,BUFF,Tempest's Call,560567,8,6,0.75,1,1,0,raid_buff,277,8
+Sun Cleric,Blessings,BUFF,Redeemed,301005,58,58,1,0.9998927268826432,0.8003952569169961,0,raid_buff,9321,1
+Sun Cleric,Blessings,BUFF,Faith,804405,58,54,0.9310344827586207,1,0.88,0,raid_buff,10020,2
+Sun Cleric,Blessings,BUFF,Warmth,704564,58,46,0.7931034482758621,0.9997123047268334,1,0,raid_buff,34749,3
+Sun Cleric,Blessings,BUFF,Light The Way,300337,58,41,0.7068965517241379,0.853387475956401,0.2,0,limited,3993,4
+Sun Cleric,Blessings,BUFF,Solar Invigoration,806123,58,36,0.6206896551724138,1,1,0,raid_buff,6028,5
+Sun Cleric,Blessings,BUFF,Circle of Valor,520647,58,21,0.3620689655172414,0.7163943068002109,0.6956521739130435,0,limited,1359,6
+Sun Cleric,Piety,DEBUFF,Purgation,806025,65,59,0.9076923076923077,1,0,1,boss_debuff,9400,1
+Sun Cleric,Piety,DEBUFF,Sun's Hope,706733,65,49,0.7538461538461538,1,0,1,boss_debuff,11064,2
+Sun Cleric,Piety,DEBUFF,Sun Down,572754,65,15,0.23076923076923078,1,0,1,boss_debuff,1203,3
+Sun Cleric,Seraphim,DEBUFF,Justicar's Wrath,572067,33,32,0.9696969696969697,1,0,1,boss_debuff,1138,1
+Sun Cleric,Seraphim,DEBUFF,Injunction,800624,33,21,0.6363636363636364,0.975,0,0.8571428571428571,boss_debuff,234,2
+Sun Cleric,Seraphim,DEBUFF,Solar Eclipse,704931,33,14,0.42424242424242425,1,0,0.8571428571428571,boss_debuff,933,3
+Sun Cleric,Seraphim,DEBUFF,Thunder Clap,13532,33,4,0.12121212121212122,0.6519916142557652,0,1,boss_debuff,311,4
+Sun Cleric,Valkyrie,DEBUFF,Dawnfall,806118,196,184,0.9387755102040817,0.5511912427559562,0,1,boss_debuff,2568,1
+Sun Cleric,Valkyrie,BUFF,Dawnfall,806118,196,184,0.9387755102040817,0.6444803725021018,0.7307692307692307,0,raid_buff,49828,2
+Sun Cleric,Valkyrie,DEBUFF,Sunslam,807973,196,181,0.923469387755102,1,0,1,boss_debuff,3726,3
+Sun Cleric,Valkyrie,DEBUFF,Horusath Blast,572050,196,160,0.8163265306122449,0.7952404561229549,0,0.99375,boss_debuff,8020,4
+Sun Cleric,Valkyrie,DEBUFF,Divine Retribution,680624,196,114,0.5816326530612245,1,0,0.9912280701754386,boss_debuff,15719,5
+Sun Cleric,Valkyrie,BUFF,Greater Devotion of Dawn,572390,196,55,0.28061224489795916,0.8672470076169749,0.36,0,limited,797,6
+Sun Cleric,Valkyrie,DEBUFF,Seeping Willow,17196,196,37,0.18877551020408162,0.5748622934401603,0,1,boss_debuff,1148,7
+Templar,Crusader,DEBUFF,Scarlet Hammer,500752,169,169,1,0.9118183092667882,0,1,boss_debuff,6504,1
+Templar,Crusader,DEBUFF,Divine Strikes,803372,169,156,0.9230769230769231,1,0,1,boss_debuff,54603,2
+Templar,Crusader,DEBUFF,Condemn,567539,169,156,0.9230769230769231,0.6309918075649295,0,1,boss_debuff,7240,3
+Templar,Crusader,BUFF,Harmonic Disposition,560653,169,110,0.650887573964497,0.644362802141171,0.92,0,raid_buff,116283,4
+Templar,Crusader,DEBUFF,Crusader's Brand,300513,169,71,0.42011834319526625,1,0,1,boss_debuff,1151,5
+Templar,Crusader,BUFF,Tithe of Courage,804820,169,63,0.3727810650887574,0.5288136378375874,0.9615384615384616,0,raid_buff,45662,6
+Templar,Crusader,BUFF,Tithe of Crusading,804782,169,22,0.1301775147928994,0.8197289631263788,1,0,raid_buff,15606,7
+Templar,Crusader,BUFF,Tithe of Liberty,804815,169,22,0.1301775147928994,1,0.9545454545454546,0,raid_buff,20383,8
+Templar,Oathkeeper,DEBUFF,Sacred Swing,301061,73,66,0.9041095890410958,1,0,0.9848484848484849,boss_debuff,2241,1
+Templar,Oathkeeper,DEBUFF,Beckon,804914,73,66,0.9041095890410958,1,0,0.8636363636363636,boss_debuff,616,2
+Templar,Oathkeeper,BUFF,Barrier of Light,805417,73,63,0.863013698630137,1,0.8636363636363636,0,raid_buff,15861,3
+Templar,Oathkeeper,DEBUFF,Mythical Scarring,823757,73,29,0.3972602739726027,0.6170212765957447,0,0.6896551724137931,limited,58,4
+Templar,Oathkeeper,DEBUFF,Fixate,823759,73,29,0.3972602739726027,0.6170212765957447,0,0.6896551724137931,limited,58,5
+Templar,Oathkeeper,DEBUFF,Absolution,800424,73,17,0.2328767123287671,1,0,1,boss_debuff,72,6
+Templar,Oathkeeper,BUFF,Tithe of Heroism,804816,73,13,0.1780821917808219,0.6286170779336056,1,0,raid_buff,14164,7
+Templar,Zealot,DEBUFF,Blade of Faith,803880,43,43,1,0.5140117994100295,0,1,boss_debuff,697,1
+Templar,Zealot,DEBUFF,Iron Penance,523713,43,42,0.9767441860465116,1,0,1,boss_debuff,8587,2
+Tinker,Demolition,DEBUFF,Napalm,805315,80,80,1,0.9995661840464183,0,1,boss_debuff,36866,1
+Tinker,Demolition,DEBUFF,Sticky Bomb,502564,80,80,1,0.6478393612024425,0,1,boss_debuff,5517,2
+Tinker,Demolition,DEBUFF,Bomb Toss,572053,80,80,1,1,0,1,boss_debuff,2766,3
+Tinker,Demolition,DEBUFF,Rocket Bombardment,706696,80,80,1,0.6422976501305483,0,1,boss_debuff,2460,4
+Tinker,Demolition,DEBUFF,Build: Spider Bomb,500535,80,80,1,1,0,1,boss_debuff,1553,5
+Tinker,Demolition,DEBUFF,Oil Spill Pylon,707290,80,79,0.9875,1,0,1,boss_debuff,646,6
+Tinker,Demolition,DEBUFF,Meltdown,581313,80,69,0.8625,0.9444444444444444,0,1,boss_debuff,1020,7
+Tinker,Invention,BUFF,Steam Vent,572369,116,116,1,0.6835434311601339,0.9545454545454546,0,raid_buff,69407,1
+Tinker,Invention,BUFF,Rejuvenating Gas,706255,116,104,0.896551724137931,1,0.6243386243386244,0,limited,12381,2
+Tinker,Invention,BUFF,Med Pack,502536,116,80,0.6896551724137931,0.9593679458239278,0.2357142857142857,0,limited,1275,3
+Tinker,Invention,BUFF,Healthy,806158,116,77,0.6637931034482759,0.9616477272727273,0.25,0,limited,1354,4
+Tinker,Invention,BUFF,Cybernetic Shield,653283,116,61,0.5258620689655172,1,0.64,0,limited,9938,5
+Tinker,Invention,BUFF,Shield Beacon,803807,116,59,0.5086206896551724,0.9599976675024783,0.72,0,raid_buff,16463,6
+Tinker,Invention,BUFF,Greater Mana Module,803665,116,49,0.4224137931034483,0.9763421292083713,1,0,raid_buff,1073,7
+Tinker,Mechanics,DEBUFF,Gatling Gun,500213,75,74,0.9866666666666667,1,0,1,boss_debuff,6307,1
+Tinker,Mechanics,DEBUFF,Turret Upgrade Z-15,573269,75,73,0.9733333333333334,1,0,0.9863013698630136,boss_debuff,8193,2
+Tinker,Mechanics,DEBUFF,Gear Grind,504594,75,71,0.9466666666666667,0.9997145304025121,0,1,boss_debuff,3502,3
+Tinker,Mechanics,DEBUFF,Molten Grenade,706694,75,70,0.9333333333333333,0.780157129945074,0,1,boss_debuff,11221,4
+Tinker,Mechanics,DEBUFF,Flamethrower,806168,75,65,0.8666666666666667,1,0,1,boss_debuff,2880,5
+Tinker,Mechanics,DEBUFF,Flame Jets,850024,75,65,0.8666666666666667,1,0,1,boss_debuff,2235,6
+Tinker,Mechanics,DEBUFF,Drill Smash,806173,75,63,0.84,1,0,1,boss_debuff,845,7
+Tinker,Mechanics,DEBUFF,Living Flame,504521,75,36,0.48,1,0,1,boss_debuff,7772,8
+Tinker,Mechanics,DEBUFF,Blazewrought Sunder,681307,75,33,0.44,1,0,0.9696969696969697,boss_debuff,8252,9
+Tinker,Mechanics,DEBUFF,Arclight Core,524904,75,32,0.4266666666666667,1,0,1,boss_debuff,2114,10
+Tinker,Mechanics,DEBUFF,Sprocket Zap!,805657,75,26,0.3466666666666667,1,0,1,boss_debuff,3838,11
+Tinker,Mechanics,DEBUFF,Lesser Sticky Bomb,500612,75,13,0.17333333333333334,1,0,1,boss_debuff,1779,12
+Venomancer,Fortitude,DEBUFF,Expulsion,807598,96,87,0.90625,1,0,0.9770114942528736,boss_debuff,5915,1
+Venomancer,Fortitude,DEBUFF,Beetle Slime,704347,96,86,0.8958333333333334,1,0,1,boss_debuff,15722,2
+Venomancer,Fortitude,DEBUFF,Blight Venom,805896,96,85,0.8854166666666666,0.6466161313191907,0,1,boss_debuff,11857,3
+Venomancer,Fortitude,DEBUFF,Wicked Poison,705985,96,85,0.8854166666666666,1,0,1,boss_debuff,8942,4
+Venomancer,Fortitude,DEBUFF,Venomtip Poison,572058,96,72,0.75,1,0,0.9861111111111112,boss_debuff,3052,5
+Venomancer,Fortitude,DEBUFF,Weakening Venom,706000,96,67,0.6979166666666666,0.966319657072872,0,1,boss_debuff,6312,6
+Venomancer,Fortitude,DEBUFF,Barbed Stinger,680854,96,49,0.5104166666666666,1,0,0.9591836734693877,boss_debuff,4336,7
+Venomancer,Fortitude,BUFF,Greater Beetle Pheromones,803657,96,44,0.4583333333333333,0.5228136882129277,1,0,raid_buff,1100,8
+Venomancer,Fortitude,BUFF,Greater Spider Pheromones,680312,96,12,0.125,0.5235042735042735,0.9553571428571428,0,raid_buff,245,9
+Venomancer,Fortitude,BUFF,Shadra's Lair,804978,96,11,0.11458333333333333,0.7560706401766004,0.48,0,limited,685,10
+Venomancer,Rot,DEBUFF,Fungal Growth,804971,68,68,1,1,0,1,boss_debuff,15277,1
+Venomancer,Rot,DEBUFF,Mushroom,680764,68,68,1,1,0,1,boss_debuff,10425,2
+Venomancer,Rot,DEBUFF,Spore,572869,68,68,1,1,0,1,boss_debuff,3856,3
+Venomancer,Rot,DEBUFF,Mycosis,572156,68,68,1,1,0,1,boss_debuff,2571,4
+Venomancer,Rot,DEBUFF,Wilt,620072,68,68,1,1,0,1,boss_debuff,2393,5
+Venomancer,Rot,DEBUFF,Cloud of Rot,652702,68,65,0.9558823529411765,1,0,1,boss_debuff,8953,6
+Venomancer,Rot,DEBUFF,Fungal Assailant,504344,68,65,0.9558823529411765,1,0,1,boss_debuff,932,7
+Venomancer,Rot,DEBUFF,Lethargy,804979,68,59,0.8676470588235294,1,0,1,boss_debuff,8629,8
+Venomancer,Rot,DEBUFF,Blightcaps,800868,68,48,0.7058823529411765,0.9904818560380726,0,0.9791666666666666,boss_debuff,1665,9
+Venomancer,Rot,DEBUFF,Suffocating Coil,707234,68,20,0.29411764705882354,1,0,1,boss_debuff,1071,10
+Venomancer,Rot,DEBUFF,Fungic,706456,68,9,0.1323529411764706,1,0,1,boss_debuff,556,11
+Venomancer,Stalking,DEBUFF,Vulnerable,572056,26,26,1,1,0,1,boss_debuff,3256,1
+Venomancer,Stalking,DEBUFF,Nerubian Sting,502911,26,26,1,1,0,1,boss_debuff,1033,2
+Venomancer,Stalking,DEBUFF,Withering Venom,707090,26,26,1,1,0,1,boss_debuff,445,3
+Venomancer,Stalking,DEBUFF,Widowmaker,800884,26,25,0.9615384615384616,1,0,1,boss_debuff,786,4
+Venomancer,Stalking,DEBUFF,Rotfang,807605,26,25,0.9615384615384616,1,0,1,boss_debuff,648,5
+Venomancer,Stalking,DEBUFF,Potency,572055,26,24,0.9230769230769231,1,0,1,boss_debuff,2141,6
+Venomancer,Stalking,DEBUFF,Facemelter,572901,26,14,0.5384615384615384,1,0,1,boss_debuff,393,7
+Venomancer,Stalking,DEBUFF,Brood Web,712456,26,4,0.15384615384615385,1,0,1,boss_debuff,605,8
+Venomancer,Stalking,DEBUFF,Nullifying Venom,805897,26,3,0.11538461538461539,0.7204502814258912,0,1,boss_debuff,384,9
+Venomancer,Vizier,BUFF,Mycelial Healing,806454,59,59,1,0.9999775270798688,1,0,raid_buff,44497,1
+Venomancer,Vizier,BUFF,Mending Mist,502957,59,57,0.9661016949152542,1,0.8,0,raid_buff,24080,2
+Venomancer,Vizier,BUFF,Shadra's Balm,502973,59,56,0.9491525423728814,1,0.49,0,limited,4627,3
+Venomancer,Vizier,BUFF,Shadra's Prayer,502947,59,55,0.9322033898305084,0.9988785046728972,0.36,0,limited,2672,4
+Venomancer,Vizier,BUFF,Shadra's Vigil,505203,59,52,0.8813559322033898,1,0.5954545454545455,0,limited,7773,5
+Venomancer,Vizier,BUFF,Worship,706017,59,51,0.864406779661017,1,1,0,raid_buff,51088,6
+Venomancer,Vizier,BUFF,Rejuvenating Venom,630869,59,50,0.847457627118644,0.7641043723554302,0.9148550724637681,0,raid_buff,6501,7
+Witch Doctor,Brewing,BUFF,Splash Potion: Jungle Shrooms,803698,107,107,1,1,0.782608695652174,0,raid_buff,29663,1
+Witch Doctor,Brewing,BUFF,Jungle Shrooms,802973,107,103,0.9626168224299065,1,0.22727272727272727,0,limited,2657,2
+Witch Doctor,Brewing,BUFF,Mojo Beam,501117,107,101,0.9439252336448598,1,0.23809523809523808,0,limited,10344,3
+Witch Doctor,Brewing,BUFF,Voodoo Cauldron,504419,107,94,0.8785046728971962,1,0.9047619047619048,0,raid_buff,24070,4
+Witch Doctor,Brewing,BUFF,Bloodthistle,802771,107,82,0.7663551401869159,0.9992494102509114,0.9523809523809523,0,raid_buff,9319,5
+Witch Doctor,Brewing,BUFF,Splash Potion: Bloodthistle,803271,107,80,0.7476635514018691,1,0.8260869565217391,0,raid_buff,16898,6
+Witch Doctor,Brewing,BUFF,Frog Bones,803697,107,67,0.6261682242990654,0.9879560750974141,0.96,0,raid_buff,8367,7
+Witch Doctor,Brewing,BUFF,Splash Potion: Frog Bones,803699,107,67,0.6261682242990654,1,0.7142857142857143,0,raid_buff,16778,8
+Witch Doctor,Brewing,BUFF,Master of Concoctions,570064,107,62,0.5794392523364486,1,0.8003952569169961,0,raid_buff,11943,9
+Witch Doctor,Brewing,BUFF,Spirit Link Idol,504921,107,61,0.5700934579439252,1,0.7619047619047619,0,raid_buff,7849,10
+Witch Doctor,Brewing,BUFF,Unstable Concoction,802488,107,58,0.5420560747663551,1,0.23904761904761904,0,limited,1676,11
+Witch Doctor,Brewing,BUFF,Frog Shrooms,500509,107,53,0.4953271028037383,1,0.5384615384615384,0,limited,2488,12
+Witch Doctor,Brewing,DEBUFF,Mana Jinx,801925,107,48,0.4485981308411215,0.9863013698630136,0,0.9583333333333334,boss_debuff,288,13
+Witch Doctor,Brewing,BUFF,Big Bad Voodoo,802719,107,43,0.40186915887850466,0.9630214205186021,0.7619047619047619,0,raid_buff,4271,14
+Witch Doctor,Brewing,BUFF,Greater Spirit Wuju,680872,107,37,0.34579439252336447,0.5996548748921484,0.9545454545454546,0,raid_buff,695,15
+Witch Doctor,Brewing,BUFF,Fish Oil,803269,107,23,0.21495327102803738,1,1,0,raid_buff,7424,16
+Witch Doctor,Brewing,BUFF,Splash Potion: Fish Oil,803273,107,21,0.19626168224299065,1,0.34782608695652173,0,limited,1009,17
+Witch Doctor,Brewing,DEBUFF,Touch of the Spirits,578296,107,19,0.17757009345794392,1,0,1,boss_debuff,1233,18
+Witch Doctor,Brewing,BUFF,Mass Allcure Elixir,706555,107,17,0.1588785046728972,1,0.9,0,raid_buff,1379,19
+Witch Doctor,Shadowhunting,DEBUFF,Eye of Kimbul,802707,89,89,1,1,0,1,boss_debuff,17226,1
+Witch Doctor,Shadowhunting,DEBUFF,Veil of Darkness,802100,89,88,0.9887640449438202,0.6460176991150443,0,1,boss_debuff,584,2
+Witch Doctor,Shadowhunting,DEBUFF,Umbral Glaive,501134,89,86,0.9662921348314607,1,0,1,boss_debuff,5999,3
+Witch Doctor,Shadowhunting,DEBUFF,Hex of Malice,504608,89,86,0.9662921348314607,0.7515992922281203,0,1,boss_debuff,5522,4
+Witch Doctor,Shadowhunting,DEBUFF,Serpent's Guile,705929,89,68,0.7640449438202247,1,0,1,boss_debuff,5386,5
+Witch Doctor,Shadowhunting,DEBUFF,Spirit Glaive,562719,89,49,0.550561797752809,1,0,0.9183673469387755,boss_debuff,2287,6
+Witch Doctor,Shadowhunting,DEBUFF,Spirit Eclipse,811117,89,29,0.3258426966292135,1,0,0.896551724137931,boss_debuff,592,7
+Witch Doctor,Voodoo,DEBUFF,Puppeteer’s Threads,572836,74,74,1,1,0,1,boss_debuff,74487,1
+Witch Doctor,Voodoo,DEBUFF,Hexfire Wrath,807520,74,74,1,1,0,1,boss_debuff,3938,2
+Witch Doctor,Voodoo,DEBUFF,Voodoo Strings,706898,74,74,1,1,0,1,boss_debuff,2837,3
+Witch Doctor,Voodoo,DEBUFF,Shadow Puppets,501087,74,74,1,1,0,1,boss_debuff,1546,4
+Witch Doctor,Voodoo,DEBUFF,Mark of Malice,802926,74,71,0.9594594594594594,1,0,0.971830985915493,boss_debuff,1012,5
+Witch Doctor,Voodoo,DEBUFF,Growing Malice,582257,74,51,0.6891891891891891,1,0,1,boss_debuff,1519,6
+Witch Doctor,Voodoo,DEBUFF,Hollow Spirit,503706,74,46,0.6216216216216216,1,0,1,boss_debuff,694,7
+Witch Hunter,Black Knight,DEBUFF,Shadow Brand,680517,57,57,1,0.999449728794906,0,1,boss_debuff,12714,1
+Witch Hunter,Black Knight,DEBUFF,Pommel Smash,582588,57,52,0.9122807017543859,0.9470426409903714,0,1,boss_debuff,1377,2
+Witch Hunter,Black Knight,DEBUFF,Witchblight,681220,57,49,0.8596491228070176,1,0,0.9795918367346939,boss_debuff,948,3
+Witch Hunter,Black Knight,DEBUFF,Vicious Mockery,802013,57,45,0.7894736842105263,0.9856801909307876,0,0.6888888888888889,limited,413,4
+Witch Hunter,Black Knight,DEBUFF,Destroyer of Evil,680532,57,35,0.6140350877192983,1,0,1,boss_debuff,5185,5
+Witch Hunter,Black Knight,DEBUFF,Witchblood Fever,684330,57,26,0.45614035087719296,1,0,0.9615384615384616,boss_debuff,850,6
+Witch Hunter,Black Knight,DEBUFF,Knight's Seal,680499,57,22,0.38596491228070173,1,0,0.9545454545454546,boss_debuff,108,7
+Witch Hunter,Black Knight,DEBUFF,Chains of Darkness (Grip),680522,57,18,0.3157894736842105,1,0,1,boss_debuff,312,8
+Witch Hunter,Boltslinger,DEBUFF,Arbalest Mastery,706241,28,23,0.8214285714285714,1,0,1,boss_debuff,3265,1
+Witch Hunter,Boltslinger,DEBUFF,Witchbane,574320,28,23,0.8214285714285714,1,0,1,boss_debuff,2648,2
+Witch Hunter,Boltslinger,DEBUFF,Heartseeking,807316,28,20,0.7142857142857143,1,0,0.9,boss_debuff,216,3
+Witch Hunter,Boltslinger,DEBUFF,Tormentor,501349,28,19,0.6785714285714286,1,0,1,boss_debuff,659,4
+Witch Hunter,Boltslinger,DEBUFF,Sorrow Bolt,313289,28,4,0.14285714285714285,0.6074074074074074,0,1,boss_debuff,82,5
+Witch Hunter,Houndmaster,DEBUFF,Shadow Claw,800697,20,20,1,1,0,1,boss_debuff,1370,1
+Witch Hunter,Houndmaster,DEBUFF,Sixfold Shot,807364,20,10,0.5,1,0,0.9,boss_debuff,122,2
+Witch Hunter,Houndmaster,DEBUFF,Feast of Talons,500564,20,2,0.1,1,0,1,boss_debuff,886,3
+Witch Hunter,Houndmaster,DEBUFF,Shadow Growl,680239,20,2,0.1,1,0,1,boss_debuff,8,4
+Witch Hunter,Inquisition,DEBUFF,Interrogator,807262,118,117,0.9915254237288136,1,0,1,boss_debuff,6283,1
+Witch Hunter,Inquisition,DEBUFF,Slayer's Mark,804068,118,100,0.847457627118644,0.664303941026368,0,0.98,boss_debuff,2343,2
+Witch Hunter,Inquisition,DEBUFF,Being Hunted,802111,118,100,0.847457627118644,1,0,0.88,boss_debuff,436,3
+Witch Hunter,Inquisition,DEBUFF,Torchlight,503662,118,79,0.6694915254237288,1,0,1,boss_debuff,1957,4
+Witch Hunter,Inquisition,DEBUFF,Death Trap,681452,118,72,0.6101694915254238,0.963276836158192,0,0.9861111111111112,boss_debuff,341,5
+Witch Hunter,Inquisition,DEBUFF,Brand of the Profane,562390,118,65,0.5508474576271186,0.5789473684210527,0,1,boss_debuff,154,6
+Witch Hunter,Inquisition,DEBUFF,Shadow Trapped,681177,118,53,0.4491525423728814,0.6055276381909548,0,0.9811320754716981,boss_debuff,482,7
+Witch Hunter,Inquisition,DEBUFF,Brand of the Damned,807710,118,44,0.3728813559322034,0.5895953757225434,0,0.9318181818181818,boss_debuff,204,8
+Witch Hunter,Inquisition,BUFF,Charming Conversation,804667,118,30,0.2542372881355932,0.5074626865671642,0.20833333333333334,0,limited,170,9

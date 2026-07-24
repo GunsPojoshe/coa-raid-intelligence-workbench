@@ -1,0 +1,5 @@
+schema_version: 1
+endpoints: []
+notes:
+  - "No API route is promoted to active until method, parameters, authorization, pagination, rate policy and schema fingerprint are verified."
+  - "Browser scripts and saved JSON samples must be inventoried before collector implementation."

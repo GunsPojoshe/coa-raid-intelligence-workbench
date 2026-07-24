@@ -1,0 +1,560 @@
+﻿Категория UI,Отображаемое имя,Ключ эффекта,Уровень,Поле базы,Класс,Специализация,Роль,Исходное значение,Источник кода
+Физические бафы,Strength,Flat Strength,Класс,classBuffs,Barbarian,Ancestry,Саппорт,Flat Strength,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Agility,Flat Agility,Класс,classBuffs,Barbarian,Ancestry,Саппорт,Flat Agility,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Attack Power,AP Flat (Shout),Класс,classBuffs,Barbarian,Ancestry,Саппорт,AP Flat (Shout),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Concentration,Concentration,Класс,classBuffs,Barbarian,Ancestry,Саппорт,Concentration (Berserker),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Armor,Armor (Devo),Спек,specBuffs,Barbarian,Ancestry,Саппорт,Armor (Devo),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Heroism | Bloodlust,Heroism,Спек,specBuffs,Barbarian,Ancestry,Саппорт,Heroism,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,Resistance Reduction,Resistance REDUCTION,Спек,specBuffs,Barbarian,Ancestry,Саппорт,Resistance REDUCTION,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Strength,Flat Strength,Класс,classBuffs,Barbarian,Brutality,Мили-DPS,Flat Strength,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Agility,Flat Agility,Класс,classBuffs,Barbarian,Brutality,Мили-DPS,Flat Agility,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Attack Power,AP Flat (Shout),Класс,classBuffs,Barbarian,Brutality,Мили-DPS,AP Flat (Shout),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Concentration,Concentration,Класс,classBuffs,Barbarian,Brutality,Мили-DPS,Concentration (Berserker),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,5% Attack Power,Attack Power %,Спек,specBuffs,Barbarian,Brutality,Мили-DPS,Attack Power %,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,4% Physical Damage,Phys Dmg Taken (4%),Спек,specDebuffs,Barbarian,Brutality,Мили-DPS,Phys Dmg Taken (4%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,30% Bleed Damage,Bleed Dmg Taken (30%),Спек,specDebuffs,Barbarian,Brutality,Мили-DPS,Bleed Dmg Taken (30%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,Armor Reduction,% Armor Debuff,Спек,specDebuffs,Barbarian,Brutality,Мили-DPS,% Armor Debuff,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Strength,Flat Strength,Класс,classBuffs,Barbarian,Headhunting,Рейндж/кастер,Flat Strength,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Agility,Flat Agility,Класс,classBuffs,Barbarian,Headhunting,Рейндж/кастер,Flat Agility,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Attack Power,AP Flat (Shout),Класс,classBuffs,Barbarian,Headhunting,Рейндж/кастер,AP Flat (Shout),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Concentration,Concentration,Класс,classBuffs,Barbarian,Headhunting,Рейндж/кастер,Concentration (Berserker),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Critical Strike (all),All Crit (3%),Спек,specBuffs,Barbarian,Headhunting,Рейндж/кастер,All Crit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,5% Attack Power,Attack Power %,Спек,specBuffs,Barbarian,Headhunting,Рейндж/кастер,Attack Power %,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,30% Bleed Damage,Bleed Dmg Taken (30%),Спек,specDebuffs,Barbarian,Headhunting,Рейндж/кастер,Bleed Dmg Taken (30%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Healing Reduction,Healing Reduc (30-50%),Спек,specDebuffs,Barbarian,Headhunting,Рейндж/кастер,Healing Reduc (30-50%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Small Resistances (all),Small All Resist,Класс,classBuffs,Witch Doctor,Shadowhunting,Рейндж/кастер,Small All Resist,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Witch Doctor,Shadowhunting,Рейндж/кастер,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spirit,Flat Spirit,Класс,classBuffs,Witch Doctor,Shadowhunting,Рейндж/кастер,Flat Spirit,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Mana Regeneration,Mp5,Класс,classBuffs,Witch Doctor,Shadowhunting,Рейндж/кастер,Mp5,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,5% Resource Reduction,Cost Reduction (5%),Класс,classBuffs,Witch Doctor,Shadowhunting,Рейндж/кастер,Cost Reduction (5%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Cast Speed Slow,Cast Slow 30%,Класс,classDebuffs,Witch Doctor,Shadowhunting,Рейндж/кастер,Cast Slow 30%,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Melee & Range Haste,Melee/Range Haste (10%),Спек,specBuffs,Witch Doctor,Shadowhunting,Рейндж/кастер,Melee/Range Haste (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,3% Spell Haste,Spell Haste (3%),Спек,specBuffs,Witch Doctor,Shadowhunting,Рейндж/кастер,Spell Haste (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,5% Attack Power,Attack Power %,Спек,specBuffs,Witch Doctor,Shadowhunting,Рейндж/кастер,Attack Power %,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,Resistance Reduction,Resistance REDUCTION,Спек,specDebuffs,Witch Doctor,Shadowhunting,Рейндж/кастер,Resistance REDUCTION,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Small Resistances (all),Small All Resist,Класс,classBuffs,Witch Doctor,Voodoo,Рейндж/кастер,Small All Resist,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Witch Doctor,Voodoo,Рейндж/кастер,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spirit,Flat Spirit,Класс,classBuffs,Witch Doctor,Voodoo,Рейндж/кастер,Flat Spirit,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Mana Regeneration,Mp5,Класс,classBuffs,Witch Doctor,Voodoo,Рейндж/кастер,Mp5,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,5% Resource Reduction,Cost Reduction (5%),Класс,classBuffs,Witch Doctor,Voodoo,Рейндж/кастер,Cost Reduction (5%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Cast Speed Slow,Cast Slow 30%,Класс,classDebuffs,Witch Doctor,Voodoo,Рейндж/кастер,Cast Slow 30%,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,3% Spell Haste,Spell Haste (3%),Спек,specBuffs,Witch Doctor,Voodoo,Рейндж/кастер,Spell Haste (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Damage Done (all),All Damage Done (3%),Спек,specBuffs,Witch Doctor,Voodoo,Рейндж/кастер,All Damage Done (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Speed Slow,Attack Speed (Slow),Спек,specDebuffs,Witch Doctor,Voodoo,Рейндж/кастер,Attack Speed (Slow),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,Resistance Reduction,Resistance REDUCTION,Спек,specDebuffs,Witch Doctor,Voodoo,Рейндж/кастер,Resistance REDUCTION,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Small Resistances (all),Small All Resist,Класс,classBuffs,Witch Doctor,Brewing,Хилер,Small All Resist,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Witch Doctor,Brewing,Хилер,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spirit,Flat Spirit,Класс,classBuffs,Witch Doctor,Brewing,Хилер,Flat Spirit,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Mana Regeneration,Mp5,Класс,classBuffs,Witch Doctor,Brewing,Хилер,Mp5,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,5% Resource Reduction,Cost Reduction (5%),Класс,classBuffs,Witch Doctor,Brewing,Хилер,Cost Reduction (5%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Cast Speed Slow,Cast Slow 30%,Класс,classDebuffs,Witch Doctor,Brewing,Хилер,Cast Slow 30%,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,3% Spell Haste,Spell Haste (3%),Спек,specBuffs,Witch Doctor,Brewing,Хилер,Spell Haste (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Replenishment,Replenishment,Спек,specBuffs,Witch Doctor,Brewing,Хилер,Replenishment,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Power Reduction,Attack Power Reduction,Спек,specDebuffs,Witch Doctor,Brewing,Хилер,Attack Power Reduction,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,Resistance Reduction,Resistance REDUCTION,Спек,specDebuffs,Witch Doctor,Brewing,Хилер,Resistance REDUCTION,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Minor Armor and All Stats,Stats Flat + Armor (MotW),Класс,classBuffs,Felsworn,Infernal,Рейндж/кастер,Stats Flat + Armor (MotW),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Attack Power,AP Flat (Shout),Класс,classBuffs,Felsworn,Infernal,Рейндж/кастер,AP Flat (Shout),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Fire Resistance,Fire,Класс,classResists,Felsworn,Infernal,Рейндж/кастер,Fire,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Shadow Resistance,Shadow,Класс,classResists,Felsworn,Infernal,Рейндж/кастер,Shadow,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Critical Strike (all),All Crit (3%),Спек,specBuffs,Felsworn,Infernal,Рейндж/кастер,All Crit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Damage Done Reduction (5%),Damage done debuff (5%),Спек,specBuffs,Felsworn,Infernal,Рейндж/кастер,Damage done debuff (5%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,3% Spell Hit,Spell Hit (3%) DEBUFF,Спек,specDebuffs,Felsworn,Infernal,Рейндж/кастер,Spell Hit (3%) DEBUFF,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,10% Spell Damage,Spell Dmg Taken (10%),Спек,specDebuffs,Felsworn,Infernal,Рейндж/кастер,Spell Dmg Taken (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Minor Armor and All Stats,Stats Flat + Armor (MotW),Класс,classBuffs,Felsworn,Tyrant,Танк,Stats Flat + Armor (MotW),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Attack Power,AP Flat (Shout),Класс,classBuffs,Felsworn,Tyrant,Танк,AP Flat (Shout),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Fire Resistance,Fire,Класс,classResists,Felsworn,Tyrant,Танк,Fire,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Shadow Resistance,Shadow,Класс,classResists,Felsworn,Tyrant,Танк,Shadow,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Melee & Range Haste,Melee/Range Haste (10%),Спек,specBuffs,Felsworn,Tyrant,Танк,Melee/Range Haste (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Damage Done (all),All Damage Done (3%),Спек,specBuffs,Felsworn,Tyrant,Танк,All Damage Done (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Defensive Cooldown (Raid-Wide),Raid Wall (Divine Sac),Спек,specBuffs,Felsworn,Tyrant,Танк,Raid Wall (Divine Sac),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,4% Physical Damage,Phys Dmg Taken (4%),Спек,specDebuffs,Felsworn,Tyrant,Танк,Phys Dmg Taken (4%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Power Reduction,Attack Power Reduction,Спек,specDebuffs,Felsworn,Tyrant,Танк,Attack Power Reduction,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Speed Slow,Attack Speed (Slow),Спек,specDebuffs,Felsworn,Tyrant,Танк,Attack Speed (Slow),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Damage Done Reduction (5%),Damage done debuff (5%),Спек,specDebuffs,Felsworn,Tyrant,Танк,Damage done debuff (5%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Minor Armor and All Stats,Stats Flat + Armor (MotW),Класс,classBuffs,Felsworn,Slaying,Мили-DPS,Stats Flat + Armor (MotW),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Attack Power,AP Flat (Shout),Класс,classBuffs,Felsworn,Slaying,Мили-DPS,AP Flat (Shout),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Fire Resistance,Fire,Класс,classResists,Felsworn,Slaying,Мили-DPS,Fire,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Shadow Resistance,Shadow,Класс,classResists,Felsworn,Slaying,Мили-DPS,Shadow,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Melee & Range Haste,Melee/Range Haste (10%),Спек,specBuffs,Felsworn,Slaying,Мили-DPS,Melee/Range Haste (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Armor,Armor (Devo),Спек,specBuffs,Felsworn,Slaying,Мили-DPS,Armor (Devo),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Healing Reduction,Healing Reduc (30-50%),Спек,specDebuffs,Felsworn,Slaying,Мили-DPS,Healing Reduc (30-50%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Cast Speed Slow,Cast Slow 30%,Спек,specDebuffs,Felsworn,Slaying,Мили-DPS,Cast Slow 30%,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,Armor Reduction,% Armor Debuff,Спек,specDebuffs,Felsworn,Slaying,Мили-DPS,% Armor Debuff,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Damage Done Reduction (5%),Damage done debuff (5%),Спек,specDebuffs,Felsworn,Slaying,Мили-DPS,Damage done debuff (5%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Minor Armor and All Stats,Stats Flat + Armor (MotW),Класс,classBuffs,Witch Hunter,Inquisition,Мили-DPS,Stats Flat + Armor (MotW),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Attack Power,AP Flat (Shout),Класс,classBuffs,Witch Hunter,Inquisition,Мили-DPS,AP Flat (Shout),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Mana Regeneration,Mp5,Класс,classBuffs,Witch Hunter,Inquisition,Мили-DPS,Mp5,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Shadow Resistance,Shadow,Класс,classResists,Witch Hunter,Inquisition,Мили-DPS,Shadow,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Melee & Range Haste,Melee/Range Haste (10%),Спек,specBuffs,Witch Hunter,Inquisition,Мили-DPS,Melee/Range Haste (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Cast Speed Slow,Cast Slow 30%,Спек,specDebuffs,Witch Hunter,Inquisition,Мили-DPS,Cast Slow 30%,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Damage Done Reduction (5%),Damage done debuff (5%),Спек,specDebuffs,Witch Hunter,Inquisition,Мили-DPS,Damage done debuff (5%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Minor Armor and All Stats,Stats Flat + Armor (MotW),Класс,classBuffs,Witch Hunter,Houndmaster,Рейндж/кастер,Stats Flat + Armor (MotW),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Attack Power,AP Flat (Shout),Класс,classBuffs,Witch Hunter,Houndmaster,Рейндж/кастер,AP Flat (Shout),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Mana Regeneration,Mp5,Класс,classBuffs,Witch Hunter,Houndmaster,Рейндж/кастер,Mp5,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Shadow Resistance,Shadow,Класс,classResists,Witch Hunter,Houndmaster,Рейндж/кастер,Shadow,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,3% Spell Haste,Spell Haste (3%),Спек,specBuffs,Witch Hunter,Houndmaster,Рейндж/кастер,Spell Haste (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,5% Attack Power,Attack Power %,Спек,specBuffs,Witch Hunter,Houndmaster,Рейндж/кастер,Attack Power %,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Cast Speed Slow,Cast Slow 30%,Спек,specDebuffs,Witch Hunter,Houndmaster,Рейндж/кастер,Cast Slow 30%,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Minor Armor and All Stats,Stats Flat + Armor (MotW),Класс,classBuffs,Witch Hunter,Black Knight,Танк,Stats Flat + Armor (MotW),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Attack Power,AP Flat (Shout),Класс,classBuffs,Witch Hunter,Black Knight,Танк,AP Flat (Shout),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Mana Regeneration,Mp5,Класс,classBuffs,Witch Hunter,Black Knight,Танк,Mp5,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Shadow Resistance,Shadow,Класс,classResists,Witch Hunter,Black Knight,Танк,Shadow,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Replenishment,Replenishment,Спек,specBuffs,Witch Hunter,Black Knight,Танк,Replenishment,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Defensive Cooldown (Raid-Wide),Raid Wall (Divine Sac),Спек,specBuffs,Witch Hunter,Black Knight,Танк,Raid Wall (Divine Sac),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Cast Speed Slow,Cast Slow 30%,Спек,specDebuffs,Witch Hunter,Black Knight,Танк,Cast Slow 30%,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Speed Slow,Attack Speed (Slow),Спек,specDebuffs,Witch Hunter,Black Knight,Танк,Attack Speed (Slow),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Minor Armor and All Stats,Stats Flat + Armor (MotW),Класс,classBuffs,Witch Hunter,Boltslinger,Рейндж/кастер,Stats Flat + Armor (MotW),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Attack Power,AP Flat (Shout),Класс,classBuffs,Witch Hunter,Boltslinger,Рейндж/кастер,AP Flat (Shout),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Mana Regeneration,Mp5,Класс,classBuffs,Witch Hunter,Boltslinger,Рейндж/кастер,Mp5,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Shadow Resistance,Shadow,Класс,classResists,Witch Hunter,Boltslinger,Рейндж/кастер,Shadow,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Critical Strike (all),All Crit (3%),Спек,specBuffs,Witch Hunter,Boltslinger,Рейндж/кастер,All Crit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Healing Reduction,Healing Reduc (30-50%),Спек,specDebuffs,Witch Hunter,Boltslinger,Рейндж/кастер,Healing Reduc (30-50%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Cast Speed Slow,Cast Slow 30%,Спек,specDebuffs,Witch Hunter,Boltslinger,Рейндж/кастер,Cast Slow 30%,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,Armor Reduction,% Armor Debuff,Спек,specDebuffs,Witch Hunter,Boltslinger,Рейндж/кастер,% Armor Debuff,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Small Resistances (all),Small All Resist,Класс,classBuffs,Stormbringer,Maelstrom,Рейндж/кастер,Small All Resist,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Stormbringer,Maelstrom,Рейндж/кастер,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Mana Regeneration,Mp5,Класс,classBuffs,Stormbringer,Maelstrom,Рейндж/кастер,Mp5,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Concentration,Concentration,Класс,classBuffs,Stormbringer,Maelstrom,Рейндж/кастер,Concentration,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Nature Resistance,Nature,Класс,classResists,Stormbringer,Maelstrom,Рейндж/кастер,Nature,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Damage Done (all),All Damage Done (3%),Спек,specBuffs,Stormbringer,Maelstrom,Рейндж/кастер,All Damage Done (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,10% Spell Damage,Spell Dmg Taken (10%),Спек,specDebuffs,Stormbringer,Maelstrom,Рейндж/кастер,Spell Dmg Taken (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Speed Slow,Attack Speed (Slow),Спек,specDebuffs,Stormbringer,Maelstrom,Рейндж/кастер,Attack Speed (Slow),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Small Resistances (all),Small All Resist,Класс,classBuffs,Stormbringer,Lightning,Рейндж/кастер,Small All Resist,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Stormbringer,Lightning,Рейндж/кастер,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Mana Regeneration,Mp5,Класс,classBuffs,Stormbringer,Lightning,Рейндж/кастер,Mp5,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Concentration,Concentration,Класс,classBuffs,Stormbringer,Lightning,Рейндж/кастер,Concentration,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Nature Resistance,Nature,Класс,classResists,Stormbringer,Lightning,Рейндж/кастер,Nature,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Critical Strike (all),All Crit (3%),Спек,specBuffs,Stormbringer,Lightning,Рейндж/кастер,All Crit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,3% Spell Critical Strike Chance,Spell Crit Taken Debuff (3%),Спек,specDebuffs,Stormbringer,Lightning,Рейндж/кастер,Spell Crit Taken Debuff (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Small Resistances (all),Small All Resist,Класс,classBuffs,Stormbringer,Wind,Саппорт,Small All Resist,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Stormbringer,Wind,Саппорт,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Mana Regeneration,Mp5,Класс,classBuffs,Stormbringer,Wind,Саппорт,Mp5,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Concentration,Concentration,Класс,classBuffs,Stormbringer,Wind,Саппорт,Concentration,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Nature Resistance,Nature,Класс,classResists,Stormbringer,Wind,Саппорт,Nature,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Armor,Armor (Devo),Спек,specBuffs,Stormbringer,Wind,Саппорт,Armor (Devo),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Heroism | Bloodlust,Heroism,Спек,specBuffs,Stormbringer,Wind,Саппорт,Heroism,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Stats,Stats % (Kings),Класс,classBuffs,Cultist,Heretic,Хилер,Stats % (Kings),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Cultist,Heretic,Хилер,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spirit,Flat Spirit,Класс,classBuffs,Cultist,Heretic,Хилер,Flat Spirit,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Dampen Magic,Dampen Magic,Класс,classBuffs,Cultist,Heretic,Хилер,Dampen Magic,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Shadow Resistance,Shadow,Класс,classResists,Cultist,Heretic,Хилер,Shadow,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Damage Reduction (all),Dmg Reduct(-3%),Спек,specBuffs,Cultist,Heretic,Хилер,Dmg Reduct(-3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Replenishment,Replenishment,Спек,specBuffs,Cultist,Heretic,Хилер,Replenishment,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Stats,Stats % (Kings),Класс,classBuffs,Cultist,Dreadnought,Танк,Stats % (Kings),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Cultist,Dreadnought,Танк,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spirit,Flat Spirit,Класс,classBuffs,Cultist,Dreadnought,Танк,Flat Spirit,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Dampen Magic,Dampen Magic,Класс,classBuffs,Cultist,Dreadnought,Танк,Dampen Magic,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Shadow Resistance,Shadow,Класс,classResists,Cultist,Dreadnought,Танк,Shadow,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Speed Slow,Attack Speed (Slow),Спек,specBuffs,Cultist,Dreadnought,Танк,Attack Speed (Slow),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,3% Hit Reduction,Insect Swarm Hit (3%),Спек,specBuffs,Cultist,Dreadnought,Танк,Insect Swarm Hit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Power Reduction,Attack Power Reduction,Спек,specDebuffs,Cultist,Dreadnought,Танк,Attack Power Reduction,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Stats,Stats % (Kings),Класс,classBuffs,Cultist,Corruption,Рейндж/кастер,Stats % (Kings),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Cultist,Corruption,Рейндж/кастер,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spirit,Flat Spirit,Класс,classBuffs,Cultist,Corruption,Рейндж/кастер,Flat Spirit,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Dampen Magic,Dampen Magic,Класс,classBuffs,Cultist,Corruption,Рейндж/кастер,Dampen Magic,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Shadow Resistance,Shadow,Класс,classResists,Cultist,Corruption,Рейндж/кастер,Shadow,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spell Power,Spell Power Flat,Спек,specBuffs,Cultist,Corruption,Рейндж/кастер,Spell Power Flat,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,3% Spell Haste,Spell Haste (3%),Спек,specBuffs,Cultist,Corruption,Рейндж/кастер,Spell Haste (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,3% Spell Hit,Spell Hit (3%) DEBUFF,Спек,specDebuffs,Cultist,Corruption,Рейндж/кастер,Spell Hit (3%) DEBUFF,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,3% Hit Reduction,Insect Swarm Hit (3%),Спек,specDebuffs,Cultist,Corruption,Рейндж/кастер,Insect Swarm Hit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Stats,Stats % (Kings),Класс,classBuffs,Cultist,Godblade,Мили-DPS,Stats % (Kings),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Cultist,Godblade,Мили-DPS,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spirit,Flat Spirit,Класс,classBuffs,Cultist,Godblade,Мили-DPS,Flat Spirit,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Dampen Magic,Dampen Magic,Класс,classBuffs,Cultist,Godblade,Мили-DPS,Dampen Magic,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Shadow Resistance,Shadow,Класс,classResists,Cultist,Godblade,Мили-DPS,Shadow,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Healing Reduction,Healing Reduc (30-50%),Спек,specBuffs,Cultist,Godblade,Мили-DPS,Healing Reduc (30-50%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,10% Spell Damage,Spell Dmg Taken (10%),Спек,specDebuffs,Cultist,Godblade,Мили-DPS,Spell Dmg Taken (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Power Reduction,Attack Power Reduction,Спек,specDebuffs,Cultist,Godblade,Мили-DPS,Attack Power Reduction,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Stamina,Stamina (Fort),Класс,classBuffs,Knight of Xoroth,Hellfire,Мили-DPS,Stamina (Fort),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Strength,Flat Strength,Класс,classBuffs,Knight of Xoroth,Hellfire,Мили-DPS,Flat Strength,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Knight of Xoroth,Hellfire,Мили-DPS,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,5% Resource Reduction,Cost Reduction (5%),Класс,classBuffs,Knight of Xoroth,Hellfire,Мили-DPS,Cost Reduction (5%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Fire Resistance,Fire,Класс,classResists,Knight of Xoroth,Hellfire,Мили-DPS,Fire,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Frost Resistance,Frost,Класс,classResists,Knight of Xoroth,Hellfire,Мили-DPS,Frost,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Shadow Resistance,Shadow,Класс,classResists,Knight of Xoroth,Hellfire,Мили-DPS,Shadow,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Arcane Resistance,Arcane,Класс,classResists,Knight of Xoroth,Hellfire,Мили-DPS,Arcane,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,5% Attack Power,Attack Power %,Спек,specBuffs,Knight of Xoroth,Hellfire,Мили-DPS,Attack Power %,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Damage Done (all),All Damage Done (3%),Спек,specBuffs,Knight of Xoroth,Hellfire,Мили-DPS,All Damage Done (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,3% Spell Critical Strike Chance,Spell Crit Taken Debuff (3%),Спек,specBuffs,Knight of Xoroth,Hellfire,Мили-DPS,Spell Crit Taken Debuff (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Cast Speed Slow,Cast Slow 30%,Спек,specDebuffs,Knight of Xoroth,Hellfire,Мили-DPS,Cast Slow 30%,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Stamina,Stamina (Fort),Класс,classBuffs,Knight of Xoroth,War,Мили-DPS,Stamina (Fort),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Strength,Flat Strength,Класс,classBuffs,Knight of Xoroth,War,Мили-DPS,Flat Strength,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Knight of Xoroth,War,Мили-DPS,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,5% Resource Reduction,Cost Reduction (5%),Класс,classBuffs,Knight of Xoroth,War,Мили-DPS,Cost Reduction (5%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Fire Resistance,Fire,Класс,classResists,Knight of Xoroth,War,Мили-DPS,Fire,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Frost Resistance,Frost,Класс,classResists,Knight of Xoroth,War,Мили-DPS,Frost,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Shadow Resistance,Shadow,Класс,classResists,Knight of Xoroth,War,Мили-DPS,Shadow,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Arcane Resistance,Arcane,Класс,classResists,Knight of Xoroth,War,Мили-DPS,Arcane,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Critical Strike (all),All Crit (3%),Спек,specBuffs,Knight of Xoroth,War,Мили-DPS,All Crit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,4% Physical Damage,Phys Dmg Taken (4%),Спек,specDebuffs,Knight of Xoroth,War,Мили-DPS,Phys Dmg Taken (4%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Healing Reduction,Healing Reduc (30-50%),Спек,specDebuffs,Knight of Xoroth,War,Мили-DPS,Healing Reduc (30-50%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,Armor Reduction,% Armor Debuff,Спек,specDebuffs,Knight of Xoroth,War,Мили-DPS,% Armor Debuff,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Stamina,Stamina (Fort),Класс,classBuffs,Knight of Xoroth,Defiance,Танк,Stamina (Fort),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Strength,Flat Strength,Класс,classBuffs,Knight of Xoroth,Defiance,Танк,Flat Strength,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Knight of Xoroth,Defiance,Танк,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,5% Resource Reduction,Cost Reduction (5%),Класс,classBuffs,Knight of Xoroth,Defiance,Танк,Cost Reduction (5%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Fire Resistance,Fire,Класс,classResists,Knight of Xoroth,Defiance,Танк,Fire,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Frost Resistance,Frost,Класс,classResists,Knight of Xoroth,Defiance,Танк,Frost,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Shadow Resistance,Shadow,Класс,classResists,Knight of Xoroth,Defiance,Танк,Shadow,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Arcane Resistance,Arcane,Класс,classResists,Knight of Xoroth,Defiance,Танк,Arcane,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Power Reduction,Attack Power Reduction,Спек,specBuffs,Knight of Xoroth,Defiance,Танк,Attack Power Reduction,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Speed Slow,Attack Speed (Slow),Спек,specBuffs,Knight of Xoroth,Defiance,Танк,Attack Speed (Slow),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,10% Spell Damage,Spell Dmg Taken (10%),Спек,specDebuffs,Knight of Xoroth,Defiance,Танк,Spell Dmg Taken (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,Armor Reduction,% Armor Debuff,Спек,specDebuffs,Knight of Xoroth,Defiance,Танк,% Armor Debuff,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Strength,Flat Strength,Класс,classBuffs,Guardian,Vanguard,Танк,Flat Strength,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Nature Resistance,Nature,Класс,classResists,Guardian,Vanguard,Танк,Nature,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Damage Reduction (all),Dmg Reduct(-3%),Спек,specBuffs,Guardian,Vanguard,Танк,Dmg Reduct(-3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Speed Slow,Attack Speed (Slow),Спек,specBuffs,Guardian,Vanguard,Танк,Attack Speed (Slow),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,Armor Reduction,% Armor Debuff,Спек,specDebuffs,Guardian,Vanguard,Танк,% Armor Debuff,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Power Reduction,Attack Power Reduction,Спек,specDebuffs,Guardian,Vanguard,Танк,Attack Power Reduction,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Strength,Flat Strength,Класс,classBuffs,Guardian,Gladiator,Мили-DPS,Flat Strength,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Nature Resistance,Nature,Класс,classResists,Guardian,Gladiator,Мили-DPS,Nature,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,5% Attack Power,Attack Power %,Спек,specBuffs,Guardian,Gladiator,Мили-DPS,Attack Power %,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,4% Physical Damage,Phys Dmg Taken (4%),Спек,specDebuffs,Guardian,Gladiator,Мили-DPS,Phys Dmg Taken (4%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Healing Reduction,Healing Reduc (30-50%),Спек,specDebuffs,Guardian,Gladiator,Мили-DPS,Healing Reduc (30-50%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,Armor Reduction,% Armor Debuff,Спек,specDebuffs,Guardian,Gladiator,Мили-DPS,% Armor Debuff,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Strength,Flat Strength,Класс,classBuffs,Guardian,Inspiration,Саппорт,Flat Strength,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Nature Resistance,Nature,Класс,classResists,Guardian,Inspiration,Саппорт,Nature,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Armor,Armor (Devo),Спек,specBuffs,Guardian,Inspiration,Саппорт,Armor (Devo),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Heroism | Bloodlust,Heroism,Спек,specBuffs,Guardian,Inspiration,Саппорт,Heroism,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,Resistance Reduction,Resistance REDUCTION,Спек,specBuffs,Guardian,Inspiration,Саппорт,Resistance REDUCTION,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,Armor Reduction,% Armor Debuff,Спек,specDebuffs,Guardian,Inspiration,Саппорт,% Armor Debuff,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Starcaller,Moon Priest,Хилер,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Strong Mana Cooldown,Burst Mana,Класс,classBuffs,Starcaller,Moon Priest,Хилер,Burst Mana,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Arcane Resistance,Arcane,Класс,classResists,Starcaller,Moon Priest,Хилер,Arcane,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Critical Strike (all),All Crit (3%),Спек,specBuffs,Starcaller,Moon Priest,Хилер,All Crit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,Resistance Reduction,Resistance REDUCTION,Спек,specBuffs,Starcaller,Moon Priest,Хилер,Resistance REDUCTION,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Starcaller,Warden,Мили-DPS,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Strong Mana Cooldown,Burst Mana,Класс,classBuffs,Starcaller,Warden,Мили-DPS,Burst Mana,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Arcane Resistance,Arcane,Класс,classResists,Starcaller,Warden,Мили-DPS,Arcane,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Critical Strike (all),All Crit (3%),Спек,specBuffs,Starcaller,Warden,Мили-DPS,All Crit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,Resistance Reduction,Resistance REDUCTION,Спек,specBuffs,Starcaller,Warden,Мили-DPS,Resistance REDUCTION,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Healing Reduction,Healing Reduc (30-50%),Спек,specDebuffs,Starcaller,Warden,Мили-DPS,Healing Reduc (30-50%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Starcaller,Sentinel,Рейндж/кастер,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Strong Mana Cooldown,Burst Mana,Класс,classBuffs,Starcaller,Sentinel,Рейндж/кастер,Burst Mana,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Arcane Resistance,Arcane,Класс,classResists,Starcaller,Sentinel,Рейндж/кастер,Arcane,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Melee & Range Haste,Melee/Range Haste (10%),Спек,specBuffs,Starcaller,Sentinel,Рейндж/кастер,Melee/Range Haste (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,Resistance Reduction,Resistance REDUCTION,Спек,specBuffs,Starcaller,Sentinel,Рейндж/кастер,Resistance REDUCTION,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,10% Spell Damage,Spell Dmg Taken (10%),Спек,specDebuffs,Starcaller,Sentinel,Рейндж/кастер,Spell Dmg Taken (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Starcaller,Moon Guard,Танк,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Strong Mana Cooldown,Burst Mana,Класс,classBuffs,Starcaller,Moon Guard,Танк,Burst Mana,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Arcane Resistance,Arcane,Класс,classResists,Starcaller,Moon Guard,Танк,Arcane,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Damage Reduction (all),Dmg Reduct(-3%),Спек,specBuffs,Starcaller,Moon Guard,Танк,Dmg Reduct(-3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,Resistance Reduction,Resistance REDUCTION,Спек,specBuffs,Starcaller,Moon Guard,Танк,Resistance REDUCTION,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,10% Spell Damage,Spell Dmg Taken (10%),Спек,specDebuffs,Starcaller,Moon Guard,Танк,Spell Dmg Taken (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Speed Slow,Attack Speed (Slow),Спек,specDebuffs,Starcaller,Moon Guard,Танк,Attack Speed (Slow),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,3% Hit Reduction,Insect Swarm Hit (3%),Спек,specDebuffs,Starcaller,Moon Guard,Танк,Insect Swarm Hit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Stats,Stats % (Kings),Класс,classBuffs,Sun Cleric,Blessings,Хилер,Stats % (Kings),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Attack Power,AP Flat (Shout),Класс,classBuffs,Sun Cleric,Blessings,Хилер,AP Flat (Shout),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spell Power,Spell Power Flat,Класс,classBuffs,Sun Cleric,Blessings,Хилер,Spell Power Flat,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Mana Regeneration,Mp5,Класс,classBuffs,Sun Cleric,Blessings,Хилер,Mp5,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,5% Resource Reduction,Cost Reduction (5%),Класс,classBuffs,Sun Cleric,Blessings,Хилер,Cost Reduction (5%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,3% Spell Haste,Spell Haste (3%),Спек,specBuffs,Sun Cleric,Blessings,Хилер,Spell Haste (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,Resistance Reduction,Resistance REDUCTION,Спек,specBuffs,Sun Cleric,Blessings,Хилер,Resistance REDUCTION,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Stats,Stats % (Kings),Класс,classBuffs,Sun Cleric,Valkyrie,Мили-DPS,Stats % (Kings),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Attack Power,AP Flat (Shout),Класс,classBuffs,Sun Cleric,Valkyrie,Мили-DPS,AP Flat (Shout),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spell Power,Spell Power Flat,Класс,classBuffs,Sun Cleric,Valkyrie,Мили-DPS,Spell Power Flat,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Mana Regeneration,Mp5,Класс,classBuffs,Sun Cleric,Valkyrie,Мили-DPS,Mp5,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,5% Resource Reduction,Cost Reduction (5%),Класс,classBuffs,Sun Cleric,Valkyrie,Мили-DPS,Cost Reduction (5%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Damage Done (all),All Damage Done (3%),Спек,specBuffs,Sun Cleric,Valkyrie,Мили-DPS,All Damage Done (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,Resistance Reduction,Resistance REDUCTION,Спек,specBuffs,Sun Cleric,Valkyrie,Мили-DPS,Resistance REDUCTION,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Speed Slow,Attack Speed (Slow),Спек,specDebuffs,Sun Cleric,Valkyrie,Мили-DPS,Attack Speed (Slow),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Stats,Stats % (Kings),Класс,classBuffs,Sun Cleric,Piety,Рейндж/кастер,Stats % (Kings),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Attack Power,AP Flat (Shout),Класс,classBuffs,Sun Cleric,Piety,Рейндж/кастер,AP Flat (Shout),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spell Power,Spell Power Flat,Класс,classBuffs,Sun Cleric,Piety,Рейндж/кастер,Spell Power Flat,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Mana Regeneration,Mp5,Класс,classBuffs,Sun Cleric,Piety,Рейндж/кастер,Mp5,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,5% Resource Reduction,Cost Reduction (5%),Класс,classBuffs,Sun Cleric,Piety,Рейндж/кастер,Cost Reduction (5%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Replenishment,Replenishment,Спек,specBuffs,Sun Cleric,Piety,Рейндж/кастер,Replenishment,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,Resistance Reduction,Resistance REDUCTION,Спек,specBuffs,Sun Cleric,Piety,Рейндж/кастер,Resistance REDUCTION,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,3% Spell Hit,Spell Hit (3%) DEBUFF,Спек,specDebuffs,Sun Cleric,Piety,Рейндж/кастер,Spell Hit (3%) DEBUFF,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,3% Hit Reduction,Insect Swarm Hit (3%),Спек,specDebuffs,Sun Cleric,Piety,Рейндж/кастер,Insect Swarm Hit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Stats,Stats % (Kings),Класс,classBuffs,Sun Cleric,Seraphim,Танк,Stats % (Kings),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Attack Power,AP Flat (Shout),Класс,classBuffs,Sun Cleric,Seraphim,Танк,AP Flat (Shout),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spell Power,Spell Power Flat,Класс,classBuffs,Sun Cleric,Seraphim,Танк,Spell Power Flat,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Mana Regeneration,Mp5,Класс,classBuffs,Sun Cleric,Seraphim,Танк,Mp5,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,5% Resource Reduction,Cost Reduction (5%),Класс,classBuffs,Sun Cleric,Seraphim,Танк,Cost Reduction (5%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,6% Healing Done,6% Healing Taken,Спек,specBuffs,Sun Cleric,Seraphim,Танк,6% Healing Taken,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Defensive Cooldown (Raid-Wide),Raid Wall (Divine Sac),Спек,specBuffs,Sun Cleric,Seraphim,Танк,Raid Wall (Divine Sac),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Speed Slow,Attack Speed (Slow),Спек,specDebuffs,Sun Cleric,Seraphim,Танк,Attack Speed (Slow),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,3% Hit Reduction,Insect Swarm Hit (3%),Спек,specDebuffs,Sun Cleric,Seraphim,Танк,Insect Swarm Hit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Damage Done Reduction (5%),Damage done debuff (5%),Спек,specDebuffs,Sun Cleric,Seraphim,Танк,Damage done debuff (5%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Stats,Stats % (Kings),Класс,classBuffs,Templar,Zealot,Мили-DPS,Stats % (Kings),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Agility,Flat Agility,Класс,classBuffs,Templar,Zealot,Мили-DPS,Flat Agility,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Melee & Range Haste,Melee/Range Haste (10%),Спек,specBuffs,Templar,Zealot,Мили-DPS,Melee/Range Haste (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,Armor Reduction,% Armor Debuff,Спек,specDebuffs,Templar,Zealot,Мили-DPS,% Armor Debuff,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Stats,Stats % (Kings),Класс,classBuffs,Templar,Crusader,Мили-DPS,Stats % (Kings),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Agility,Flat Agility,Класс,classBuffs,Templar,Crusader,Мили-DPS,Flat Agility,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Damage Done (all),All Damage Done (3%),Спек,specBuffs,Templar,Crusader,Мили-DPS,All Damage Done (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Power Reduction,Attack Power Reduction,Спек,specDebuffs,Templar,Crusader,Мили-DPS,Attack Power Reduction,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Stats,Stats % (Kings),Класс,classBuffs,Templar,Oathkeeper,Танк,Stats % (Kings),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Agility,Flat Agility,Класс,classBuffs,Templar,Oathkeeper,Танк,Flat Agility,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,5% Attack Power,Attack Power %,Спек,specBuffs,Templar,Oathkeeper,Танк,Attack Power %,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,6% Healing Done,6% Healing Taken,Спек,specBuffs,Templar,Oathkeeper,Танк,6% Healing Taken,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Defensive Cooldown (Raid-Wide),Raid Wall (Divine Sac),Спек,specBuffs,Templar,Oathkeeper,Танк,Raid Wall (Divine Sac),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Cast Speed Slow,Cast Slow 30%,Спек,specDebuffs,Templar,Oathkeeper,Танк,Cast Slow 30%,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,3% Hit Reduction,Insect Swarm Hit (3%),Спек,specDebuffs,Templar,Oathkeeper,Танк,Insect Swarm Hit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Minor Armor and All Stats,Stats Flat + Armor (MotW),Класс,classBuffs,Primalist,Wildwalker,Мили-DPS,Stats Flat + Armor (MotW),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Small Resistances (all),Small All Resist,Класс,classBuffs,Primalist,Wildwalker,Мили-DPS,Small All Resist,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Agility,Flat Agility,Класс,classBuffs,Primalist,Wildwalker,Мили-DPS,Flat Agility,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spirit,Flat Spirit,Класс,classBuffs,Primalist,Wildwalker,Мили-DPS,Flat Spirit,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Nature Resistance,Nature,Класс,classResists,Primalist,Wildwalker,Мили-DPS,Nature,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Arcane Resistance,Arcane,Класс,classResists,Primalist,Wildwalker,Мили-DPS,Arcane,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,5% Attack Power,Attack Power %,Спек,specBuffs,Primalist,Wildwalker,Мили-DPS,Attack Power %,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,4% Physical Damage,Phys Dmg Taken (4%),Спек,specDebuffs,Primalist,Wildwalker,Мили-DPS,Phys Dmg Taken (4%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,30% Bleed Damage,Bleed Dmg Taken (30%),Спек,specDebuffs,Primalist,Wildwalker,Мили-DPS,Bleed Dmg Taken (30%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Minor Armor and All Stats,Stats Flat + Armor (MotW),Класс,classBuffs,Primalist,Mountain King,Танк,Stats Flat + Armor (MotW),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Small Resistances (all),Small All Resist,Класс,classBuffs,Primalist,Mountain King,Танк,Small All Resist,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Agility,Flat Agility,Класс,classBuffs,Primalist,Mountain King,Танк,Flat Agility,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spirit,Flat Spirit,Класс,classBuffs,Primalist,Mountain King,Танк,Flat Spirit,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Nature Resistance,Nature,Класс,classResists,Primalist,Mountain King,Танк,Nature,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Arcane Resistance,Arcane,Класс,classResists,Primalist,Mountain King,Танк,Arcane,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Replenishment,Replenishment,Спек,specBuffs,Primalist,Mountain King,Танк,Replenishment,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,4% Physical Damage,Phys Dmg Taken (4%),Спек,specBuffs,Primalist,Mountain King,Танк,Phys Dmg Taken (4%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Speed Slow,Attack Speed (Slow),Спек,specDebuffs,Primalist,Mountain King,Танк,Attack Speed (Slow),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,3% Hit Reduction,Insect Swarm Hit (3%),Спек,specDebuffs,Primalist,Mountain King,Танк,Insect Swarm Hit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Minor Armor and All Stats,Stats Flat + Armor (MotW),Класс,classBuffs,Primalist,Geomancy,Рейндж/кастер,Stats Flat + Armor (MotW),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Small Resistances (all),Small All Resist,Класс,classBuffs,Primalist,Geomancy,Рейндж/кастер,Small All Resist,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Agility,Flat Agility,Класс,classBuffs,Primalist,Geomancy,Рейндж/кастер,Flat Agility,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spirit,Flat Spirit,Класс,classBuffs,Primalist,Geomancy,Рейндж/кастер,Flat Spirit,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Nature Resistance,Nature,Класс,classResists,Primalist,Geomancy,Рейндж/кастер,Nature,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Arcane Resistance,Arcane,Класс,classResists,Primalist,Geomancy,Рейндж/кастер,Arcane,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,3% Spell Haste,Spell Haste (3%),Спек,specBuffs,Primalist,Geomancy,Рейндж/кастер,Spell Haste (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,3% Spell Hit,Spell Hit (3%) DEBUFF,Спек,specBuffs,Primalist,Geomancy,Рейндж/кастер,Spell Hit (3%) DEBUFF,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,3% Spell Critical Strike Chance,Spell Crit Taken Debuff (3%),Спек,specDebuffs,Primalist,Geomancy,Рейндж/кастер,Spell Crit Taken Debuff (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,3% Hit Reduction,Insect Swarm Hit (3%),Спек,specDebuffs,Primalist,Geomancy,Рейндж/кастер,Insect Swarm Hit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Minor Armor and All Stats,Stats Flat + Armor (MotW),Класс,classBuffs,Primalist,Grovekeeper,Саппорт,Stats Flat + Armor (MotW),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Small Resistances (all),Small All Resist,Класс,classBuffs,Primalist,Grovekeeper,Саппорт,Small All Resist,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Agility,Flat Agility,Класс,classBuffs,Primalist,Grovekeeper,Саппорт,Flat Agility,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spirit,Flat Spirit,Класс,classBuffs,Primalist,Grovekeeper,Саппорт,Flat Spirit,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Nature Resistance,Nature,Класс,classResists,Primalist,Grovekeeper,Саппорт,Nature,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Arcane Resistance,Arcane,Класс,classResists,Primalist,Grovekeeper,Саппорт,Arcane,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,6% Healing Done,6% Healing Taken,Спек,specBuffs,Primalist,Grovekeeper,Саппорт,6% Healing Taken,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Armor,Armor (Devo),Спек,specBuffs,Primalist,Grovekeeper,Саппорт,Armor (Devo),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Heroism | Bloodlust,Heroism,Спек,specBuffs,Primalist,Grovekeeper,Саппорт,Heroism,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,Armor Reduction,% Armor Debuff,Спек,specDebuffs,Primalist,Grovekeeper,Саппорт,% Armor Debuff,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Stamina,Stamina (Fort),Класс,classBuffs,Bloodmage,Sanguine,Рейндж/кастер,Stamina (Fort),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Concentration,Concentration,Класс,classBuffs,Bloodmage,Sanguine,Рейндж/кастер,Concentration,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,3% Spell Haste,Spell Haste (3%),Спек,specBuffs,Bloodmage,Sanguine,Рейндж/кастер,Spell Haste (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,3% Spell Critical Strike Chance,Spell Crit Taken Debuff (3%),Спек,specDebuffs,Bloodmage,Sanguine,Рейндж/кастер,Spell Crit Taken Debuff (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,30% Bleed Damage,Bleed Dmg Taken (30%),Спек,specDebuffs,Bloodmage,Sanguine,Рейндж/кастер,Bleed Dmg Taken (30%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Speed Slow,Attack Speed (Slow),Спек,specDebuffs,Bloodmage,Sanguine,Рейндж/кастер,Attack Speed (Slow),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Stamina,Stamina (Fort),Класс,classBuffs,Bloodmage,Fleshweaver,Саппорт,Stamina (Fort),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Concentration,Concentration,Класс,classBuffs,Bloodmage,Fleshweaver,Саппорт,Concentration,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Armor,Armor (Devo),Спек,specBuffs,Bloodmage,Fleshweaver,Саппорт,Armor (Devo),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Heroism | Bloodlust,Heroism,Спек,specBuffs,Bloodmage,Fleshweaver,Саппорт,Heroism,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,30% Bleed Damage,Bleed Dmg Taken (30%),Спек,specDebuffs,Bloodmage,Fleshweaver,Саппорт,Bleed Dmg Taken (30%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Stamina,Stamina (Fort),Класс,classBuffs,Bloodmage,Accursed,Мили-DPS,Stamina (Fort),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Concentration,Concentration,Класс,classBuffs,Bloodmage,Accursed,Мили-DPS,Concentration,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,3% Spell Haste,Spell Haste (3%),Спек,specBuffs,Bloodmage,Accursed,Мили-DPS,Spell Haste (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Critical Strike (all),All Crit (3%),Спек,specBuffs,Bloodmage,Accursed,Мили-DPS,All Crit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,30% Bleed Damage,Bleed Dmg Taken (30%),Спек,specDebuffs,Bloodmage,Accursed,Мили-DPS,Bleed Dmg Taken (30%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Healing Reduction,Healing Reduc (30-50%),Спек,specDebuffs,Bloodmage,Accursed,Мили-DPS,Healing Reduc (30-50%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Stamina,Stamina (Fort),Класс,classBuffs,Bloodmage,Eternal,Танк,Stamina (Fort),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Concentration,Concentration,Класс,classBuffs,Bloodmage,Eternal,Танк,Concentration,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,5% Attack Power,Attack Power %,Спек,specBuffs,Bloodmage,Eternal,Танк,Attack Power %,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,6% Healing Done,6% Healing Taken,Спек,specBuffs,Bloodmage,Eternal,Танк,6% Healing Taken,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,30% Bleed Damage,Bleed Dmg Taken (30%),Спек,specDebuffs,Bloodmage,Eternal,Танк,Bleed Dmg Taken (30%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Speed Slow,Attack Speed (Slow),Спек,specDebuffs,Bloodmage,Eternal,Танк,Attack Speed (Slow),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,3% Hit Reduction,Insect Swarm Hit (3%),Спек,specDebuffs,Bloodmage,Eternal,Танк,Insect Swarm Hit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Pyromancer,Flameweaving,Хилер,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spirit,Flat Spirit,Класс,classBuffs,Pyromancer,Flameweaving,Хилер,Flat Spirit,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Strong Mana Cooldown,Burst Mana,Класс,classBuffs,Pyromancer,Flameweaving,Хилер,Burst Mana,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Fire Resistance,Fire,Класс,classResists,Pyromancer,Flameweaving,Хилер,Fire,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Arcane Resistance,Arcane,Класс,classResists,Pyromancer,Flameweaving,Хилер,Arcane,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Replenishment,Replenishment,Спек,specBuffs,Pyromancer,Flameweaving,Хилер,Replenishment,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Healing Reduction,Healing Reduc (30-50%),Спек,specDebuffs,Pyromancer,Flameweaving,Хилер,Healing Reduc (30-50%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Pyromancer,Draconic,Рейндж/кастер,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spirit,Flat Spirit,Класс,classBuffs,Pyromancer,Draconic,Рейндж/кастер,Flat Spirit,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Strong Mana Cooldown,Burst Mana,Класс,classBuffs,Pyromancer,Draconic,Рейндж/кастер,Burst Mana,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Fire Resistance,Fire,Класс,classResists,Pyromancer,Draconic,Рейндж/кастер,Fire,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Arcane Resistance,Arcane,Класс,classResists,Pyromancer,Draconic,Рейндж/кастер,Arcane,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,3% Spell Haste,Spell Haste (3%),Спек,specBuffs,Pyromancer,Draconic,Рейндж/кастер,Spell Haste (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,3% Spell Hit,Spell Hit (3%) DEBUFF,Спек,specDebuffs,Pyromancer,Draconic,Рейндж/кастер,Spell Hit (3%) DEBUFF,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Healing Reduction,Healing Reduc (30-50%),Спек,specDebuffs,Pyromancer,Draconic,Рейндж/кастер,Healing Reduc (30-50%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Pyromancer,Incineration,Рейндж/кастер,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spirit,Flat Spirit,Класс,classBuffs,Pyromancer,Incineration,Рейндж/кастер,Flat Spirit,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Strong Mana Cooldown,Burst Mana,Класс,classBuffs,Pyromancer,Incineration,Рейндж/кастер,Burst Mana,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Fire Resistance,Fire,Класс,classResists,Pyromancer,Incineration,Рейндж/кастер,Fire,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Arcane Resistance,Arcane,Класс,classResists,Pyromancer,Incineration,Рейндж/кастер,Arcane,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Critical Strike (all),All Crit (3%),Спек,specBuffs,Pyromancer,Incineration,Рейндж/кастер,All Crit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,3% Spell Critical Strike Chance,Spell Crit Taken Debuff (3%),Спек,specBuffs,Pyromancer,Incineration,Рейндж/кастер,Spell Crit Taken Debuff (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Healing Reduction,Healing Reduc (30-50%),Спек,specDebuffs,Pyromancer,Incineration,Рейндж/кастер,Healing Reduc (30-50%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Minor Armor and All Stats,Stats Flat + Armor (MotW),Класс,classBuffs,Ranger,Brigand,Мили-DPS,Stats Flat + Armor (MotW),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Agility,Flat Agility,Класс,classBuffs,Ranger,Brigand,Мили-DPS,Flat Agility,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Nature Resistance,Nature,Класс,classResists,Ranger,Brigand,Мили-DPS,Nature,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Melee & Range Haste,Melee/Range Haste (10%),Спек,specBuffs,Ranger,Brigand,Мили-DPS,Melee/Range Haste (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Healing Reduction,Healing Reduc (30-50%),Спек,specDebuffs,Ranger,Brigand,Мили-DPS,Healing Reduc (30-50%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,3% Hit Reduction,Insect Swarm Hit (3%),Спек,specDebuffs,Ranger,Brigand,Мили-DPS,Insect Swarm Hit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Minor Armor and All Stats,Stats Flat + Armor (MotW),Класс,classBuffs,Ranger,Archery,Рейндж/кастер,Stats Flat + Armor (MotW),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Agility,Flat Agility,Класс,classBuffs,Ranger,Archery,Рейндж/кастер,Flat Agility,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Nature Resistance,Nature,Класс,classResists,Ranger,Archery,Рейндж/кастер,Nature,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Melee & Range Haste,Melee/Range Haste (10%),Спек,specBuffs,Ranger,Archery,Рейндж/кастер,Melee/Range Haste (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,4% Physical Damage,Phys Dmg Taken (4%),Спек,specDebuffs,Ranger,Archery,Рейндж/кастер,Phys Dmg Taken (4%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,30% Bleed Damage,Bleed Dmg Taken (30%),Спек,specDebuffs,Ranger,Archery,Рейндж/кастер,Bleed Dmg Taken (30%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,3% Hit Reduction,Insect Swarm Hit (3%),Спек,specDebuffs,Ranger,Archery,Рейндж/кастер,Insect Swarm Hit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Minor Armor and All Stats,Stats Flat + Armor (MotW),Класс,classBuffs,Ranger,Farstrider,Саппорт,Stats Flat + Armor (MotW),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Agility,Flat Agility,Класс,classBuffs,Ranger,Farstrider,Саппорт,Flat Agility,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Nature Resistance,Nature,Класс,classResists,Ranger,Farstrider,Саппорт,Nature,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Melee & Range Haste,Melee/Range Haste (10%),Спек,specBuffs,Ranger,Farstrider,Саппорт,Melee/Range Haste (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Armor,Armor (Devo),Спек,specBuffs,Ranger,Farstrider,Саппорт,Armor (Devo),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Heroism | Bloodlust,Heroism,Спек,specBuffs,Ranger,Farstrider,Саппорт,Heroism,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Power Reduction,Attack Power Reduction,Спек,specDebuffs,Ranger,Farstrider,Саппорт,Attack Power Reduction,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,3% Hit Reduction,Insect Swarm Hit (3%),Спек,specDebuffs,Ranger,Farstrider,Саппорт,Insect Swarm Hit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Small Resistances (all),Small All Resist,Класс,classBuffs,Reaper,Soul,Мили-DPS,Small All Resist,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Stamina,Stamina (Fort),Класс,classBuffs,Reaper,Soul,Мили-DPS,Stamina (Fort),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Strength,Flat Strength,Класс,classBuffs,Reaper,Soul,Мили-DPS,Flat Strength,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,10% Spell Damage,Spell Dmg Taken (10%),Спек,specDebuffs,Reaper,Soul,Мили-DPS,Spell Dmg Taken (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Speed Slow,Attack Speed (Slow),Спек,specDebuffs,Reaper,Soul,Мили-DPS,Attack Speed (Slow),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,3% Hit Reduction,Insect Swarm Hit (3%),Спек,specDebuffs,Reaper,Soul,Мили-DPS,Insect Swarm Hit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Small Resistances (all),Small All Resist,Класс,classBuffs,Reaper,Harvest,Мили-DPS,Small All Resist,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Stamina,Stamina (Fort),Класс,classBuffs,Reaper,Harvest,Мили-DPS,Stamina (Fort),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Strength,Flat Strength,Класс,classBuffs,Reaper,Harvest,Мили-DPS,Flat Strength,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Critical Strike (all),All Crit (3%),Спек,specBuffs,Reaper,Harvest,Мили-DPS,All Crit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Healing Reduction,Healing Reduc (30-50%),Спек,specDebuffs,Reaper,Harvest,Мили-DPS,Healing Reduc (30-50%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Power Reduction,Attack Power Reduction,Спек,specDebuffs,Reaper,Harvest,Мили-DPS,Attack Power Reduction,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,3% Hit Reduction,Insect Swarm Hit (3%),Спек,specDebuffs,Reaper,Harvest,Мили-DPS,Insect Swarm Hit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Small Resistances (all),Small All Resist,Класс,classBuffs,Reaper,Domination,Танк,Small All Resist,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Stamina,Stamina (Fort),Класс,classBuffs,Reaper,Domination,Танк,Stamina (Fort),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Strength,Flat Strength,Класс,classBuffs,Reaper,Domination,Танк,Flat Strength,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Critical Strike (all),All Crit (3%),Спек,specBuffs,Reaper,Domination,Танк,All Crit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Damage Reduction (all),Dmg Reduct(-3%),Спек,specBuffs,Reaper,Domination,Танк,Dmg Reduct(-3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,4% Physical Damage,Phys Dmg Taken (4%),Спек,specDebuffs,Reaper,Domination,Танк,Phys Dmg Taken (4%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Speed Slow,Attack Speed (Slow),Спек,specDebuffs,Reaper,Domination,Танк,Attack Speed (Slow),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,3% Hit Reduction,Insect Swarm Hit (3%),Спек,specDebuffs,Reaper,Domination,Танк,Insect Swarm Hit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Stats,Stats % (Kings),Класс,classBuffs,Runemaster,Glyphic,Рейндж/кастер,Stats % (Kings),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Agility,Flat Agility,Класс,classBuffs,Runemaster,Glyphic,Рейндж/кастер,Flat Agility,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,5% Resource Reduction,Cost Reduction (5%),Класс,classBuffs,Runemaster,Glyphic,Рейндж/кастер,Cost Reduction (5%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Strong Mana Cooldown,Burst Mana,Класс,classBuffs,Runemaster,Glyphic,Рейндж/кастер,Burst Mana,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Amplify Magic,Amplify Magic,Класс,classBuffs,Runemaster,Glyphic,Рейндж/кастер,Amplify Magic,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Fire Resistance,Fire,Класс,classResists,Runemaster,Glyphic,Рейндж/кастер,Fire,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Nature Resistance,Nature,Класс,classResists,Runemaster,Glyphic,Рейндж/кастер,Nature,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Arcane Resistance,Arcane,Класс,classResists,Runemaster,Glyphic,Рейндж/кастер,Arcane,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Replenishment,Replenishment,Спек,specBuffs,Runemaster,Glyphic,Рейндж/кастер,Replenishment,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,10% Spell Damage,Spell Dmg Taken (10%),Спек,specDebuffs,Runemaster,Glyphic,Рейндж/кастер,Spell Dmg Taken (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Healing Reduction,Healing Reduc (30-50%),Спек,specDebuffs,Runemaster,Glyphic,Рейндж/кастер,Healing Reduc (30-50%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Stats,Stats % (Kings),Класс,classBuffs,Runemaster,Riftblade,Мили-DPS,Stats % (Kings),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Agility,Flat Agility,Класс,classBuffs,Runemaster,Riftblade,Мили-DPS,Flat Agility,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,5% Resource Reduction,Cost Reduction (5%),Класс,classBuffs,Runemaster,Riftblade,Мили-DPS,Cost Reduction (5%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Strong Mana Cooldown,Burst Mana,Класс,classBuffs,Runemaster,Riftblade,Мили-DPS,Burst Mana,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Amplify Magic,Amplify Magic,Класс,classBuffs,Runemaster,Riftblade,Мили-DPS,Amplify Magic,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Fire Resistance,Fire,Класс,classResists,Runemaster,Riftblade,Мили-DPS,Fire,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Nature Resistance,Nature,Класс,classResists,Runemaster,Riftblade,Мили-DPS,Nature,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Arcane Resistance,Arcane,Класс,classResists,Runemaster,Riftblade,Мили-DPS,Arcane,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Damage Done (all),All Damage Done (3%),Спек,specBuffs,Runemaster,Riftblade,Мили-DPS,All Damage Done (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Replenishment,Replenishment,Спек,specBuffs,Runemaster,Riftblade,Мили-DPS,Replenishment,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Healing Reduction,Healing Reduc (30-50%),Спек,specDebuffs,Runemaster,Riftblade,Мили-DPS,Healing Reduc (30-50%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Stats,Stats % (Kings),Класс,classBuffs,Runemaster,Engravement,Мили-DPS,Stats % (Kings),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Agility,Flat Agility,Класс,classBuffs,Runemaster,Engravement,Мили-DPS,Flat Agility,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,5% Resource Reduction,Cost Reduction (5%),Класс,classBuffs,Runemaster,Engravement,Мили-DPS,Cost Reduction (5%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Strong Mana Cooldown,Burst Mana,Класс,classBuffs,Runemaster,Engravement,Мили-DPS,Burst Mana,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Amplify Magic,Amplify Magic,Класс,classBuffs,Runemaster,Engravement,Мили-DPS,Amplify Magic,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Fire Resistance,Fire,Класс,classResists,Runemaster,Engravement,Мили-DPS,Fire,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Nature Resistance,Nature,Класс,classResists,Runemaster,Engravement,Мили-DPS,Nature,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Arcane Resistance,Arcane,Класс,classResists,Runemaster,Engravement,Мили-DPS,Arcane,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Melee & Range Haste,Melee/Range Haste (10%),Спек,specBuffs,Runemaster,Engravement,Мили-DPS,Melee/Range Haste (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Replenishment,Replenishment,Спек,specBuffs,Runemaster,Engravement,Мили-DPS,Replenishment,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Healing Reduction,Healing Reduc (30-50%),Спек,specDebuffs,Runemaster,Engravement,Мили-DPS,Healing Reduc (30-50%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Power Reduction,Attack Power Reduction,Спек,specDebuffs,Runemaster,Engravement,Мили-DPS,Attack Power Reduction,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Chronomancer,Time,Хилер,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spirit,Flat Spirit,Класс,classBuffs,Chronomancer,Time,Хилер,Flat Spirit,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Strong Mana Cooldown,Burst Mana,Класс,classBuffs,Chronomancer,Time,Хилер,Burst Mana,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Amplify Magic,Amplify Magic,Класс,classBuffs,Chronomancer,Time,Хилер,Amplify Magic,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Dampen Magic,Dampen Magic,Класс,classBuffs,Chronomancer,Time,Хилер,Dampen Magic,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,3% Spell Haste,Spell Haste (3%),Спек,specBuffs,Chronomancer,Time,Хилер,Spell Haste (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Damage Reduction (all),Dmg Reduct(-3%),Спек,specBuffs,Chronomancer,Time,Хилер,Dmg Reduct(-3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Chronomancer,Infinite,Рейндж/кастер,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spirit,Flat Spirit,Класс,classBuffs,Chronomancer,Infinite,Рейндж/кастер,Flat Spirit,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Strong Mana Cooldown,Burst Mana,Класс,classBuffs,Chronomancer,Infinite,Рейндж/кастер,Burst Mana,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Amplify Magic,Amplify Magic,Класс,classBuffs,Chronomancer,Infinite,Рейндж/кастер,Amplify Magic,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Dampen Magic,Dampen Magic,Класс,classBuffs,Chronomancer,Infinite,Рейндж/кастер,Dampen Magic,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Damage Done (all),All Damage Done (3%),Спек,specBuffs,Chronomancer,Infinite,Рейндж/кастер,All Damage Done (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,3% Spell Hit,Spell Hit (3%) DEBUFF,Спек,specDebuffs,Chronomancer,Infinite,Рейндж/кастер,Spell Hit (3%) DEBUFF,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,10% Spell Damage,Spell Dmg Taken (10%),Спек,specDebuffs,Chronomancer,Infinite,Рейндж/кастер,Spell Dmg Taken (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Cast Speed Slow,Cast Slow 30%,Спек,specDebuffs,Chronomancer,Infinite,Рейндж/кастер,Cast Slow 30%,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Intellect,Flat Intellect,Класс,classBuffs,Chronomancer,Artificer,Рейндж/кастер,Flat Intellect,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spirit,Flat Spirit,Класс,classBuffs,Chronomancer,Artificer,Рейндж/кастер,Flat Spirit,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Strong Mana Cooldown,Burst Mana,Класс,classBuffs,Chronomancer,Artificer,Рейндж/кастер,Burst Mana,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Amplify Magic,Amplify Magic,Класс,classBuffs,Chronomancer,Artificer,Рейндж/кастер,Amplify Magic,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Dampen Magic,Dampen Magic,Класс,classBuffs,Chronomancer,Artificer,Рейндж/кастер,Dampen Magic,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Critical Strike (all),All Crit (3%),Спек,specBuffs,Chronomancer,Artificer,Рейндж/кастер,All Crit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Replenishment,Replenishment,Спек,specBuffs,Chronomancer,Artificer,Рейндж/кастер,Replenishment,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Speed Slow,Attack Speed (Slow),Спек,specDebuffs,Chronomancer,Artificer,Рейндж/кастер,Attack Speed (Slow),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,3% Hit Reduction,Insect Swarm Hit (3%),Спек,specDebuffs,Chronomancer,Artificer,Рейндж/кастер,Insect Swarm Hit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Stamina,Stamina (Fort),Класс,classBuffs,Necromancer,Animation,Рейндж/кастер,Stamina (Fort),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spell Power,Spell Power Flat,Класс,classBuffs,Necromancer,Animation,Рейндж/кастер,Spell Power Flat,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Fire Resistance,Fire,Класс,classResists,Necromancer,Animation,Рейндж/кастер,Fire,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Damage Done (all),All Damage Done (3%),Спек,specBuffs,Necromancer,Animation,Рейндж/кастер,All Damage Done (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Healing Reduction,Healing Reduc (30-50%),Спек,specDebuffs,Necromancer,Animation,Рейндж/кастер,Healing Reduc (30-50%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,Armor Reduction,% Armor Debuff,Спек,specDebuffs,Necromancer,Animation,Рейндж/кастер,% Armor Debuff,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Power Reduction,Attack Power Reduction,Спек,specDebuffs,Necromancer,Animation,Рейндж/кастер,Attack Power Reduction,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Speed Slow,Attack Speed (Slow),Спек,specDebuffs,Necromancer,Animation,Рейндж/кастер,Attack Speed (Slow),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Stamina,Stamina (Fort),Класс,classBuffs,Necromancer,Death,Рейндж/кастер,Stamina (Fort),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spell Power,Spell Power Flat,Класс,classBuffs,Necromancer,Death,Рейндж/кастер,Spell Power Flat,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Fire Resistance,Fire,Класс,classResists,Necromancer,Death,Рейндж/кастер,Fire,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,3% Spell Haste,Spell Haste (3%),Спек,specBuffs,Necromancer,Death,Рейндж/кастер,Spell Haste (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,10% Spell Damage,Spell Dmg Taken (10%),Спек,specDebuffs,Necromancer,Death,Рейндж/кастер,Spell Dmg Taken (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Healing Reduction,Healing Reduc (30-50%),Спек,specDebuffs,Necromancer,Death,Рейндж/кастер,Healing Reduc (30-50%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,Armor Reduction,% Armor Debuff,Спек,specDebuffs,Necromancer,Death,Рейндж/кастер,% Armor Debuff,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Power Reduction,Attack Power Reduction,Спек,specDebuffs,Necromancer,Death,Рейндж/кастер,Attack Power Reduction,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Speed Slow,Attack Speed (Slow),Спек,specDebuffs,Necromancer,Death,Рейндж/кастер,Attack Speed (Slow),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Stamina,Stamina (Fort),Класс,classBuffs,Necromancer,Rime,Рейндж/кастер,Stamina (Fort),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spell Power,Spell Power Flat,Класс,classBuffs,Necromancer,Rime,Рейндж/кастер,Spell Power Flat,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Fire Resistance,Fire,Класс,classResists,Necromancer,Rime,Рейндж/кастер,Fire,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Critical Strike (all),All Crit (3%),Спек,specBuffs,Necromancer,Rime,Рейндж/кастер,All Crit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,3% Spell Critical Strike Chance,Spell Crit Taken Debuff (3%),Спек,specBuffs,Necromancer,Rime,Рейндж/кастер,Spell Crit Taken Debuff (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Healing Reduction,Healing Reduc (30-50%),Спек,specDebuffs,Necromancer,Rime,Рейндж/кастер,Healing Reduc (30-50%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,Armor Reduction,% Armor Debuff,Спек,specDebuffs,Necromancer,Rime,Рейндж/кастер,% Armor Debuff,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Power Reduction,Attack Power Reduction,Спек,specDebuffs,Necromancer,Rime,Рейндж/кастер,Attack Power Reduction,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Speed Slow,Attack Speed (Slow),Спек,specDebuffs,Necromancer,Rime,Рейндж/кастер,Attack Speed (Slow),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Minor Armor and All Stats,Stats Flat + Armor (MotW),Класс,classBuffs,Venomancer,Stalking,Мили-DPS,Stats Flat + Armor (MotW),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Agility,Flat Agility,Класс,classBuffs,Venomancer,Stalking,Мили-DPS,Flat Agility,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spirit,Flat Spirit,Класс,classBuffs,Venomancer,Stalking,Мили-DPS,Flat Spirit,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Fire Resistance,Fire,Класс,classResists,Venomancer,Stalking,Мили-DPS,Fire,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,3% Spell Critical Strike Chance,Spell Crit Taken Debuff (3%),Спек,specBuffs,Venomancer,Stalking,Мили-DPS,Spell Crit Taken Debuff (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Cast Speed Slow,Cast Slow 30%,Спек,specBuffs,Venomancer,Stalking,Мили-DPS,Cast Slow 30%,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,10% Spell Damage,Spell Dmg Taken (10%),Спек,specDebuffs,Venomancer,Stalking,Мили-DPS,Spell Dmg Taken (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Minor Armor and All Stats,Stats Flat + Armor (MotW),Класс,classBuffs,Venomancer,Vizier,Хилер,Stats Flat + Armor (MotW),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Agility,Flat Agility,Класс,classBuffs,Venomancer,Vizier,Хилер,Flat Agility,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spirit,Flat Spirit,Класс,classBuffs,Venomancer,Vizier,Хилер,Flat Spirit,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Fire Resistance,Fire,Класс,classResists,Venomancer,Vizier,Хилер,Fire,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,6% Healing Done,6% Healing Taken,Спек,specBuffs,Venomancer,Vizier,Хилер,6% Healing Taken,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Replenishment,Replenishment,Спек,specBuffs,Venomancer,Vizier,Хилер,Replenishment,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Cast Speed Slow,Cast Slow 30%,Спек,specDebuffs,Venomancer,Vizier,Хилер,Cast Slow 30%,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Minor Armor and All Stats,Stats Flat + Armor (MotW),Класс,classBuffs,Venomancer,Fortitude,Танк,Stats Flat + Armor (MotW),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Agility,Flat Agility,Класс,classBuffs,Venomancer,Fortitude,Танк,Flat Agility,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spirit,Flat Spirit,Класс,classBuffs,Venomancer,Fortitude,Танк,Flat Spirit,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Fire Resistance,Fire,Класс,classResists,Venomancer,Fortitude,Танк,Fire,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Damage Reduction (all),Dmg Reduct(-3%),Спек,specBuffs,Venomancer,Fortitude,Танк,Dmg Reduct(-3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Cast Speed Slow,Cast Slow 30%,Спек,specDebuffs,Venomancer,Fortitude,Танк,Cast Slow 30%,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Speed Slow,Attack Speed (Slow),Спек,specDebuffs,Venomancer,Fortitude,Танк,Attack Speed (Slow),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,3% Hit Reduction,Insect Swarm Hit (3%),Спек,specDebuffs,Venomancer,Fortitude,Танк,Insect Swarm Hit (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Minor Armor and All Stats,Stats Flat + Armor (MotW),Класс,classBuffs,Venomancer,Rot,Рейндж/кастер,Stats Flat + Armor (MotW),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Agility,Flat Agility,Класс,classBuffs,Venomancer,Rot,Рейндж/кастер,Flat Agility,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Spirit,Flat Spirit,Класс,classBuffs,Venomancer,Rot,Рейндж/кастер,Flat Spirit,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Fire Resistance,Fire,Класс,classResists,Venomancer,Rot,Рейндж/кастер,Fire,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,3% Spell Haste,Spell Haste (3%),Спек,specBuffs,Venomancer,Rot,Рейндж/кастер,Spell Haste (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Магические дебафы,3% Spell Hit,Spell Hit (3%) DEBUFF,Спек,specDebuffs,Venomancer,Rot,Рейндж/кастер,Spell Hit (3%) DEBUFF,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Healing Reduction,Healing Reduc (30-50%),Спек,specDebuffs,Venomancer,Rot,Рейндж/кастер,Healing Reduc (30-50%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Cast Speed Slow,Cast Slow 30%,Спек,specDebuffs,Venomancer,Rot,Рейндж/кастер,Cast Slow 30%,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Attack Power,AP Flat (Shout),Класс,classBuffs,Tinker,Demolition,Рейндж/кастер,AP Flat (Shout),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Mana Regeneration,Mp5,Класс,classBuffs,Tinker,Demolition,Рейндж/кастер,Mp5,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Strong Mana Cooldown,Burst Mana,Класс,classBuffs,Tinker,Demolition,Рейндж/кастер,Burst Mana,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Concentration,Concentration,Класс,classBuffs,Tinker,Demolition,Рейндж/кастер,Concentration,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Amplify Magic,Amplify Magic,Класс,classBuffs,Tinker,Demolition,Рейндж/кастер,Amplify Magic,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,5% Attack Power,Attack Power %,Спек,specBuffs,Tinker,Demolition,Рейндж/кастер,Attack Power %,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-дебафы,Attack Power Reduction,Attack Power Reduction,Спек,specDebuffs,Tinker,Demolition,Рейндж/кастер,Attack Power Reduction,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Attack Power,AP Flat (Shout),Класс,classBuffs,Tinker,Mechanics,Рейндж/кастер,AP Flat (Shout),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Mana Regeneration,Mp5,Класс,classBuffs,Tinker,Mechanics,Рейндж/кастер,Mp5,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Strong Mana Cooldown,Burst Mana,Класс,classBuffs,Tinker,Mechanics,Рейндж/кастер,Burst Mana,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Concentration,Concentration,Класс,classBuffs,Tinker,Mechanics,Рейндж/кастер,Concentration,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Amplify Magic,Amplify Magic,Класс,classBuffs,Tinker,Mechanics,Рейндж/кастер,Amplify Magic,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,10% Melee & Range Haste,Melee/Range Haste (10%),Спек,specBuffs,Tinker,Mechanics,Рейндж/кастер,Melee/Range Haste (10%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические дебафы,Armor Reduction,% Armor Debuff,Спек,specDebuffs,Tinker,Mechanics,Рейндж/кастер,% Armor Debuff,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Физические бафы,Attack Power,AP Flat (Shout),Класс,classBuffs,Tinker,Invention,Хилер,AP Flat (Shout),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Mana Regeneration,Mp5,Класс,classBuffs,Tinker,Invention,Хилер,Mp5,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,Strong Mana Cooldown,Burst Mana,Класс,classBuffs,Tinker,Invention,Хилер,Burst Mana,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Concentration,Concentration,Класс,classBuffs,Tinker,Invention,Хилер,Concentration,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,Amplify Magic,Amplify Magic,Класс,classBuffs,Tinker,Invention,Хилер,Amplify Magic,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Кастерские бафы,3% Spell Haste,Spell Haste (3%),Спек,specBuffs,Tinker,Invention,Хилер,Spell Haste (3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,3% Damage Reduction (all),Dmg Reduct(-3%),Спек,specBuffs,Tinker,Invention,Хилер,Dmg Reduct(-3%),https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Утилити-бафы,6% Healing Done,6% Healing Taken,Спек,specBuffs,Tinker,Invention,Хилер,6% Healing Taken,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js

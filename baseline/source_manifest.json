@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-24T19:39:47.427827+00:00",
+  "files": [
+    {
+      "path": "workbook/archive/CoA_Raid_Comp_Конструктор_v9.xlsx",
+      "size_bytes": 323542,
+      "sha256": "d2f719c2875ad5aa1b1413daee54aaa36e4d52068bfe2a898df8fcb8b296eb83",
+      "modified_at": "2026-07-24T19:34:37.353530+00:00"
+    },
+    {
+      "path": "docs/PROJECT_BASELINE_v0.5.docx",
+      "size_bytes": 73137,
+      "sha256": "979025e51802a11b63cc3b59b919e7206e13ac21d12732d87909ca4114cd25b7",
+      "modified_at": "2026-07-24T19:34:37.273530+00:00"
+    },
+    {
+      "path": "docs/PROJECT_BASELINE_v0.5.md",
+      "size_bytes": 2939,
+      "sha256": "a4132ee4af978b94d079f18c03c09f2c57a25b224109eb8eb886f83de3ab83a3",
+      "modified_at": "2026-07-24T19:34:37.273530+00:00"
+    }
+  ],
+  "table_exports": [
+    {
+      "sheet": "КАТАЛОГ СПЕКОВ",
+      "table": "CatalogSpecsTable",
+      "ref": "A3:P73",
+      "data_rows": 70,
+      "columns": 16,
+      "path": "tables/CatalogSpecsTable.csv",
+      "sha256": "9aca88cea311d15a57f2c612f1c2d91a9bccfef15539ae6e11634fafba0dc045"
+    },
+    {
+      "sheet": "СПРАВОЧНИК ЭФФЕКТОВ",
+      "table": "EffectsReferenceTable",
+      "ref": "A3:K48",
+      "data_rows": 45,
+      "columns": 11,
+      "path": "tables/EffectsReferenceTable.csv",
+      "sha256": "dc5cff3582b8d16742f51f439dc15599c07975ed2cac7fe3eb2696be4896a73f"
+    },
+    {
+      "sheet": "ДАННЫЕ_Комбинации",
+      "table": "RawCombinationsTable",
+      "ref": "A2:K72",
+      "data_rows": 70,
+      "columns": 11,
+      "path": "tables/RawCombinationsTable.csv",
+      "sha256": "f45ae4bb720cca069faa4f414bdddefba0ff81e383d6d1f455722d4d49f193d3"
+    },
+    {
+      "sheet": "ДАННЫЕ_Источники",
+      "table": "RawSourcesTable",
+      "ref": "A2:J561",
+      "data_rows": 559,
+      "columns": 10,
+      "path": "tables/RawSourcesTable.csv",
+      "sha256": "435fb99bca56220a7bfa48d04170be585d2ccf58f25cd8f644adbddf3a509785"
+    },
+    {
+      "sheet": "Справка",
+      "table": "HelpTable",
+      "ref": "A2:D16",
+      "data_rows": 14,
+      "columns": 4,
+      "path": "tables/HelpTable.csv",
+      "sha256": "e1d56bfd4c14e322e92dbea7e834d4d6e68bd4746e29755393429023268ae980"
+    },
+    {
+      "sheet": "ЛОГИ_Эффекты",
+      "table": "LogsEffects",
+      "ref": "A1:S341",
+      "data_rows": 340,
+      "columns": 19,
+      "path": "tables/LogsEffects.csv",
+      "sha256": "06207870164d3d31e1ab103f085f0734d8718303b5436daa678e0ff268293f9c"
+    },
+    {
+      "sheet": "ЛОГИ_Пакеты",
+      "table": "LogsPackages",
+      "ref": "A1:N531",
+      "data_rows": 530,
+      "columns": 14,
+      "path": "tables/LogsPackages.csv",
+      "sha256": "bb42c6f25c0901ae8d969e4034bff542bdcb04953b45c473e4214351878810a3"
+    },
+    {
+      "sheet": "ЛОГИ_Эксклюзивы",
+      "table": "LogsExclusive",
+      "ref": "A1:O44",
+      "data_rows": 43,
+      "columns": 15,
+      "path": "tables/LogsExclusive.csv",
+      "sha256": "dc29ff21111d1ce418d0f0c52e3cd210cbf71578d50be48768d3fb559d54afbc"
+    },
+    {
+      "sheet": "ЛОГИ_Спеки",
+      "table": "LogsSpecs",
+      "ref": "A1:T83",
+      "data_rows": 82,
+      "columns": 20,
+      "path": "tables/LogsSpecs.csv",
+      "sha256": "35f9bdff88dd0214f36d059f853bbb68c260491e8274a005102386ac98caae35"
+    }
+  ]
+}

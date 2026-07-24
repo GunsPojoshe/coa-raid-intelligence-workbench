@@ -1,0 +1,15 @@
+﻿Показатель,Значение,Пояснение,Источник
+Классы,21,Активные классы в объекте DB,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Специализации,70,"Активные специализации в объекте DB; 135 в README — число файлов иконок, не активных спеков",https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Типы эффектов,45,Элементы шести разделов панели: 3 группы бафов и 3 группы дебафов,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Логика сочетания,Класс + спек,"При выборе спека калькулятор объединяет classBuffs, classResists, classDebuffs, spec.buffs и spec.debuffs",https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/main.jsx
+Канонизация,Concentration (Berserker) → Concentration,Единственный алиас в текущей базе,https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+Важно,Категория берётся из UI_CATEGORIES,"Некоторые дебафы физически записаны в массив buffs[]; поэтому итоговые бафы/дебафы определены по разделу интерфейса, а не только по имени поля",https://github.com/TheAscOrg/coa-raid-comp-calculator/blob/main/src/data/raidData.js
+,,,
+Категория UI,Тип,Количество эффектов,Примечание
+Физические бафы,Баф,8,10% Stats; Minor Armor and All Stats; Stamina; Strength; Agility; Attack Power; 5% Attack Power; 10% Melee & Range Haste
+Кастерские бафы,Баф,7,Intellect; Spirit; Spell Power; 3% Spell Haste; Mana Regeneration; Replenishment; Strong Mana Cooldown
+Утилити-бафы,Баф,17,3% Critical Strike (all); 3% Damage Done (all); Small Resistances (all); Fire Resistance; Frost Resistance; Nature Resistance; Shadow Resistance; Arcane Resistance; 5% Resource Reduction; 3% Damage Reduction (all); 6% Healing Done; Concentration; Amplify Magic; Dampen Magic; Armor; Defensive Cooldown (Raid-Wide); Heroism | Bloodlust
+Физические дебафы,Дебаф,3,4% Physical Damage; 30% Bleed Damage; Armor Reduction
+Магические дебафы,Дебаф,4,10% Spell Damage; 3% Spell Critical Strike Chance; 3% Spell Hit; Resistance Reduction
+Утилити-дебафы,Дебаф,6,Attack Power Reduction; Attack Speed Slow; 3% Hit Reduction; Healing Reduction; Cast Speed Slow; Damage Done Reduction (5%)
