@@ -1,0 +1,21 @@
+{
+  "source": "workbook/archive/CoA_Raid_Comp_Конструктор_v9.xlsx",
+  "output": "workbook/candidates/CoA_Raid_Comp_Конструктор_v9_formula_repair.xlsx",
+  "source_sha256": "d2f719c2875ad5aa1b1413daee54aaa36e4d52068bfe2a898df8fcb8b296eb83",
+  "output_sha256": "b9a7eb947621301a122ce74b4706b27bd1c1d62d03b19d0eb1eaaea4d426912e",
+  "member_count": 50,
+  "changed_members": [
+    "xl/workbook.xml",
+    "xl/worksheets/sheet2.xml",
+    "xl/worksheets/sheet9.xml"
+  ],
+  "replacements": {
+    "_xludf.TEXTJOIN": 72,
+    "_xludf.RANK.EQ": 70
+  },
+  "remaining_xludf_occurrences": 0,
+  "xlfn_textjoin_occurrences": 72,
+  "xlfn_rank_eq_occurrences": 70,
+  "cached_values_recalculated": false,
+  "recalculation_policy": "Workbook calcMode=auto, fullCalcOnLoad=1 and forceFullCalc=1. Desktop Excel must open and save the candidate before it can become a golden fixture."
+}
