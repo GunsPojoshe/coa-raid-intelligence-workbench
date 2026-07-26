@@ -26,6 +26,8 @@ class RepairResult:
     remaining_xludf_occurrences: int
     xlfn_textjoin_occurrences: int
     xlfn_rank_eq_occurrences: int
+    restored_role_formulas: int
+    remaining_missing_role_formulas: int
     cached_values_recalculated: bool
     recalculation_policy: str
 
@@ -60,6 +62,25 @@ def _patch_calc_properties(data: bytes) -> bytes:
     return data[: match.start()] + patched.encode("ascii") + data[match.end() :]
 
 
+def _repair_missing_role_formulas(data: bytes) -> tuple[bytes, int]:
+    """Restore role formulas missing from E6:E15 in the saved v9 package."""
+    restored = 0
+    for row in range(6, 16):
+        empty = f'<c r="E{row}" s="74"/>'.encode("utf-8")
+        formula = (
+            f'<c r="E{row}" s="74" t="str"><f>'
+            f'IF(OR(C{row}="",D{row}=""),"",IFERROR(INDEX(ТЕХ_Списки!$C$2:$C$71,'
+            f'MATCH(C{row}&amp;"§"&amp;D{row},ТЕХ_Списки!$D$2:$D$71,0)),""))'
+            f'</f><v/></c>'
+        ).encode("utf-8")
+        count = data.count(empty)
+        if count != 1:
+            raise ValueError(f"Expected exactly one empty E{row} cell, found {count}")
+        data = data.replace(empty, formula, 1)
+        restored += 1
+    return data, restored
+
+
 def repair_workbook(source: Path, output: Path) -> RepairResult:
     source = source.resolve()
     output = output.resolve()
@@ -75,6 +96,7 @@ def repair_workbook(source: Path, output: Path) -> RepairResult:
 
     changed_members: list[str] = []
     replacement_counts = {old.decode("ascii"): 0 for old, _ in FORMULA_REPLACEMENTS}
+    restored_role_formulas = 0
 
     try:
         with ZipFile(source, "r") as src, ZipFile(temp_output, "w") as dst:
@@ -88,6 +110,9 @@ def repair_workbook(source: Path, output: Path) -> RepairResult:
                         if count:
                             replacement_counts[old.decode("ascii")] += count
                             patched = patched.replace(old, new)
+
+                if info.filename == "xl/worksheets/sheet1.xml":
+                    patched, restored_role_formulas = _repair_missing_role_formulas(patched)
 
                 if info.filename == "xl/workbook.xml":
                     patched = _patch_calc_properties(patched)
@@ -118,16 +143,23 @@ def repair_workbook(source: Path, output: Path) -> RepairResult:
                 if name.startswith("xl/") and name.endswith(".xml")
             )
             member_count = len(check.namelist())
+            sheet1_xml = check.read("xl/worksheets/sheet1.xml")
 
         remaining_xludf = xml_bytes.count(b"_xludf.")
         textjoin_count = xml_bytes.count(b"_xlfn.TEXTJOIN")
         rank_eq_count = xml_bytes.count(b"_xlfn.RANK.EQ")
+        remaining_missing_role_formulas = sum(
+            sheet1_xml.count(f'<c r="E{row}" s="74"/>'.encode("utf-8"))
+            for row in range(6, 16)
+        )
         if remaining_xludf:
             raise ValueError(f"Repair incomplete: {remaining_xludf} _xludf occurrences remain")
         if textjoin_count != replacement_counts["_xludf.TEXTJOIN"]:
             raise ValueError("TEXTJOIN replacement count mismatch")
         if rank_eq_count != replacement_counts["_xludf.RANK.EQ"]:
             raise ValueError("RANK.EQ replacement count mismatch")
+        if restored_role_formulas != 10 or remaining_missing_role_formulas != 0:
+            raise ValueError("Role formula restoration is incomplete")
 
         temp_output.replace(output)
     except Exception:
@@ -145,6 +177,8 @@ def repair_workbook(source: Path, output: Path) -> RepairResult:
         remaining_xludf_occurrences=remaining_xludf,
         xlfn_textjoin_occurrences=textjoin_count,
         xlfn_rank_eq_occurrences=rank_eq_count,
+        restored_role_formulas=restored_role_formulas,
+        remaining_missing_role_formulas=remaining_missing_role_formulas,
         cached_values_recalculated=False,
         recalculation_policy=(
             "Workbook calcMode=auto, fullCalcOnLoad=1 and forceFullCalc=1. "
