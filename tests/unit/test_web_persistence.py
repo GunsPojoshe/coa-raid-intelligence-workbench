@@ -34,7 +34,7 @@ def test_role_is_derived_from_class_and_spec(tmp_path: Path) -> None:
     assert response.json()["slots"][0]["role"] == "Танк"
 
 
-def test_plan_round_trip_and_delete(tmp_path: Path) -> None:
+def test_plan_round_trip_update_without_duplicate_and_delete(tmp_path: Path) -> None:
     api = client(tmp_path)
     saved = api.post(
         "/api/plans",
@@ -53,12 +53,48 @@ def test_plan_round_trip_and_delete(tmp_path: Path) -> None:
     )
     assert saved.status_code == 200
     assert saved.headers["x-request-id"]
+    assert saved.json()["action"] == "created"
     plan_id = saved.json()["plan_id"]
+
+    updated = api.post(
+        "/api/plans",
+        json={
+            "plan_id": plan_id,
+            "plan_name": "Регрессия 10 — обновлено",
+            "raid_format": "10",
+            "boss_id": "Boss X",
+            "slots": [
+                {
+                    "slot_no": 1,
+                    "player_name": "Tank-Updated",
+                    "class_code": "felsworn",
+                    "spec_code": "tyrant",
+                    "locked": True,
+                }
+            ],
+        },
+    )
+    assert updated.status_code == 200
+    assert updated.json() == {
+        "plan_id": plan_id,
+        "status": "saved",
+        "action": "updated",
+    }
+
+    plans = api.get("/api/plans").json()["plans"]
+    assert len(plans) == 1
+    assert plans[0]["plan_id"] == plan_id
+    assert plans[0]["plan_name"] == "Регрессия 10 — обновлено"
+
     loaded = api.get(f"/api/plans/{plan_id}")
     assert loaded.status_code == 200
-    assert loaded.json()["plan_name"] == "Регрессия 10"
-    assert loaded.json()["slots"][0]["role"] == "Танк"
-    assert api.get("/api/plans").json()["plans"][0]["plan_id"] == plan_id
+    payload = loaded.json()
+    assert payload["plan_name"] == "Регрессия 10 — обновлено"
+    assert payload["boss_id"] == "Boss X"
+    assert payload["slots"][0]["player_name"] == "Tank-Updated"
+    assert payload["slots"][0]["role"] == "Танк"
+    assert payload["slots"][0]["locked"] is True
+
     assert api.delete(f"/api/plans/{plan_id}").status_code == 204
     assert api.get(f"/api/plans/{plan_id}").status_code == 404
 
@@ -70,3 +106,6 @@ def test_save_button_has_explicit_non_conflicting_binding(tmp_path: Path) -> Non
     assert "function persistCurrentPlan()" in html
     assert "getElementById('savePlanButton').addEventListener('click',persistCurrentPlan)" in html
     assert 'id="diagnostics"' in html
+    assert "function summarizeForLog(url,data)" in html
+    assert "data.action==='updated'" in html
+    assert "classList.toggle('current'" in html
