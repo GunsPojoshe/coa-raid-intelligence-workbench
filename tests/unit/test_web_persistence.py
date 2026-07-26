@@ -52,6 +52,7 @@ def test_plan_round_trip_and_delete(tmp_path: Path) -> None:
         },
     )
     assert saved.status_code == 200
+    assert saved.headers["x-request-id"]
     plan_id = saved.json()["plan_id"]
     loaded = api.get(f"/api/plans/{plan_id}")
     assert loaded.status_code == 200
@@ -60,3 +61,12 @@ def test_plan_round_trip_and_delete(tmp_path: Path) -> None:
     assert api.get("/api/plans").json()["plans"][0]["plan_id"] == plan_id
     assert api.delete(f"/api/plans/{plan_id}").status_code == 204
     assert api.get(f"/api/plans/{plan_id}").status_code == 404
+
+
+def test_save_button_has_explicit_non_conflicting_binding(tmp_path: Path) -> None:
+    html = client(tmp_path).get("/").text
+    assert 'id="savePlanButton"' in html
+    assert 'id="savePlan"' not in html
+    assert "function persistCurrentPlan()" in html
+    assert "getElementById('savePlanButton').addEventListener('click',persistCurrentPlan)" in html
+    assert 'id="diagnostics"' in html
