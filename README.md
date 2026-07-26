@@ -1,52 +1,63 @@
-# CoA Raid Intelligence Workbench
+# CoA Raid Intelligence
 
-Initial implementation slice for the local Excel + Python + DuckDB product described by project baseline v0.5.
+Локальное браузерное приложение для подготовки рейдовых составов FLEX / 10 / 25 / 40.
 
-## What is implemented
+## Архитектурный статус
 
-- byte-for-byte archive and SHA-256 freeze of Excel v9;
-- reproducible workbook inventory, table exports and observed saved-state fixture;
-- Python package and CLI skeleton;
-- unified format/target-size logic for FLEX, 10, 25 and 40;
-- canonical 40-slot `ActiveSlot` mask;
-- source-grounded draft raid profiles;
-- initial DuckDB migration contract;
-- unit tests plus an optional DuckDB migration test.
+Excel, Power Query и VBA больше не являются частью рабочего продукта. Историческая книга v9 используется только как источник миграции правил и проверочных данных; приложение не открывает, не изменяет и не требует Excel.
 
-## Run from the repository root
+```text
+Browser → FastAPI → Planner / Catalog / Analytics → DuckDB / Parquet
+```
+
+## Запуск
 
 ```powershell
 uv sync --extra dev
+uv run coa-workbench serve
+```
+
+По умолчанию приложение доступно только на этом компьютере:
+
+```text
+http://127.0.0.1:8000
+```
+
+OpenAPI:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+## Реализованный вертикальный срез
+
+- локальная FastAPI-служба;
+- браузерный конструктор до 40 слотов;
+- FLEX / 10 / 25 / 40;
+- ActiveSlot рассчитывается в Python;
+- проверка повторного игрока;
+- подсчёт заполненных и оставшихся слотов;
+- подсчёт ролей;
+- API предварительного расчёта плана;
+- localhost-only по умолчанию.
+
+## Команды
+
+```powershell
 uv run coa-workbench doctor --project-root .
 uv run coa-workbench validate-config --path config/raid_profiles.yaml
+uv run coa-workbench init-db --database data/warehouse/coa.duckdb --migrations migrations
+uv run coa-workbench serve
 uv run pytest
 ```
 
-Rebuild the baseline artifacts without changing the source workbook:
+## Что больше не входит в runtime
 
-```powershell
-uv run coa-workbench freeze-baseline `
-  workbook/archive/CoA_Raid_Comp_Конструктор_v9.xlsx `
-  --output-dir baseline `
-  --project-document docs/PROJECT_BASELINE_v0.5.md
-```
+- Excel workbook как интерфейс;
+- формулы Excel как расчётное ядро;
+- Power Query;
+- VBA;
+- изменение `.xlsx` из Python;
+- обязательное наличие Microsoft Excel.
 
-Initialize DuckDB after dependencies are installed:
-
-```powershell
-uv run coa-workbench init-db --database data/warehouse/coa.duckdb --migrations migrations
-```
-
-## Baseline facts and constraints
-
-- The archived workbook checksum is recorded in `baseline/source_manifest.json`.
-- The workbook has 25 physical roster rows in the saved v9 interface, 70 class/spec combinations and 45 conceptual effects.
-- The uploaded workbook does **not** contain an approved fully populated 25-player composition. The generated JSON fixture captures only the saved state and is marked accordingly.
-- The workbook contains extension-based Excel rules that openpyxl warns it would strip when saving. The archived v9 file is therefore read-only for the Python baseline tool.
-- Cached formula errors from v9 are retained in the inventory as evidence; they are not silently corrected.
-- FLEX allowed size, role limits and effect requirements remain unapproved and are not guessed in configuration.
-- Endpoint Registry is intentionally empty until prior browser scripts, URLs and sample payloads are supplied and verified.
-
-## Immediate next implementation issue
-
-Create and approve a fully populated 25-player regression fixture, including expected roles, coverage, top recommendation and comparison outputs. Only then create the first workbook v10 copy with 40 physical rows and `ActiveSlot` filtering.
+Архивные workbook-материалы сохраняются только как evidence миграции и не являются частью пользовательского контура.
