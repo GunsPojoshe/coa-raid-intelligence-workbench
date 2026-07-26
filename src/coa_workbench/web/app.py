@@ -84,7 +84,11 @@ def create_app(
     @app.get("/api/catalog/class-specs")
     def class_specs() -> dict[str, object]:
         payload = catalog_payload()
-        logger.info("catalog.loaded entries=%s classes=%s", payload["entry_count"], len(payload["classes"]))
+        logger.info(
+            "catalog.loaded entries=%s classes=%s",
+            payload["entry_count"],
+            len(payload["classes"]),
+        )
         return payload
 
     @app.post("/api/plans/preview", response_model=PlanPreviewResponse)
@@ -139,8 +143,10 @@ def create_app(
     @app.post("/api/plans")
     def save_plan(payload: PlanPreviewRequest) -> dict[str, str]:
         preview_result = build_plan_preview(payload)
+        action = "updated" if preview_result.plan_id else "created"
         logger.info(
-            "plan.save.start plan_id=%s name=%r format=%s target=%s filled=%s",
+            "plan.save.start action=%s plan_id=%s name=%r format=%s target=%s filled=%s",
+            action,
             preview_result.plan_id,
             preview_result.plan_name,
             preview_result.raid_format.value,
@@ -151,7 +157,8 @@ def create_app(
             plan_id = repository.save(preview_result.model_dump(mode="json"))
         except Exception as exc:
             logger.exception(
-                "plan.save.failed plan_id=%s name=%r database=%s",
+                "plan.save.failed action=%s plan_id=%s name=%r database=%s",
+                action,
                 preview_result.plan_id,
                 preview_result.plan_name,
                 database_path,
@@ -164,8 +171,13 @@ def create_app(
                     "error": str(exc),
                 },
             ) from exc
-        logger.info("plan.save.success plan_id=%s name=%r", plan_id, preview_result.plan_name)
-        return {"plan_id": plan_id, "status": "saved"}
+        logger.info(
+            "plan.save.success action=%s plan_id=%s name=%r",
+            action,
+            plan_id,
+            preview_result.plan_name,
+        )
+        return {"plan_id": plan_id, "status": "saved", "action": action}
 
     @app.delete("/api/plans/{plan_id}", status_code=204)
     def delete_plan(plan_id: str) -> Response:
