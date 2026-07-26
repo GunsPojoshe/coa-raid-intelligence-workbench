@@ -3,18 +3,23 @@ from __future__ import annotations
 from pydantic import BaseModel, Field, model_validator
 
 from coa_workbench.planner import MAX_RAID_SLOTS, RaidFormat, active_slot_flags, resolve_target_size
+from coa_workbench.web.catalog import resolve_role
 
 
 class RaidSlotInput(BaseModel):
     slot_no: int = Field(ge=1, le=MAX_RAID_SLOTS)
     player_name: str = Field(default="", max_length=80)
-    class_code: str = Field(default="", max_length=40)
+    class_code: str = Field(default="", max_length=80)
     spec_code: str = Field(default="", max_length=80)
     role: str = Field(default="", max_length=40)
     locked: bool = False
 
 
 class PlanPreviewRequest(BaseModel):
+    plan_id: str | None = None
+    plan_name: str = Field(default="Новый план", max_length=120)
+    raid_date: str | None = None
+    boss_id: str = Field(default="", max_length=120)
     raid_format: RaidFormat = RaidFormat.TWENTY_FIVE
     target_size: int | None = Field(default=None, ge=1, le=MAX_RAID_SLOTS)
     slots: list[RaidSlotInput] = Field(default_factory=list, max_length=MAX_RAID_SLOTS)
@@ -27,10 +32,7 @@ class PlanPreviewRequest(BaseModel):
         names = [slot.player_name.strip().casefold() for slot in self.slots if slot.player_name.strip()]
         if len(names) != len(set(names)):
             raise ValueError("one player cannot occupy multiple slots")
-        try:
-            resolve_target_size(self.raid_format, self.target_size)
-        except ValueError as exc:
-            raise ValueError(str(exc)) from exc
+        resolve_target_size(self.raid_format, self.target_size)
         return self
 
     def resolved_target_size(self) -> int:
@@ -48,6 +50,10 @@ class SlotPreview(BaseModel):
 
 
 class PlanPreviewResponse(BaseModel):
+    plan_id: str | None = None
+    plan_name: str
+    raid_date: str | None = None
+    boss_id: str = ""
     raid_format: RaidFormat
     target_size: int
     filled_slots: int
@@ -66,13 +72,17 @@ def build_plan_preview(payload: PlanPreviewRequest) -> PlanPreviewResponse:
 
     for slot_no, active in enumerate(active_slot_flags(target_size), start=1):
         source = supplied.get(slot_no)
+        class_code = source.class_code.strip() if source else ""
+        spec_code = source.spec_code.strip() if source else ""
+        derived_role = resolve_role(class_code, spec_code) if class_code and spec_code else None
+        role = derived_role or (source.role.strip() if source else "")
         preview = SlotPreview(
             slot_no=slot_no,
             active=active,
             player_name=source.player_name.strip() if source else "",
-            class_code=source.class_code.strip() if source else "",
-            spec_code=source.spec_code.strip() if source else "",
-            role=source.role.strip() if source else "",
+            class_code=class_code,
+            spec_code=spec_code,
+            role=role,
             locked=source.locked if source else False,
         )
         result_slots.append(preview)
@@ -82,9 +92,15 @@ def build_plan_preview(payload: PlanPreviewRequest) -> PlanPreviewResponse:
             errors.append(f"Slot {slot_no} is inactive for target size {target_size}")
         if active and preview.player_name and (not preview.class_code or not preview.spec_code):
             errors.append(f"Slot {slot_no}: class and spec are required for a filled slot")
+        if active and preview.player_name and preview.class_code and preview.spec_code and not derived_role:
+            errors.append(f"Slot {slot_no}: unknown class/spec pair")
 
     filled_slots = sum(1 for slot in result_slots if slot.active and slot.player_name)
     return PlanPreviewResponse(
+        plan_id=payload.plan_id,
+        plan_name=payload.plan_name.strip() or "Новый план",
+        raid_date=payload.raid_date,
+        boss_id=payload.boss_id.strip(),
         raid_format=payload.raid_format,
         target_size=target_size,
         filled_slots=filled_slots,
