@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
+from time import perf_counter
+from uuid import uuid4
 
-from fastapi import FastAPI, HTTPException, Response, status
+from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.responses import HTMLResponse
 
 from coa_workbench import __version__
@@ -12,13 +15,51 @@ from coa_workbench.web.catalog import catalog_payload
 from coa_workbench.web.models import PlanPreviewRequest, PlanPreviewResponse, build_plan_preview
 from coa_workbench.web.ui import INDEX_HTML
 
+logger = logging.getLogger("uvicorn.error")
+
 
 def create_app(
     database_path: Path = Path("data/warehouse/coa.duckdb"),
     migrations_dir: Path = Path("migrations"),
 ) -> FastAPI:
-    app = FastAPI(title="CoA Raid Intelligence", version=__version__, description="Local-first raid planning application")
+    app = FastAPI(
+        title="CoA Raid Intelligence",
+        version=__version__,
+        description="Local-first raid planning application",
+    )
     repository = PlanRepository(database_path, migrations_dir)
+
+    @app.middleware("http")
+    async def request_diagnostics(request: Request, call_next):
+        request_id = uuid4().hex[:8]
+        started = perf_counter()
+        logger.info(
+            "request.start id=%s method=%s path=%s",
+            request_id,
+            request.method,
+            request.url.path,
+        )
+        try:
+            response = await call_next(request)
+        except Exception:
+            logger.exception(
+                "request.error id=%s method=%s path=%s",
+                request_id,
+                request.method,
+                request.url.path,
+            )
+            raise
+        duration_ms = (perf_counter() - started) * 1000
+        response.headers["X-Request-ID"] = request_id
+        logger.info(
+            "request.end id=%s method=%s path=%s status=%s duration_ms=%.1f",
+            request_id,
+            request.method,
+            request.url.path,
+            response.status_code,
+            duration_ms,
+        )
+        return response
 
     @app.get("/", response_class=HTMLResponse, include_in_schema=False)
     def index() -> str:
@@ -34,39 +75,117 @@ def create_app(
 
     @app.get("/api/formats")
     def formats() -> dict[str, object]:
-        return {"formats": [item.value for item in RaidFormat], "max_slots": MAX_RAID_SLOTS, "fixed_sizes": {"10": 10, "25": 25, "40": 40}}
+        return {
+            "formats": [item.value for item in RaidFormat],
+            "max_slots": MAX_RAID_SLOTS,
+            "fixed_sizes": {"10": 10, "25": 25, "40": 40},
+        }
 
     @app.get("/api/catalog/class-specs")
     def class_specs() -> dict[str, object]:
-        return catalog_payload()
+        payload = catalog_payload()
+        logger.info("catalog.loaded entries=%s classes=%s", payload["entry_count"], len(payload["classes"]))
+        return payload
 
     @app.post("/api/plans/preview", response_model=PlanPreviewResponse)
     def preview(payload: PlanPreviewRequest) -> PlanPreviewResponse:
-        return build_plan_preview(payload)
+        result = build_plan_preview(payload)
+        if result.validation_errors:
+            logger.warning(
+                "plan.preview.validation plan_id=%s errors=%s",
+                result.plan_id,
+                result.validation_errors,
+            )
+        return result
 
     @app.get("/api/plans")
     def list_plans() -> dict[str, object]:
-        return {"plans": repository.list()}
+        try:
+            plans = repository.list()
+        except Exception as exc:
+            logger.exception("plans.list.failed database=%s", database_path)
+            raise HTTPException(
+                status_code=500,
+                detail={
+                    "message": "Не удалось получить список планов",
+                    "error_type": type(exc).__name__,
+                    "error": str(exc),
+                },
+            ) from exc
+        logger.info("plans.list.success count=%s database=%s", len(plans), database_path)
+        return {"plans": plans}
 
     @app.get("/api/plans/{plan_id}")
     def get_plan(plan_id: str) -> dict[str, object]:
+        logger.info("plan.load.start plan_id=%s", plan_id)
         try:
-            return repository.get(plan_id)
+            plan = repository.get(plan_id)
         except PlanNotFoundError as exc:
+            logger.warning("plan.load.not_found plan_id=%s", plan_id)
             raise HTTPException(status_code=404, detail="Plan not found") from exc
+        except Exception as exc:
+            logger.exception("plan.load.failed plan_id=%s", plan_id)
+            raise HTTPException(
+                status_code=500,
+                detail={
+                    "message": "Не удалось открыть план",
+                    "error_type": type(exc).__name__,
+                    "error": str(exc),
+                },
+            ) from exc
+        logger.info("plan.load.success plan_id=%s slots=%s", plan_id, len(plan["slots"]))
+        return plan
 
     @app.post("/api/plans")
     def save_plan(payload: PlanPreviewRequest) -> dict[str, str]:
         preview_result = build_plan_preview(payload)
-        plan_id = repository.save(preview_result.model_dump(mode="json"))
+        logger.info(
+            "plan.save.start plan_id=%s name=%r format=%s target=%s filled=%s",
+            preview_result.plan_id,
+            preview_result.plan_name,
+            preview_result.raid_format.value,
+            preview_result.target_size,
+            preview_result.filled_slots,
+        )
+        try:
+            plan_id = repository.save(preview_result.model_dump(mode="json"))
+        except Exception as exc:
+            logger.exception(
+                "plan.save.failed plan_id=%s name=%r database=%s",
+                preview_result.plan_id,
+                preview_result.plan_name,
+                database_path,
+            )
+            raise HTTPException(
+                status_code=500,
+                detail={
+                    "message": "Не удалось сохранить план",
+                    "error_type": type(exc).__name__,
+                    "error": str(exc),
+                },
+            ) from exc
+        logger.info("plan.save.success plan_id=%s name=%r", plan_id, preview_result.plan_name)
         return {"plan_id": plan_id, "status": "saved"}
 
     @app.delete("/api/plans/{plan_id}", status_code=204)
     def delete_plan(plan_id: str) -> Response:
+        logger.info("plan.delete.start plan_id=%s", plan_id)
         try:
             repository.delete(plan_id)
         except PlanNotFoundError as exc:
+            logger.warning("plan.delete.not_found plan_id=%s", plan_id)
             raise HTTPException(status_code=404, detail="Plan not found") from exc
+        except Exception as exc:
+            logger.exception("plan.delete.failed plan_id=%s", plan_id)
+            raise HTTPException(
+                status_code=500,
+                detail={
+                    "message": "Не удалось удалить план",
+                    "error_type": type(exc).__name__,
+                    "error": str(exc),
+                },
+            ) from exc
+        logger.info("plan.delete.success plan_id=%s", plan_id)
         return Response(status_code=204)
 
     return app
