@@ -40,6 +40,11 @@ class _Response:
         return self._body[:size]
 
 
+class _TimeoutResponse(_Response):
+    def read(self, size: int = -1) -> bytes:
+        raise TimeoutError("simulated slow asset")
+
+
 def _registry():
     return load_source_registry(Path("config/ascension_logs_sources.yaml"))
 
@@ -127,6 +132,40 @@ def test_capture_archives_pages_embedded_json_assets_and_route_candidates(tmp_pa
         )
         assert app_asset.capture is not None
         assert Path(app_asset.capture.payload_path).is_file()
+
+
+def test_asset_read_timeout_is_recorded_without_aborting_batch(tmp_path):
+    html = b"""<!doctype html><html><body>
+<script type="module" src="/assets/slow.js"></script>
+</body></html>"""
+    slow_url = "https://coa.ascensionlogs.gg/assets/slow.js"
+    calls: list[str] = []
+
+    def opener(request, **_kwargs):
+        calls.append(request.full_url)
+        if request.full_url == slow_url:
+            return _TimeoutResponse(b"", "application/javascript")
+        return _Response(html)
+
+    results = capture_character_build_pages(
+        _registry(),
+        RawArchive(tmp_path / "raw"),
+        character="Gunspojoshe",
+        realm="Vol'Jin",
+        spec="Tyrant",
+        opener=opener,
+        timeout_seconds=1.0,
+    )
+
+    assert len(results) == 2
+    assert all(item.capture is not None for item in results)
+    assert all(len(item.assets) == 1 for item in results)
+    assert calls.count(slow_url) == 2
+    for result in results:
+        asset = result.assets[0]
+        assert asset.capture is None
+        assert asset.api_route_candidates == ()
+        assert asset.error == "read timeout after 1 seconds (attempt 2/2)"
 
 
 def test_capture_does_not_persist_request_header_values(tmp_path):
