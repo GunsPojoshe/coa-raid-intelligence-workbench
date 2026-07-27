@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-from typing import Any
-
 from pydantic import BaseModel, Field, model_validator
 
 from coa_workbench.planner import MAX_RAID_SLOTS, RaidFormat, active_slot_flags, resolve_target_size
 from coa_workbench.web.catalog import resolve_role
-from coa_workbench.web.trusted_effects import analyze_composition
 
 
 class RaidSlotInput(BaseModel):
@@ -64,9 +61,8 @@ class PlanPreviewResponse(BaseModel):
     role_counts: dict[str, int]
     validation_errors: list[str]
     slots: list[SlotPreview]
-    coverage: dict[str, Any]
-    recommendations: list[dict[str, Any]]
-    scoring: dict[str, Any]
+    evidence_status: str
+    evidence_message: str
 
 
 def build_plan_preview(payload: PlanPreviewRequest) -> PlanPreviewResponse:
@@ -103,7 +99,6 @@ def build_plan_preview(payload: PlanPreviewRequest) -> PlanPreviewResponse:
         if active and preview.player_name and preview.class_code and preview.spec_code and not derived_role:
             errors.append(f"Слот {slot_no}: неизвестная пара класса и специализации")
 
-    analytics = analyze_composition(result_slots, top_n=3)
     filled_slots = sum(1 for slot in result_slots if slot.active and slot.player_name)
     return PlanPreviewResponse(
         plan_id=payload.plan_id,
@@ -117,7 +112,9 @@ def build_plan_preview(payload: PlanPreviewRequest) -> PlanPreviewResponse:
         role_counts=dict(sorted(role_counts.items())),
         validation_errors=errors,
         slots=result_slots,
-        coverage=analytics["coverage"],
-        recommendations=analytics["recommendations"],
-        scoring=analytics["scoring"],
+        evidence_status="not_loaded",
+        evidence_message=(
+            "Расчёт игровых механик будет доступен после загрузки, нормализации "
+            "и подтверждения данных журналов боя."
+        ),
     )
