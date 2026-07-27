@@ -1,4 +1,4 @@
-schema_version: 1
+schema_version: 2
 source_code: coa_ascension_logs
 base_url: https://coa.ascensionlogs.gg
 status: discovery
@@ -11,6 +11,7 @@ principles:
   - inferred mechanics never overwrite contradictory evidence
   - newer observations receive greater weight through a versioned policy
   - guild and global samples are retained as separate cohorts
+  - upstream class and spec labels are retained as derived observations, not raw mechanic truth
 
 routes:
   - endpoint_code: public_home
@@ -19,6 +20,27 @@ routes:
     auth_mode: public
     status: verified_html
     use: availability_probe
+
+  - endpoint_code: public_reports
+    route_template: /reports
+    method: GET
+    auth_mode: public
+    status: verified_html
+    use: public_report_navigation_discovery
+
+  - endpoint_code: public_faq
+    route_template: /faq
+    method: GET
+    auth_mode: public
+    status: verified_html
+    use: parser_behavior_and_source_limitations
+
+  - endpoint_code: public_guild_progression
+    route_template: /guilds/progression
+    method: GET
+    auth_mode: public
+    status: verified_html
+    use: guild_and_report_navigation_discovery
 
   - endpoint_code: report_metadata
     route_template: null
@@ -32,7 +54,7 @@ routes:
     method: GET
     auth_mode: unknown
     status: unverified
-    use: participant_identity_and_detected_spec
+    use: participant_identity_and_upstream_detected_spec
 
   - endpoint_code: aura_timeline
     route_template: null
@@ -70,3 +92,4 @@ prohibited_assumptions:
   - one observed application proves raid-wide scope
   - absence in one log disproves a mechanic
   - old and new game versions are directly interchangeable
+  - upstream detected specialization proves a provider mechanic
