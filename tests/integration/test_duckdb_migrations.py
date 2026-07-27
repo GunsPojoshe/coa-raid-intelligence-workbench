@@ -16,6 +16,7 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         "0002_web_plan_fields",
         "0003_log_evidence_refactor",
         "0004_raw_capture_archive",
+        "0005_canonical_normalization",
     ]
     assert apply_migrations(database, root / "migrations") == []
     with duckdb.connect(str(database)) as connection:
@@ -36,6 +37,10 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
             row[0]
             for row in connection.execute("DESCRIBE raw_fetch_observation").fetchall()
         }
+        interval_columns = {
+            row[0]
+            for row in connection.execute("DESCRIBE aura_state_interval").fetchall()
+        }
     assert {"source_endpoint", "raw_object", "raid_plan", "raid_slot", "job"} <= tables
     assert {
         "observation_batch",
@@ -47,6 +52,10 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         "mechanic_inference_run",
         "source_route_probe",
         "raw_fetch_observation",
+        "payload_schema_profile",
+        "normalization_mapping",
+        "normalization_run",
+        "normalization_reject",
     } <= tables
     assert "plan_name" in raid_plan_columns
     assert {"player_name", "class_code", "spec_code", "role"} <= raid_slot_columns
@@ -58,3 +67,4 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         "fetched_at",
         "request_url_sanitized",
     } <= raw_fetch_columns
+    assert {"max_stack_count", "refresh_count", "termination_reason"} <= interval_columns
