@@ -12,6 +12,7 @@ from coa_workbench import __version__
 from coa_workbench.planner import MAX_RAID_SLOTS, RaidFormat
 from coa_workbench.storage import PlanNotFoundError, PlanRepository
 from coa_workbench.web.catalog import catalog_payload
+from coa_workbench.web.effects import effects_catalog_payload
 from coa_workbench.web.models import PlanPreviewRequest, PlanPreviewResponse, build_plan_preview
 from coa_workbench.web.ui import INDEX_HTML
 
@@ -91,6 +92,16 @@ def create_app(
         )
         return payload
 
+    @app.get("/api/catalog/effects")
+    def effects() -> dict[str, object]:
+        payload = effects_catalog_payload()
+        logger.info(
+            "effects.loaded effects=%s provider_links=%s",
+            payload["effect_count"],
+            payload["provider_link_count"],
+        )
+        return payload
+
     @app.post("/api/plans/preview", response_model=PlanPreviewResponse)
     def preview(payload: PlanPreviewRequest) -> PlanPreviewResponse:
         result = build_plan_preview(payload)
@@ -100,6 +111,13 @@ def create_app(
                 result.plan_id,
                 result.validation_errors,
             )
+        logger.info(
+            "plan.preview.analytics plan_id=%s coverage=%s/%s recommendations=%s",
+            result.plan_id,
+            result.coverage["covered_effects"],
+            result.coverage["total_effects"],
+            len(result.recommendations),
+        )
         return result
 
     @app.get("/api/plans")
@@ -186,10 +204,12 @@ def create_app(
                 },
             ) from exc
         logger.info(
-            "plan.save.success action=%s plan_id=%s name=%r",
+            "plan.save.success action=%s plan_id=%s name=%r coverage=%s/%s",
             action,
             plan_id,
             preview_result.plan_name,
+            preview_result.coverage["covered_effects"],
+            preview_result.coverage["total_effects"],
         )
         return {"plan_id": plan_id, "status": "saved", "action": action}
 
