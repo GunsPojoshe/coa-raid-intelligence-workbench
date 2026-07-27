@@ -17,6 +17,7 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         "0003_log_evidence_refactor",
         "0004_raw_capture_archive",
         "0005_canonical_normalization",
+        "0006_aura_interval_provenance",
     ]
     assert apply_migrations(database, root / "migrations") == []
     with duckdb.connect(str(database)) as connection:
@@ -67,4 +68,10 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         "fetched_at",
         "request_url_sanitized",
     } <= raw_fetch_columns
-    assert {"max_stack_count", "refresh_count", "termination_reason"} <= interval_columns
+    assert {
+        "max_stack_count",
+        "refresh_count",
+        "termination_reason",
+        "state_status",
+        "metadata_json",
+    } <= interval_columns
