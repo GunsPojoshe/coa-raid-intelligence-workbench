@@ -53,9 +53,24 @@ def test_invalid_plan_is_not_persisted(tmp_path: Path) -> None:
     detail = response.json()["detail"]
     assert detail["message"] == "План не сохранён: исправьте ошибки проверки"
     assert detail["validation_errors"] == [
-        "Slot 1: class and spec are required for a filled slot"
+        "Слот 1: для заполненного игрока выберите класс и специализацию"
     ]
     assert api.get("/api/plans").json()["plans"] == []
+
+
+def test_duplicate_player_validation_is_localized(tmp_path: Path) -> None:
+    response = client(tmp_path).post(
+        "/api/plans/preview",
+        json={
+            "raid_format": "10",
+            "slots": [
+                {"slot_no": 1, "player_name": "Same"},
+                {"slot_no": 2, "player_name": "same"},
+            ],
+        },
+    )
+    assert response.status_code == 422
+    assert "один игрок не может занимать несколько слотов" in response.text
 
 
 def test_plan_round_trip_update_without_duplicate_and_delete(tmp_path: Path) -> None:
@@ -133,3 +148,4 @@ def test_save_button_has_explicit_non_conflicting_binding(tmp_path: Path) -> Non
     assert "function summarizeForLog(url,data)" in html
     assert "data.action==='updated'" in html
     assert "classList.toggle('current'" in html
+    assert "serialized===lastPreviewPayload" in html
