@@ -1,6 +1,6 @@
 # Фактическое состояние проекта
 
-Дата актуализации: 2026-07-27.
+Дата актуализации: 2026-07-28.
 
 ## Репозиторий
 
@@ -31,6 +31,34 @@
 - единый `scripts/verify_repo.py`;
 - CI-проверки Ubuntu и Windows.
 
+## Первый реальный evidence checkpoint
+
+На локально сохранённых immutable payloads отчёта CoA Logs подтверждён первый воспроизводимый single-encounter путь:
+
+```text
+report 2987
+encounter 64795
+spell 968746 (Ninja's Focus)
+aura_timeline -> canonical events -> Aura State Engine -> debuff_sources intervals
+```
+
+Проверенный результат:
+
+- schema fingerprint: `2994424cb95c2a7e1997651226b7942367ebe77003e0f4614aae5da4920f8b98`;
+- mapping: `coa-aura-timeline-single-encounter-v1`, status `verified`;
+- `buff_applied -> APPLIED`;
+- `buff_removed -> REMOVED`;
+- одна служебная baseline-строка корректно исключена;
+- 6 canonical aura events;
+- 3 восстановленных интервала;
+- 3 эталонных интервала `debuff_sources`;
+- точное совпадение интервалов;
+- 0 rejects;
+- 0 anomalies;
+- provenance сохраняет hash и archive path обоих payloads.
+
+Этот checkpoint подтверждает корректность наблюдаемой схемы и нормализации для single-encounter payload. Он не подтверждает общую механику эффекта, его числовое описание, обязательность, stacking или эквивалентность похожим эффектам.
+
 ## Канонические ограничения
 
 - Статические historical mappings имеют статус `legacy_unverified`.
@@ -38,6 +66,7 @@
 - Непроверенный normalization mapping отклоняется.
 - Только `corroborated` и `confirmed` механики могут использоваться для рекомендаций.
 - Инфраструктура evidence pipeline не является подтверждением игровых механик.
+- Verified schema mapping не повышает trust state игровой механики автоматически.
 
 ## Воспроизводимая проверка
 
@@ -48,17 +77,33 @@ uv run python scripts/verify_repo.py
 
 Verifier запускает Ruff, полный pytest, doctor, CLI smoke tests, trust gates и двукратную инициализацию временной DuckDB. Рабочая `data/warehouse/coa.duckdb` не используется. JSON-отчёт записывается в `artifacts/verification-report.json`.
 
+Первый реальный aura checkpoint воспроизводится командой:
+
+```bash
+python scripts/validate_aura_capture.py \
+  --timeline <timeline-payload-hash> \
+  --reference <debuff-sources-payload-hash> \
+  --encounter-id 64795
+```
+
 ## Незавершённая контрольная точка
 
-До завершения evidence checkpoint отсутствуют подтверждённые в репозитории результаты следующих этапов:
+Выполнено частично:
 
-1. реальный сохранённый payload CoA Logs;
-2. verified mapping для его фактической схемы;
-3. нормализованный реальный report и encounter;
-4. связанные actors, participants и aura events;
-5. восстановленные реальные aura intervals;
-6. повторяемая механика с независимыми supporting observations;
-7. проверенные contradicting observations;
-8. канонический вывод, воспроизводимый по dataset, policy и inference versions.
+1. реальный immutable payload CoA Logs — выполнено локально;
+2. verified mapping фактической single-encounter aura schema — выполнено;
+3. нормализованный реальный encounter и aura events — выполнено для одного aura payload;
+4. восстановленные реальные aura intervals — выполнено для одного aura payload;
+5. независимое точное сравнение с готовыми `debuff_sources` intervals — выполнено для одного encounter.
+
+До полного evidence checkpoint остаются:
+
+1. нормализация полного реального report/encounter/roster с actors и participants;
+2. повторение проверки на других spells, encounters и reports;
+3. гипотезы stacking, overwrite и coexistence;
+4. независимые supporting observations;
+5. проверенные contradicting observations;
+6. критичность эффекта по описанию, распространённости и редкости провайдеров;
+7. канонический вывод, воспроизводимый по dataset, policy и inference versions.
 
 До выполнения этих условий PR №3 остаётся Draft и не сливается в `main`.
