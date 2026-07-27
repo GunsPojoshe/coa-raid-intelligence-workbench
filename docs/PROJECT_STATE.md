@@ -24,21 +24,24 @@
 - canonical report, encounter, actor, participant и aura events;
 - normalization rejects;
 - Aura State Engine с обработкой refresh, stacks, duplicate events, нескольких источников и целей;
+- различение полного encounter и ограниченного окна наблюдения aura timeline;
 - интервалы со статусами `active`, `closed`, `incomplete` и provenance metadata;
+- явные причины границ `window_start`, `window_end`, `removed` и `encounter_end`;
 - trust states, hypotheses, evidence links и versioned weighting policy;
 - миграции `0001`–`0006`;
 - compatibility-исполнение миграции `0005` без изменения её исходного checksum;
 - единый `scripts/verify_repo.py`;
 - CI-проверки Ubuntu и Windows.
 
-## Первый реальный evidence checkpoint
+## Реальный evidence checkpoint: aura normalization
 
-На локально сохранённых immutable payloads отчёта CoA Logs подтверждён первый воспроизводимый single-encounter путь:
+На локально сохранённых immutable payloads отчёта CoA Logs подтверждены два воспроизводимых single-encounter пути для spell `968746` (`Ninja's Focus`).
+
+### Encounter 64795 — полный timeline
 
 ```text
 report 2987
 encounter 64795
-spell 968746 (Ninja's Focus)
 aura_timeline -> canonical events -> Aura State Engine -> debuff_sources intervals
 ```
 
@@ -48,7 +51,7 @@ aura_timeline -> canonical events -> Aura State Engine -> debuff_sources interva
 - mapping: `coa-aura-timeline-single-encounter-v1`, status `verified`;
 - `buff_applied -> APPLIED`;
 - `buff_removed -> REMOVED`;
-- одна служебная baseline-строка корректно исключена;
+- одна пустая baseline-строка корректно исключена;
 - 6 canonical aura events;
 - 3 восстановленных интервала;
 - 3 эталонных интервала `debuff_sources`;
@@ -57,7 +60,33 @@ aura_timeline -> canonical events -> Aura State Engine -> debuff_sources interva
 - 0 anomalies;
 - provenance сохраняет hash и archive path обоих payloads.
 
-Этот checkpoint подтверждает корректность наблюдаемой схемы и нормализации для single-encounter payload. Он не подтверждает общую механику эффекта, его числовое описание, обязательность, stacking или эквивалентность похожим эффектам.
+### Encounter 64796 — оконный timeline
+
+```text
+report 2987
+encounter 64796
+window 10382–38265 ms
+full encounter duration 117215 ms
+observed window duration 27883 ms
+```
+
+Проверенный результат:
+
+- schema fingerprint: `d8b6dd869d6adf8f3433f9e285b8270cd1aa8d640839c915a42c80b2211cbf0b`;
+- baseline в `10382` с `active_targets=1` восстановлен как начало интервала с причиной `window_start`;
+- `buff_removed` в `14970` корректно закрывает первый интервал;
+- `buff_applied` в `29458` открывает второй интервал;
+- отсутствие remove внутри окна корректно закрывает второй интервал на `38265` с причиной `window_end`;
+- 3 canonical aura events, включая синтетическое boundary event;
+- 2 восстановленных интервала;
+- 2 эталонных интервала `debuff_sources`;
+- точное совпадение интервалов;
+- 0 rejects;
+- 0 anomalies.
+
+Оба наблюдения подтверждают корректность reviewed mapping и реконструкции для полного и оконного single-encounter aura timeline. Это corroborating evidence для технической нормализации, но не для игровой механики эффекта.
+
+Checkpoint не подтверждает числовое описание `Ninja's Focus`, его обязательность, stacking, overwrite, эквивалентность похожим эффектам или стратегическую критичность.
 
 ## Канонические ограничения
 
@@ -67,6 +96,7 @@ aura_timeline -> canonical events -> Aura State Engine -> debuff_sources interva
 - Только `corroborated` и `confirmed` механики могут использоваться для рекомендаций.
 - Инфраструктура evidence pipeline не является подтверждением игровых механик.
 - Verified schema mapping не повышает trust state игровой механики автоматически.
+- Corroborated normalizer behavior не считается corroborated mechanic behavior.
 
 ## Воспроизводимая проверка
 
@@ -77,14 +107,16 @@ uv run python scripts/verify_repo.py
 
 Verifier запускает Ruff, полный pytest, doctor, CLI smoke tests, trust gates и двукратную инициализацию временной DuckDB. Рабочая `data/warehouse/coa.duckdb` не используется. JSON-отчёт записывается в `artifacts/verification-report.json`.
 
-Первый реальный aura checkpoint воспроизводится командой:
+Реальный aura checkpoint воспроизводится командой:
 
 ```bash
 python scripts/validate_aura_capture.py \
   --timeline <timeline-payload-hash> \
   --reference <debuff-sources-payload-hash> \
-  --encounter-id 64795
+  --encounter-id <encounter-id>
 ```
+
+Последняя проверка ветки после поддержки window boundaries: GitHub Actions run №26, Ubuntu и Windows — success.
 
 ## Незавершённая контрольная точка
 
@@ -92,16 +124,17 @@ python scripts/validate_aura_capture.py \
 
 1. реальный immutable payload CoA Logs — выполнено локально;
 2. verified mapping фактической single-encounter aura schema — выполнено;
-3. нормализованный реальный encounter и aura events — выполнено для одного aura payload;
-4. восстановленные реальные aura intervals — выполнено для одного aura payload;
-5. независимое точное сравнение с готовыми `debuff_sources` intervals — выполнено для одного encounter.
+3. нормализованные реальные encounter и aura events — выполнено для двух aura payloads;
+4. восстановленные реальные aura intervals — выполнено для полного и оконного timeline;
+5. независимое точное сравнение с готовыми `debuff_sources` intervals — выполнено для двух encounters;
+6. повторяемость normalizer behavior на разных encounters и temporal shapes — выполнено.
 
 До полного evidence checkpoint остаются:
 
 1. нормализация полного реального report/encounter/roster с actors и participants;
-2. повторение проверки на других spells, encounters и reports;
+2. повторение проверки на других spells и reports;
 3. гипотезы stacking, overwrite и coexistence;
-4. независимые supporting observations;
+4. независимые supporting observations игровых механик;
 5. проверенные contradicting observations;
 6. критичность эффекта по описанию, распространённости и редкости провайдеров;
 7. канонический вывод, воспроизводимый по dataset, policy и inference versions.
