@@ -90,3 +90,72 @@ def test_aura_state_reconstructs_refresh_and_remove():
     assert interval.max_stack_count == 2
     assert interval.termination_reason == "removed"
     assert result.anomalies == ()
+
+
+def _event(*, timestamp, event_type, source="A1", target="A2", spell="77", stacks=None, ordinal=0):
+    from coa_workbench.normalizer.canonical import CanonicalAuraEvent
+
+    return CanonicalAuraEvent(
+        "E1",
+        timestamp,
+        event_type,
+        source,
+        target,
+        spell,
+        stacks,
+        ordinal,
+        event_type,
+        f"/events/{ordinal}",
+    )
+
+
+def test_aura_state_stack_change_and_missing_remove():
+    result = reconstruct_aura_intervals(
+        [
+            _event(timestamp=100, event_type="APPLIED", stacks=1),
+            _event(timestamp=200, event_type="STACK_CHANGE", stacks=3, ordinal=1),
+        ]
+    )
+    assert result.intervals[0].max_stack_count == 3
+    assert result.intervals[0].termination_reason == "unknown_termination"
+    assert result.intervals[0].state_status == "incomplete"
+
+
+def test_aura_state_ignores_semantic_duplicate():
+    result = reconstruct_aura_intervals(
+        [
+            _event(timestamp=100, event_type="APPLIED"),
+            _event(timestamp=100, event_type="APPLIED", ordinal=1),
+            _event(timestamp=200, event_type="REMOVED", ordinal=2),
+        ]
+    )
+    assert len(result.intervals) == 1
+    assert result.intervals[0].ended_at_ms == 200
+    assert [item["reason"] for item in result.anomalies] == ["duplicate_event"]
+
+
+def test_aura_state_orders_input_and_isolates_sources_and_targets():
+    result = reconstruct_aura_intervals(
+        [
+            _event(timestamp=300, event_type="REMOVED", source="A1", target="A2", ordinal=5),
+            _event(timestamp=100, event_type="APPLIED", source="A2", target="A2", ordinal=1),
+            _event(timestamp=100, event_type="APPLIED", source="A1", target="A3", ordinal=2),
+            _event(timestamp=100, event_type="APPLIED", source="A1", target="A2", ordinal=3),
+        ],
+        encounter_end_ms={"E1": 400},
+    )
+    assert len(result.intervals) == 3
+    by_key = {(item.source_actor_id, item.target_actor_id): item for item in result.intervals}
+    assert by_key[("A1", "A2")].termination_reason == "removed"
+    assert by_key[("A2", "A2")].ended_at_ms == 400
+    assert by_key[("A1", "A3")].ended_at_ms == 400
+
+
+def test_aura_state_rejects_impossible_encounter_end():
+    result = reconstruct_aura_intervals(
+        [_event(timestamp=100, event_type="APPLIED")],
+        encounter_end_ms={"E1": 50},
+    )
+    assert result.intervals[0].ended_at_ms is None
+    assert result.intervals[0].state_status == "incomplete"
+    assert result.anomalies[0]["reason"] == "encounter_end_before_apply"
