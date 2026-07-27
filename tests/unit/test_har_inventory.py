@@ -113,6 +113,25 @@ def test_inventory_covers_safe_content_types_errors_duplicates_and_determinism(t
         assert secret not in rendered
 
 
+def test_inventory_redacts_non_http_data_urls(tmp_path: Path) -> None:
+    data_url = "data:image/png;base64,PRIVATE_BASE64_IMAGE_CONTENT"
+    har_path = tmp_path / "capture.har"
+    _write_har(har_path, [_entry("ignored", url=data_url, mime="image/png")])
+
+    result = inventory_har(
+        har_path,
+        archive=RawArchive(tmp_path / "raw"),
+        source_code="coa_ascension_logs",
+        allowed_host="coa.ascensionlogs.gg",
+    )
+
+    entry = result["entries"][0]
+    assert entry["route_path"] == "[non-http-url]"
+    assert entry["query_keys"] == []
+    assert entry["skip_reason"] == "unsupported_url_scheme"
+    assert "PRIVATE_BASE64_IMAGE_CONTENT" not in json.dumps(result)
+
+
 def test_inspect_archived_reads_gzip_json_by_hash_and_returns_relative_path(tmp_path: Path) -> None:
     root = tmp_path / "raw"
     capture = RawArchive(root).capture_bytes(
