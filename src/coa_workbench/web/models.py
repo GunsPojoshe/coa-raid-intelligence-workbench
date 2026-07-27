@@ -28,10 +28,10 @@ class PlanPreviewRequest(BaseModel):
     def validate_plan(self) -> "PlanPreviewRequest":
         numbers = [slot.slot_no for slot in self.slots]
         if len(numbers) != len(set(numbers)):
-            raise ValueError("slot_no values must be unique")
+            raise ValueError("номера слотов не должны повторяться")
         names = [slot.player_name.strip().casefold() for slot in self.slots if slot.player_name.strip()]
         if len(names) != len(set(names)):
-            raise ValueError("one player cannot occupy multiple slots")
+            raise ValueError("один игрок не может занимать несколько слотов")
         resolve_target_size(self.raid_format, self.target_size)
         return self
 
@@ -89,11 +89,13 @@ def build_plan_preview(payload: PlanPreviewRequest) -> PlanPreviewResponse:
         if active and preview.player_name and preview.role:
             role_counts[preview.role] = role_counts.get(preview.role, 0) + 1
         if not active and preview.player_name:
-            errors.append(f"Slot {slot_no} is inactive for target size {target_size}")
+            errors.append(f"Слот {slot_no} неактивен для размера рейда {target_size}")
         if active and preview.player_name and (not preview.class_code or not preview.spec_code):
-            errors.append(f"Slot {slot_no}: class and spec are required for a filled slot")
+            errors.append(
+                f"Слот {slot_no}: для заполненного игрока выберите класс и специализацию"
+            )
         if active and preview.player_name and preview.class_code and preview.spec_code and not derived_role:
-            errors.append(f"Slot {slot_no}: unknown class/spec pair")
+            errors.append(f"Слот {slot_no}: неизвестная пара класса и специализации")
 
     filled_slots = sum(1 for slot in result_slots if slot.active and slot.player_name)
     return PlanPreviewResponse(
