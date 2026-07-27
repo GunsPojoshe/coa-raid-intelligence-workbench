@@ -6,6 +6,25 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request
 
 OpenUrl = Callable[..., Any]
+_READ_CHUNK_BYTES = 64 * 1024
+
+
+def _read_body(response: Any, max_bytes: int | None) -> bytes:
+    """Prefer HTTPResponse.read1 so chunked bodies do not wait for a huge read size."""
+    read1 = getattr(response, "read1", None)
+    if not callable(read1):
+        return response.read(max_bytes + 1) if max_bytes is not None else response.read()
+
+    chunks: list[bytes] = []
+    total = 0
+    while True:
+        chunk = read1(_READ_CHUNK_BYTES)
+        if not chunk:
+            return b"".join(chunks)
+        chunks.append(chunk)
+        total += len(chunk)
+        if max_bytes is not None and total > max_bytes:
+            return b"".join(chunks)
 
 
 def read_response_resilient(
@@ -17,6 +36,9 @@ def read_response_resilient(
     retry_count: int = 1,
 ) -> tuple[int | None, str | None, bytes | None, str | None]:
     """Read one response without allowing a slow asset to abort the capture batch."""
+    request.add_header("Accept-Encoding", "identity")
+    request.add_header("Connection", "close")
+
     last_status: int | None = None
     last_content_type: str | None = None
     last_error: str | None = None
@@ -31,11 +53,7 @@ def read_response_resilient(
                 last_status = int(response.status)
                 last_content_type = response.headers.get_content_type()
                 try:
-                    body = (
-                        response.read(max_bytes + 1)
-                        if max_bytes is not None
-                        else response.read()
-                    )
+                    body = _read_body(response, max_bytes)
                 except TimeoutError:
                     last_error = (
                         f"read timeout after {timeout_seconds:g} seconds "
@@ -54,7 +72,7 @@ def read_response_resilient(
             last_status = exc.code
             last_content_type = exc.headers.get_content_type() if exc.headers else None
             try:
-                body = exc.read(max_bytes + 1) if max_bytes is not None else exc.read()
+                body = _read_body(exc, max_bytes)
             except TimeoutError:
                 body = None
                 last_error = f"HTTP {exc.code} response read timed out: {exc.reason}"
