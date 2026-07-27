@@ -6,7 +6,7 @@ Accepted for implementation on branch `e2/log-evidence-refactor`.
 
 ## Context
 
-The current 45-effect catalog and class/spec provider links originated from the legacy Excel workbook. They are useful migration evidence, but spot checks and raid-log behaviour show that a simple relation
+The historical static effect catalog and class/spec provider links are useful for regression research, but spot checks and raid-log behaviour show that a simple relation
 
 ```text
 class/spec present -> effect covered
@@ -20,13 +20,13 @@ Observed mechanics can depend on source, target, application order, target count
 
 ## Decision
 
-### 1. Legacy data classification
+### 1. Historical static data classification
 
-All Excel-derived effects and provider capabilities are classified as `legacy_unverified`.
+All historical static effects and provider capabilities are classified as `legacy_unverified`.
 
 They:
 
-- remain available for migration audit and forensic comparison;
+- remain available only for controlled regression research;
 - are excluded from canonical scoring by default;
 - can be enabled only with `COA_ENABLE_LEGACY_EFFECTS=1`;
 - may not be promoted without log evidence.
@@ -85,7 +85,7 @@ Unverified routes are rejected by the collector registry.
 
 ### 6. Aura State Engine target
 
-The canonical engine will reconstruct per-target intervals from apply/refresh/remove events and retain:
+The canonical engine reconstructs per-target intervals from apply/refresh/remove events and retains:
 
 - source actor;
 - target actor;
@@ -100,9 +100,9 @@ Order-sensitive stacking and overwrite hypotheses are inferred from these interv
 
 ## Consequences
 
-- Current coverage and Top-N advice disappear from canonical preview until confirmed evidence exists.
-- The UI may show data unavailable instead of a fabricated 0/45 score.
-- Legacy comparisons remain possible for regression research.
+- Coverage and recommendations remain unavailable until confirmed evidence exists.
+- The UI may show data unavailable instead of a fabricated score.
+- Historical static comparisons remain non-canonical and isolated.
 - Database growth increases because observations and contradictions are retained.
 - Planner results become reproducible through dataset, policy and inference versions.
 
@@ -112,5 +112,5 @@ Order-sensitive stacking and overwrite hypotheses are inferred from these interv
 - source registry `config/ascension_logs_sources.yaml`;
 - canonical trust policy module;
 - recency/cohort weighting module;
-- default legacy-scoring gate;
+- default static-scoring gate;
 - regression tests for trust, weighting, route verification and migration schema.
