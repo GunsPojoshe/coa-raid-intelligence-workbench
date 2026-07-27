@@ -52,6 +52,6 @@ def analyze_composition(
     result["scoring"]["canonical"] = False
     result["scoring"]["algorithm"] = "legacy-missing-effect-priority-v1"
     result["scoring"]["warning"] = (
-        "Legacy Excel-derived provider links are enabled for forensic comparison only."
+        "Historical static provider links are enabled for non-canonical comparison only."
     )
     return result

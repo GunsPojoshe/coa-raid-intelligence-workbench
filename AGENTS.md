@@ -6,7 +6,7 @@ These instructions apply to the entire repository. Read them before changing cod
 
 Build a localhost-first raid intelligence system for Classless / Ascension WoW that derives explainable planning recommendations from evidence captured from `coa.ascensionlogs.gg`.
 
-The system must keep these layers separate:
+The system keeps these layers separate:
 
 1. immutable raw observations;
 2. upstream-derived fields;
@@ -24,7 +24,7 @@ Before modifying code:
 
 1. inspect the current branch, HEAD and working tree;
 2. inspect the active pull request and its base branch when available;
-3. read `README.md` and relevant files under `docs/`;
+3. read `README.md`, `docs/PROJECT_STATE.md` and relevant ADR files;
 4. compare documented claims with the actual implementation;
 5. run the available verification commands;
 6. report any discrepancy before extending the analytical model.
@@ -35,9 +35,9 @@ Do not trust commit counts, test counts, branch state or implementation claims f
 
 The active evidence-refactor branch is `e2/log-evidence-refactor` and its pull request is PR #3 into `main`.
 
-PR #3 must remain Draft until the evidence checkpoint is complete. Do not merge it, mark it ready, or delete the branch unless the user explicitly changes this instruction.
+PR #3 remains Draft until the evidence checkpoint is complete unless the user explicitly changes this instruction.
 
-This milestone information must be updated when the project moves to a new branch or phase.
+Update this section when the project moves to a new branch or phase.
 
 ## Source and data-trust rules
 
@@ -50,14 +50,7 @@ This milestone information must be updated when the project moves to a new branc
 - Keep global game mechanics separate from guild and individual-player execution quality.
 - Recent evidence may receive more weight, but old observations remain stored.
 - Only `corroborated` and `confirmed` mechanics may participate in canonical planner scoring.
-
-## Legacy data
-
-Excel-derived effect and provider data is `legacy_unverified`.
-
-It may be used only for migration audits, forensic comparison and regression investigation. It must not participate in canonical scoring by default.
-
-The environment flag `COA_ENABLE_LEGACY_EFFECTS=1` enables legacy analytics only for forensic comparison. Results remain non-canonical.
+- Historical static catalogs are non-canonical and must not enter planner scoring.
 
 ## Raw data and privacy
 
@@ -69,7 +62,7 @@ The environment flag `COA_ENABLE_LEGACY_EFFECTS=1` enables legacy analytics only
 
 ## Database migrations
 
-- Never edit a migration that has already been published to the branch history.
+- Never edit a migration that has already been published to branch history.
 - Add a new migration for every schema correction.
 - Test migrations on a clean temporary DuckDB database.
 - Test migration repeatability and checksum behavior.
@@ -109,12 +102,13 @@ Use the locked environment when possible:
 uv sync --frozen --extra dev
 ```
 
-Run the checks relevant to the change, including at minimum:
+Run the repository verifier:
 
 ```bash
-uv run pytest
-uv run coa-workbench doctor --project-root .
+uv run python scripts/verify_repo.py
 ```
+
+Run change-specific tests when the full verifier does not isolate the changed behavior.
 
 For migration or storage changes, initialize a clean temporary database and run initialization again to verify repeatability:
 
@@ -130,7 +124,7 @@ Never claim a test passed unless it was actually executed. If a check cannot run
 
 - Do not overwrite unrelated user or agent changes.
 - Before committing, re-check the branch and remote state.
-- If the selected base branch changed while a task was running, refresh or rebase safely before publishing.
+- If the selected base branch changed while a task was running, refresh safely before publishing.
 - Avoid multiple concurrent write tasks touching the same files.
 - Keep commits limited to one coherent block.
 - Leave the working tree clean when a task is complete.
@@ -147,12 +141,11 @@ Do not request manual user testing before the evidence pipeline reaches the agre
 6. aura intervals are reconstructed;
 7. at least one repeatable mechanic has independent supporting evidence;
 8. contradicting evidence has been checked;
-9. at least one legacy discrepancy has been documented;
-10. the result is reproducible and visible with provenance.
+9. the result is reproducible and visible with provenance.
 
 ## Completion report
 
-Every completed task must report:
+Every completed task reports:
 
 - what was verified;
 - what previous claim was false, incomplete or outdated;
