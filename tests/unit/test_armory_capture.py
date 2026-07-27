@@ -34,8 +34,10 @@ class _Response:
     def __exit__(self, exc_type, exc, traceback) -> None:
         return None
 
-    def read(self) -> bytes:
-        return self._body
+    def read(self, size: int = -1) -> bytes:
+        if size is None or size < 0:
+            return self._body
+        return self._body[:size]
 
 
 def _registry():
@@ -66,18 +68,28 @@ def test_build_urls_encode_character_realm_and_query():
     }
 
 
-def test_capture_archives_pages_and_embedded_json(tmp_path):
+def test_capture_archives_pages_embedded_json_assets_and_route_candidates(tmp_path):
     html = b"""<!doctype html>
-<html><body>
+<html><head>
+<link rel="modulepreload" href="/assets/shared.js">
+</head><body>
 <script id="__NEXT_DATA__" type="application/json">
 {"build":{"spec":"Tyrant","talents":[{"id":123,"rank":2}]}}
 </script>
-<script>window.notJson = true;</script>
+<script type="module" src="/assets/app.js"></script>
 </body></html>"""
+    assets = {
+        "https://coa.ascensionlogs.gg/assets/app.js": (
+            b'fetch("/api/characters/${name}/${realm}"); fetch("/api/spells/tooltips?id=1")'
+        ),
+        "https://coa.ascensionlogs.gg/assets/shared.js": b"const noop = true;",
+    }
     requested_urls: list[str] = []
 
     def opener(request, **_kwargs):
         requested_urls.append(request.full_url)
+        if request.full_url in assets:
+            return _Response(assets[request.full_url], "application/javascript")
         return _Response(html)
 
     raw_root = tmp_path / "raw"
@@ -95,8 +107,9 @@ def test_capture_archives_pages_and_embedded_json(tmp_path):
     assert all(item.error is None for item in results)
     assert all(item.capture is not None for item in results)
     assert all(len(item.embedded_json) == 1 for item in results)
-    assert requested_urls[0].startswith("https://coa.ascensionlogs.gg/characters/")
-    assert requested_urls[1] == "https://coa.ascensionlogs.gg/armory/Gunspojoshe/Vol%27Jin"
+    assert all(len(item.assets) == 2 for item in results)
+    assert requested_urls.count("https://coa.ascensionlogs.gg/assets/app.js") == 1
+    assert requested_urls.count("https://coa.ascensionlogs.gg/assets/shared.js") == 1
 
     for result in results:
         embedded = result.embedded_json[0]
@@ -106,6 +119,14 @@ def test_capture_archives_pages_and_embedded_json(tmp_path):
         payload = json.loads(gzip.decompress(path.read_bytes()))
         assert payload["build"]["spec"] == "Tyrant"
         assert payload["build"]["talents"] == [{"id": 123, "rank": 2}]
+
+        app_asset = next(item for item in result.assets if item.url.endswith("/assets/app.js"))
+        assert app_asset.api_route_candidates == (
+            "/api/characters/${name}/${realm}",
+            "/api/spells/tooltips?id=<value>",
+        )
+        assert app_asset.capture is not None
+        assert Path(app_asset.capture.payload_path).is_file()
 
 
 def test_capture_does_not_persist_request_header_values(tmp_path):
