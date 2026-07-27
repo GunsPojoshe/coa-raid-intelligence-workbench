@@ -1,3 +1,4 @@
+from . import armory_capture as _armory_capture
 from .armory_capture import (
     BuildPageCapture,
     EmbeddedJsonCapture,
@@ -16,12 +17,15 @@ from .raw_archive import (
     sanitize_url,
     schema_fingerprint,
 )
+from .route_discovery import discover_api_route_candidates
 from .source_registry import (
     SourceRegistry,
     SourceRoute,
     UnverifiedSourceRouteError,
     load_source_registry,
 )
+
+_armory_capture._api_route_candidates = discover_api_route_candidates
 
 __all__ = [
     "BuildPageCapture",
@@ -37,6 +41,7 @@ __all__ = [
     "build_page_capture_to_dict",
     "capture_character_build_pages",
     "capture_to_dict",
+    "discover_api_route_candidates",
     "inspect_archived_payload",
     "inventory_har",
     "load_source_registry",
