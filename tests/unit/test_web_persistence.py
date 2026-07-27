@@ -34,6 +34,30 @@ def test_role_is_derived_from_class_and_spec(tmp_path: Path) -> None:
     assert response.json()["slots"][0]["role"] == "Танк"
 
 
+def test_invalid_plan_is_not_persisted(tmp_path: Path) -> None:
+    api = client(tmp_path)
+    response = api.post(
+        "/api/plans",
+        json={
+            "plan_name": "Некорректный план",
+            "raid_format": "10",
+            "slots": [
+                {
+                    "slot_no": 1,
+                    "player_name": "Player without class",
+                }
+            ],
+        },
+    )
+    assert response.status_code == 422
+    detail = response.json()["detail"]
+    assert detail["message"] == "План не сохранён: исправьте ошибки проверки"
+    assert detail["validation_errors"] == [
+        "Slot 1: class and spec are required for a filled slot"
+    ]
+    assert api.get("/api/plans").json()["plans"] == []
+
+
 def test_plan_round_trip_update_without_duplicate_and_delete(tmp_path: Path) -> None:
     api = client(tmp_path)
     saved = api.post(
