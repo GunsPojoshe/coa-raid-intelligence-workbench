@@ -5,8 +5,9 @@
 ## Репозиторий
 
 - Основная стабильная ветка: `main`.
-- Активная ветка evidence-refactor: `e2/log-evidence-refactor`.
-- Активный интеграционный PR: №3, `e2/log-evidence-refactor → main`, Draft.
+- Родительская ветка evidence-refactor: `e2/log-evidence-refactor`.
+- Активная ветка real-log capture: `e3/real-log-capture`.
+- Активный Draft PR: №7, `e3/real-log-capture → e2/log-evidence-refactor`.
 - PR №4 с усилением Aura State Engine слит в `e2/log-evidence-refactor`.
 - PR №5 с verification runner и GitHub Actions слит в `e2/log-evidence-refactor`.
 - Проверки GitHub Actions выполняются на Ubuntu и Windows.
@@ -16,6 +17,7 @@
 - localhost FastAPI-приложение и браузерный конструктор рейда;
 - сохранение планов в DuckDB;
 - неизменяемый raw archive;
+- безопасная детерминированная инвентаризация HAR и инспекция архивированного gzip JSON;
 - source registry и безопасный probe;
 - schema inspection и fingerprint;
 - verified normalization mappings;

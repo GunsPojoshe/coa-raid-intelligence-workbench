@@ -49,6 +49,8 @@ From the repository root:
 uv sync --frozen --extra dev
 uv run coa-workbench init-db
 uv run coa-workbench import-har data/exchange/in/coa-report-YYYYMMDD.har
+uv run coa-workbench inventory-har data/exchange/in/coa-report-YYYYMMDD.har \
+  --output data/exchange/out/coa-report-inventory.json
 ```
 
 The import must:
@@ -84,6 +86,11 @@ The inventory must not contain:
 - authorization tokens;
 - unredacted query values;
 - full local usernames or home-directory paths.
+
+`inventory-har` records only the registered hostname's safe request shape, response metadata and
+content-derived identifiers. It archives non-empty response bodies through the immutable raw
+archive. Use `inspect-archived <payload-path-or-hash>` to inspect an archived gzip JSON body; its
+output reports only a path relative to `--raw-root`.
 
 ## Mapping gate
 
