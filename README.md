@@ -117,7 +117,9 @@ uv run coa-workbench init-db --database data/warehouse/coa.duckdb --migrations m
 uv run coa-workbench probe-source public_home
 uv run coa-workbench import-json <payload.json>
 uv run coa-workbench import-har <browser-export.har>
+uv run coa-workbench inventory-har <browser-export.har> --output <inventory.json>
 uv run coa-workbench inspect-json <payload.json>
+uv run coa-workbench inspect-archived <payload-path-or-hash>
 uv run coa-workbench normalize-json <payload.json> --mapping <verified-mapping.json>
 uv run coa-workbench serve
 uv run pytest
@@ -133,7 +135,9 @@ uv run pytest
 
 ## Текущий этап
 
-Активный evidence-refactor ведётся через PR №3 в `main`. До завершения контрольной точки он остаётся Draft.
+Безопасная инвентаризация реального HAR ведётся в Draft PR №7 из
+`e3/real-log-capture` в `e2/log-evidence-refactor`. Родительская evidence-контрольная точка остаётся
+незавершённой.
 
 Контрольная точка требует:
 

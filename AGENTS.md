@@ -33,9 +33,11 @@ Do not trust commit counts, test counts, branch state or implementation claims f
 
 ## Current milestone
 
-The active evidence-refactor branch is `e2/log-evidence-refactor` and its pull request is PR #3 into `main`.
+The active real-log capture branch is `e3/real-log-capture` and its pull request is PR #7 into
+`e2/log-evidence-refactor`.
 
-PR #3 remains Draft until the evidence checkpoint is complete unless the user explicitly changes this instruction.
+PR #7 remains Draft until the safe HAR inventory block is reviewed unless the user explicitly
+changes this instruction. The parent evidence checkpoint remains incomplete.
 
 Update this section when the project moves to a new branch or phase.
 

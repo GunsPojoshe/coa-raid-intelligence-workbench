@@ -1,3 +1,4 @@
+from .har_inventory import inspect_archived_payload, inventory_har
 from .probe import ProbeResult, probe_registry_route, probe_result_to_dict
 from .raw_archive import (
     RawArchive,
@@ -16,6 +17,8 @@ from .source_registry import (
 
 __all__ = [
     "ProbeResult",
+    "inspect_archived_payload",
+    "inventory_har",
     "RawArchive",
     "RawCapture",
     "SourceRegistry",
