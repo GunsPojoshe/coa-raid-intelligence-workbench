@@ -1,31 +1,62 @@
 # Фактическое состояние проекта
 
-Дата проверки: 2026-07-27.
+Дата актуализации: 2026-07-27.
 
-## Репозиторий и review
+## Репозиторий
 
-- Исходный HEAD задачи: `5fcb976e67a9a1b0bd1d62d9bdafc7711e4a25f4`.
-- Контейнер был открыт на локальной ветке `work`; ветка `e2/log-evidence-refactor` в локальных refs отсутствовала и была создана на указанном HEAD до изменений.
-- В checkout отсутствуют Git remote и GitHub CLI. Поэтому состояние PR #3 и наличие открытого PR #4 нельзя подтвердить из этого checkout. Документация утверждает, что PR #3 направлен в `main` и остаётся Draft; эта задача не меняет его состояние и не сливает PR #4.
+- Основная стабильная ветка: `main`.
+- Активная ветка evidence-refactor: `e2/log-evidence-refactor`.
+- Активный интеграционный PR: №3, `e2/log-evidence-refactor → main`, Draft.
+- PR №4 с усилением Aura State Engine слит в `e2/log-evidence-refactor`.
+- PR №5 с verification runner и GitHub Actions слит в `e2/log-evidence-refactor`.
+- Проверки GitHub Actions выполняются на Ubuntu и Windows.
 
-## Реализованный код
+## Реализованный фундамент
 
-- Evidence-first компоненты присутствуют: raw archive, schema inspection, verified normalization и Aura State Engine.
-- Legacy scoring по умолчанию отключён; включение разрешает только неканоническое forensic-сравнение.
-- Непроверенный (`candidate`) normalization mapping отклоняется.
-- Опубликованы миграции `0001`–`0005`. Упомянутой в постановке миграции `0006` в исходном checkout нет; существующие миграции не изменялись.
-- `README.md` описывает ветку `e2/log-evidence-refactor` и Draft PR #3, но перечень файлов подтверждает только миграции до `0005`.
+- localhost FastAPI-приложение и браузерный конструктор рейда;
+- сохранение планов в DuckDB;
+- неизменяемый raw archive;
+- source registry и безопасный probe;
+- schema inspection и fingerprint;
+- verified normalization mappings;
+- canonical report, encounter, actor, participant и aura events;
+- normalization rejects;
+- Aura State Engine с обработкой refresh, stacks, duplicate events, нескольких источников и целей;
+- интервалы со статусами `active`, `closed`, `incomplete` и provenance metadata;
+- trust states, hypotheses, evidence links и versioned weighting policy;
+- миграции `0001`–`0006`;
+- compatibility-исполнение миграции `0005` без изменения её исходного checksum;
+- единый `scripts/verify_repo.py`;
+- CI-проверки Ubuntu и Windows.
+
+## Канонические ограничения
+
+- Статические historical mappings имеют статус `legacy_unverified`.
+- Они не участвуют в каноническом planner scoring.
+- Непроверенный normalization mapping отклоняется.
+- Только `corroborated` и `confirmed` механики могут использоваться для рекомендаций.
+- Инфраструктура evidence pipeline не является подтверждением игровых механик.
 
 ## Воспроизводимая проверка
 
-После установки locked dev-окружения полная локальная проверка запускается без сети:
-
 ```bash
+uv sync --frozen --extra dev
 uv run python scripts/verify_repo.py
 ```
 
-Она последовательно запускает Ruff, полный pytest, doctor, CLI smoke tests, проверки trust gates и двукратную инициализацию временной DuckDB. Рабочая `data/warehouse/coa.duckdb` не используется. Машиночитаемый результат записывается в `artifacts/verification-report.json`.
+Verifier запускает Ruff, полный pytest, doctor, CLI smoke tests, trust gates и двукратную инициализацию временной DuckDB. Рабочая `data/warehouse/coa.duckdb` не используется. JSON-отчёт записывается в `artifacts/verification-report.json`.
 
-## Ограничения checkpoint
+## Незавершённая контрольная точка
 
-Инфраструктура evidence pipeline не является подтверждением игровых механик. В checkout нет документированного подтверждения завершения пользовательского evidence checkpoint на реальном нормализованном отчёте с независимо corroborated mechanic и проверкой противоречащих свидетельств.
+До завершения evidence checkpoint отсутствуют подтверждённые в репозитории результаты следующих этапов:
+
+1. реальный сохранённый payload CoA Logs;
+2. verified mapping для его фактической схемы;
+3. нормализованный реальный report и encounter;
+4. связанные actors, participants и aura events;
+5. восстановленные реальные aura intervals;
+6. повторяемая механика с независимыми supporting observations;
+7. проверенные contradicting observations;
+8. канонический вывод, воспроизводимый по dataset, policy и inference versions.
+
+До выполнения этих условий PR №3 остаётся Draft и не сливается в `main`.
