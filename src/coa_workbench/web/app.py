@@ -153,6 +153,20 @@ def create_app(
             preview_result.target_size,
             preview_result.filled_slots,
         )
+        if preview_result.validation_errors:
+            logger.warning(
+                "plan.save.rejected action=%s plan_id=%s errors=%s",
+                action,
+                preview_result.plan_id,
+                preview_result.validation_errors,
+            )
+            raise HTTPException(
+                status_code=422,
+                detail={
+                    "message": "План не сохранён: исправьте ошибки проверки",
+                    "validation_errors": preview_result.validation_errors,
+                },
+            )
         try:
             plan_id = repository.save(preview_result.model_dump(mode="json"))
         except Exception as exc:
