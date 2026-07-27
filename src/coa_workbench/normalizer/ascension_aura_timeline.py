@@ -95,6 +95,20 @@ def _canonical_actor_id(source_code: str, source_actor_id: Any) -> str:
     return stable_id("actor", source_code, str(source_actor_id))
 
 
+def _window_bounds(payload: Mapping[str, Any]) -> tuple[int | None, int | None]:
+    start = payload.get("window_start_ms")
+    end = payload.get("window_end_ms")
+    if start is None and end is None:
+        return None, None
+    if start is None or end is None:
+        raise ValueError("windowed timeline must contain both window_start_ms and window_end_ms")
+    start_ms = int(start)
+    end_ms = int(end)
+    if end_ms < start_ms:
+        raise ValueError("window_end_ms is before window_start_ms")
+    return start_ms, end_ms
+
+
 def normalize_single_encounter_aura_timeline(
     payload: Any,
     *,
@@ -117,7 +131,9 @@ def normalize_single_encounter_aura_timeline(
 
     report_id = str(payload["report_id"])
     encounter_id = stable_id("encounter", contract.source_code, report_id, source_encounter_id)
-    duration_ms = int(payload["encounter_duration_ms"])
+    observed_duration_ms = int(payload["encounter_duration_ms"])
+    full_duration_ms = int(payload.get("full_encounter_duration_ms") or observed_duration_ms)
+    window_start_ms, window_end_ms = _window_bounds(payload)
     spell = _required_object(payload, "spell")
     spell_id = str(spell["id"])
     rows = _required_list(payload, "series")
@@ -125,6 +141,7 @@ def normalize_single_encounter_aura_timeline(
     ignored: list[dict[str, Any]] = []
     rejects: list[dict[str, Any]] = []
 
+    baseline: dict[str, Any] | None = None
     for ordinal, row in enumerate(rows):
         path = f"/series/{ordinal}"
         if not isinstance(row, dict):
@@ -136,7 +153,15 @@ def normalize_single_encounter_aura_timeline(
             and row.get("source_id") is None
             and row.get("target_id") is None
         ):
-            ignored.append({"path": path, "reason": "timeline_baseline"})
+            baseline = row
+            ignored.append(
+                {
+                    "path": path,
+                    "reason": "timeline_baseline",
+                    "active_targets": row.get("active_targets"),
+                    "total_stacks": row.get("total_stacks"),
+                }
+            )
             continue
         missing = [field for field in contract.required_event_fields if row.get(field) is None]
         if missing:
@@ -170,6 +195,35 @@ def normalize_single_encounter_aura_timeline(
             )
         )
 
+    if window_start_ms is not None and baseline is not None:
+        active_targets = int(baseline.get("active_targets") or 0)
+        total_stacks = int(baseline.get("total_stacks") or 0)
+        if active_targets == 1 and events and events[0].event_type == "REMOVED":
+            first = events[0]
+            events.append(
+                CanonicalAuraEvent(
+                    encounter_id=encounter_id,
+                    timestamp_ms=window_start_ms,
+                    event_type="APPLIED",
+                    source_actor_id=first.source_actor_id,
+                    target_actor_id=first.target_actor_id,
+                    spell_id=spell_id,
+                    stacks=total_stacks or 1,
+                    event_ordinal=-1,
+                    raw_event_type="window_baseline_active",
+                    raw_path="/series/0",
+                )
+            )
+        elif active_targets > 0:
+            rejects.append(
+                {
+                    "path": "/series/0",
+                    "reason": "ambiguous_active_window_baseline",
+                    "active_targets": active_targets,
+                    "total_stacks": total_stacks,
+                }
+            )
+
     events.sort(key=lambda item: (item.timestamp_ms, item.event_ordinal))
     return {
         "mapping_id": contract.mapping_id,
@@ -179,7 +233,10 @@ def normalize_single_encounter_aura_timeline(
         "source_report_id": report_id,
         "source_encounter_id": str(source_encounter_id),
         "encounter_id": encounter_id,
-        "duration_ms": duration_ms,
+        "observed_duration_ms": observed_duration_ms,
+        "full_duration_ms": full_duration_ms,
+        "window_start_ms": window_start_ms,
+        "window_end_ms": window_end_ms,
         "spell_id": spell_id,
         "events": events,
         "ignored": ignored,
@@ -250,9 +307,17 @@ def validate_single_encounter_aura_capture(
         source_encounter_id=source_encounter_id,
         contract=contract,
     )
+    window_end_ms = normalized["window_end_ms"]
+    encounter_end_ms = None
+    interval_end_boundaries = None
+    if window_end_ms is None:
+        encounter_end_ms = {normalized["encounter_id"]: normalized["full_duration_ms"]}
+    else:
+        interval_end_boundaries = {normalized["encounter_id"]: (window_end_ms, "window_end")}
     state = reconstruct_aura_intervals(
         normalized["events"],
-        encounter_end_ms={normalized["encounter_id"]: normalized["duration_ms"]},
+        encounter_end_ms=encounter_end_ms,
+        interval_end_boundaries=interval_end_boundaries,
     )
     actual = [
         {
@@ -263,6 +328,7 @@ def validate_single_encounter_aura_capture(
             "ended_at_ms": interval.ended_at_ms,
             "max_stack_count": interval.max_stack_count,
             "termination_reason": interval.termination_reason,
+            "metadata_json": interval.metadata_json,
         }
         for interval in state.intervals
     ]
@@ -284,7 +350,7 @@ def validate_single_encounter_aura_capture(
         {
             key: value
             for key, value in interval.items()
-            if key != "termination_reason"
+            if key not in {"termination_reason", "metadata_json"}
         }
         for interval in actual
     ]
@@ -298,7 +364,10 @@ def validate_single_encounter_aura_capture(
         "source_encounter_id": normalized["source_encounter_id"],
         "encounter_id": normalized["encounter_id"],
         "spell_id": normalized["spell_id"],
-        "duration_ms": normalized["duration_ms"],
+        "observed_duration_ms": normalized["observed_duration_ms"],
+        "full_duration_ms": normalized["full_duration_ms"],
+        "window_start_ms": normalized["window_start_ms"],
+        "window_end_ms": normalized["window_end_ms"],
         "event_count": len(normalized["events"]),
         "ignored": normalized["ignored"],
         "rejects": normalized["rejects"],
