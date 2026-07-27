@@ -24,6 +24,8 @@ class AuraInterval:
     removal_ordinal: int | None
     refresh_count: int
     termination_reason: str
+    state_status: str = "closed"
+    metadata_json: dict[str, object] | None = None
     reconstruction_version: str = RECONSTRUCTION_VERSION
 
     def to_dict(self) -> dict[str, object]:
@@ -59,10 +61,36 @@ def reconstruct_aura_intervals(
     active: dict[tuple[str, str, str | None, str], AuraInterval] = {}
     completed: list[AuraInterval] = []
     anomalies: list[dict[str, object]] = []
+    seen_events: set[tuple[object, ...]] = set()
     ordered = sorted(events, key=lambda item: (item.encounter_id, item.timestamp_ms, item.event_ordinal))
     for event in ordered:
+        event_signature = (
+            event.encounter_id,
+            event.timestamp_ms,
+            event.event_type,
+            event.source_actor_id,
+            event.target_actor_id,
+            event.spell_id,
+            event.stacks,
+        )
+        if event_signature in seen_events:
+            anomalies.append(
+                {
+                    "reason": "duplicate_event",
+                    "event_ordinal": event.event_ordinal,
+                    "path": event.raw_path,
+                }
+            )
+            continue
+        seen_events.add(event_signature)
         if not event.target_actor_id:
-            anomalies.append({"reason": "missing_target", "event_ordinal": event.event_ordinal, "path": event.raw_path})
+            anomalies.append(
+                {
+                    "reason": "missing_target",
+                    "event_ordinal": event.event_ordinal,
+                    "path": event.raw_path,
+                }
+            )
             continue
         key = (event.encounter_id, event.spell_id, event.source_actor_id, event.target_actor_id)
         current = active.get(key)
@@ -71,6 +99,7 @@ def reconstruct_aura_intervals(
                 current.ended_at_ms = event.timestamp_ms
                 current.removal_ordinal = event.event_ordinal
                 current.termination_reason = "reapplied"
+                current.state_status = "closed"
                 completed.append(current)
             stacks = event.stacks if event.stacks is not None else 1
             active[key] = AuraInterval(
@@ -87,10 +116,18 @@ def reconstruct_aura_intervals(
                 removal_ordinal=None,
                 refresh_count=0,
                 termination_reason="active",
+                state_status="active",
+                metadata_json={},
             )
         elif event.event_type == "REFRESH":
             if current is None:
-                anomalies.append({"reason": "refresh_without_apply", "event_ordinal": event.event_ordinal, "path": event.raw_path})
+                anomalies.append(
+                    {
+                        "reason": "refresh_without_apply",
+                        "event_ordinal": event.event_ordinal,
+                        "path": event.raw_path,
+                    }
+                )
                 continue
             current.refresh_count += 1
             if event.stacks is not None:
@@ -98,29 +135,63 @@ def reconstruct_aura_intervals(
                 current.max_stack_count = max(current.max_stack_count or event.stacks, event.stacks)
         elif event.event_type == "STACK_CHANGE":
             if current is None:
-                anomalies.append({"reason": "stack_without_apply", "event_ordinal": event.event_ordinal, "path": event.raw_path})
+                anomalies.append(
+                    {
+                        "reason": "stack_without_apply",
+                        "event_ordinal": event.event_ordinal,
+                        "path": event.raw_path,
+                    }
+                )
                 continue
             current.stack_count = event.stacks
             if event.stacks is not None:
                 current.max_stack_count = max(current.max_stack_count or event.stacks, event.stacks)
         elif event.event_type == "REMOVED":
             if current is None:
-                anomalies.append({"reason": "remove_without_apply", "event_ordinal": event.event_ordinal, "path": event.raw_path})
+                anomalies.append(
+                    {
+                        "reason": "remove_without_apply",
+                        "event_ordinal": event.event_ordinal,
+                        "path": event.raw_path,
+                    }
+                )
                 continue
             current.ended_at_ms = event.timestamp_ms
             current.removal_ordinal = event.event_ordinal
             current.termination_reason = "removed"
+            current.state_status = "closed"
             completed.append(current)
             del active[key]
         else:
-            anomalies.append({"reason": "unsupported_event_type", "event_ordinal": event.event_ordinal, "value": event.event_type})
+            anomalies.append(
+                {
+                    "reason": "unsupported_event_type",
+                    "event_ordinal": event.event_ordinal,
+                    "value": event.event_type,
+                }
+            )
     ends = encounter_end_ms or {}
     for current in active.values():
         if current.encounter_id in ends:
-            current.ended_at_ms = ends[current.encounter_id]
-            current.termination_reason = "encounter_end"
+            end_ms = ends[current.encounter_id]
+            if end_ms >= current.started_at_ms:
+                current.ended_at_ms = end_ms
+                current.termination_reason = "encounter_end"
+                current.state_status = "closed"
+            else:
+                current.termination_reason = "unknown_termination"
+                current.state_status = "incomplete"
+                anomalies.append(
+                    {
+                        "reason": "encounter_end_before_apply",
+                        "encounter_id": current.encounter_id,
+                        "application_ordinal": current.application_ordinal,
+                        "encounter_end_ms": end_ms,
+                    }
+                )
         else:
-            current.termination_reason = "open"
+            current.termination_reason = "unknown_termination"
+            current.state_status = "incomplete"
         completed.append(current)
     completed.sort(key=lambda item: (item.encounter_id, item.started_at_ms, item.application_ordinal))
     return AuraStateResult(tuple(completed), tuple(anomalies))
