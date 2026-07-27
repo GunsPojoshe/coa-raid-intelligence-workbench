@@ -6,7 +6,7 @@ from typing import Iterable
 
 from .canonical import CanonicalAuraEvent
 
-RECONSTRUCTION_VERSION = "aura-state-v1"
+RECONSTRUCTION_VERSION = "aura-state-v2"
 
 
 @dataclass(slots=True)
@@ -57,6 +57,7 @@ def reconstruct_aura_intervals(
     events: Iterable[CanonicalAuraEvent],
     *,
     encounter_end_ms: dict[str, int] | None = None,
+    interval_end_boundaries: dict[str, tuple[int, str]] | None = None,
 ) -> AuraStateResult:
     active: dict[tuple[str, str, str | None, str], AuraInterval] = {}
     completed: list[AuraInterval] = []
@@ -102,6 +103,12 @@ def reconstruct_aura_intervals(
                 current.state_status = "closed"
                 completed.append(current)
             stacks = event.stacks if event.stacks is not None else 1
+            metadata: dict[str, object] = {}
+            if event.raw_event_type == "window_baseline_active":
+                metadata = {
+                    "start_reason": "window_start",
+                    "boundary_inferred": True,
+                }
             active[key] = AuraInterval(
                 interval_id=_interval_id(event),
                 encounter_id=event.encounter_id,
@@ -117,7 +124,7 @@ def reconstruct_aura_intervals(
                 refresh_count=0,
                 termination_reason="active",
                 state_status="active",
-                metadata_json={},
+                metadata_json=metadata,
             )
         elif event.event_type == "REFRESH":
             if current is None:
@@ -170,23 +177,32 @@ def reconstruct_aura_intervals(
                     "value": event.event_type,
                 }
             )
-    ends = encounter_end_ms or {}
+
+    ends = {
+        encounter_id: (end_ms, "encounter_end")
+        for encounter_id, end_ms in (encounter_end_ms or {}).items()
+    }
+    ends.update(interval_end_boundaries or {})
     for current in active.values():
-        if current.encounter_id in ends:
-            end_ms = ends[current.encounter_id]
+        boundary = ends.get(current.encounter_id)
+        if boundary is not None:
+            end_ms, reason = boundary
             if end_ms >= current.started_at_ms:
                 current.ended_at_ms = end_ms
-                current.termination_reason = "encounter_end"
+                current.termination_reason = reason
                 current.state_status = "closed"
+                metadata = current.metadata_json or {}
+                metadata["end_reason"] = reason
+                current.metadata_json = metadata
             else:
                 current.termination_reason = "unknown_termination"
                 current.state_status = "incomplete"
                 anomalies.append(
                     {
-                        "reason": "encounter_end_before_apply",
+                        "reason": f"{reason}_before_apply",
                         "encounter_id": current.encounter_id,
                         "application_ordinal": current.application_ordinal,
-                        "encounter_end_ms": end_ms,
+                        "boundary_end_ms": end_ms,
                     }
                 )
         else:
