@@ -1,0 +1,5 @@
+ALTER TABLE raid_plan ADD COLUMN plan_name VARCHAR;
+ALTER TABLE raid_slot ADD COLUMN player_name VARCHAR;
+ALTER TABLE raid_slot ADD COLUMN class_code VARCHAR;
+ALTER TABLE raid_slot ADD COLUMN spec_code VARCHAR;
+ALTER TABLE raid_slot ADD COLUMN role VARCHAR;
