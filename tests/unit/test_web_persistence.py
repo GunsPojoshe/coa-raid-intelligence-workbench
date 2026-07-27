@@ -149,3 +149,18 @@ def test_save_button_has_explicit_non_conflicting_binding(tmp_path: Path) -> Non
     assert "data.action==='updated'" in html
     assert "classList.toggle('current'" in html
     assert "serialized===lastPreviewPayload" in html
+
+
+def test_analytics_ui_is_compact_filterable_and_actionable(tmp_path: Path) -> None:
+    html = client(tmp_path).get("/").text
+    assert '<details class="section-card" id="diagnosticsSection">' in html
+    assert 'data-filter="critical"' in html
+    assert 'data-filter="important"' in html
+    assert 'id="showMoreMissing"' in html
+    assert 'class="apply-advisor"' in html
+    assert "function applyRecommendation(classCode,specCode)" in html
+    assert "function firstFreeActiveRow()" in html
+    assert "row.querySelector('.player').focus()" in html
+    assert "score:x.score" not in html
+    assert "new_effect_count:x.new_effect_count" in html
+    assert "class_count:data.classes.length" in html
