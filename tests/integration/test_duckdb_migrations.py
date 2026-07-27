@@ -14,6 +14,7 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
     assert apply_migrations(database, root / "migrations") == [
         "0001_initial",
         "0002_web_plan_fields",
+        "0003_log_evidence_refactor",
     ]
     assert apply_migrations(database, root / "migrations") == []
     with duckdb.connect(str(database)) as connection:
@@ -24,6 +25,24 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         raid_slot_columns = {
             row[0] for row in connection.execute("DESCRIBE raid_slot").fetchall()
         }
+        effect_columns = {
+            row[0] for row in connection.execute("DESCRIBE effect_family").fetchall()
+        }
+        capability_columns = {
+            row[0] for row in connection.execute("DESCRIBE provider_capability").fetchall()
+        }
     assert {"source_endpoint", "raw_object", "raid_plan", "raid_slot", "job"} <= tables
+    assert {
+        "observation_batch",
+        "aura_observation",
+        "aura_state_interval",
+        "mechanic_hypothesis",
+        "hypothesis_evidence_link",
+        "evidence_weight_policy",
+        "mechanic_inference_run",
+        "source_route_probe",
+    } <= tables
     assert "plan_name" in raid_plan_columns
     assert {"player_name", "class_code", "spec_code", "role"} <= raid_slot_columns
+    assert {"trust_status", "source_kind"} <= effect_columns
+    assert {"trust_status", "source_kind"} <= capability_columns
