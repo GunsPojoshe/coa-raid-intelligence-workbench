@@ -8,6 +8,7 @@ from .armory_capture import (
     capture_character_build_pages,
 )
 from .har_inventory import inspect_archived_payload, inventory_har
+from .http_read import read_response_resilient
 from .probe import ProbeResult, probe_registry_route, probe_result_to_dict
 from .raw_archive import (
     RawArchive,
@@ -26,6 +27,7 @@ from .source_registry import (
 )
 
 _armory_capture._api_route_candidates = discover_api_route_candidates
+_armory_capture._read_response = read_response_resilient
 
 __all__ = [
     "BuildPageCapture",
@@ -47,6 +49,7 @@ __all__ = [
     "load_source_registry",
     "probe_registry_route",
     "probe_result_to_dict",
+    "read_response_resilient",
     "request_key_from_url",
     "sanitize_url",
     "schema_fingerprint",
