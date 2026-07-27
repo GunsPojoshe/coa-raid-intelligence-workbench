@@ -12,7 +12,11 @@ def main() -> int:
         description="Validate one single-encounter aura timeline against archived source intervals."
     )
     parser.add_argument("--timeline", required=True, help="Archived timeline payload hash or path")
-    parser.add_argument("--reference", required=True, help="Archived debuff_sources payload hash or path")
+    parser.add_argument(
+        "--reference",
+        required=True,
+        help="Archived debuff_sources payload hash or path",
+    )
     parser.add_argument("--encounter-id", required=True, help="Source encounter ID")
     parser.add_argument(
         "--mapping",
