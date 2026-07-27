@@ -9,13 +9,15 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-from urllib.parse import parse_qsl, urlsplit
+from urllib.parse import SplitResult, parse_qsl, urlsplit
 
 from coa_workbench.normalizer import inspect_payload
 
 from .raw_archive import RawArchive, request_key_from_url
 
 INVENTORY_SCHEMA_VERSION = 1
+_ALLOWED_URL_SCHEMES = {"http", "https"}
+_NON_HTTP_ROUTE = "[non-http-url]"
 
 
 def _generated_at() -> str:
@@ -86,6 +88,12 @@ def _json_kind(payload: Any) -> str:
     return "string"
 
 
+def _safe_route_path(parts: SplitResult) -> str:
+    if parts.scheme.casefold() not in _ALLOWED_URL_SCHEMES:
+        return _NON_HTTP_ROUTE
+    return parts.path or "/"
+
+
 @dataclass(slots=True)
 class HarInventoryEntry:
     ordinal: int
@@ -125,6 +133,7 @@ def inventory_har(
         raise ValueError("HAR log.entries must be an array")
     inventory: list[HarInventoryEntry] = []
     seen_payload_hashes: set[str] = set()
+    normalized_allowed_host = allowed_host.casefold()
     for ordinal, original in enumerate(entries):
         item = HarInventoryEntry(ordinal=ordinal)
         inventory.append(item)
@@ -140,10 +149,18 @@ def inventory_har(
             if not isinstance(method, str) or not isinstance(url, str):
                 raise ValueError("request method or URL is invalid")
             parts = urlsplit(url)
+            scheme = parts.scheme.casefold()
             item.method = method.upper()
-            item.route_path = parts.path or "/"
-            item.query_keys = sorted({key for key, _ in parse_qsl(parts.query, keep_blank_values=True)})
-            if parts.hostname != allowed_host:
+            item.route_path = _safe_route_path(parts)
+            if scheme not in _ALLOWED_URL_SCHEMES:
+                item.query_keys = []
+                item.skip_reason = "unsupported_url_scheme"
+                continue
+            item.query_keys = sorted(
+                {key for key, _ in parse_qsl(parts.query, keep_blank_values=True)}
+            )
+            hostname = parts.hostname.casefold() if parts.hostname else None
+            if hostname != normalized_allowed_host:
                 item.skip_reason = "hostname_not_allowed"
                 continue
             status = response.get("status")
