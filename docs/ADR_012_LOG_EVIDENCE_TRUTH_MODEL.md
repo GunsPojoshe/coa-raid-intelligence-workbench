@@ -69,7 +69,24 @@ Evidence weight is versioned and includes:
 
 The initial policy uses a 90-day half-life. This is an implementation default, not a game truth, and must remain configurable and versioned.
 
-### 5. Route discovery
+### 5. Effect descriptions and strategic criticality
+
+Source-provided spell descriptions, tooltip text, icons and display names are retained as versioned semantic observations with provenance. They are important evidence for the stated effect and magnitude, but they are not by themselves proof of runtime behaviour.
+
+Strategic criticality is evaluated from separate evidence dimensions:
+
+- the explicit effect and magnitude stated by the source description;
+- observed usage frequency among high-performing guilds and encounters;
+- the number and identity of classes/specs able to provide the effect;
+- the presence of exact or similar alternative effects;
+- measured stacking, overwrite, refresh and coexistence behaviour;
+- the effect's observed uptime, target coverage and execution reliability.
+
+For example, broad adoption of an effect described as an attack-power increase supports a high-criticality hypothesis, but does not alone prove the stated magnitude, universal applicability or mandatory status. A similar effect is not considered equivalent until its runtime relationship is tested. Exact stacking, partial stacking, overwrite and mutual-exclusion outcomes remain distinct hypotheses.
+
+Planner criticality and composition recommendations remain unavailable until the relevant semantics and coexistence behaviour reach the required trust state.
+
+### 6. Route discovery
 
 Collector routes are not production-ready merely because they were observed once. Each route requires:
 
@@ -83,7 +100,7 @@ Collector routes are not production-ready merely because they were observed once
 
 Unverified routes are rejected by the collector registry.
 
-### 6. Aura State Engine target
+### 7. Aura State Engine target
 
 The canonical engine reconstructs per-target intervals from apply/refresh/remove events and retains:
 
