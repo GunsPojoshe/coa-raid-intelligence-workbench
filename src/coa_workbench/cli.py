@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import platform
@@ -19,6 +20,13 @@ from coa_workbench.collector import (
     probe_result_to_dict,
 )
 from coa_workbench.config import load_raid_profiles
+from coa_workbench.normalizer import (
+    NormalizationMapping,
+    inspect_payload,
+    normalize_payload,
+    reconstruct_aura_intervals,
+    structure_fingerprint,
+)
 from coa_workbench.storage import DuckDBUnavailableError, apply_migrations
 
 app = typer.Typer(no_args_is_help=True, add_completion=False)
@@ -159,6 +167,62 @@ def import_har(
             indent=2,
         )
     )
+
+
+@app.command("inspect-json")
+def inspect_json(
+    path: Path = typer.Argument(..., exists=True, dir_okay=False, readable=True),
+    output: Path | None = typer.Option(None, "--output", dir_okay=False),
+) -> None:
+    """Inspect JSON structure and propose collection candidates without assigning semantics."""
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    inspection = inspect_payload(payload)
+    result = inspection.to_dict()
+    if output:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(
+            json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+    typer.echo(json.dumps(result, ensure_ascii=False, indent=2))
+
+
+@app.command("normalize-json")
+def normalize_json(
+    path: Path = typer.Argument(..., exists=True, dir_okay=False, readable=True),
+    mapping_path: Path = typer.Option(..., "--mapping", exists=True, dir_okay=False),
+    output: Path | None = typer.Option(None, "--output", dir_okay=False),
+) -> None:
+    """Normalize one JSON payload through an explicitly verified mapping and rebuild aura state."""
+    raw_bytes = path.read_bytes()
+    payload = json.loads(raw_bytes)
+    fingerprint = structure_fingerprint(payload)
+    mapping = NormalizationMapping.from_path(mapping_path)
+    batch = normalize_payload(payload, mapping, schema_fingerprint=fingerprint)
+    encounter_ends = {
+        str(record["encounter_id"]): int(record["duration_ms"])
+        for record in batch.encounters
+        if record.get("duration_ms") not in (None, "")
+    }
+    aura_state = reconstruct_aura_intervals(batch.aura_events, encounter_end_ms=encounter_ends)
+    result = {
+        "payload_hash": hashlib.sha256(raw_bytes).hexdigest(),
+        "schema_fingerprint": fingerprint,
+        "canonical": batch.to_dict(),
+        "aura_state": {
+            "interval_count": len(aura_state.intervals),
+            "anomaly_count": len(aura_state.anomalies),
+            "intervals": [item.to_dict() for item in aura_state.intervals],
+            "anomalies": list(aura_state.anomalies),
+        },
+    }
+    if output:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(
+            json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+    typer.echo(json.dumps(result, ensure_ascii=False, indent=2))
 
 
 @app.command("serve")
