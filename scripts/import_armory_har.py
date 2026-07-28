@@ -60,9 +60,7 @@ def main() -> int:
     )
 
     selected = [
-        entry
-        for entry in inventory["entries"]
-        if _is_armory_route(entry.get("route_path"))
+        entry for entry in inventory["entries"] if _is_armory_route(entry.get("route_path"))
     ]
     successful_json = [
         entry
@@ -72,9 +70,7 @@ def main() -> int:
         and entry.get("candidate_label") in {"json_object", "json_array"}
         and entry.get("raw_id")
     ]
-    routes = sorted(
-        {str(entry["route_path"]) for entry in selected if entry.get("route_path")}
-    )
+    routes = sorted({str(entry["route_path"]) for entry in selected if entry.get("route_path")})
     fingerprints = sorted(
         {
             str(entry["schema_fingerprint"])
