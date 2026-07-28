@@ -37,6 +37,7 @@ class ArmoryApiCaptureResult:
     character_id: int | str | None
     character_class: str | None
     has_armory: bool | None
+    identity_source: str | None
     observations: tuple[ArmoryApiObservation, ...]
 
 
@@ -143,6 +144,47 @@ def _character_identity(payload: Any) -> tuple[int | str | None, str | None, boo
     return character_id, character_class, has_armory
 
 
+def _search_identity(
+    payload: Any,
+    *,
+    character: str,
+    realm: str,
+) -> tuple[int | str | None, str | None]:
+    if not isinstance(payload, dict):
+        return None, None
+    rows = payload.get("characters")
+    if not isinstance(rows, list):
+        return None, None
+
+    expected_name = character.casefold()
+    expected_realm = realm.casefold()
+    matches: list[dict[str, Any]] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        name = row.get("name")
+        row_realm = row.get("realm")
+        if not isinstance(name, str) or name.casefold() != expected_name:
+            continue
+        if not isinstance(row_realm, str) or row_realm.casefold() != expected_realm:
+            continue
+        matches.append(row)
+
+    if len(matches) != 1:
+        return None, None
+    match = matches[0]
+    candidate_id = match.get("id")
+    if not isinstance(candidate_id, (int, str)) or isinstance(candidate_id, bool):
+        return None, None
+    candidate_class = match.get("class")
+    character_class = (
+        candidate_class.strip()
+        if isinstance(candidate_class, str) and candidate_class.strip()
+        else None
+    )
+    return candidate_id, character_class
+
+
 def capture_armory_api(
     registry: SourceRegistry,
     archive: RawArchive,
@@ -180,11 +222,37 @@ def capture_armory_api(
     observations.append(by_name)
 
     character_id, character_class, has_armory = _character_identity(by_name_payload)
+    identity_source: str | None = "by_name" if character_id is not None else None
+
+    if character_id is None and has_armory is not False:
+        search_url = _api_url(
+            registry.base_url,
+            "/api/characters/search",
+            [("q", prepared_character), ("limit", "20")],
+        )
+        search, search_payload = _capture_json_observation(
+            registry=registry,
+            archive=archive,
+            observation_kind="character_search",
+            url=search_url,
+            timeout_seconds=timeout_seconds,
+            opener=opener,
+        )
+        observations.append(search)
+        character_id, character_class = _search_identity(
+            search_payload,
+            character=prepared_character,
+            realm=prepared_realm,
+        )
+        if character_id is not None:
+            identity_source = "character_search"
+
     if character_id is None or has_armory is False:
         return ArmoryApiCaptureResult(
             character_id=character_id,
             character_class=character_class,
             has_armory=has_armory,
+            identity_source=identity_source,
             observations=tuple(observations),
         )
 
@@ -229,6 +297,7 @@ def capture_armory_api(
         character_id=character_id,
         character_class=character_class,
         has_armory=has_armory,
+        identity_source=identity_source,
         observations=tuple(observations),
     )
 
@@ -238,6 +307,7 @@ def armory_api_capture_to_dict(result: ArmoryApiCaptureResult) -> dict[str, Any]
         "character_id": result.character_id,
         "character_class": result.character_class,
         "has_armory": result.has_armory,
+        "identity_source": result.identity_source,
         "observations": [
             {
                 "observation_kind": item.observation_kind,
