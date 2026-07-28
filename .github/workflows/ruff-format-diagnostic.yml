@@ -1,0 +1,29 @@
+name: Ruff format diagnostic
+
+on:
+  push:
+    branches:
+      - e3/real-log-capture
+    paths:
+      - .github/workflows/ruff-format-diagnostic.yml
+      - scripts/diagnose_armory_access.py
+      - scripts/import_armory_har.py
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --frozen --extra dev
+      - run: uv run ruff format scripts/diagnose_armory_access.py scripts/import_armory_har.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ruff-formatted-scripts
+          path: |
+            scripts/diagnose_armory_access.py
+            scripts/import_armory_har.py
+          if-no-files-found: error
