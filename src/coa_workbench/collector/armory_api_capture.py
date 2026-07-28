@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from typing import Any, Callable
 from urllib.parse import quote, urlencode, urljoin
 
-from .http_profile import FETCH_CONTEXT_PROFILE_VERSION, SameOriginHttpSession
+from .http_profile import SameOriginHttpSession
 from .http_read import read_response_resilient
 from .raw_archive import (
     RawArchive,
