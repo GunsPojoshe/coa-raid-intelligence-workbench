@@ -56,6 +56,7 @@ confirmed
 - безопасный probe зарегистрированных маршрутов;
 - неизменяемый raw archive с SHA-256;
 - импорт локального JSON и HAR;
+- безопасный deterministic HAR inventory;
 - schema inspection и fingerprint;
 - versioned normalization mapping;
 - canonical report / encounter / actor / participant / aura events;
@@ -65,9 +66,61 @@ confirmed
 - временные и cohort-веса;
 - разделение глобальной механики и исполнения конкретной гильдии;
 - воспроизводимый verification runner;
-- GitHub Actions для Ubuntu и Windows.
+- GitHub Actions для Ubuntu и Windows;
+- реальный aura checkpoint на encounters `64795` и `64796`;
+- exact comparison reconstructed intervals с `debuff_sources`;
+- SPA HTML/asset capture и API-route discovery;
+- Armory API collector и character-search fallback;
+- безопасный Armory HAR importer;
+- воспроизводимая HTTP access matrix через GitHub Actions.
 
 Инфраструктура доказательности не означает, что реальные игровые механики уже подтверждены. Для этого нужны реальные нормализованные отчёты и независимые повторяемые observations.
+
+## Проверенное наблюдение по HTTP-доступу
+
+Обычный `urllib` profile и только browser-like headers возвращали `403` для:
+
+```text
+/api/reports/public
+/api/characters/search
+/api/armory/by-name/...
+```
+
+Полный same-origin fetch-context profile вернул `200` для всех трёх маршрутов:
+
+```text
+Accept: application/json, text/plain, */*
+Accept-Language: en-US,en;q=0.9
+Cache-Control: no-cache
+Pragma: no-cache
+User-Agent: Chromium-like
+Referer: https://coa.ascensionlogs.gg/
+Sec-Fetch-Dest: empty
+Sec-Fetch-Mode: cors
+Sec-Fetch-Site: same-origin
+```
+
+Проверен полный профиль, но ещё не доказано, какой отдельный header является минимально необходимым и нужна ли cookie, установленная первым успешным API-response. Подробности и ограничения находятся в `docs/PROJECT_STATE.md`.
+
+## Целевой поток автоматического получения логов
+
+Не требуется вручную скачивать и разбирать каждый полный лог.
+
+```text
+public reports discovery
+→ фильтр phase/location/difficulty/category
+→ до 5 reports на категорию
+→ encounters
+→ нужные analytical endpoints
+→ immutable raw archive
+→ fingerprint
+→ endpoint-specific parser
+→ canonical normalization
+```
+
+Предпочтение отдаётся специализированным payloads: report, encounters, roster/combatants, aura timeline/detail/uptimes, casts и debuff sources. Полный event stream используется только когда агрегированные endpoints не позволяют проверить конкретную временную или причинную гипотезу.
+
+Много однотипных raw files ожидаемо. Один versioned parser применяется ко всем payloads совпадающей проверенной схемы. Неизвестный fingerprint отклоняется и отправляется на review.
 
 ## Запуск
 
@@ -133,20 +186,26 @@ uv run pytest
 
 Перед изменением кода агент обязан проверить фактическую ветку, состояние PR, тесты, миграции и соответствие документации реальному коду.
 
+Raw HAR, payloads, DuckDB, browser profiles, cookies, authorization headers и access tokens не коммитятся.
+
 ## Текущий этап
 
-Безопасная инвентаризация реального HAR ведётся в Draft PR №7 из
-`e3/real-log-capture` в `e2/log-evidence-refactor`. Родительская evidence-контрольная точка остаётся
-незавершённой.
+Активная работа ведётся в Draft PR №7 из `e3/real-log-capture` в `e2/log-evidence-refactor`. Родительский PR №3 остаётся Draft.
 
-Контрольная точка требует:
+Ближайший bounded slice:
 
-1. реальный payload CoA Logs;
-2. неизменяемое raw-хранение;
-3. зафиксированный fingerprint;
-4. verified mapping;
-5. нормализованные report, encounter, actors, participants и aura events;
-6. восстановленные интервалы аур;
-7. минимум одну повторяемую механику с независимыми supporting observations;
-8. проверку contradicting evidence;
-9. воспроизводимый результат с provenance.
+1. централизовать проверенный fetch-context profile и persistent same-host cookie jar;
+2. покрыть Armory collector unit tests;
+3. получить real immutable `armory/character`, `captures` и `talent-grid` payloads;
+4. выполнить safe structural inventory и reviewed mappings;
+5. автоматизировать выбор до 5 reports на категорию и сбор необходимых encounter endpoints;
+6. нормализовать полный report/encounter/roster с actors и participants;
+7. повторить evidence checks на других spells/reports и проверить contradicting observations;
+8. запустить полный verifier и CI.
+
+Полное фактическое состояние и handoff-промпт находятся в:
+
+```text
+docs/PROJECT_STATE.md
+docs/CONTINUATION_PROMPT.md
+```
