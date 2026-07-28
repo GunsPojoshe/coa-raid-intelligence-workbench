@@ -2,19 +2,32 @@
 
 These instructions apply to the entire repository. Read them before changing code.
 
+## Canonical context
+
+Read in this order:
+
+1. `AGENTS.md`;
+2. `docs/PROJECT_MASTER_CONTEXT.md`;
+3. `docs/PROJECT_STATE.md`;
+4. `docs/CONTINUATION_PROMPT.md`;
+5. relevant ADR and capture documents.
+
+`PROJECT_MASTER_CONTEXT.md` contains the full product and architecture context. `PROJECT_STATE.md` contains mutable operational facts. Neither replaces checking GitHub, code and CI.
+
 ## Mission
 
 Build a localhost-first raid intelligence system for Classless / Ascension WoW that derives explainable planning recommendations from evidence captured from `coa.ascensionlogs.gg`.
 
-The system keeps these layers separate:
+Keep these layers separate:
 
 1. immutable raw observations;
 2. upstream-derived fields;
 3. canonical normalized events;
-4. locally inferred hypotheses;
-5. supporting and contradicting evidence;
-6. corroborated or confirmed mechanics;
-7. planner scoring and recommendations.
+4. deterministic local reconstruction;
+5. locally inferred hypotheses;
+6. supporting and contradicting evidence;
+7. corroborated or confirmed mechanics;
+8. planner scoring and recommendations.
 
 A combat-log event is an observation. It is not automatic proof of a general game mechanic.
 
@@ -23,52 +36,53 @@ A combat-log event is an observation. It is not automatic proof of a general gam
 Before modifying code:
 
 1. inspect the current branch, HEAD and working tree;
-2. inspect the active pull request and its base branch when available;
-3. read `README.md`, `docs/PROJECT_STATE.md`, `docs/CONTINUATION_PROMPT.md` and relevant ADR files;
-4. compare documented claims with the actual implementation;
-5. inspect the latest CI runs;
-6. run the available verification commands;
-7. report any discrepancy before extending the analytical model.
+2. inspect the active pull request and base branch;
+3. inspect the latest CI run and exact failures;
+4. read the canonical context documents;
+5. compare documented claims with actual implementation;
+6. run available verification commands;
+7. report discrepancies before extending the analytical model.
 
-Do not trust commit counts, test counts, branch state or implementation claims from old prompts without checking them.
+Do not trust old commit counts, test counts, branch state or implementation claims without checking them.
 
 ## Current milestone
 
-The active real-log capture branch is `e3/real-log-capture` and its pull request is PR #7 into `e2/log-evidence-refactor`.
+The active branch is `e3/real-log-capture`, PR #7 into `e2/log-evidence-refactor`.
 
-The parent evidence PR is PR #3 from `e2/log-evidence-refactor` into `main`. Both remain Draft until their acceptance criteria are met unless the user explicitly changes this instruction.
+The parent evidence branch is `e2/log-evidence-refactor`, PR #3 into `main`.
 
-The current bounded implementation sequence is:
+Both remain Draft until their acceptance criteria are met unless the user explicitly changes this instruction.
 
-1. centralize the verified same-origin fetch-context HTTP profile;
-2. keep one persistent cookie jar/opener for a same-host request chain;
-3. add Armory HTTP and collector unit tests;
-4. repeat real Armory capture for detail, captures and talent-grid payloads;
-5. inventory and fingerprint those payloads before mapping;
-6. automate report discovery and bounded endpoint capture;
-7. normalize a complete real report/encounter/roster slice;
+Current bounded sequence:
+
+1. restore green Ruff/CI baseline;
+2. implement endpoint-isolated and progressive Armory capture;
+3. capture missing real `character` and `talent-grid` payloads;
+4. inventory and fingerprint those payloads;
+5. create reviewed mappings only after structural review;
+6. automate bounded report discovery;
+7. normalize a complete report/encounter/roster slice;
 8. expand supporting and contradicting evidence;
-9. run the full verifier and cross-platform CI.
+9. integrate only corroborated/confirmed mechanics into planner scoring.
 
 Update this section when the project moves to a new branch or phase.
 
 ## Source and data-trust rules
 
-- `coa.ascensionlogs.gg` is the primary source of observations.
+- `coa.ascensionlogs.gg` is the primary observation source.
 - Never invent source routes, request parameters, JSON fields, event types, spell mappings, class mappings or pagination behavior.
 - Probe and fingerprint a real payload before creating a mapping.
 - Normalization requires an explicitly verified mapping and a matching schema fingerprint.
 - Keep `raw_log`, `upstream_derived`, `companion_addon`, `local_inference` and `manual_override` provenance distinct.
-- Preserve contradicting evidence. Never delete it because a preferred hypothesis exists.
-- Keep global game mechanics separate from guild and individual-player execution quality.
-- Recent evidence may receive more weight, but old observations remain stored.
+- Preserve contradicting evidence.
+- Keep global mechanics separate from guild and player execution.
 - Only `corroborated` and `confirmed` mechanics may participate in canonical planner scoring.
-- Historical static catalogs are non-canonical and must not enter planner scoring.
-- A verified normalizer behavior does not by itself corroborate a game mechanic.
+- Historical static catalogs are `legacy_unverified` and non-canonical.
+- A verified normalizer behavior does not corroborate a gameplay mechanic.
 
-## Verified HTTP-access finding
+## Verified HTTP finding
 
-The following full request profile has been observed to return HTTP 200 for public reports, character search and Armory by-name routes:
+The full versioned request profile `coa-fetch-context-v1` has returned HTTP 200 for public reports, character search and Armory by-name routes:
 
 ```text
 Accept: application/json, text/plain, */*
@@ -82,23 +96,21 @@ Sec-Fetch-Mode: cors
 Sec-Fetch-Site: same-origin
 ```
 
-Do not overstate this result:
+Do not overstate it:
 
-- only the complete profile and tested sequence are verified;
-- the minimum required subset is not yet isolated;
-- the diagnostic sequence requested public reports before the Armory endpoints;
-- one cookie existed after the first successful API response;
-- it is not yet proven whether Armory succeeds as the first request in a fresh session;
-- do not describe the source as authorization-only, browser-only or TLS-fingerprint-only based on earlier 403 responses.
+- only the complete profile is verified;
+- the minimum required subset is unknown;
+- cookie and request-order dependencies are not isolated;
+- Armory-first behavior in a completely fresh session is not proven;
+- old 403 responses do not prove authorization-only, browser-only or TLS-fingerprint-only access.
 
-When implementing the profile:
+Implementation requirements:
 
-- version it;
-- use one persistent same-host session/opener;
-- keep cookies in memory only;
-- never log or archive cookie values;
-- record only profile version and safe header names;
-- retain the HAR path only as a fallback, not the primary requirement.
+- one persistent same-origin session/opener;
+- in-memory cookies only;
+- no cookie or header values in output metadata;
+- record profile version and safe header names;
+- HAR remains fallback, not a primary requirement.
 
 ## Raw data and privacy
 
@@ -106,9 +118,9 @@ When implementing the profile:
 - Repeated retrieval of the same payload creates another observation, not another payload body.
 - Never commit cookies, authorization headers, access tokens or unsanitized HAR files.
 - Never commit browser profiles, local DuckDB files or private raw payloads.
-- Do not commit private player information unless it is intentionally sanitized and documented as a test fixture.
-- Do not modify an archived raw payload to make a test pass.
-- Cookies may exist only in process memory and must not appear in output metadata.
+- Never commit absolute local paths containing usernames.
+- Do not modify archived raw payloads to make tests pass.
+- Cookies may exist only in process memory.
 
 ## Automated report capture
 
@@ -116,31 +128,31 @@ The intended design is not manual download and per-file parsing.
 
 ```text
 public report discovery
-→ verified filters and pagination
-→ bounded selection, normally up to 5 reports per category
-→ encounter discovery
-→ selected analytical endpoints
-→ immutable archive
-→ fingerprint
-→ endpoint/schema parser
-→ canonical normalization
+-> verified filters and pagination
+-> bounded deterministic selection, normally up to 5 reports per category
+-> encounter discovery
+-> selected analytical endpoints
+-> immutable archive
+-> fingerprint
+-> endpoint/schema parser
+-> canonical normalization
 ```
 
 Prefer specialized payloads over a full event stream. Download the full event stream only when compact endpoint data cannot test the current temporal or causal hypothesis.
 
-Many similar raw files are expected. Implement one versioned parser per reviewed endpoint/schema, not one parser per file. Unknown fingerprints must be rejected and queued for review.
+Many similar raw files are expected. Implement one versioned parser per reviewed endpoint/schema. Unknown fingerprints must be rejected and queued for review.
 
 ## Database migrations
 
-- Never edit a migration that has already been published to branch history.
+- Never edit a migration already published to branch history.
 - Add a new migration for every schema correction.
 - Test migrations on a clean temporary DuckDB database.
-- Test migration repeatability and checksum behavior.
+- Test repeatability and checksum behavior.
 - Keep migrations deterministic and independent of external network access.
 
 ## Aura State Engine
 
-Before building scope, overwrite, stacking or order-sensitive inference, verify at least:
+Before building scope, overwrite, stacking or order-sensitive inference, verify:
 
 - normal apply/remove;
 - refresh;
@@ -151,22 +163,34 @@ Before building scope, overwrite, stacking or order-sensitive inference, verify 
 - two sources;
 - two targets;
 - encounter-end closure;
-- observed-window start and end boundaries.
+- observed-window boundaries.
 
 Do not silently discard anomalies. Return or persist them with deterministic reason codes.
 
-The confirmed technical aura checkpoint for `Ninja's Focus` verifies normalizer and interval reconstruction behavior only. It does not confirm the effect's numeric description, stacking, overwrite, provider equivalence or strategic criticality.
+The real `Ninja's Focus` checkpoints verify normalizer and interval reconstruction behavior only. They do not confirm numeric effect, stacking, overwrite, provider equivalence or strategic criticality.
+
+## Collector development rules
+
+- Live-network tests must not be unit tests.
+- Use deterministic fake openers/responses for unit coverage.
+- Use bounded real capture only after deterministic tests pass.
+- Prefer endpoint-isolated capture over a long all-or-nothing chain.
+- Write progressive safe result state after each endpoint.
+- Make capture resumable where practical.
+- Do not re-fetch already archived successful payloads without a reason.
+- Treat HTTP status and completed body capture as separate facts.
+- Preserve transport warnings without treating partial invalid bytes as valid evidence.
 
 ## Development scope
 
 - Complete one bounded analytical slice at a time.
 - Do not mix unrelated UI redesign with evidence-pipeline work.
-- Do not perform broad refactors unless required by the current acceptance criteria.
-- Do not create speculative CoA Logs mappings or mechanics to unblock development.
+- Do not perform broad refactors unless required by current acceptance criteria.
+- Do not create speculative CoA Logs mappings or mechanics.
 - Heavy analytics belongs in Python, not frontend JavaScript.
 - Algorithms, mappings, policies, HTTP profiles and inference outputs must be versioned.
-- Results must carry provenance and enough identifiers to reproduce them.
-- Temporary diagnostic workflows should be removed or reduced to manual dispatch after their behavior is integrated into tested production code.
+- Results must carry provenance and reproducibility identifiers.
+- Temporary diagnostic workflows should become tested production code or manual-only probes.
 
 ## Required verification
 
@@ -182,56 +206,53 @@ Run the repository verifier:
 uv run python scripts/verify_repo.py
 ```
 
-Run change-specific tests when the full verifier does not isolate the changed behavior.
+Run change-specific tests when the verifier does not isolate changed behavior.
 
-For migration or storage changes, initialize a clean temporary database and run initialization again to verify repeatability:
+For migration/storage changes, initialize a clean temporary database twice.
 
-```bash
-uv run coa-workbench init-db --database <temporary-path>/coa.duckdb --migrations migrations
-```
+For CLI changes, run `--help` and a deterministic smoke test.
 
-For CLI changes, run the affected command's `--help` and a deterministic smoke test.
+For collector changes, use fake-opener tests and one bounded real capture.
 
-For collector changes, use deterministic fake-opener tests and a bounded real capture. Do not make unit tests depend on live network access.
+Never claim a test passed unless it actually ran. If a check cannot run, state the exact reason and what ran instead.
 
-Never claim a test passed unless it was actually executed. If a check cannot run, state the exact reason and what was run instead.
+Local `uv run --no-sync` targeted tests are useful diagnostics but do not replace locked full verification.
 
 ## Git and concurrent work
 
 - Do not overwrite unrelated user or agent changes.
-- Before committing, re-check the branch and remote state.
-- If the selected base branch changed while a task was running, refresh safely before publishing.
-- Avoid multiple concurrent write tasks touching the same files.
-- Keep commits limited to one coherent block.
-- Leave the working tree clean when a task is complete.
+- Re-check branch and remote state before publishing.
+- Avoid concurrent writes to the same files.
+- Keep commits coherent and bounded.
+- Leave the working tree clean.
+- Do not add private local data to a commit.
 
-## User involvement checkpoint
+## User interaction
 
-Do not request broad manual user testing before the evidence pipeline reaches the agreed checkpoint. Narrow local capture commands are acceptable when the raw data must remain private and the agent has already implemented and verified the corresponding collector path.
+The user prefers:
 
-The full checkpoint requires:
+- autonomous GitHub work;
+- one complete PowerShell block for local actions;
+- full code without omissions;
+- direct answers;
+- no unnecessary manual steps;
+- explicit verified/observed/planned distinctions.
 
-1. a real CoA Logs JSON or HAR captured immutably;
-2. its schema fingerprint recorded;
-3. a verified mapping;
-4. one complete report and encounter normalized;
-5. actors, participants and aura events linked;
-6. aura intervals reconstructed;
-7. at least one repeatable mechanic with independent supporting evidence;
-8. contradicting evidence checked;
-9. the result reproducible and visible with provenance.
+Do not request broad manual testing before the evidence pipeline reaches the agreed checkpoint. Narrow local capture is acceptable when private data must remain local and the corresponding collector path is already implemented and tested.
 
 ## Completion report
 
 Every completed task reports:
 
 - what was verified;
-- what previous claim was false, incomplete or outdated;
+- local-only observations;
+- outdated or incorrect prior claims;
 - files changed;
 - migrations added;
 - exact commands executed;
-- exact test results;
+- exact tests and results;
+- CI state;
 - remaining limitations;
-- the next bounded task.
+- next bounded task.
 
-Do not hide uncertainty and do not describe scaffolding as confirmed game knowledge.
+Do not describe scaffolding, parser correctness or schema mapping as confirmed gameplay knowledge.
