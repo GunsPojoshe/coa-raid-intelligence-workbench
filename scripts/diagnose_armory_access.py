@@ -4,7 +4,6 @@ import gzip
 import hashlib
 import http.cookiejar
 import json
-import ssl
 from dataclasses import asdict, dataclass
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -50,8 +49,7 @@ ENDPOINTS = {
         )
     ),
     "character_search": (
-        "/api/characters/search?"
-        + urlencode({"q": CHARACTER, "limit": "20"})
+        "/api/characters/search?" + urlencode({"q": CHARACTER, "limit": "20"})
     ),
     "armory_by_name": (
         f"/api/armory/by-name/{quote(CHARACTER, safe='')}?"
@@ -115,7 +113,9 @@ def _read_response(response: Any) -> tuple[int | None, str | None, bytes, tuple[
     status = int(getattr(response, "status", response.getcode()))
     headers = response.headers
     content_type = headers.get_content_type() if headers else None
-    header_names = tuple(sorted({str(name).casefold() for name in headers.keys()})) if headers else ()
+    header_names = (
+        tuple(sorted({str(name).casefold() for name in headers.keys()})) if headers else ()
+    )
     body = response.read(MAX_RESPONSE_BYTES + 1)
     if len(body) > MAX_RESPONSE_BYTES:
         body = body[:MAX_RESPONSE_BYTES]
