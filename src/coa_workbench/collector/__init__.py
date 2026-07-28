@@ -14,6 +14,12 @@ from .armory_capture import (
     build_page_capture_to_dict,
     capture_character_build_pages,
 )
+from .armory_endpoint_capture import (
+    ARMORY_ENDPOINT_KINDS,
+    ArmoryEndpointCaptureResult,
+    capture_armory_endpoint,
+    capture_armory_endpoints_progressively,
+)
 from .har_inventory import inspect_archived_payload, inventory_har
 from .http_profile import (
     COA_FETCH_CONTEXT_V1,
@@ -44,8 +50,10 @@ _armory_capture._read_response = read_response_resilient
 _armory_capture._capture_asset = capture_asset_with_archive_fallback
 
 __all__ = [
+    "ARMORY_ENDPOINT_KINDS",
     "ArmoryApiCaptureResult",
     "ArmoryApiObservation",
+    "ArmoryEndpointCaptureResult",
     "BuildPageCapture",
     "COA_FETCH_CONTEXT_V1",
     "EmbeddedJsonCapture",
@@ -63,6 +71,8 @@ __all__ = [
     "build_character_url",
     "build_page_capture_to_dict",
     "capture_armory_api",
+    "capture_armory_endpoint",
+    "capture_armory_endpoints_progressively",
     "capture_asset_with_archive_fallback",
     "capture_character_build_pages",
     "capture_to_dict",
