@@ -5,8 +5,8 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Callable
 from urllib.parse import quote, urlencode, urljoin
-from urllib.request import Request, urlopen
 
+from .http_profile import FETCH_CONTEXT_PROFILE_VERSION, SameOriginHttpSession
 from .http_read import read_response_resilient
 from .raw_archive import (
     RawArchive,
@@ -38,6 +38,7 @@ class ArmoryApiCaptureResult:
     character_class: str | None
     has_armory: bool | None
     identity_source: str | None
+    http_profile_version: str
     observations: tuple[ArmoryApiObservation, ...]
 
 
@@ -55,20 +56,13 @@ def _capture_json_observation(
     observation_kind: str,
     url: str,
     timeout_seconds: float,
-    opener: OpenUrl,
+    session: SameOriginHttpSession,
 ) -> tuple[ArmoryApiObservation, Any | None]:
-    request = Request(
-        url,
-        headers={
-            "Accept": "application/json",
-            "User-Agent": "CoA-Raid-Intelligence-Workbench/0.1 armory-api-capture",
-        },
-        method="GET",
-    )
+    request = session.build_request(url)
     status, content_type, body, network_error = read_response_resilient(
         request,
         timeout_seconds=timeout_seconds,
-        opener=opener,
+        opener=session.open,
         max_bytes=_MAX_JSON_BYTES,
     )
     if body is None:
@@ -97,7 +91,7 @@ def _capture_json_observation(
         metadata={
             "capture_mode": "autonomous_armory_api",
             "observation_kind": observation_kind,
-            "request_header_names": sorted(request.headers),
+            **session.safe_request_metadata(request),
         },
     )
 
@@ -193,7 +187,7 @@ def capture_armory_api(
     realm: str,
     timeout_seconds: float = 30.0,
     captures_limit: int = 100,
-    opener: OpenUrl = urlopen,
+    opener: OpenUrl | Any | None = None,
 ) -> ArmoryApiCaptureResult:
     """Capture the public Armory JSON chain without assigning game semantics."""
     prepared_character = character.strip()
@@ -205,6 +199,7 @@ def capture_armory_api(
     if captures_limit < 1 or captures_limit > 100:
         raise ValueError("captures_limit must be between 1 and 100")
 
+    session = SameOriginHttpSession(registry.base_url, opener=opener)
     observations: list[ArmoryApiObservation] = []
     by_name_url = _api_url(
         registry.base_url,
@@ -217,7 +212,7 @@ def capture_armory_api(
         observation_kind="by_name",
         url=by_name_url,
         timeout_seconds=timeout_seconds,
-        opener=opener,
+        session=session,
     )
     observations.append(by_name)
 
@@ -236,7 +231,7 @@ def capture_armory_api(
             observation_kind="character_search",
             url=search_url,
             timeout_seconds=timeout_seconds,
-            opener=opener,
+            session=session,
         )
         observations.append(search)
         character_id, character_class = _search_identity(
@@ -253,6 +248,7 @@ def capture_armory_api(
             character_class=character_class,
             has_armory=has_armory,
             identity_source=identity_source,
+            http_profile_version=session.profile.version,
             observations=tuple(observations),
         )
 
@@ -273,7 +269,7 @@ def capture_armory_api(
             observation_kind=observation_kind,
             url=url,
             timeout_seconds=timeout_seconds,
-            opener=opener,
+            session=session,
         )
         observations.append(observation)
 
@@ -289,7 +285,7 @@ def capture_armory_api(
             observation_kind="talent_grid",
             url=talent_grid_url,
             timeout_seconds=timeout_seconds,
-            opener=opener,
+            session=session,
         )
         observations.append(talent_grid)
 
@@ -298,6 +294,7 @@ def capture_armory_api(
         character_class=character_class,
         has_armory=has_armory,
         identity_source=identity_source,
+        http_profile_version=session.profile.version,
         observations=tuple(observations),
     )
 
@@ -308,6 +305,7 @@ def armory_api_capture_to_dict(result: ArmoryApiCaptureResult) -> dict[str, Any]
         "character_class": result.character_class,
         "has_armory": result.has_armory,
         "identity_source": result.identity_source,
+        "http_profile_version": result.http_profile_version,
         "observations": [
             {
                 "observation_kind": item.observation_kind,
