@@ -19,4 +19,38 @@ jobs:
         with:
           python-version: "3.12"
       - name: Run safe access matrix
-        run: python scripts/diagnose_armory_access.py
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          set +e
+          python scripts/diagnose_armory_access.py > artifacts/armory-access-diagnostic.json
+          diagnostic_exit=$?
+          set -e
+
+          python - <<'PY'
+          import json
+          from collections import defaultdict
+          from pathlib import Path
+
+          path = Path("artifacts/armory-access-diagnostic.json")
+          payload = json.loads(path.read_text(encoding="utf-8"))
+          grouped = defaultdict(list)
+          for item in payload.get("results", []):
+              grouped[item.get("variant", "unknown")].append(
+                  f"{item.get('endpoint')}={item.get('status')}"
+              )
+          print(f"diagnostic_file={path}")
+          print(f"result_count={len(payload.get('results', []))}")
+          for variant in sorted(grouped):
+              print(f"{variant}: " + ", ".join(grouped[variant]))
+          PY
+
+          exit "$diagnostic_exit"
+      - name: Upload diagnostic artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: armory-access-diagnostic
+          path: artifacts/armory-access-diagnostic.json
+          if-no-files-found: error
+          retention-days: 7
