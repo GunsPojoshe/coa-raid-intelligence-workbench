@@ -5,9 +5,6 @@ on:
   push:
     branches:
       - e3/real-log-capture
-    paths:
-      - scripts/diagnose_armory_access.py
-      - .github/workflows/diagnose-armory-access.yml
 
 permissions:
   contents: read
