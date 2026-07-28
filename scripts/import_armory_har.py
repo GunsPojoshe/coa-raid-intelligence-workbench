@@ -72,7 +72,9 @@ def main() -> int:
         and entry.get("candidate_label") in {"json_object", "json_array"}
         and entry.get("raw_id")
     ]
-    routes = sorted({str(entry["route_path"]) for entry in selected if entry.get("route_path")})
+    routes = sorted(
+        {str(entry["route_path"]) for entry in selected if entry.get("route_path")}
+    )
     fingerprints = sorted(
         {
             str(entry["schema_fingerprint"])
