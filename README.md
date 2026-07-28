@@ -1,92 +1,107 @@
-# CoA Raid Intelligence
+# CoA Raid Intelligence Workbench
 
-Локальное браузерное приложение для подготовки и интеллектуального анализа рейдовых составов FLEX / 10 / 25 / 40.
+Локальное браузерное приложение для подготовки рейдовых составов и evidence-first анализа Classless / Ascension WoW.
+
+## Главная цель
+
+Система объединяет:
+
+- конструктор рейда FLEX / 10 / 25 / 40;
+- хранение планов в DuckDB;
+- автоматический сбор наблюдений с `coa.ascensionlogs.gg`;
+- immutable raw archive;
+- schema fingerprinting;
+- verified normalization;
+- Aura State Engine;
+- hypotheses, supporting и contradicting evidence;
+- trust-aware planner scoring;
+- объяснимые рекомендации с provenance.
+
+Канонический принцип:
+
+```text
+combat-log event = observation
+combat-log event != proof of a general game mechanic
+```
+
+Полный контекст проекта находится в:
+
+```text
+docs/PROJECT_MASTER_CONTEXT.md
+```
 
 ## Архитектура
 
 ```text
-Browser → FastAPI → Planner / Catalog / Evidence Pipeline → DuckDB
+Browser
+-> localhost FastAPI
+-> planner / catalog / evidence pipeline
+-> DuckDB
 ```
 
-Приложение работает локально на компьютере пользователя. Браузер является основным интерфейсом, Python содержит доменную логику, DuckDB хранит планы и аналитические данные.
-
-## Каноническая модель данных
+Evidence pipeline:
 
 ```text
-Raw observation
-→ schema fingerprint
-→ verified normalization
-→ aura-state reconstruction
-→ mechanic hypothesis
-→ supporting / contradicting evidence
-→ corroborated / confirmed mechanic
-→ planner scoring
+source response
+-> immutable raw observation
+-> SHA-256 + schema fingerprint
+-> reviewed verified mapping
+-> canonical normalized records
+-> deterministic state reconstruction
+-> mechanic hypothesis
+-> supporting / contradicting evidence
+-> corroborated / confirmed mechanic
+-> planner scoring
 ```
 
-Событие журнала боя является наблюдением, а не автоматическим доказательством общей игровой механики.
-
-Основной источник наблюдений:
-
-```text
-https://coa.ascensionlogs.gg
-```
-
-Маршруты, JSON-поля, типы событий, Spell ID и игровые связи нельзя придумывать. Реальный payload сначала сохраняется неизменяемо, получает SHA-256 и fingerprint схемы. Нормализация разрешена только через проверенный mapping с совпадающим fingerprint.
-
-Канонический planner scoring использует только механики со статусами:
-
-```text
-corroborated
-confirmed
-```
-
-Наблюдения, неподтверждённые гипотезы и исторические статические связи не участвуют в каноническом расчёте.
+Только `corroborated` и `confirmed` mechanics допускаются в canonical scoring.
 
 ## Реализовано
 
-- локальная FastAPI-служба;
+### Product foundation
+
+- localhost FastAPI runtime;
 - браузерный конструктор до 40 слотов;
 - FLEX / 10 / 25 / 40;
-- расчёт активных слотов и проверок состава в Python;
-- каталог классов, специализаций и ролей;
-- сохранение, открытие, обновление и удаление планов в DuckDB;
-- localhost-only по умолчанию;
-- request ID и диагностический журнал;
-- реестр источника `coa.ascensionlogs.gg`;
-- безопасный probe зарегистрированных маршрутов;
-- неизменяемый raw archive с SHA-256;
-- импорт локального JSON и HAR;
-- безопасный deterministic HAR inventory;
-- schema inspection и fingerprint;
-- versioned normalization mapping;
-- canonical report / encounter / actor / participant / aura events;
-- rejects для неполных и неизвестных записей;
+- class/spec/role catalog;
+- Python validation;
+- DuckDB persistence;
+- create/read/update/delete raid plans;
+- request IDs и diagnostic logging;
+- localhost-only bind по умолчанию.
+
+### Evidence foundation
+
+- source registry;
+- safe source probe;
+- immutable raw archive;
+- deduplicated payload body + separate observations;
+- JSON/HAR import;
+- privacy-safe deterministic HAR inventory;
+- archived gzip JSON inspection;
+- schema fingerprinting;
+- verified mapping gate;
+- canonical report/encounter/actor/participant/aura records;
+- rejects;
 - Aura State Engine;
-- hypotheses, supporting evidence и contradicting evidence;
-- временные и cohort-веса;
-- разделение глобальной механики и исполнения конкретной гильдии;
-- воспроизводимый verification runner;
-- GitHub Actions для Ubuntu и Windows;
-- реальный aura checkpoint на encounters `64795` и `64796`;
-- exact comparison reconstructed intervals с `debuff_sources`;
-- SPA HTML/asset capture и API-route discovery;
-- Armory API collector и character-search fallback;
-- безопасный Armory HAR importer;
-- воспроизводимая HTTP access matrix через GitHub Actions.
+- hypotheses и evidence links;
+- trust/weighting policies;
+- migrations `0001`–`0006`;
+- reproducible repository verifier;
+- GitHub Actions Ubuntu + Windows.
 
-Инфраструктура доказательности не означает, что реальные игровые механики уже подтверждены. Для этого нужны реальные нормализованные отчёты и независимые повторяемые observations.
+### Real observations
 
-## Проверенное наблюдение по HTTP-доступу
+- verified full same-origin HTTP profile `coa-fetch-context-v1`;
+- real Armory identity for `Gunspojoshe / Vol'Jin`;
+- real immutable `armory_api_by_name` payload;
+- real immutable `armory_api_captures` payload;
+- real aura normalization checkpoints for encounters `64795` and `64796`;
+- exact reconstructed interval comparison with `debuff_sources` for spell `968746`.
 
-Обычный `urllib` profile и только browser-like headers возвращали `403` для:
+Текущие ограничения и hashes описаны в `docs/PROJECT_STATE.md` и `docs/PROJECT_MASTER_CONTEXT.md`.
 
-```text
-/api/reports/public
-/api/characters/search
-/api/armory/by-name/...
-```
-
-Полный same-origin fetch-context profile вернул `200` для всех трёх маршрутов:
+## Проверенный HTTP profile
 
 ```text
 Accept: application/json, text/plain, */*
@@ -100,44 +115,44 @@ Sec-Fetch-Mode: cors
 Sec-Fetch-Site: same-origin
 ```
 
-Проверен полный профиль, но ещё не доказано, какой отдельный header является минимально необходимым и нужна ли cookie, установленная первым успешным API-response. Подробности и ограничения находятся в `docs/PROJECT_STATE.md`.
+Проверен только полный profile. Не доказано минимальное подмножество headers и необходимость cookie/order dependency для fresh Armory-first session.
 
-## Целевой поток автоматического получения логов
+## Текущий этап
 
-Не требуется вручную скачивать и разбирать каждый полный лог.
+Активная работа:
 
 ```text
-public reports discovery
-→ фильтр phase/location/difficulty/category
-→ до 5 reports на категорию
-→ encounters
-→ нужные analytical endpoints
-→ immutable raw archive
-→ fingerprint
-→ endpoint-specific parser
-→ canonical normalization
+PR #7: e3/real-log-capture -> e2/log-evidence-refactor
+PR #3: e2/log-evidence-refactor -> main
 ```
 
-Предпочтение отдаётся специализированным payloads: report, encounters, roster/combatants, aura timeline/detail/uptimes, casts и debuff sources. Полный event stream используется только когда агрегированные endpoints не позволяют проверить конкретную временную или причинную гипотезу.
+Оба PR остаются Draft.
 
-Много однотипных raw files ожидаемо. Один versioned parser применяется ко всем payloads совпадающей проверенной схемы. Неизвестный fingerprint отклоняется и отправляется на review.
+Ближайший bounded plan:
 
-## Запуск
+1. исправить Ruff blockers и вернуть green CI;
+2. добавить endpoint-isolated Armory capture;
+3. получить `armory/character/{id}` и `talent-grid/{class}` payloads;
+4. выполнить safe structural review и mappings;
+5. автоматизировать bounded report discovery;
+6. нормализовать полный report/encounter/roster slice;
+7. расширить supporting и contradicting evidence;
+8. интегрировать только corroborated/confirmed mechanics в planner.
 
-Требования:
+## Требования
 
 ```text
-Python 3.12+
+Python >= 3.12
 uv
 ```
 
-Установка зафиксированных зависимостей:
+Locked environment:
 
 ```powershell
 uv sync --frozen --extra dev
 ```
 
-Полная проверка проекта:
+Полная проверка:
 
 ```powershell
 uv run python scripts/verify_repo.py
@@ -149,7 +164,7 @@ uv run python scripts/verify_repo.py
 uv run coa-workbench serve
 ```
 
-Адрес приложения:
+Адрес:
 
 ```text
 http://127.0.0.1:8000
@@ -178,34 +193,28 @@ uv run coa-workbench serve
 uv run pytest
 ```
 
-`normalize-json` требует mapping со статусом `verified` и совпадающим fingerprint входного payload.
+## Privacy
 
-## Правила разработки
+Никогда не коммитить:
 
-Постоянные инструкции для Codex и других агентов находятся в `AGENTS.md`.
+- HAR;
+- raw payloads;
+- local DuckDB;
+- cookies;
+- Authorization headers;
+- tokens;
+- browser profiles;
+- unsanitized private query values;
+- absolute local paths containing usernames.
 
-Перед изменением кода агент обязан проверить фактическую ветку, состояние PR, тесты, миграции и соответствие документации реальному коду.
-
-Raw HAR, payloads, DuckDB, browser profiles, cookies, authorization headers и access tokens не коммитятся.
-
-## Текущий этап
-
-Активная работа ведётся в Draft PR №7 из `e3/real-log-capture` в `e2/log-evidence-refactor`. Родительский PR №3 остаётся Draft.
-
-Ближайший bounded slice:
-
-1. централизовать проверенный fetch-context profile и persistent same-host cookie jar;
-2. покрыть Armory collector unit tests;
-3. получить real immutable `armory/character`, `captures` и `talent-grid` payloads;
-4. выполнить safe structural inventory и reviewed mappings;
-5. автоматизировать выбор до 5 reports на категорию и сбор необходимых encounter endpoints;
-6. нормализовать полный report/encounter/roster с actors и participants;
-7. повторить evidence checks на других spells/reports и проверить contradicting observations;
-8. запустить полный verifier и CI.
-
-Полное фактическое состояние и handoff-промпт находятся в:
+## Документация
 
 ```text
+AGENTS.md
+README.md
+docs/PROJECT_MASTER_CONTEXT.md
 docs/PROJECT_STATE.md
 docs/CONTINUATION_PROMPT.md
+docs/REAL_LOG_CAPTURE.md
+docs/ADR_012_LOG_EVIDENCE_TRUTH_MODEL.md
 ```
