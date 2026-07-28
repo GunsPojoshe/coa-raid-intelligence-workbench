@@ -184,6 +184,13 @@ def test_capture_does_not_persist_request_header_values(tmp_path):
 
     observation = json.loads(Path(result.capture.manifest_path).read_text(encoding="utf-8"))
     metadata = observation["metadata"]
-    assert metadata["request_header_names"] == ["Accept", "User-agent"]
+    assert metadata["request_header_names"] == [
+        "Accept",
+        "Accept-encoding",
+        "Connection",
+        "User-agent",
+    ]
     serialized = json.dumps(observation).casefold()
     assert "coa-raid-intelligence-workbench/0.1 armory-capture" not in serialized
+    assert '"identity"' not in serialized
+    assert '"close"' not in serialized
