@@ -1,0 +1,25 @@
+name: Diagnose Armory Access
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - e3/real-log-capture
+    paths:
+      - scripts/diagnose_armory_access.py
+      - .github/workflows/diagnose-armory-access.yml
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run safe access matrix
+        run: python scripts/diagnose_armory_access.py
