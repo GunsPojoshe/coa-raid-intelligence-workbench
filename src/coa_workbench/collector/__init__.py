@@ -15,6 +15,12 @@ from .armory_capture import (
     capture_character_build_pages,
 )
 from .har_inventory import inspect_archived_payload, inventory_har
+from .http_profile import (
+    COA_FETCH_CONTEXT_V1,
+    FETCH_CONTEXT_PROFILE_VERSION,
+    HttpRequestProfile,
+    SameOriginHttpSession,
+)
 from .http_read import read_response_resilient
 from .probe import ProbeResult, probe_registry_route, probe_result_to_dict
 from .raw_archive import (
@@ -41,10 +47,14 @@ __all__ = [
     "ArmoryApiCaptureResult",
     "ArmoryApiObservation",
     "BuildPageCapture",
+    "COA_FETCH_CONTEXT_V1",
     "EmbeddedJsonCapture",
+    "FETCH_CONTEXT_PROFILE_VERSION",
+    "HttpRequestProfile",
     "ProbeResult",
     "RawArchive",
     "RawCapture",
+    "SameOriginHttpSession",
     "SourceRegistry",
     "SourceRoute",
     "UnverifiedSourceRouteError",
