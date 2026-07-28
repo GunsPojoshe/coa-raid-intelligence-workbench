@@ -48,12 +48,9 @@ ENDPOINTS = {
             }
         )
     ),
-    "character_search": (
-        "/api/characters/search?" + urlencode({"q": CHARACTER, "limit": "20"})
-    ),
+    "character_search": ("/api/characters/search?" + urlencode({"q": CHARACTER, "limit": "20"})),
     "armory_by_name": (
-        f"/api/armory/by-name/{quote(CHARACTER, safe='')}?"
-        + urlencode({"realm": REALM})
+        f"/api/armory/by-name/{quote(CHARACTER, safe='')}?" + urlencode({"realm": REALM})
     ),
 }
 
@@ -252,9 +249,7 @@ def main() -> int:
     }
     print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
 
-    control_results = [
-        result for result in results if result.endpoint == "reports_public_control"
-    ]
+    control_results = [result for result in results if result.endpoint == "reports_public_control"]
     return 0 if any(result.status == 200 for result in control_results) else 4
 
 
