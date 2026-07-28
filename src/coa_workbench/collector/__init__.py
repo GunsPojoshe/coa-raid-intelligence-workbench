@@ -1,5 +1,11 @@
 from . import armory_capture as _armory_capture
 from .archive_reuse import capture_asset_with_archive_fallback
+from .armory_api_capture import (
+    ArmoryApiCaptureResult,
+    ArmoryApiObservation,
+    armory_api_capture_to_dict,
+    capture_armory_api,
+)
 from .armory_capture import (
     BuildPageCapture,
     EmbeddedJsonCapture,
@@ -32,6 +38,8 @@ _armory_capture._read_response = read_response_resilient
 _armory_capture._capture_asset = capture_asset_with_archive_fallback
 
 __all__ = [
+    "ArmoryApiCaptureResult",
+    "ArmoryApiObservation",
     "BuildPageCapture",
     "EmbeddedJsonCapture",
     "ProbeResult",
@@ -40,9 +48,11 @@ __all__ = [
     "SourceRegistry",
     "SourceRoute",
     "UnverifiedSourceRouteError",
+    "armory_api_capture_to_dict",
     "build_armory_url",
     "build_character_url",
     "build_page_capture_to_dict",
+    "capture_armory_api",
     "capture_asset_with_archive_fallback",
     "capture_character_build_pages",
     "capture_to_dict",
