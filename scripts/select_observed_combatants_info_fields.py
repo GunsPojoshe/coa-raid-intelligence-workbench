@@ -61,13 +61,9 @@ def main() -> int:
     print(f"linkage_contract_count={summary['linkage_contract_count']}")
     print(f"deferred_field_count={summary['deferred_field_count']}")
     print(f"missing_optional_scope_count={summary['missing_optional_scope_count']}")
+    print(f"candidate_mapping_files_ready={str(summary['candidate_mapping_files_ready']).lower()}")
     print(
-        "candidate_mapping_files_ready="
-        f"{str(summary['candidate_mapping_files_ready']).lower()}"
-    )
-    print(
-        "ready_for_manual_mapping_design="
-        f"{str(summary['ready_for_manual_mapping_design']).lower()}"
+        f"ready_for_manual_mapping_design={str(summary['ready_for_manual_mapping_design']).lower()}"
     )
     print(
         "combatants_info_enrichment_available="
