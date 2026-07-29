@@ -8,26 +8,27 @@
 
 ## Обязательный порядок начала
 
-До изменений:
+До изменения кода:
 
 1. Проверь repository `GunsPojoshe/coa-raid-intelligence-workbench`.
-2. Проверь branch, HEAD и working tree.
-3. Проверь PR #7 и его base branch.
+2. Проверь текущие branch, HEAD и working tree.
+3. Проверь PR #7 и base branch.
 4. Проверь PR #3.
 5. Проверь последний GitHub Actions run и точную причину любого failure.
-6. Прочитай:
+6. Прочитай полностью:
    - `AGENTS.md`;
    - `docs/PROJECT_MASTER_CONTEXT.md`;
    - `docs/PROJECT_STATE.md`;
    - этот документ;
+   - `docs/ARMORY_MAPPING_REVIEW_V1.md`;
    - `docs/ADR_012_LOG_EVIDENCE_TRUTH_MODEL.md`;
    - `docs/REAL_LOG_CAPTURE.md`.
-7. Сверь claims с кодом и CI.
-8. Сообщи расхождения до расширения analytical model.
+7. Сверь документированные claims с реальным кодом.
+8. Сообщи расхождения до изменения analytical model.
 
 Старые HEAD, commit counts, test counts и CI status не считать вечными.
 
-## Branch chain
+## Репозиторий и branch chain
 
 ```text
 main
@@ -35,14 +36,14 @@ main
     └── e3/real-log-capture         PR #7 -> e2, Draft
 ```
 
-Подтверждённый checkpoint до следующей проверки:
+На момент handoff:
 
 ```text
-HEAD: 787ce2e35d66df7752ad7f9b1b6c83518bf68e40
-CI: Verify repository run #98, success
+HEAD: d251460ea97a8b861b6cec77294108c3beddbb17
+Verify repository run #115: success
 ```
 
-После documentation refresh фактический HEAD будет новее. Всегда проверяй GitHub.
+Фактический HEAD и CI всегда перепроверить.
 
 ## Миссия
 
@@ -51,10 +52,10 @@ CI: Verify repository run #98, success
 - подготовки рейдов FLEX / 10 / 25 / 40;
 - хранения планов в DuckDB;
 - автоматического сбора observations с `coa.ascensionlogs.gg`;
-- evidence-first анализа игровых механик;
+- evidence-first вывода игровых механик;
 - explainable planner recommendations.
 
-Pipeline:
+Канонический pipeline:
 
 ```text
 immutable raw observation
@@ -68,23 +69,40 @@ immutable raw observation
 -> planner scoring
 ```
 
-Combat-log event является observation, а не доказательством общей mechanic.
+Combat-log event является observation, а не автоматическим доказательством общей mechanic.
 
 ## Trust rules
 
-Нельзя придумывать routes, parameters, fields, pagination, event types, Spell IDs, class/spec/provider mappings или gameplay semantics.
+Нельзя придумывать:
+
+- routes;
+- query parameters;
+- JSON fields;
+- pagination behavior;
+- event types;
+- Spell IDs;
+- class/spec/provider mappings;
+- semantic meaning по route name;
+- stacking, overwrite, coexistence или scope без evidence.
 
 Normalization разрешена только при:
 
 - immutable archived payload;
 - exact fingerprint;
 - reviewed mapping;
-- status `verified`;
+- mapping status `verified`;
 - matching fingerprint.
 
-В planner scoring допускаются только `corroborated` и `confirmed` mechanics.
+В planner scoring допускаются только:
 
-Сохраняй contradicting evidence и разделяй provenance:
+```text
+corroborated
+confirmed
+```
+
+Всегда сохраняй contradicting evidence.
+
+Provenance разделять:
 
 ```text
 raw_log
@@ -106,9 +124,9 @@ manual_override
 - tokens;
 - browser profiles;
 - private query values;
-- абсолютные пути с username.
+- absolute paths containing username.
 
-Cookies разрешены только в process memory.
+Cookies разрешены только в памяти process.
 
 ## Окружение пользователя
 
@@ -121,96 +139,107 @@ Git
 local repo under C:\Users\<USER>\source\repos\...
 ```
 
-Пользователь предпочитает автономную GitHub-работу, один полный PowerShell block, полный код без обрывов, минимум ручных действий и явное разделение verified/observed/planned.
+Пользователь предпочитает:
+
+- автономную работу через GitHub;
+- один полный PowerShell block за раз;
+- полный код без обрывов;
+- прямые ответы;
+- минимум ручных действий;
+- честное разделение verified / observed / planned.
 
 ## Подтверждённый фундамент
 
-- localhost FastAPI app и browser raid constructor;
+- localhost FastAPI app;
+- browser raid constructor;
 - DuckDB persistence;
 - immutable raw archive;
-- safe JSON/HAR import и deterministic inventory;
+- observations отдельно от deduplicated payload bodies;
+- safe JSON/HAR import and inventory;
 - schema fingerprints;
 - verified mapping gate;
 - canonical report/encounter/actor/participant/aura records;
 - Aura State Engine;
-- hypotheses и evidence links;
+- hypotheses and evidence links;
 - trust/weighting policies;
 - migrations `0001`–`0006`;
-- repository verifier и Ubuntu/Windows CI;
+- repository verifier;
+- Ubuntu and Windows CI;
 - SPA route discovery;
-- HTTP profile `coa-fetch-context-v1`;
-- persistent same-origin session;
-- timeout/retry/incomplete-response handling;
+- versioned HTTP profile `coa-fetch-context-v1`;
 - endpoint-isolated progressive/resumable Armory capture;
-- structural and type-only Armory review;
-- candidate Armory mappings с production gate.
+- structural and mapping-review packets;
+- candidate Armory mapping contracts;
+- raw-archive selector validation gate.
 
 ## Real aura checkpoint
 
 Report `2987`, spell `968746`:
 
-```text
-encounter 64795:
-  fingerprint 2994424cb95c2a7e1997651226b7942367ebe77003e0f4614aae5da4920f8b98
-  6 canonical events
-  3 reconstructed intervals
-  exact match with 3 reference intervals
-  0 rejects, 0 anomalies
+### Encounter 64795
 
-encounter 64796:
-  window 10382–38265 ms
-  full duration 117215 ms
-  fingerprint d8b6dd869d6adf8f3433f9e285b8270cd1aa8d640839c915a42c80b2211cbf0b
-  3 canonical events
-  2 reconstructed intervals
-  exact match with 2 reference intervals
-  0 rejects, 0 anomalies
+```text
+fingerprint: 2994424cb95c2a7e1997651226b7942367ebe77003e0f4614aae5da4920f8b98
+mapping: coa-aura-timeline-single-encounter-v1, verified
+6 canonical events
+3 reconstructed intervals
+exact match with 3 debuff_sources intervals
+0 rejects
+0 anomalies
+```
+
+### Encounter 64796
+
+```text
+window: 10382-38265 ms
+full duration: 117215 ms
+fingerprint: d8b6dd869d6adf8f3433f9e285b8270cd1aa8d640839c915a42c80b2211cbf0b
+3 canonical events
+2 reconstructed intervals
+exact match with 2 debuff_sources intervals
+0 rejects
+0 anomalies
 ```
 
 Это подтверждает normalizer/Aura State Engine behavior, но не numeric effect, stacking, overwrite, coexistence, scope или criticality.
 
 ## Real Armory checkpoint
 
-Subject:
-
 ```text
 character_id: 156120
 class_slug: felsworn
-realm: Vol'Jin
 profile: coa-fetch-context-v1
 ```
 
-Captured and verified locally:
+### Character
 
 ```text
-character:
-  route /api/armory/character/156120
-  HTTP 200
-  bytes 59910
-  hash 2a9d752d7af72d41cd9d41836d670069c78e408df7260f5d9caa83b07430985f
-  fingerprint efbcf618291d824667ba586c22af4ed031fa146d69b11a5539ec17a41d042621
-
-talent_grid:
-  route /api/armory/talent-grid/felsworn
-  HTTP 200
-  bytes 63025
-  hash 11be25407ec00898547c1b7f342d4596268b3164df9fe0f120bb911559cc5206
-  fingerprint 7e3b3bfc3966ddc5d0160c8d466e5ba92edbe55440449619d7204102a25b3240
+route: /api/armory/character/156120
+bytes: 59910
+hash: 2a9d752d7af72d41cd9d41836d670069c78e408df7260f5d9caa83b07430985f
+fingerprint: efbcf618291d824667ba586c22af4ed031fa146d69b11a5539ec17a41d042621
 ```
 
-Оба payloads immutable, hash/fingerprint/size verified, raw bodies local-only.
+### Talent grid
 
-## Mapping review checkpoint
+```text
+route: /api/armory/talent-grid/felsworn
+bytes: 63025
+hash: 11be25407ec00898547c1b7f342d4596268b3164df9fe0f120bb911559cc5206
+fingerprint: 7e3b3bfc3966ddc5d0160c8d466e5ba92edbe55440449619d7204102a25b3240
+```
+
+## Mapping review state
 
 Review packet schema `2`:
 
 ```text
-2 verified archives
-470 aggregated paths
-6106 node occurrences
-4 numeric maps
-no source scalar values
-ready for manual mapping review
+archive_verified: 2
+field_path_count: 470
+node_occurrence_count: 6106
+numeric_map_path_count: 4
+contains_source_scalar_values: false
+ready_for_manual_mapping_review: true
 ```
 
 Candidate mappings:
@@ -220,94 +249,122 @@ config/mappings/coa_armory_character_v1.json
 config/mappings/coa_armory_talent_grid_v1.json
 ```
 
-Локальная validation:
+Review document:
 
 ```text
+docs/ARMORY_MAPPING_REVIEW_V1.md
+```
+
+Review corrections:
+
+- `cao_id` retained as `source_cao_id`;
+- `bisbeard_tree` retained as `source_bisbeard_tree`;
+- talent records preserve parent tree;
+- connections preserve source talent/tree;
+- rank texts preserve source talent/tree;
+- empty `lock_rules` and `rank_spell_ids` item schemas remain deferred.
+
+Mappings are still `candidate` and blocked from production.
+
+## Raw-archive validation gate
+
+`scripts/validate_armory_mappings.py` now validates:
+
+1. safe type-only review packet;
+2. structural manifest against exact gzip archives;
+3. payload hash;
+4. schema fingerprint;
+5. route template;
+6. singleton selector extraction;
+7. collection occurrence counts;
+8. `@item`, `@index`, `@ancestor[n]` selectors;
+9. required field presence and JSON types.
+
+Unit coverage verifies selector execution and controlled rejection of drift.
+
+Repository CI:
+
+```text
+96 passed, 1 warning
+Ubuntu verifier: success
+Windows pytest/doctor/DuckDB initialization: success
+```
+
+The real private archives have not yet been run through the new raw selector gate.
+
+## Первая задача нового агента
+
+1. Проверить latest HEAD and CI.
+2. Попросить пользователя выполнить один local PowerShell block:
+
+```powershell
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+
+Set-Location "C:\Users\<USER>\source\repos\coa-raid-intelligence-workbench"
+
+git fetch origin
+git switch e3/real-log-capture
+git pull --ff-only origin e3/real-log-capture
+
+uv run --no-sync python scripts/validate_armory_mappings.py `
+    --review "data\exchange\out\armory-mapping-review-v2.json" `
+    --manifest "data\exchange\out\armory-endpoint-capture.json" `
+    --raw-root "data\raw" `
+    --output "data\exchange\out\armory-mapping-validation.json"
+
+Get-Content "data\exchange\out\armory-mapping-validation.json" -Raw
+```
+
+3. Проверить ожидаемое:
+
+```text
+schema_version: 2
 all_structurally_consistent: true
+all_raw_archives_consistent: true
 all_production_ready: false
 mapping_count: 2
 ```
 
-`all_production_ready: false` ожидаемо: mappings имеют status `candidate` и production gate должен их блокировать.
+4. Не переводить mappings в `verified`, пока реальный raw result не проверен.
+5. После successful raw validation выполнить отдельный explicit promotion change с `reviewed_by` и `reviewed_at`.
+6. Затем перейти к bounded report discovery.
 
-## Current CI
-
-```text
-commit: 787ce2e35d66df7752ad7f9b1b6c83518bf68e40
-workflow: Verify repository
-run: #98
-conclusion: success
-```
-
-Старые Ruff blockers исправлены. Старые claims об отсутствующих `character` и `talent_grid` payloads устарели.
-
-## Первая bounded задача нового агента
-
-### A. Baseline
-
-1. Проверить latest HEAD, PR и CI.
-2. Проверить, что candidate mappings всё ещё структурно согласованы с локальным review packet.
-3. Не менять migrations.
-
-### B. Manual Armory mapping review
-
-1. Review только заявленных paths/types/nullable/occurrence counts.
-2. Не выводить gameplay semantics из названий fields.
-3. Проверить scope candidate mappings:
-   - character identity/context;
-   - selected talents;
-   - compact stat summaries;
-   - talent-grid trees/nodes/connections/rank text.
-4. Сохранить deferred:
-   - detailed gear semantics;
-   - hero build semantics;
-   - character internal derived/raw computational structures;
-   - empty `lock_rules` и `rank_spell_ids` item schemas.
-5. Переводить mapping в `verified` только после явного review decision.
-6. Не называть verified mapping подтверждённой игровой механикой.
-
-### C. Следующий engineering slice
-
-После mapping decision:
+## Дальнейший план
 
 ```text
-verified report discovery
+verified Armory mappings
+-> bounded report discovery
 -> filters/pagination review
--> deterministic selection, default up to 5 reports/category
+-> default up to 5 reports per category
 -> encounter discovery
 -> selected analytical endpoints
 -> immutable archive
 -> reviewed parsers
 -> full report/encounter/roster normalization
 -> evidence expansion
+-> planner integration
 ```
 
-Full event stream использовать только когда compact endpoints недостаточны.
-
-## Remaining limitations
-
-- Armory mappings пока candidate;
-- bounded report discovery не реализован;
-- полный report/encounter/roster slice не нормализован;
-- evidence coverage узкая;
-- нет corroborated gameplay mechanic для planner scoring.
+Full event stream использовать только для hypotheses, которые нельзя проверить compact endpoints.
 
 ## Completion gate
 
-PR #3 остаётся Draft до:
+PR #3 и PR #7 остаются Draft до соответствующего evidence checkpoint:
 
 1. real immutable payloads;
-2. stable fingerprints;
-3. reviewed verified mappings;
+2. fingerprints;
+3. verified mappings;
 4. normalized report/encounter;
 5. linked actors/participants/aura events;
 6. reconstructed intervals;
 7. independent supporting observations;
 8. contradicting evidence review;
-9. versioned reproducible output and provenance;
-10. green Ubuntu + Windows CI.
+9. versioned reproducible output;
+10. provenance;
+11. green Ubuntu + Windows CI.
 
-## Формат отчёта
+## Формат отчёта после каждой задачи
 
 Сообщай:
 
@@ -316,7 +373,8 @@ PR #3 остаётся Draft до:
 - устаревшие claims;
 - files changed;
 - migrations added;
-- exact commands/tests;
+- exact commands run;
+- exact tests;
 - CI state;
 - remaining limitations;
 - next bounded task.
