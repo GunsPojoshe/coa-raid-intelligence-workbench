@@ -59,6 +59,7 @@ from .report_slice_capture import (
     capture_observed_report_slice,
     observed_report_slice_capture_to_dict,
 )
+from .report_slice_mapping_review import build_observed_report_slice_mapping_review
 from .report_slice_review import review_observed_report_slice_capture
 from .route_discovery import discover_api_route_candidates
 from .source_registry import (
@@ -103,6 +104,7 @@ __all__ = [
     "armory_api_capture_to_dict",
     "build_armory_url",
     "build_character_url",
+    "build_observed_report_slice_mapping_review",
     "build_page_capture_to_dict",
     "build_report_discovery_mapping_review",
     "build_spa_route_inventory",
