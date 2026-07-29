@@ -20,6 +20,7 @@ from .armory_endpoint_capture import (
     capture_armory_endpoint,
     capture_armory_endpoints_progressively,
 )
+from .combatants_scope_review import build_observed_combatants_info_deep_scope_review
 from .har_inventory import inspect_archived_payload, inventory_har
 from .http_profile import (
     COA_FETCH_CONTEXT_V1,
@@ -114,6 +115,7 @@ __all__ = [
     "armory_api_capture_to_dict",
     "build_armory_url",
     "build_character_url",
+    "build_observed_combatants_info_deep_scope_review",
     "build_observed_report_slice_mapping_review",
     "build_observed_report_slice_scope_review",
     "build_page_capture_to_dict",
