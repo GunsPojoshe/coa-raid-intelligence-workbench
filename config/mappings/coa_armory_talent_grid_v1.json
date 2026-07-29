@@ -3,13 +3,15 @@
   "mapping_id": "coa-armory-talent-grid-v1",
   "source_code": "coa_ascension_logs",
   "mapping_version": "1",
-  "status": "candidate",
+  "status": "verified",
   "endpoint_kind": "talent_grid",
   "route_template": "/api/armory/talent-grid/{class_slug}",
   "schema_fingerprint": "7e3b3bfc3966ddc5d0160c8d466e5ba92edbe55440449619d7204102a25b3240",
   "reviewed_payload_hash": "11be25407ec00898547c1b7f342d4596268b3164df9fe0f120bb911559cc5206",
   "review_packet_schema_version": 2,
   "provenance_type": "upstream_derived",
+  "reviewed_by": "GunsPojoshe (operator), OpenAI-assisted review",
+  "reviewed_at": "2026-07-29T15:34:00+03:00",
   "singletons": {
     "class_name": {"selector": "/class_name", "review_path": "/class_name", "types": ["string"], "nullable": false, "required": true},
     "success": {"selector": "/success", "review_path": "/success", "types": ["boolean"], "nullable": false, "required": true}
@@ -65,11 +67,11 @@
     "/trees/*/talents/*/rank_spell_ids"
   ],
   "review_notes": [
-    "Candidate mapping derived from one immutable talent-grid payload and mapping-review schema v2.",
+    "Verified against one immutable talent-grid payload and mapping-review schema v2.",
+    "Raw-archive validation confirmed exact payload hash, schema fingerprint, route template, 2 singleton values and 2955 extracted values.",
     "All four trees and 158 talent records share the reviewed field shape.",
     "Talent, connection and rank-text records retain their parent talent and tree relationships through reviewed ancestor selectors.",
     "Empty lock_rules and rank_spell_ids arrays do not establish their future item schemas.",
-    "Display text is an upstream observation and does not prove runtime magnitude, stacking or scope.",
-    "Promotion to verified requires explicit human review, raw-archive selector validation and a separate code change."
+    "Display text is an upstream observation and does not prove runtime magnitude, stacking or scope."
   ]
 }
