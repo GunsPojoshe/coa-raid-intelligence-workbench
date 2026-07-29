@@ -89,14 +89,8 @@ def main() -> int:
     print(f"participants={counts['participants']}")
     print(f"aura_events={counts['aura_events']}")
     print(f"rejects={counts['rejects']}")
-    print(
-        "canonical_entity_observation_count="
-        f"{summary['canonical_entity_observation_count']}"
-    )
-    print(
-        "all_integrity_checks_passed="
-        f"{str(summary['all_integrity_checks_passed']).lower()}"
-    )
+    print(f"canonical_entity_observation_count={summary['canonical_entity_observation_count']}")
+    print(f"all_integrity_checks_passed={str(summary['all_integrity_checks_passed']).lower()}")
     print(f"transaction_committed={str(summary['transaction_committed']).lower()}")
     print(
         "ready_for_parser_observation_queries="
