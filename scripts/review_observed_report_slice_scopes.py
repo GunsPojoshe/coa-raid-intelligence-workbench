@@ -61,17 +61,12 @@ def _render(review: dict[str, Any]) -> str:
         f"scope_candidate_count={totals['scope_candidate_count']}",
         f"direct_field_count={totals['direct_field_count']}",
         f"all_archives_consistent={_boolean(totals['all_archives_consistent'])}",
-        "contains_source_scalar_values="
-        f"{_boolean(totals['contains_source_scalar_values'])}",
-        "semantic_verification_required="
-        f"{_boolean(totals['semantic_verification_required'])}",
+        f"contains_source_scalar_values={_boolean(totals['contains_source_scalar_values'])}",
+        f"semantic_verification_required={_boolean(totals['semantic_verification_required'])}",
         f"normalization_allowed={_boolean(totals['normalization_allowed'])}",
-        "ready_for_manual_field_selection="
-        f"{_boolean(totals['ready_for_manual_field_selection'])}",
-        "automatic_scope_selection="
-        f"{_boolean(boundary['automatic_scope_selection'])}",
-        "automatic_field_selection="
-        f"{_boolean(boundary['automatic_field_selection'])}",
+        f"ready_for_manual_field_selection={_boolean(totals['ready_for_manual_field_selection'])}",
+        f"automatic_scope_selection={_boolean(boundary['automatic_scope_selection'])}",
+        f"automatic_field_selection={_boolean(boundary['automatic_field_selection'])}",
         f"can_promote={_boolean(boundary['can_promote'])}",
         "",
         "SCOPE_CANDIDATES",
@@ -88,8 +83,7 @@ def _render(review: dict[str, Any]) -> str:
                     f"types={_join(scope_shape['types'])}",
                     f"occurrence_count={summary['scope_occurrence_count']}",
                     f"direct_field_count={summary['direct_field_count']}",
-                    "nullable_direct_field_count="
-                    f"{summary['nullable_direct_field_count']}",
+                    f"nullable_direct_field_count={summary['nullable_direct_field_count']}",
                     f"review_status={scope['review_status']}",
                     f"semantic_status={scope['semantic_status']}",
                 ]
