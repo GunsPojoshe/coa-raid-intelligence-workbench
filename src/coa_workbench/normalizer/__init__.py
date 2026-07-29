@@ -7,6 +7,11 @@ from .ascension_aura_timeline import (
 )
 from .aura_state import AuraInterval, AuraStateResult, reconstruct_aura_intervals
 from .canonical import CanonicalAuraEvent, CanonicalBatch, NormalizationMapping, normalize_payload
+from .report_discovery_mapping import (
+    ReportDiscoveryCollectionContract,
+    ReportDiscoveryFieldContract,
+    ReportDiscoveryMappingContract,
+)
 from .schema_inspector import SchemaInspection, inspect_payload, structure_fingerprint
 
 __all__ = [
@@ -16,6 +21,9 @@ __all__ = [
     "CanonicalAuraEvent",
     "CanonicalBatch",
     "NormalizationMapping",
+    "ReportDiscoveryCollectionContract",
+    "ReportDiscoveryFieldContract",
+    "ReportDiscoveryMappingContract",
     "SchemaInspection",
     "inspect_payload",
     "load_archived_json",
