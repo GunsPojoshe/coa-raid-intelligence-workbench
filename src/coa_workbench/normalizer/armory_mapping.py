@@ -9,6 +9,7 @@ _ALLOWED_JSON_TYPES = {"array", "boolean", "integer", "null", "number", "object"
 _ALLOWED_STATUSES = {"candidate", "verified"}
 _ALLOWED_ENDPOINT_KINDS = {"character", "talent_grid"}
 _MAPPING_SCHEMA_VERSION = 1
+_MISSING = object()
 
 
 def _required_string(value: object, name: str) -> str:
@@ -28,6 +29,170 @@ def _sha256(value: object, name: str) -> str:
     if len(prepared) != 64 or any(char not in "0123456789abcdef" for char in prepared):
         raise ValueError(f"Armory mapping field {name} must be a SHA-256 hex digest")
     return prepared
+
+
+def _json_type(value: Any) -> str:
+    if value is None:
+        return "null"
+    if isinstance(value, bool):
+        return "boolean"
+    if isinstance(value, int):
+        return "integer"
+    if isinstance(value, float):
+        return "number"
+    if isinstance(value, str):
+        return "string"
+    if isinstance(value, list):
+        return "array"
+    if isinstance(value, dict):
+        return "object"
+    raise TypeError(f"unsupported JSON value type: {type(value).__name__}")
+
+
+def _decode_pointer_segment(segment: str) -> str:
+    return segment.replace("~1", "/").replace("~0", "~")
+
+
+def _escape_pointer_segment(segment: str) -> str:
+    return segment.replace("~", "~0").replace("/", "~1")
+
+
+def _pointer_get(value: Any, pointer: str, default: Any = _MISSING) -> Any:
+    if pointer in {"", "/"}:
+        return value
+    current = value
+    raw = pointer[1:] if pointer.startswith("/") else pointer
+    for segment in raw.split("/"):
+        key = _decode_pointer_segment(segment)
+        try:
+            if isinstance(current, list):
+                current = current[int(key)]
+            elif isinstance(current, dict):
+                current = current[key]
+            else:
+                raise KeyError(pointer)
+        except (KeyError, IndexError, TypeError, ValueError):
+            if default is _MISSING:
+                raise KeyError(pointer) from None
+            return default
+    return current
+
+
+def _sorted_object_keys(value: Mapping[Any, Any]) -> list[Any]:
+    keys = list(value)
+    if keys and all(str(key).isdecimal() for key in keys):
+        return sorted(keys, key=lambda item: int(str(item)))
+    return sorted(keys, key=str)
+
+
+@dataclass(frozen=True, slots=True)
+class _ArmoryMatch:
+    value: Any
+    path: str
+    ancestors: tuple[Any, ...]
+    index: int | None
+
+
+def _find_matches(root: Any, pattern: str) -> tuple[_ArmoryMatch, ...]:
+    segments = [
+        _decode_pointer_segment(segment)
+        for segment in pattern.strip("/").split("/")
+        if segment
+    ]
+    matches: list[_ArmoryMatch] = []
+
+    def walk(
+        current: Any,
+        offset: int,
+        path: list[str],
+        ancestors: list[Any],
+        index: int | None,
+    ) -> None:
+        if offset == len(segments):
+            matches.append(
+                _ArmoryMatch(
+                    value=current,
+                    path="/" + "/".join(path) if path else "/",
+                    ancestors=tuple(ancestors),
+                    index=index,
+                )
+            )
+            return
+        segment = segments[offset]
+        if segment == "*":
+            if isinstance(current, list):
+                for child_index, child in enumerate(current):
+                    walk(
+                        child,
+                        offset + 1,
+                        [*path, str(child_index)],
+                        [*ancestors, current],
+                        child_index,
+                    )
+            elif isinstance(current, dict):
+                for key in _sorted_object_keys(current):
+                    walk(
+                        current[key],
+                        offset + 1,
+                        [*path, _escape_pointer_segment(str(key))],
+                        [*ancestors, current],
+                        None,
+                    )
+            return
+        child = _pointer_get(current, "/" + segment, _MISSING)
+        if child is _MISSING:
+            return
+        walk(
+            child,
+            offset + 1,
+            [*path, _escape_pointer_segment(segment)],
+            [*ancestors, current],
+            None,
+        )
+
+    if not segments:
+        return (_ArmoryMatch(root, "/", (), None),)
+    walk(root, 0, [], [], None)
+    return tuple(matches)
+
+
+def _select(match: _ArmoryMatch, root: Any, expression: str, default: Any = _MISSING) -> Any:
+    if expression == "@item":
+        return match.value
+    if expression == "@index":
+        return match.index if match.index is not None else default
+    if expression.startswith("@root"):
+        pointer = expression.removeprefix("@root") or "/"
+        return _pointer_get(root, pointer, default)
+    if expression.startswith("@ancestor["):
+        close = expression.find("]")
+        if close < 0:
+            return default
+        try:
+            distance = int(expression[len("@ancestor[") : close])
+        except ValueError:
+            return default
+        pointer = expression[close + 1 :] or "/"
+        position = len(match.ancestors) - 1 - distance
+        if position < 0:
+            return default
+        return _pointer_get(match.ancestors[position], pointer, default)
+    return _pointer_get(match.value, expression, default)
+
+
+def _route_matches(template: str, route: str) -> bool:
+    route_path = route.split("?", 1)[0]
+    template_segments = template.strip("/").split("/")
+    route_segments = route_path.strip("/").split("/")
+    if len(template_segments) != len(route_segments):
+        return False
+    for expected, actual in zip(template_segments, route_segments, strict=True):
+        if expected.startswith("{") and expected.endswith("}"):
+            if not actual:
+                return False
+        elif expected != actual:
+            return False
+    return True
 
 
 @dataclass(frozen=True, slots=True)
@@ -309,4 +474,87 @@ class ArmoryMappingContract:
             "field_count": field_count,
             "review_packet_schema_version": self.review_packet_schema_version,
             "production_ready": self.production_ready,
+        }
+
+    def validate_against_payload(
+        self,
+        payload: Any,
+        *,
+        payload_hash: str,
+        schema_fingerprint: str,
+        route: str | None = None,
+    ) -> dict[str, Any]:
+        errors: list[str] = []
+        if payload_hash != self.reviewed_payload_hash:
+            errors.append("reviewed payload hash mismatch")
+        if schema_fingerprint != self.schema_fingerprint:
+            errors.append("schema fingerprint mismatch")
+        if route is not None and not _route_matches(self.route_template, route):
+            errors.append(f"route mismatch: template={self.route_template} route={route}")
+
+        extracted_value_count = 0
+        singleton_values = 0
+        collection_counts: dict[str, int] = {}
+        root_match = _ArmoryMatch(payload, "/", (), None)
+
+        def validate_value(
+            name: str,
+            field: ArmoryFieldContract,
+            match: _ArmoryMatch,
+        ) -> None:
+            nonlocal extracted_value_count
+            value = _select(match, payload, field.selector, _MISSING)
+            if value is _MISSING:
+                if field.required:
+                    errors.append(f"{name}: required selector missing at {match.path}")
+                return
+            try:
+                value_type = _json_type(value)
+            except TypeError as exc:
+                errors.append(f"{name}: {exc}")
+                return
+            if value_type not in field.types:
+                errors.append(
+                    f"{name}: extracted type {value_type} is not allowed; "
+                    f"expected={sorted(field.types)} path={match.path}"
+                )
+            if (value is None) is not field.nullable and value is None:
+                errors.append(f"{name}: extracted null from non-nullable field at {match.path}")
+            extracted_value_count += 1
+
+        for name, field in self.singletons.items():
+            before = extracted_value_count
+            validate_value(f"singletons.{name}", field, root_match)
+            if extracted_value_count > before:
+                singleton_values += 1
+
+        for collection_name, collection in self.collections.items():
+            matches = _find_matches(payload, collection.path)
+            collection_counts[collection_name] = len(matches)
+            if len(matches) != collection.observed_occurrences:
+                errors.append(
+                    f"collections.{collection_name}: occurrence mismatch "
+                    f"mapping={collection.observed_occurrences} payload={len(matches)}"
+                )
+            for match in matches:
+                for field_name, field in collection.fields.items():
+                    validate_value(
+                        f"collections.{collection_name}.fields.{field_name}",
+                        field,
+                        match,
+                    )
+
+        if errors:
+            raise ValueError("Armory raw payload validation failed: " + "; ".join(errors))
+        return {
+            "mapping_id": self.mapping_id,
+            "endpoint_kind": self.endpoint_kind,
+            "reviewed_payload_hash": self.reviewed_payload_hash,
+            "schema_fingerprint": self.schema_fingerprint,
+            "route_template": self.route_template,
+            "route_matched": route is not None,
+            "singleton_value_count": singleton_values,
+            "collection_counts": collection_counts,
+            "extracted_value_count": extracted_value_count,
+            "raw_payload_validated": True,
         }
