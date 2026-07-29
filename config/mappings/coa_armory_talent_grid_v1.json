@@ -1,0 +1,69 @@
+{
+  "mapping_schema_version": 1,
+  "mapping_id": "coa-armory-talent-grid-v1",
+  "source_code": "coa_ascension_logs",
+  "mapping_version": "1",
+  "status": "candidate",
+  "endpoint_kind": "talent_grid",
+  "route_template": "/api/armory/talent-grid/{class_slug}",
+  "schema_fingerprint": "7e3b3bfc3966ddc5d0160c8d466e5ba92edbe55440449619d7204102a25b3240",
+  "reviewed_payload_hash": "11be25407ec00898547c1b7f342d4596268b3164df9fe0f120bb911559cc5206",
+  "review_packet_schema_version": 2,
+  "provenance_type": "upstream_derived",
+  "singletons": {
+    "class_name": {"selector": "/class_name", "review_path": "/class_name", "types": ["string"], "nullable": false, "required": true},
+    "success": {"selector": "/success", "review_path": "/success", "types": ["boolean"], "nullable": false, "required": true}
+  },
+  "collections": {
+    "trees": {
+      "path": "/trees/*",
+      "observed_occurrences": 4,
+      "fields": {
+        "tree_name": {"selector": "/tree", "review_path": "/trees/*/tree", "types": ["string"], "nullable": false, "required": true},
+        "tree_slug": {"selector": "/tree_slug", "review_path": "/trees/*/tree_slug", "types": ["string"], "nullable": false, "required": true},
+        "is_class_tree": {"selector": "/is_class_tree", "review_path": "/trees/*/is_class_tree", "types": ["boolean"], "nullable": false, "required": true}
+      }
+    },
+    "talents": {
+      "path": "/trees/*/talents/*",
+      "observed_occurrences": 158,
+      "fields": {
+        "source_talent_id": {"selector": "/talent_id", "review_path": "/trees/*/talents/*/talent_id", "types": ["integer"], "nullable": false, "required": true},
+        "source_spell_id": {"selector": "/spell_id", "review_path": "/trees/*/talents/*/spell_id", "types": ["integer"], "nullable": false, "required": true},
+        "display_name": {"selector": "/name", "review_path": "/trees/*/talents/*/name", "types": ["string"], "nullable": false, "required": true},
+        "icon": {"selector": "/icon", "review_path": "/trees/*/talents/*/icon", "types": ["string"], "nullable": false, "required": true},
+        "node_type": {"selector": "/node_type", "review_path": "/trees/*/talents/*/node_type", "types": ["string"], "nullable": false, "required": true},
+        "grid_row": {"selector": "/grid_row", "review_path": "/trees/*/talents/*/grid_row", "types": ["integer"], "nullable": false, "required": true},
+        "grid_col": {"selector": "/grid_col", "review_path": "/trees/*/talents/*/grid_col", "types": ["integer"], "nullable": false, "required": true},
+        "max_ranks": {"selector": "/max_ranks", "review_path": "/trees/*/talents/*/max_ranks", "types": ["integer"], "nullable": false, "required": true},
+        "group_id": {"selector": "/group_id", "review_path": "/trees/*/talents/*/group_id", "types": ["integer", "null"], "nullable": true, "required": false},
+        "category_name": {"selector": "/category_name", "review_path": "/trees/*/talents/*/category_name", "types": ["null"], "nullable": true, "required": false, "note": "Observed as null for all 158 reviewed talent records."}
+      }
+    },
+    "connections": {
+      "path": "/trees/*/talents/*/connected_ids/*",
+      "observed_occurrences": 243,
+      "fields": {
+        "connected_talent_id": {"selector": "@item", "review_path": "/trees/*/talents/*/connected_ids/*", "types": ["integer"], "nullable": false, "required": true}
+      }
+    },
+    "rank_texts": {
+      "path": "/trees/*/talents/*/ranks/*",
+      "observed_occurrences": 158,
+      "fields": {
+        "rank_text": {"selector": "@item", "review_path": "/trees/*/talents/*/ranks/*", "types": ["string"], "nullable": false, "required": true}
+      }
+    }
+  },
+  "deferred_scopes": [
+    "/trees/*/talents/*/lock_rules",
+    "/trees/*/talents/*/rank_spell_ids"
+  ],
+  "review_notes": [
+    "Candidate mapping derived from one immutable talent-grid payload and mapping-review schema v2.",
+    "All four trees and 158 talent records share the reviewed field shape.",
+    "Empty lock_rules and rank_spell_ids arrays do not establish their future item schemas.",
+    "Display text is an upstream observation and does not prove runtime magnitude, stacking or scope.",
+    "Promotion to verified requires explicit human review and a separate code change."
+  ]
+}
