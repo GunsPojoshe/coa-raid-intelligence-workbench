@@ -21,6 +21,7 @@ from .armory_endpoint_capture import (
     capture_armory_endpoints_progressively,
 )
 from .combatants_candidate_extraction import extract_observed_combatants_info_candidates
+from .combatants_candidate_promotion import promote_observed_combatants_info_candidates
 from .combatants_info_field_selection import select_observed_combatants_info_fields
 from .combatants_mapping_design import design_observed_combatants_info_mappings
 from .combatants_scope_review import build_observed_combatants_info_deep_scope_review
@@ -143,6 +144,7 @@ __all__ = [
     "observed_report_slice_capture_to_dict",
     "probe_registry_route",
     "probe_result_to_dict",
+    "promote_observed_combatants_info_candidates",
     "promote_observed_report_slice_candidate_mappings",
     "publish_observed_report_slice_mappings",
     "read_response_resilient",
