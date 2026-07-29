@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from copy import deepcopy
+from pathlib import Path
 
 import pytest
 
@@ -202,6 +203,41 @@ def test_candidate_mapping_is_blocked_from_production():
     assert contract.production_ready is False
     with pytest.raises(ValueError, match="is not verified"):
         contract.require_verified()
+
+
+def test_verified_mapping_requires_review_metadata():
+    payload = _payload()
+    mapping = _mapping(payload)
+    mapping["status"] = "verified"
+
+    with pytest.raises(ValueError, match="reviewed_by"):
+        ReportDiscoveryMappingContract.from_dict(mapping)
+
+    mapping["reviewed_by"] = "Operator"
+    mapping["reviewed_at"] = "2026-07-29T16:41:00+03:00"
+    contract = ReportDiscoveryMappingContract.from_dict(mapping)
+
+    assert contract.production_ready is True
+    contract.require_verified()
+
+
+def test_checked_in_report_mapping_is_verified():
+    repository_root = Path(__file__).resolve().parents[2]
+    contract = ReportDiscoveryMappingContract.from_path(
+        repository_root / "config" / "mappings" / "coa_public_report_discovery_v1.json"
+    )
+
+    assert contract.production_ready is True
+    assert contract.reviewed_by == "GunsPojoshe (operator), OpenAI-assisted review"
+    assert contract.reviewed_at == "2026-07-29T16:41:00+03:00"
+    assert contract.deferred_scopes == (
+        "/pagination",
+        "/reports/*/guild_id",
+        "/reports/*/guild_name",
+        "/reports/*/highest_difficulty",
+        "/reports/*/locations",
+    )
+    contract.require_verified()
 
 
 def test_summary_type_mismatch_is_rejected():
