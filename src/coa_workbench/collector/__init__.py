@@ -49,6 +49,16 @@ from .report_discovery_mapping_review import build_report_discovery_mapping_revi
 from .report_discovery_mapping_summary import summarize_report_discovery_mapping_review
 from .report_discovery_mapping_text import render_report_discovery_mapping_summary_text
 from .report_discovery_review import review_report_discovery_capture
+from .report_slice_capture import (
+    COMBATANTS_INFO_ROUTE_SHAPE,
+    ENCOUNTER_DETAIL_ROUTE_SHAPE,
+    OBSERVED_REPORT_SLICE_ROUTE_SHAPES,
+    REPORT_DETAIL_ROUTE_SHAPE,
+    ObservedReportSliceCaptureResult,
+    ReportSliceEndpointCapture,
+    capture_observed_report_slice,
+    observed_report_slice_capture_to_dict,
+)
 from .route_discovery import discover_api_route_candidates
 from .source_registry import (
     SourceRegistry,
@@ -69,16 +79,22 @@ __all__ = [
     "ArmoryEndpointCaptureResult",
     "BuildPageCapture",
     "COA_FETCH_CONTEXT_V1",
+    "COMBATANTS_INFO_ROUTE_SHAPE",
+    "ENCOUNTER_DETAIL_ROUTE_SHAPE",
     "EmbeddedJsonCapture",
     "FETCH_CONTEXT_PROFILE_VERSION",
     "HttpRequestProfile",
+    "OBSERVED_REPORT_SLICE_ROUTE_SHAPES",
+    "ObservedReportSliceCaptureResult",
     "ProbeResult",
     "REPORTS_PUBLIC_ROUTE",
+    "REPORT_DETAIL_ROUTE_SHAPE",
     "REPORT_DISCOVERY_DEFAULT_LIMIT",
     "REPORT_DISCOVERY_MAX_LIMIT",
     "RawArchive",
     "RawCapture",
     "ReportDiscoveryCapture",
+    "ReportSliceEndpointCapture",
     "SameOriginHttpSession",
     "SourceRegistry",
     "SourceRoute",
@@ -94,6 +110,7 @@ __all__ = [
     "capture_armory_endpoints_progressively",
     "capture_asset_with_archive_fallback",
     "capture_character_build_pages",
+    "capture_observed_report_slice",
     "capture_public_report_discovery",
     "capture_to_dict",
     "discover_api_route_candidates",
@@ -101,6 +118,7 @@ __all__ = [
     "inventory_har",
     "load_source_registry",
     "normalize_api_route_shape",
+    "observed_report_slice_capture_to_dict",
     "probe_registry_route",
     "probe_result_to_dict",
     "read_response_resilient",
