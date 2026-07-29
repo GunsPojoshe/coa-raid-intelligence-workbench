@@ -3,7 +3,7 @@
   "mapping_id": "coa-public-report-discovery-v1",
   "source_code": "coa_ascension_logs",
   "mapping_version": "1",
-  "status": "candidate",
+  "status": "verified",
   "route_template": "/api/reports/public",
   "schema_fingerprint": "4f47885820e6931cd76db538cabd68405b4969778c1bede9dee53a7f1e005ed4",
   "reviewed_payload_hash": "2203e52709fad4fbc8d5235bc3699abeec6b85cf1e13b9df3e24091ddf8775c2",
@@ -104,11 +104,13 @@
     "/reports/*/locations"
   ],
   "review_notes": [
-    "Candidate mapping derived from one exact immutable page=1, limit=5 public-report payload.",
+    "Verified parser/schema mapping derived from one exact immutable page=1, limit=5 public-report payload.",
     "The collection selector /reports/* is the only report-like collection in the reviewed payload.",
     "All eleven source keys were present in all five reviewed report objects.",
     "guild_id and guild_name were observed only as null and remain deferred.",
     "highest_difficulty, locations and pagination remain deferred because their source semantics are not yet independently reviewed.",
-    "This candidate is not production-ready and must not be used for canonical normalization."
-  ]
+    "Verification confirms exact selector/type compatibility only; it does not establish category, pagination, limit-enforcement or gameplay semantics."
+  ],
+  "reviewed_by": "GunsPojoshe (operator), OpenAI-assisted review",
+  "reviewed_at": "2026-07-29T16:41:00+03:00"
 }
