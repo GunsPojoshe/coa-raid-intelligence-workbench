@@ -1,8 +1,8 @@
 # Фактическое состояние проекта
 
-Дата актуализации: 2026-07-29.
+Дата актуализации: **2026-07-30**.
 
-Этот документ фиксирует изменяемое operational state. Перед работой всегда перепроверять GitHub, код и CI.
+Этот документ фиксирует изменяемое operational state. Перед работой всегда перепроверять GitHub, код, local receipts и CI.
 
 ## Репозиторий
 
@@ -13,51 +13,51 @@ main
     └── e3/real-log-capture         PR #7 -> e2, Draft
 ```
 
-Latest verified checkpoint:
+Green baseline перед обновлением документации:
 
 ```text
-commit: 84e0773f4259005da572731f1e839473f867055f
+commit: 2b92b3d02339a3748d146c1b15a6718f84494e6f
 workflow: Verify repository
-run: #220
-conclusion: success
+run: #280
 Ubuntu: success
 Windows: success
 ```
 
+PR #7 остаётся open, Draft и mergeable.
+
 ## Реализованный фундамент
+
+### Product runtime
 
 - localhost FastAPI application;
 - browser raid constructor FLEX / 10 / 25 / 40;
+- Python validation;
+- class/spec/role catalog;
 - DuckDB raid-plan persistence;
-- immutable raw archive;
-- separate observations and deduplicated payload bodies;
+- create/read/update/delete plans;
+- request IDs и diagnostic logging;
+- localhost-only bind по умолчанию.
+
+### Evidence runtime
+
 - source registry;
-- JSON/HAR import and safe inventory;
+- safe source probe;
+- immutable content-addressed raw archive;
+- repeated retrieval observation отдельно от deduplicated payload body;
+- JSON/HAR import;
+- deterministic privacy-safe HAR inventory;
+- archived gzip JSON inspection;
 - schema fingerprints;
-- verified normalization mapping gate;
+- versioned mapping contracts;
+- mandatory `verified` mapping gate;
 - canonical report/encounter/actor/participant/aura records;
+- normalization rejects;
 - Aura State Engine;
-- hypotheses and supporting/contradicting evidence;
-- trust and weighting policies;
-- migrations `0001`–`0006`;
-- repository verifier and Ubuntu/Windows CI;
-- SPA/asset capture and frontend route discovery;
-- versioned HTTP profile `coa-fetch-context-v1`;
-- persistent same-origin session with in-memory cookie jar;
-- timeout/retry/incomplete-response handling;
-- endpoint-isolated progressive/resumable Armory capture;
-- structural review and mapping-review packet schema v2;
-- raw-archive selector validation;
-- verified Armory character and talent-grid mappings;
-- bounded one-page public-report discovery collector;
-- exact public-report structural and mapping reviews;
-- completed verified public-report production gate for seven reviewed scalar fields;
-- archive-only SPA API route inventory;
-- inventory-gated observed report-slice capture;
-- exact offline structural review for report detail, encounter detail and combatants info;
-- scalar-free full-root report-slice mapping review;
-- wildcarded scalar-free report-slice mapping summary;
-- explicit direct-field scope-review tooling.
+- hypotheses и evidence links;
+- trust/weighting policies;
+- migrations `0001`–`0007`;
+- repository verifier;
+- Ubuntu/Windows CI.
 
 ## Trust boundary
 
@@ -65,47 +65,15 @@ Normalization разрешена только при:
 
 ```text
 immutable archived payload
-+ exact SHA-256
++ exact payload SHA-256
 + exact schema fingerprint
 + reviewed mapping
 + mapping status verified
 ```
 
-Verified schema/parser compatibility не является подтверждением игровой механики. В planner scoring допускаются только corroborated/confirmed mechanics.
+Parser/schema verification не подтверждает игровую механику. В canonical planner scoring допускаются только `corroborated` и `confirmed` mechanics.
 
-## Real aura checkpoint
-
-Report `2987`, spell `968746`.
-
-### Encounter 64795
-
-```text
-fingerprint: 2994424cb95c2a7e1997651226b7942367ebe77003e0f4614aae5da4920f8b98
-mapping: coa-aura-timeline-single-encounter-v1
-mapping status: verified
-canonical events: 6
-reconstructed intervals: 3
-reference intervals: 3
-rejects: 0
-anomalies: 0
-```
-
-### Encounter 64796
-
-```text
-window: 10382-38265 ms
-full duration: 117215 ms
-fingerprint: d8b6dd869d6adf8f3433f9e285b8270cd1aa8d640839c915a42c80b2211cbf0b
-canonical events: 3
-reconstructed intervals: 2
-reference intervals: 2
-rejects: 0
-anomalies: 0
-```
-
-Это подтверждает technical behavior normalizer/Aura State Engine, но не numeric/runtime mechanic `Ninja's Focus`.
-
-## Completed Armory production gate
+## Verified Armory checkpoint
 
 Verified mappings:
 
@@ -121,7 +89,7 @@ reviewed_by: GunsPojoshe (operator), OpenAI-assisted review
 reviewed_at: 2026-07-29T15:34:00+03:00
 ```
 
-User-local post-promotion validation:
+Post-promotion validation:
 
 ```text
 schema_version: 2
@@ -132,9 +100,9 @@ all_raw_archives_consistent: true
 all_production_ready: true
 ```
 
-Review decisions and deferred scopes are recorded in `docs/ARMORY_MAPPING_REVIEW_V1.md`.
+Deferred scopes remain documented in `docs/ARMORY_MAPPING_REVIEW_V1.md`.
 
-## Completed public-report production gate
+## Verified public-report discovery checkpoint
 
 Observed request:
 
@@ -146,55 +114,22 @@ sortBy=created_at
 sortOrder=desc
 ```
 
-Exact immutable capture:
+Exact binding:
 
 ```text
-HTTP: 200
-payload hash: 2203e52709fad4fbc8d5235bc3699abeec6b85cf1e13b9df3e24091ddf8775c2
+payload hash:       2203e52709fad4fbc8d5235bc3699abeec6b85cf1e13b9df3e24091ddf8775c2
 schema fingerprint: 4f47885820e6931cd76db538cabd68405b4969778c1bede9dee53a7f1e005ed4
+mapping:            config/mappings/coa_public_report_discovery_v1.json
+mapping status:     verified
+selected fields:    7
+production_ready:   true
 ```
 
-Verified mapping:
+Unverified: source category semantics, additional-page policy and pagination stopping rules.
 
-```text
-config/mappings/coa_public_report_discovery_v1.json
-mapping_id: coa-public-report-discovery-v1
-status: verified
-collection: /reports/*
-selected fields: 7
-reviewed_by: GunsPojoshe (operator), OpenAI-assisted review
-reviewed_at: 2026-07-29T16:41:00+03:00
-production_ready: true
-```
+## Observed report slice
 
-Deferred scopes:
-
-```text
-/pagination
-/reports/*/guild_id
-/reports/*/guild_name
-/reports/*/highest_difficulty
-/reports/*/locations
-```
-
-Any new payload hash or schema fingerprint requires a new review decision.
-
-## Archived SPA route inventory
-
-Local archive-only inventory:
-
-```text
-archive_count: 1
-route_candidate_count: 24
-lexically_relevant_candidate_count: 10
-all_archives_verified: true
-contains_source_record_scalar_values: false
-semantic_verification_required: true
-network_requests_performed: false
-route inventory hash: f66d683319b0efc141134e5314038e8984fcd698bac083818d462ed5d1cf240f
-```
-
-Observed route shapes selected for the bounded slice:
+Observed route shapes:
 
 ```text
 /api/reports/{template}
@@ -202,197 +137,285 @@ Observed route shapes selected for the bounded slice:
 /api/reports/{template}/encounters/{template}/combatants-info
 ```
 
-No separate `/roster` route was observed. `combatants-info` remains only a roster-adjacent candidate until mapping review establishes usable fields.
-
-## Observed report-slice capture
-
-All three endpoints returned HTTP 200 JSON and were archived immutably.
+Отдельный `/roster` route не наблюдался.
 
 ### Report detail
 
 ```text
-route: /api/reports/{template}
-payload hash: 161739896f0b8321f884bcc24d1896efb894a9c6e05166269189f9871c64cba9
+payload hash:       161739896f0b8321f884bcc24d1896efb894a9c6e05166269189f9871c64cba9
 schema fingerprint: 3d533a4178b67957bbd31544ddf5484bd5959635ebd5edcdd0c7689a4bace216
-bytes: 3562
-top-level keys: encounters, report, success, summary
+bytes:              3562
 ```
 
 ### Encounter detail
 
 ```text
-route: /api/reports/{template}/encounters/{template}
-payload hash: 955437d6c9c287cc7db280dd2388b88603af2785508061b95c7811dcd272fe22
+payload hash:       955437d6c9c287cc7db280dd2388b88603af2785508061b95c7811dcd272fe22
 schema fingerprint: 567f36824efb37a29b835df01ce9b1fcc79eae57d6230202d16a6265c6ca0e85
-bytes: 734084
-top-level keys: character_stats, character_target_damage, encounter, healing_by_character, healing_targets_by_source_and_spell, rankings, success, target_damage_by_source
+bytes:              734084
 ```
 
 ### Combatants info
 
 ```text
-route: /api/reports/{template}/encounters/{template}/combatants-info
-payload hash: 45672e0f0ff9eb461c575bdd38385795daa6326378bc3f8ad51474276140dc14
+payload hash:       45672e0f0ff9eb461c575bdd38385795daa6326378bc3f8ad51474276140dc14
 schema fingerprint: 41d6d15422c668f83d2ccae1ec0ff2969671861f9e43b21cb371578961c5f8ff
-bytes: 637520
-top-level keys: combatants, success
+bytes:              637520
 ```
 
-Capture boundary:
+## Completed report/encounter parser gate
+
+Published mappings:
 
 ```text
-route_inventory_verified: true
-contains_source_scalar_values: false
-semantic_verification_required: true
-normalization_allowed: false
+config/mappings/coa_report_detail_v1.json
+config/mappings/coa_encounter_detail_v1.json
 ```
 
-## Completed report-slice structural gate
-
-User-local exact offline structural review:
+Publication boundary:
 
 ```text
-schema_version: 1
-review_kind: observed_report_slice_structural_review
-route_inventory_hash: f66d683319b0efc141134e5314038e8984fcd698bac083818d462ed5d1cf240f
-raw_archive_count: 3
-candidate_collection_count: 1452
-all_archives_consistent: true
-contains_source_scalar_values: false
-semantic_verification_required: true
-normalization_allowed: false
+published mappings:                    2
+field contracts:                       54
+selected parser normalization allowed: true
+mechanic semantics verified:           false
+combatants-info available:             false
+aura normalization available:          false
+full report slice complete:            false
 ```
 
-All three endpoint kinds were present exactly once:
+## Completed selected-parser normalization
+
+Aggregate normalized input:
 
 ```text
-report_detail
-encounter_detail
-combatants_info
+reports:       2
+encounters:   15
+actors:       31
+participants: 31
+aura_events:   0
+rejects:       0
 ```
 
-The structural review revalidated each payload hash, schema fingerprint, uncompressed byte count, HTTP status, content type, top-level kind and top-level keys directly against the immutable archives.
+All mapping hashes, raw archives, counts and six cross-payload checks passed.
 
-## Completed report-slice mapping-review gate
+Local normalized batches contain source-derived scalar values and remain gitignored.
 
-User-local scalar-free full-root mapping review:
+## Completed deterministic reconstruction
+
+Output:
 
 ```text
-schema_version: 1
-review_kind: observed_report_slice_mapping_review
-endpoint_count: 3
-raw_archive_count: 3
-field_path_count: 860
-node_occurrence_count: 70011
-numeric_map_path_count: 9
-nullable_path_count: 108
-array_path_count: 73
-object_path_count: 112
-candidate_collection_count: 1452
-all_archives_consistent: true
-contains_source_scalar_values: false
-semantic_verification_required: true
-normalization_allowed: false
-ready_for_manual_mapping_review: true
+reports:       1
+encounters:   14
+actors:       31
+participants: 31
+aura_events:   0
+rejects:       0
 ```
 
-Per endpoint:
+Merge facts:
 
 ```text
-report_detail: field paths 52, nodes 168, candidate collections 2
-encounter_detail: field paths 126, nodes 34987, candidate collections 533
-combatants_info: field paths 682, nodes 34856, candidate collections 917
+duplicate reports merged:    1
+duplicate encounters merged: 1
+field conflicts:             0
+linkage checks:              9/9
 ```
 
-All three endpoints remain `review_status: candidate`.
+The reconstructed file is private and local-only.
 
-## Completed wildcarded mapping-summary gate
+## Completed selected-parser persistence
 
-User-local scalar-free mapping summary:
+Migration:
 
 ```text
-schema_version: 1
-summary_kind: observed_report_slice_mapping_summary
-endpoint_count: 3
-field_path_count: 860
-node_occurrence_count: 70011
-source_candidate_collection_count: 1452
-aggregated_candidate_path_count: 73
-shortlist_row_count: 22
-all_archives_consistent: true
-contains_source_scalar_values: false
-semantic_verification_required: true
-normalization_allowed: false
-ready_for_manual_scope_selection: true
-automatic_scope_selection: false
-can_promote: false
+migrations/0007_selected_parser_persistence.sql
 ```
 
-Per endpoint:
+Persisted local DuckDB state:
 
 ```text
-report_detail: aggregated paths 2, shortlist rows 3
-encounter_detail: aggregated paths 8, shortlist rows 8
-combatants_info: aggregated paths 63, shortlist rows 11
+reports:                       1
+encounters:                   14
+actors:                       31
+participants:                 31
+canonical entity observations:77
+normalization mappings:        2
+normalization runs:            2
+observation batches:           2
+rejects:                       0
+transaction committed:         true
 ```
 
-The candidate scores are navigation hints only. They do not select scopes, establish roster semantics or authorize mapping promotion.
+Core parser entities are persisted with reproducible provenance. The database remains local and private.
 
-## Explicit scope-review readiness
+## Combatants-info review and design
 
-Implemented and CI-verified:
+### Deep structural review
 
 ```text
-src/coa_workbench/collector/report_slice_scope_review.py
-scripts/review_observed_report_slice_scopes.py
-tests/unit/test_report_slice_scope_review.py
+bounded scope candidates: 12
+present scopes:           10
+required scopes:           4/4
+direct fields:             56
+missing optional scopes:    2
 ```
 
-The bounded packet reviews direct fields under these observed structural roots:
+Missing:
 
 ```text
-report_detail: /report
-report_detail: /encounters/*
-encounter_detail: /encounter
-encounter_detail: /character_stats/*
-combatants_info: /combatants/*
-combatants_info: /combatants/*/ci_resolved
-combatants_info: /combatants/*/ci_resolved/specialization
+/combatants/*/ci_resolved/mystic_enchants/*
+/combatants/*/ci_resolved/specialization/talents/trees/*
 ```
 
-The CLI writes both JSON and a PowerShell-safe UTF-8 text packet. It performs no network requests, automatic scope selection, automatic field selection, promotion or normalization.
+### Manual field selection
+
+```text
+selection groups:       8
+selected fields:       37
+deferred fields:       19
+actor linkage path:     /combatants/*/character_id
+candidate mappings:     not created
+```
+
+### Storage-aware mapping design
+
+Six dedicated immutable observation units:
+
+```text
+coa-combatants-actor-enrichment-v1
+coa-combatants-instance-context-v1
+coa-combatants-talent-container-v1
+coa-combatants-classless-talent-rank-v1
+coa-combatants-hero-build-entry-v1
+coa-combatants-gear-slot-v1
+```
+
+All target `canonical_entity_observation`; core actor mutation is forbidden.
+
+### Candidate extraction dry run
+
+Exact result:
+
+```text
+source matches:       1350
+output observations:  1343
+deduplicated matches: 7
+linked actors:        11
+actor name matches:   11
+integrity checks:     12/12
+core mutations:       0
+```
+
+Per design:
+
+```text
+actor enrichment:       11 -> 11
+instance context:        11 -> 4   (7 exact duplicates)
+talent container:        11 -> 11
+classless talent rank:  564 -> 564
+hero build entry:       564 -> 564
+gear slot:              189 -> 189
+```
+
+Verified for the exact payload:
+
+- raw archive;
+- observation manifest;
+- route context;
+- persisted report/encounter references;
+- 11 stable actor links;
+- exact existing actor names;
+- selected JSON types;
+- record hashes;
+- source match counts;
+- no core mutation.
+
+Still unverified:
+
+- companion-addon provenance;
+- semantic meaning and global uniqueness of nested identifiers;
+- talent/gear gameplay semantics;
+- automatic persistence policy;
+- promotion;
+- normalization as canonical player/build state;
+- planner scoring.
+
+The scalar-free receipt is versioned at:
+
+```text
+evidence/real-data/observed-combatants-info-candidate-extraction.json
+```
+
+## Real aura checkpoint
+
+Separate real-aura fixtures validate normalizer/Aura State Engine behavior for report `2987`, spell `968746`:
+
+```text
+encounter 64795: 6 events -> 3 intervals, 0 rejects, 0 anomalies
+encounter 64796: 3 events -> 2 intervals, 0 rejects, 0 anomalies
+```
+
+This does not verify numeric effect, stacking, overwrite, scope, provider equivalence or planner criticality.
+
+## Data and Git policy
+
+The user has authorized use of all local private context while the repository remains private. This allows local analysis but does not make secrets or bulky raw data appropriate Git artifacts.
+
+Versioned:
+
+- source code and tests;
+- migrations;
+- reviewed mappings;
+- canonical documentation;
+- scalar-free evidence receipts.
+
+Local-only by default:
+
+```text
+data/raw/
+data/warehouse/
+data/normalized/
+data/reconstructed/
+data/extracted/
+data/exchange/in/
+data/exchange/out/
+```
+
+Never commit cookies, tokens, Authorization headers, browser profiles, `.env` secrets or unsanitized HAR.
 
 ## Current blockers
 
-1. Direct fields under the seven explicit candidate scopes have not yet been reviewed.
-2. Minimal report, encounter and combatant field sets have not yet been selected.
-3. Exact versioned mappings for the three report-slice endpoints do not exist yet.
-4. A complete report/encounter/participants slice is not normalized.
-5. Evidence coverage remains narrow.
-6. No corroborated gameplay mechanic is ready for canonical planner scoring.
-7. Source category/filter semantics and pagination policy remain unverified.
+1. Candidate combatants extraction has not passed a separate manual promotion gate.
+2. The 1343 extracted observations are not persisted.
+3. No read model exists yet for actor build/talent/gear observations.
+4. Companion-addon provenance is not verified.
+5. Nested collection semantics and identifier uniqueness are not verified.
+6. The report slice contains no aura events and is not complete.
+7. Evidence coverage is insufficient for any new corroborated gameplay mechanic.
+8. Planner scoring remains correctly disabled for observed/candidate data.
 
 ## Next bounded tasks
 
-1. Build the explicit scalar-free direct-field scope packet locally.
-2. Review field presence, types, nullability and occurrence coverage.
-3. Select minimal fields without assigning unsupported semantics.
-4. Create exact candidate mappings bound to payload hashes and schema fingerprints.
-5. Validate candidate mappings against exact raw archives.
-6. Promote mappings manually only after review.
-7. Normalize only after all required mappings are `verified`.
+1. Validate the exact candidate extraction receipt as the input to a manual promotion decision.
+2. Define immutable persistence contracts for the six combatants observation types.
+3. Add an idempotent migration only if the existing observation table cannot represent required provenance.
+4. Persist candidate observations atomically without mutating core actor rows.
+5. Add deterministic queries/read models for actor enrichment and build observations.
+6. Investigate exact aura-related endpoints for the observed report slice.
+7. Gather independent supporting and contradicting observations before mechanic promotion.
 
 ## Completion gate
 
-PR #3 and PR #7 remain Draft until the relevant evidence checkpoint is complete:
+PR #7 remains Draft until the relevant evidence checkpoint includes:
 
-- real immutable payloads;
-- stable fingerprints;
-- reviewed verified mappings;
-- normalized report/encounter/actors/participants/aura events;
-- reconstructed intervals;
+- exact immutable payloads and fingerprints;
+- verified report/encounter parsers;
+- persisted report/encounter/actors/participants;
+- reviewed combatants observations;
+- aura observations and reconstructed intervals for the report slice;
 - independent supporting observations;
 - contradicting evidence review;
-- reproducible versioned output;
-- provenance;
+- reproducible versioned provenance;
 - green Ubuntu and Windows verification.
