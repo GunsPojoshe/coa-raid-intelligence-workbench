@@ -55,6 +55,7 @@ from .report_discovery_mapping_review import build_report_discovery_mapping_revi
 from .report_discovery_mapping_summary import summarize_report_discovery_mapping_review
 from .report_discovery_mapping_text import render_report_discovery_mapping_summary_text
 from .report_discovery_review import review_report_discovery_capture
+from .report_pagination_evidence import capture_bounded_report_pagination_evidence
 from .report_slice_capture import (
     COMBATANTS_INFO_ROUTE_SHAPE,
     ENCOUNTER_DETAIL_ROUTE_SHAPE,
@@ -131,6 +132,7 @@ __all__ = [
     "capture_armory_endpoint",
     "capture_armory_endpoints_progressively",
     "capture_asset_with_archive_fallback",
+    "capture_bounded_report_pagination_evidence",
     "capture_character_build_pages",
     "capture_observed_report_slice",
     "capture_public_report_discovery",
