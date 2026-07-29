@@ -57,10 +57,18 @@ def _load_object(path: Path, description: str) -> dict[str, Any]:
     return payload
 
 
-def _load_archived_payload(endpoint: dict[str, Any], *, raw_root: Path) -> tuple[Any, str, str]:
+def _load_archived_payload(
+    endpoint: dict[str, Any],
+    *,
+    raw_root: Path,
+) -> tuple[Any, str, str]:
     root = raw_root.resolve()
     path = (root / str(endpoint["payload_path"])).resolve()
-    if not path.is_relative_to(root) or not path.is_file() or not path.name.endswith(".json.gz"):
+    if (
+        not path.is_relative_to(root)
+        or not path.is_file()
+        or not path.name.endswith(".json.gz")
+    ):
         raise ValueError("Armory payload must be a gzip JSON archive below raw-root")
     body = gzip.decompress(path.read_bytes())
     payload_hash = hashlib.sha256(body).hexdigest()
