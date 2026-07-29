@@ -16,15 +16,15 @@ main
 Latest verified code checkpoint before this documentation update:
 
 ```text
-commit: 0190937d6ba9364ef88ad03e164964fd18415ba7
+commit: a1517d44f3024efcb237f1f47ca775de1fee1c33
 workflow: Verify repository
-run: #126
+run: #133
 conclusion: success
 Ubuntu: success
 Windows: success
 ```
 
-Documentation commits follow that code checkpoint. Не считать HEAD и CI status из документа вечными.
+Documentation commits follow that checkpoint. Не считать HEAD и CI status из документа вечными.
 
 ## Реализованный фундамент
 
@@ -50,7 +50,8 @@ Documentation commits follow that code checkpoint. Не считать HEAD и C
 - endpoint-isolated progressive/resumable Armory capture;
 - structural review and mapping-review packet schema v2;
 - raw-archive selector validation;
-- verified Armory character and talent-grid mappings.
+- verified Armory character and talent-grid mappings;
+- one-page bounded public-report discovery collector and CLI.
 
 ## Trust boundary
 
@@ -152,22 +153,6 @@ config/mappings/coa_armory_character_v1.json
 config/mappings/coa_armory_talent_grid_v1.json
 ```
 
-Review document:
-
-```text
-docs/ARMORY_MAPPING_REVIEW_V1.md
-```
-
-Review decisions:
-
-- source `cao_id` retained as `source_cao_id`;
-- source `bisbeard_tree` retained as `source_bisbeard_tree`;
-- talent records preserve parent tree;
-- connections preserve source talent and tree;
-- rank texts preserve source talent and tree;
-- empty `lock_rules` and `rank_spell_ids` item schemas remain deferred;
-- detailed gear, hero build and computational stat internals remain deferred.
-
 Reviewer metadata:
 
 ```text
@@ -175,9 +160,11 @@ reviewed_by: GunsPojoshe (operator), OpenAI-assisted review
 reviewed_at: 2026-07-29T15:34:00+03:00
 ```
 
-## Completed raw-archive validation
+Review decisions and deferred scopes are recorded in `docs/ARMORY_MAPPING_REVIEW_V1.md`.
 
-User-local validation against the exact private archives:
+## Completed Armory production gate
+
+User-local validation against the exact private archives after promotion:
 
 ```text
 schema_version: 2
@@ -185,12 +172,10 @@ mapping_count: 2
 raw_archive_count: 2
 all_structurally_consistent: true
 all_raw_archives_consistent: true
-all_production_ready: false
+all_production_ready: true
 ```
 
-The run was executed before promotion, so `all_production_ready: false` was expected.
-
-Per-mapping result:
+Per-mapping raw validation established before promotion:
 
 ```text
 coa-armory-character-v1
@@ -206,34 +191,70 @@ coa-armory-talent-grid-v1
   extracted_value_count: 2955
 ```
 
-After pulling the promotion commits, a repeated local run must return:
+Any new payload hash or fingerprint requires a new review decision.
+
+## Bounded report discovery scaffold
+
+Implemented files:
 
 ```text
-all_structurally_consistent: true
-all_raw_archives_consistent: true
-all_production_ready: true
+src/coa_workbench/collector/report_discovery.py
+scripts/capture_report_discovery.py
+tests/unit/test_report_discovery.py
 ```
 
-Any new payload hash or fingerprint requires a new review decision.
+The collector is deliberately limited to the observed request shape:
+
+```text
+GET /api/reports/public
+page=<explicit integer >= 1>
+limit=<1..5, default 5>
+sortBy=created_at
+sortOrder=desc
+```
+
+Verified in code/tests:
+
+- one explicitly requested page per invocation;
+- hard maximum of five returned source records requested from the endpoint;
+- exact observed sort keys only;
+- response archived before JSON interpretation;
+- invalid JSON remains archived but the result is incomplete;
+- transport failure does not create a false raw capture;
+- compact output contains hashes, fingerprint and top-level shape only;
+- compact output does not expose report IDs, names or other source scalar values;
+- request header values and cookies are not persisted.
+
+Not yet verified from a real report-discovery response:
+
+- top-level response shape and field paths;
+- actual number of returned records;
+- meaning of any source category/filter fields;
+- whether additional pages exist;
+- source pagination metadata or stopping rules;
+- deterministic cross-page/category selection.
+
+`local_category` is only a local label. It must not be treated as a source-supported category.
 
 ## Current blockers
 
-1. Bounded report discovery filters and pagination are not reviewed.
-2. Default report limits are not implemented/verified against real behavior.
-3. A complete report/encounter/roster slice is not normalized.
-4. Evidence coverage remains narrow.
-5. No corroborated gameplay mechanic is ready for canonical planner scoring.
-6. `docs/PROJECT_MASTER_CONTEXT.md` still contains older historical sections and must not override this operational state without code verification.
+1. One real `/api/reports/public` page has not yet been captured with the new bounded collector.
+2. Report response shape has not been reviewed against an immutable archive.
+3. Source category/filter semantics and pagination policy remain unverified.
+4. A complete report/encounter/roster slice is not normalized.
+5. Evidence coverage remains narrow.
+6. No corroborated gameplay mechanic is ready for canonical planner scoring.
+7. `docs/PROJECT_MASTER_CONTEXT.md` contains historical sections and must not override this operational state without code verification.
 
 ## Next bounded tasks
 
-1. Inspect existing report discovery code and frontend observations.
-2. Implement bounded report discovery with default up to 5 reports per category.
-3. Verify filters and pagination only from observed source behavior.
-4. Archive one deterministic discovery result.
-5. Select and normalize one complete report/encounter/roster slice.
-6. Expand supporting and contradicting evidence.
-7. Integrate only corroborated/confirmed mechanics into planner scoring.
+1. Run one local bounded capture with `page=1`, `limit=5`, `sortBy=created_at`, `sortOrder=desc`.
+2. Review only the compact output and archive identifiers; do not print or commit the raw response.
+3. Build a scalar-free structural review for the captured response.
+4. Confirm response shape before defining report selectors or mappings.
+5. Investigate filters/categories/pagination only from additional explicit observations.
+6. Select and normalize one complete report/encounter/roster slice after reviewed mappings exist.
+7. Expand supporting and contradicting evidence.
 
 ## Completion gate
 
