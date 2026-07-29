@@ -40,9 +40,7 @@ def _arguments() -> argparse.Namespace:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path(
-            "data/exchange/out/observed-report-slice-candidate-mapping-validation.json"
-        ),
+        default=Path("data/exchange/out/observed-report-slice-candidate-mapping-validation.json"),
     )
     return parser.parse_args()
 
