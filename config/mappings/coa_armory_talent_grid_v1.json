@@ -28,6 +28,7 @@
       "path": "/trees/*/talents/*",
       "observed_occurrences": 158,
       "fields": {
+        "tree_slug": {"selector": "@ancestor[1]/tree_slug", "review_path": "/trees/*/tree_slug", "types": ["string"], "nullable": false, "required": true},
         "source_talent_id": {"selector": "/talent_id", "review_path": "/trees/*/talents/*/talent_id", "types": ["integer"], "nullable": false, "required": true},
         "source_spell_id": {"selector": "/spell_id", "review_path": "/trees/*/talents/*/spell_id", "types": ["integer"], "nullable": false, "required": true},
         "display_name": {"selector": "/name", "review_path": "/trees/*/talents/*/name", "types": ["string"], "nullable": false, "required": true},
@@ -44,6 +45,8 @@
       "path": "/trees/*/talents/*/connected_ids/*",
       "observed_occurrences": 243,
       "fields": {
+        "tree_slug": {"selector": "@ancestor[3]/tree_slug", "review_path": "/trees/*/tree_slug", "types": ["string"], "nullable": false, "required": true},
+        "source_talent_id": {"selector": "@ancestor[1]/talent_id", "review_path": "/trees/*/talents/*/talent_id", "types": ["integer"], "nullable": false, "required": true},
         "connected_talent_id": {"selector": "@item", "review_path": "/trees/*/talents/*/connected_ids/*", "types": ["integer"], "nullable": false, "required": true}
       }
     },
@@ -51,6 +54,8 @@
       "path": "/trees/*/talents/*/ranks/*",
       "observed_occurrences": 158,
       "fields": {
+        "tree_slug": {"selector": "@ancestor[3]/tree_slug", "review_path": "/trees/*/tree_slug", "types": ["string"], "nullable": false, "required": true},
+        "source_talent_id": {"selector": "@ancestor[1]/talent_id", "review_path": "/trees/*/talents/*/talent_id", "types": ["integer"], "nullable": false, "required": true},
         "rank_text": {"selector": "@item", "review_path": "/trees/*/talents/*/ranks/*", "types": ["string"], "nullable": false, "required": true}
       }
     }
@@ -62,8 +67,9 @@
   "review_notes": [
     "Candidate mapping derived from one immutable talent-grid payload and mapping-review schema v2.",
     "All four trees and 158 talent records share the reviewed field shape.",
+    "Talent, connection and rank-text records retain their parent talent and tree relationships through reviewed ancestor selectors.",
     "Empty lock_rules and rank_spell_ids arrays do not establish their future item schemas.",
     "Display text is an upstream observation and does not prove runtime magnitude, stacking or scope.",
-    "Promotion to verified requires explicit human review and a separate code change."
+    "Promotion to verified requires explicit human review, raw-archive selector validation and a separate code change."
   ]
 }
