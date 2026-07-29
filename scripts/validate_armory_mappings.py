@@ -6,6 +6,7 @@ import hashlib
 import json
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 from coa_workbench.collector.armory_structural_review import (
     review_armory_capture_manifest,
@@ -75,6 +76,13 @@ def _load_archived_payload(
     return payload, payload_hash, fingerprint
 
 
+def _route_path(value: object) -> str | None:
+    if not isinstance(value, str) or not value:
+        return None
+    path = urlsplit(value).path
+    return path or None
+
+
 def main() -> int:
     args = _arguments()
     mapping_paths = args.mappings or [
@@ -100,7 +108,7 @@ def main() -> int:
             payload,
             payload_hash=payload_hash,
             schema_fingerprint=fingerprint,
-            route=endpoint.get("route"),
+            route=_route_path(endpoint.get("route")),
         )
         review_result["mapping_file"] = mapping_path.as_posix()
         review_result["raw_archive_validation"] = archive_result
