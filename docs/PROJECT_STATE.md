@@ -2,27 +2,29 @@
 
 Дата актуализации: 2026-07-29.
 
-Главный контекст:
-
-```text
-docs/PROJECT_MASTER_CONTEXT.md
-```
-
-Этот документ фиксирует изменяемое operational state. Перед работой проверять GitHub, код и CI заново.
+Этот документ фиксирует изменяемое operational state. Перед работой всегда перепроверять GitHub, код и CI.
 
 ## Репозиторий
 
-- repository: `GunsPojoshe/coa-raid-intelligence-workbench`;
-- default branch: `main`;
-- evidence branch: `e2/log-evidence-refactor`;
-- active capture branch: `e3/real-log-capture`;
-- PR #3: `e2/log-evidence-refactor -> main`, Draft;
-- PR #7: `e3/real-log-capture -> e2/log-evidence-refactor`, Draft;
-- PR #8 safe HAR inventory merged into PR #7;
-- latest verified branch head: `7772eac950e005f93b28d5b90bb6935f04a3da74`;
-- latest verified workflow: `Verify repository`, run #119, success.
+```text
+repository: GunsPojoshe/coa-raid-intelligence-workbench
+main
+└── e2/log-evidence-refactor        PR #3 -> main, Draft
+    └── e3/real-log-capture         PR #7 -> e2, Draft
+```
 
-Не доверять commit count, HEAD или CI status из документа без проверки.
+Latest verified code checkpoint before this documentation update:
+
+```text
+commit: 0190937d6ba9364ef88ad03e164964fd18415ba7
+workflow: Verify repository
+run: #126
+conclusion: success
+Ubuntu: success
+Windows: success
+```
+
+Documentation commits follow that code checkpoint. Не считать HEAD и CI status из документа вечными.
 
 ## Реализованный фундамент
 
@@ -32,8 +34,7 @@ docs/PROJECT_MASTER_CONTEXT.md
 - immutable raw archive;
 - separate observations and deduplicated payload bodies;
 - source registry;
-- JSON/HAR import;
-- safe HAR inventory;
+- JSON/HAR import and safe inventory;
 - schema fingerprints;
 - verified normalization mapping gate;
 - canonical report/encounter/actor/participant/aura records;
@@ -48,12 +49,26 @@ docs/PROJECT_MASTER_CONTEXT.md
 - timeout/retry/incomplete-response handling;
 - endpoint-isolated progressive/resumable Armory capture;
 - structural review and mapping-review packet schema v2;
-- candidate Armory mapping contracts;
-- type-only and raw-archive mapping validation gates.
+- raw-archive selector validation;
+- verified Armory character and talent-grid mappings.
+
+## Trust boundary
+
+Normalization разрешена только при:
+
+```text
+immutable archived payload
++ exact SHA-256
++ exact schema fingerprint
++ reviewed mapping
++ mapping status verified
+```
+
+Verified schema/parser compatibility не является подтверждением игровой механики. В planner scoring допускаются только corroborated/confirmed mechanics.
 
 ## Real aura checkpoint
 
-Report `2987`, spell `968746`:
+Report `2987`, spell `968746`.
 
 ### Encounter 64795
 
@@ -82,23 +97,6 @@ anomalies: 0
 ```
 
 Это подтверждает technical behavior normalizer/Aura State Engine, но не numeric/runtime mechanic `Ninja's Focus`.
-
-## HTTP access finding
-
-Полный same-origin profile возвращал HTTP 200 для:
-
-- `/api/reports/public`;
-- `/api/characters/search`;
-- `/api/armory/by-name/...`;
-- `/api/armory/character/156120`;
-- `/api/armory/talent-grid/felsworn`.
-
-Не доказано:
-
-- минимальное подмножество headers;
-- обязательность cookie;
-- request-order dependency;
-- Armory-first behavior в completely fresh session.
 
 ## Real Armory capture
 
@@ -134,7 +132,7 @@ keys: class_name, success, trees
 
 Raw payloads и local review/validation outputs остаются gitignored.
 
-## Mapping review checkpoint
+## Armory mapping review
 
 Review packet schema `2`:
 
@@ -147,107 +145,95 @@ contains_source_scalar_values: false
 ready_for_manual_mapping_review: true
 ```
 
-Candidate mappings:
+Verified mappings:
 
-- `config/mappings/coa_armory_character_v1.json`;
-- `config/mappings/coa_armory_talent_grid_v1.json`.
+```text
+config/mappings/coa_armory_character_v1.json
+config/mappings/coa_armory_talent_grid_v1.json
+```
 
-Documented review:
+Review document:
 
 ```text
 docs/ARMORY_MAPPING_REVIEW_V1.md
 ```
 
-Review corrections:
+Review decisions:
 
 - source `cao_id` retained as `source_cao_id`;
 - source `bisbeard_tree` retained as `source_bisbeard_tree`;
 - talent records preserve parent tree;
 - connections preserve source talent and tree;
 - rank texts preserve source talent and tree;
-- empty `lock_rules` and `rank_spell_ids` item schemas remain deferred.
+- empty `lock_rules` and `rank_spell_ids` item schemas remain deferred;
+- detailed gear, hero build and computational stat internals remain deferred.
 
-Candidate mappings remain blocked by `require_verified()`.
-
-## Mapping validation gates
-
-### Completed type-only validation
-
-User-local result against the real review packet:
+Reviewer metadata:
 
 ```text
-all_structurally_consistent: true
-all_production_ready: false
-mapping_count: 2
-character: 19 singletons, 5 collections, 36 fields
-talent_grid before review refinement: 2 singletons, 4 collections, 17 fields
+reviewed_by: GunsPojoshe (operator), OpenAI-assisted review
+reviewed_at: 2026-07-29T15:34:00+03:00
 ```
 
-After review refinement the talent-grid mapping contains 22 fields because parent tree/talent relations are now explicit.
+## Completed raw-archive validation
 
-### Implemented raw-archive validation
-
-The validator checks the exact immutable gzip archives:
-
-- payload hash;
-- schema fingerprint;
-- route template;
-- singleton selectors;
-- collection occurrence counts;
-- `@item`, `@index` and `@ancestor[n]` selectors;
-- required field presence and JSON types.
-
-The local real-archive run is still pending. Until it passes, mappings remain `candidate`.
-
-Expected result before promotion:
+User-local validation against the exact private archives:
 
 ```text
+schema_version: 2
+mapping_count: 2
+raw_archive_count: 2
 all_structurally_consistent: true
 all_raw_archives_consistent: true
 all_production_ready: false
 ```
 
-## Tests and CI
+The run was executed before promotion, so `all_production_ready: false` was expected.
 
-Latest verified checkpoint:
+Per-mapping result:
 
 ```text
-commit: 7772eac950e005f93b28d5b90bb6935f04a3da74
-workflow: Verify repository
-run: #119
-conclusion: success
-Ubuntu repository verifier: success
-Windows pytest/doctor/DuckDB initialization: success
-full pytest: 96 passed, 1 warning
+coa-armory-character-v1
+  raw_payload_validated: true
+  route_matched: true
+  singleton_value_count: 19
+  extracted_value_count: 328
+
+coa-armory-talent-grid-v1
+  raw_payload_validated: true
+  route_matched: true
+  singleton_value_count: 2
+  extracted_value_count: 2955
 ```
 
-The verifier uses `ruff format --diff`, so formatting failures include the exact formatter patch.
+After pulling the promotion commits, a repeated local run must return:
 
-## Local environment caveat
+```text
+all_structurally_consistent: true
+all_raw_archives_consistent: true
+all_production_ready: true
+```
 
-A previous local `uv sync --frozen --extra dev` attempted to build Ruff from source and failed because MSVC `link.exe` was unavailable.
-
-Targeted commands through `uv run --no-sync` work. Do not require Visual Studio Build Tools without a separate dependency-resolution diagnosis.
+Any new payload hash or fingerprint requires a new review decision.
 
 ## Current blockers
 
-1. Real raw-archive selector validation has not yet been executed on the user's private archives.
-2. Armory mappings remain `candidate`, not `verified`.
-3. Bounded report discovery filters and pagination are not reviewed.
-4. A complete report/encounter/roster slice is not normalized.
-5. Evidence coverage remains narrow.
-6. No corroborated gameplay mechanic is ready for canonical planner scoring.
+1. Bounded report discovery filters and pagination are not reviewed.
+2. Default report limits are not implemented/verified against real behavior.
+3. A complete report/encounter/roster slice is not normalized.
+4. Evidence coverage remains narrow.
+5. No corroborated gameplay mechanic is ready for canonical planner scoring.
+6. `docs/PROJECT_MASTER_CONTEXT.md` still contains older historical sections and must not override this operational state without code verification.
 
 ## Next bounded tasks
 
-1. Run raw-archive validation locally.
-2. Review the compact validation result.
-3. Promote only structurally validated mappings through a separate explicit change.
-4. Implement bounded report discovery, default up to 5 reports/category.
-5. Review filters and pagination on real observations/frontend behavior.
-6. Normalize one complete report/encounter/roster slice.
-7. Expand supporting and contradicting evidence.
-8. Integrate only corroborated/confirmed mechanics into planner scoring.
+1. Inspect existing report discovery code and frontend observations.
+2. Implement bounded report discovery with default up to 5 reports per category.
+3. Verify filters and pagination only from observed source behavior.
+4. Archive one deterministic discovery result.
+5. Select and normalize one complete report/encounter/roster slice.
+6. Expand supporting and contradicting evidence.
+7. Integrate only corroborated/confirmed mechanics into planner scoring.
 
 ## Completion gate
 
@@ -261,4 +247,5 @@ PR #3 and PR #7 remain Draft until the relevant evidence checkpoint is complete:
 - independent supporting observations;
 - contradicting evidence review;
 - reproducible versioned output;
+- provenance;
 - green Ubuntu and Windows verification.
