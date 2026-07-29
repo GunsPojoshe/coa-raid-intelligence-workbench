@@ -62,6 +62,9 @@ from .report_slice_capture import (
 from .report_slice_field_selection import select_observed_report_slice_fields
 from .report_slice_mapping_review import build_observed_report_slice_mapping_review
 from .report_slice_mapping_summary import summarize_observed_report_slice_mapping_review
+from .report_slice_mapping_validation import (
+    validate_observed_report_slice_candidate_mappings,
+)
 from .report_slice_review import review_observed_report_slice_capture
 from .report_slice_scope_review import build_observed_report_slice_scope_review
 from .route_discovery import discover_api_route_candidates
@@ -139,4 +142,5 @@ __all__ = [
     "select_observed_report_slice_fields",
     "summarize_observed_report_slice_mapping_review",
     "summarize_report_discovery_mapping_review",
+    "validate_observed_report_slice_candidate_mappings",
 ]
