@@ -59,6 +59,7 @@ from .report_slice_capture import (
     capture_observed_report_slice,
     observed_report_slice_capture_to_dict,
 )
+from .report_slice_review import review_observed_report_slice_capture
 from .route_discovery import discover_api_route_candidates
 from .source_registry import (
     SourceRegistry,
@@ -125,6 +126,7 @@ __all__ = [
     "render_report_discovery_mapping_summary_text",
     "report_discovery_capture_to_dict",
     "request_key_from_url",
+    "review_observed_report_slice_capture",
     "review_report_discovery_capture",
     "sanitize_url",
     "schema_fingerprint",
