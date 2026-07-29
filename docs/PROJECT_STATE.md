@@ -16,9 +16,9 @@ main
 Latest verified code checkpoint before this documentation update:
 
 ```text
-commit: be42e97c86956687911f5cd09e00c50edd011054
+commit: 37f24b12512b7486c857e9fe5199bf10a60cd777
 workflow: Verify repository
-run: #199
+run: #213
 conclusion: success
 Ubuntu: success
 Windows: success
@@ -57,7 +57,8 @@ This documentation commit requires its own CI verification.
 - archive-only SPA API route inventory;
 - inventory-gated observed report-slice capture;
 - exact offline structural review for report detail, encounter detail and combatants info;
-- scalar-free full-root report-slice mapping-review tooling.
+- completed scalar-free full-root report-slice mapping review;
+- wildcarded candidate-path aggregation and manual scope-selection summary tooling.
 
 ## Trust boundary
 
@@ -202,7 +203,7 @@ Observed route shapes selected for the bounded slice:
 /api/reports/{template}/encounters/{template}/combatants-info
 ```
 
-No separate `/roster` route was observed. `combatants-info` remains only a roster-adjacent candidate until mapping review establishes usable fields.
+No separate `/roster` route was observed. `combatants-info` remains only a roster-adjacent candidate until reviewed mappings establish usable fields.
 
 ## Observed report-slice capture
 
@@ -263,50 +264,75 @@ semantic_verification_required: true
 normalization_allowed: false
 ```
 
-All three endpoint kinds were present exactly once:
+All three endpoint kinds were present exactly once. The structural review revalidated each payload hash, schema fingerprint, uncompressed byte count, HTTP status, content type, top-level kind and top-level keys directly against the immutable archives.
+
+## Completed report-slice mapping review
+
+User-local scalar-free full-root mapping review:
 
 ```text
-report_detail
-encounter_detail
-combatants_info
+schema_version: 1
+review_kind: observed_report_slice_mapping_review
+endpoint_count: 3
+raw_archive_count: 3
+field_path_count: 860
+node_occurrence_count: 70011
+numeric_map_path_count: 9
+nullable_path_count: 108
+array_path_count: 73
+object_path_count: 112
+candidate_collection_count: 1452
+all_archives_consistent: true
+contains_source_scalar_values: false
+semantic_verification_required: true
+normalization_allowed: false
+ready_for_manual_mapping_review: true
 ```
 
-The structural review revalidated each payload hash, schema fingerprint, uncompressed byte count, HTTP status, content type, top-level kind and top-level keys directly against the immutable archives.
+Per endpoint:
 
-## Report-slice mapping-review readiness
+```text
+report_detail: field paths 52, nodes 168, candidate collections 2
+encounter_detail: field paths 126, nodes 34987, candidate collections 533
+combatants_info: field paths 682, nodes 34856, candidate collections 917
+```
+
+All endpoints remain `review_status: candidate`. No endpoint is production-ready and no normalization is enabled.
+
+## Mapping scope-selection summary readiness
 
 Implemented:
 
 ```text
-src/coa_workbench/collector/report_slice_mapping_review.py
-scripts/build_observed_report_slice_mapping_review.py
-tests/unit/test_report_slice_mapping_review.py
+src/coa_workbench/collector/report_slice_mapping_summary.py
+scripts/summarize_observed_report_slice_mapping_review.py
+tests/unit/test_report_slice_mapping_summary.py
 ```
 
-The mapping review:
+The summary:
 
-- reruns the exact structural gate before reading payloads;
-- profiles the full root `/` of each endpoint;
-- emits only JSON Pointer paths, occurrence counts, JSON types and object/array shapes;
-- replaces numeric-map keys with `*`;
-- limits traversal to 500000 nodes per endpoint by default;
-- keeps every endpoint at `review_status: candidate`;
-- keeps `normalization_allowed: false`.
+- validates mapping and structural reviews against each other;
+- aggregates sampled numeric-index paths into wildcard paths such as `/combatants/*/...`;
+- preserves candidate counts, observed keys, matched hints and structural scores;
+- emits bounded shortlists for report, encounter, actor and aura-event review;
+- does not automatically select scopes;
+- keeps `can_promote: false` and `normalization_allowed: false`.
 
 ## Current blockers
 
-1. Report, encounter and combatants mapping packets have not yet been manually reviewed.
-2. Exact versioned mappings for the three report-slice endpoints do not exist yet.
-3. A complete report/encounter/participants slice is not normalized.
-4. Evidence coverage remains narrow.
-5. No corroborated gameplay mechanic is ready for canonical planner scoring.
-6. Source category/filter semantics and pagination policy remain unverified.
+1. Wildcarded candidate shortlists have not yet been reviewed locally.
+2. Minimal report, encounter and combatants scopes have not been selected.
+3. Exact versioned mappings for the three report-slice endpoints do not exist yet.
+4. A complete report/encounter/participants slice is not normalized.
+5. Evidence coverage remains narrow.
+6. No corroborated gameplay mechanic is ready for canonical planner scoring.
+7. Source category/filter semantics and pagination policy remain unverified.
 
 ## Next bounded tasks
 
-1. Build the scalar-free full-root mapping-review packet locally from the exact three archives.
-2. Review candidate collections and field shapes without assigning unsupported semantics.
-3. Select minimal report, encounter and combatants fields for candidate mappings.
+1. Build the scalar-free wildcarded mapping summary locally.
+2. Review top-level fields and candidate shortlists without assigning unsupported semantics.
+3. Select minimal report, encounter and combatants scopes for candidate mappings.
 4. Validate mappings against exact payload hashes and schema fingerprints.
 5. Promote mappings manually only after review.
 6. Normalize only after all required mappings are `verified`.
