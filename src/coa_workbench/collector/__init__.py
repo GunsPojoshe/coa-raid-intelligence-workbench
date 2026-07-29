@@ -60,6 +60,7 @@ from .report_slice_capture import (
     observed_report_slice_capture_to_dict,
 )
 from .report_slice_field_selection import select_observed_report_slice_fields
+from .report_slice_mapping_promotion import promote_observed_report_slice_candidate_mappings
 from .report_slice_mapping_review import build_observed_report_slice_mapping_review
 from .report_slice_mapping_summary import summarize_observed_report_slice_mapping_review
 from .report_slice_mapping_validation import (
@@ -131,6 +132,7 @@ __all__ = [
     "observed_report_slice_capture_to_dict",
     "probe_registry_route",
     "probe_result_to_dict",
+    "promote_observed_report_slice_candidate_mappings",
     "read_response_resilient",
     "render_report_discovery_mapping_summary_text",
     "report_discovery_capture_to_dict",
