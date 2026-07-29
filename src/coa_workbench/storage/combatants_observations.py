@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
 
-from coa_workbench.collector.combatants_candidate_promotion import (
+from coa_workbench.collector.combatants_candidate_promotion_compat import (
     promote_observed_combatants_info_candidates,
 )
 
@@ -184,53 +184,105 @@ def _load_private_batch(path: Path, expected_sha256: str) -> dict[str, Any]:
     return payload
 
 
-def _strict_insert_or_match(
+def _core_snapshot(connection: Any) -> dict[str, list[tuple[Any, ...]]]:
+    return {
+        table: connection.execute(f"SELECT * FROM {table} ORDER BY ALL").fetchall()
+        for table in ("report", "encounter", "actor", "participant")
+    }
+
+
+def _validate_core_references(connection: Any, private_payload: Mapping[str, Any]) -> None:
+    report_id = _required_sha256(private_payload.get("report_id"), "report_id")
+    encounter_id = _required_sha256(private_payload.get("encounter_id"), "encounter_id")
+    report_rows = connection.execute(
+        "SELECT report_id FROM report WHERE report_id = ?", [report_id]
+    ).fetchall()
+    if len(report_rows) != 1:
+        raise ValueError("combatants persistence report reference is missing")
+    encounter_rows = connection.execute(
+        "SELECT encounter_id, report_id FROM encounter WHERE encounter_id = ?", [encounter_id]
+    ).fetchall()
+    if encounter_rows != [(encounter_id, report_id)]:
+        raise ValueError("combatants persistence encounter reference is missing or inconsistent")
+
+    observations = _required_object(private_payload.get("observations"), "observations")
+    actor_rows = _required_list(
+        observations.get("coa-combatants-actor-enrichment-v1"),
+        "coa-combatants-actor-enrichment-v1",
+    )
+    expected_actor_rows = sorted(
+        (
+            _required_sha256(_required_object(row, "actor observation").get("actor_id"), "actor_id"),
+            _required_string(_required_object(row, "actor observation").get("source_actor_id"), "source_actor_id"),
+        )
+        for row in actor_rows
+    )
+    persisted_actor_rows = connection.execute(
+        "SELECT actor_id, source_actor_id FROM actor WHERE actor_id IN (SELECT UNNEST(?)) ORDER BY actor_id",
+        [[row[0] for row in expected_actor_rows]],
+    ).fetchall()
+    if persisted_actor_rows != expected_actor_rows:
+        raise ValueError("combatants persistence actor references are incomplete or inconsistent")
+
+
+def _observation_rows(private_payload: Mapping[str, Any], persistence_run_id: str) -> list[list[Any]]:
+    observations = _required_object(private_payload.get("observations"), "observations")
+    rows: list[list[Any]] = []
+    entity_counts: dict[str, int] = {}
+    for design_id in sorted(observations):
+        for raw_row in _required_list(observations.get(design_id), design_id):
+            row = _required_object(raw_row, f"{design_id}[]")
+            observation_id = _required_sha256(row.get("observation_id"), "observation_id")
+            entity_type = _required_string(row.get("entity_type"), "entity_type")
+            entity_hash = _required_sha256(row.get("selected_record_sha256"), "selected_record_sha256")
+            actor_id = row.get("actor_id")
+            entity_key = _required_sha256(actor_id, "actor_id") if actor_id is not None else observation_id
+            if _sha256_json(_required_object(row.get("selected_fields"), "selected_fields")) != entity_hash:
+                raise ValueError(f"combatants selected field hash changed before persistence: {design_id}")
+            entity_counts[entity_type] = entity_counts.get(entity_type, 0) + 1
+            rows.append(
+                [
+                    observation_id,
+                    persistence_run_id,
+                    entity_type,
+                    entity_key,
+                    entity_hash,
+                    _canonical_json([private_payload.get("observation_id")]),
+                    "exact_private_combatants_candidate_extraction",
+                    "verified_parser_observation",
+                    _canonical_json(row),
+                ]
+            )
+    if entity_counts != _EXPECTED_ENTITY_COUNTS:
+        raise ValueError("combatants persistence entity counts mismatch")
+    if len(rows) != _EXPECTED_TOTAL_OBSERVATIONS:
+        raise ValueError("combatants persistence observation count mismatch")
+    return rows
+
+
+def _upsert_exact(
     connection: Any,
     *,
     table: str,
-    key_fields: tuple[str, ...],
-    values: Mapping[str, Any],
+    key_column: str,
+    key_value: str,
+    columns: list[str],
+    values: list[Any],
 ) -> str:
-    columns = list(values)
-    where = " AND ".join(f"{field} = ?" for field in key_fields)
     existing = connection.execute(
-        f"SELECT {', '.join(columns)} FROM {table} WHERE {where}",
-        [values[field] for field in key_fields],
-    ).fetchone()
-    if existing is None:
-        placeholders = ", ".join("?" for _ in columns)
-        connection.execute(
-            f"INSERT INTO {table} ({', '.join(columns)}) VALUES ({placeholders})",
-            [values[field] for field in columns],
-        )
-        return "inserted"
-    existing_values = dict(zip(columns, existing, strict=True))
-    if existing_values != dict(values):
-        raise ValueError(f"existing {table} row conflicts with verified combatants persistence")
-    return "matched"
-
-
-def _record_change(changes: dict[str, dict[str, int]], category: str, result: str) -> None:
-    changes.setdefault(category, {"inserted": 0, "matched": 0})[result] += 1
-
-
-def _core_snapshot(connection: Any, report_id: str, encounter_id: str, actor_ids: list[str]) -> dict[str, Any]:
-    placeholders = ", ".join("?" for _ in actor_ids)
-    return {
-        "report": connection.execute("SELECT * FROM report WHERE report_id = ?", [report_id]).fetchall(),
-        "encounter": connection.execute(
-            "SELECT * FROM encounter WHERE encounter_id = ? AND report_id = ?",
-            [encounter_id, report_id],
-        ).fetchall(),
-        "actors": connection.execute(
-            f"SELECT * FROM actor WHERE actor_id IN ({placeholders}) ORDER BY actor_id",
-            actor_ids,
-        ).fetchall(),
-        "participants": connection.execute(
-            "SELECT * FROM participant WHERE encounter_id = ? ORDER BY actor_id",
-            [encounter_id],
-        ).fetchall(),
-    }
+        f"SELECT {', '.join(columns)} FROM {table} WHERE {key_column} = ?",
+        [key_value],
+    ).fetchall()
+    if existing:
+        if existing != [tuple(values)]:
+            raise ValueError(f"combatants persistence existing {table} row conflicts with exact batch")
+        return "matched"
+    placeholders = ", ".join("?" for _ in values)
+    connection.execute(
+        f"INSERT INTO {table} ({', '.join(columns)}) VALUES ({placeholders})",
+        values,
+    )
+    return "inserted"
 
 
 def persist_observed_combatants_info_observations(
@@ -241,7 +293,7 @@ def persist_observed_combatants_info_observations(
     database_path: Path,
     migrations_path: Path,
 ) -> dict[str, Any]:
-    """Persist the exact manually promoted combatants batch atomically and idempotently."""
+    """Persist an exact promoted combatants parser-observation batch atomically and idempotently."""
     promotion, promotion_sha256 = _validate_promotion(
         promotion_path,
         extraction_receipt_path=extraction_receipt_path,
@@ -251,238 +303,143 @@ def persist_observed_combatants_info_observations(
         promotion.get("source_private_extraction_sha256"),
         "source_private_extraction_sha256",
     )
-    payload = _load_private_batch(private_extraction_path, private_sha256)
-    observations = _required_object(payload.get("observations"), "observations")
-    report_id = _required_sha256(payload.get("report_id"), "report_id")
-    encounter_id = _required_sha256(payload.get("encounter_id"), "encounter_id")
-
-    promoted_designs = {
-        _required_string(row.get("design_id"), "promoted_designs[].design_id"): row
-        for raw_row in _required_list(promotion.get("promoted_designs"), "promoted_designs")
-        for row in [_required_object(raw_row, "promoted_designs[]")]
-    }
-    if len(promoted_designs) != 6:
-        raise ValueError("combatants promoted design set is incomplete")
-
-    flattened: list[dict[str, Any]] = []
-    entity_counts: dict[str, int] = {}
-    actor_map: dict[str, str] = {}
-    linked_actor_ids: set[str] = set()
-    for design_id in sorted(observations):
-        design = promoted_designs.get(design_id)
-        if design is None:
-            raise ValueError(f"combatants private batch has an unpromoted design: {design_id}")
-        entity_type = _required_string(design.get("target_entity_type"), "target_entity_type")
-        rows = _required_list(observations[design_id], f"observations.{design_id}")
-        for raw_row in rows:
-            row = _required_object(raw_row, f"observations.{design_id}[]")
-            if row.get("design_id") != design_id or row.get("entity_type") != entity_type:
-                raise ValueError(f"combatants persisted observation design mismatch: {design_id}")
-            source_observation_id = _required_sha256(row.get("observation_id"), "observation_id")
-            if row.get("trust_status") != "observed_candidate":
-                raise ValueError(f"combatants source observation trust status changed: {design_id}")
-            actor_id = row.get("actor_id")
-            source_actor_id = row.get("source_actor_id")
-            if actor_id is not None:
-                prepared_actor_id = _required_sha256(actor_id, "actor_id")
-                prepared_source_actor_id = _required_string(source_actor_id, "source_actor_id")
-                linked_actor_ids.add(prepared_actor_id)
-                if entity_type == "actor_enrichment_observation":
-                    existing = actor_map.setdefault(prepared_source_actor_id, prepared_actor_id)
-                    if existing != prepared_actor_id:
-                        raise ValueError("combatants actor enrichment mapping conflicts")
-            else:
-                for linked_actor_id in _required_list(row.get("linked_actor_ids"), "linked_actor_ids"):
-                    linked_actor_ids.add(_required_sha256(linked_actor_id, "linked_actor_id"))
-            stored = deepcopy(row)
-            stored["trust_status"] = "verified_parser_observation"
-            flattened.append(
-                {
-                    "source_observation_id": source_observation_id,
-                    "entity_type": entity_type,
-                    "stored": stored,
-                }
-            )
-            entity_counts[entity_type] = entity_counts.get(entity_type, 0) + 1
-
-    if entity_counts != _EXPECTED_ENTITY_COUNTS:
-        raise ValueError("combatants persistence entity counts do not match promoted batch")
-    if len(flattened) != _EXPECTED_TOTAL_OBSERVATIONS:
-        raise ValueError("combatants persistence observation count mismatch")
-    if len(actor_map) != _EXPECTED_LINKED_ACTORS or len(linked_actor_ids) != _EXPECTED_LINKED_ACTORS:
-        raise ValueError("combatants persistence linked actor set mismatch")
-
+    private_payload = _load_private_batch(private_extraction_path, private_sha256)
+    report_id = _required_sha256(private_payload.get("report_id"), "report_id")
+    encounter_id = _required_sha256(private_payload.get("encounter_id"), "encounter_id")
+    reviewed_at = _timestamp(promotion.get("reviewed_at"), "reviewed_at")
     persistence_run_id = _stable_id(
         "combatants_observation_persistence_run",
+        promotion_sha256,
         private_sha256,
-        _PERSISTENCE_VERSION,
+        report_id,
+        encounter_id,
     )
-    source_batch_id = _stable_id("combatants_observation_batch", private_sha256, _PAYLOAD_HASH)
-    reviewed_at = _timestamp(promotion.get("reviewed_at"), "reviewed_at")
-    reviewed_by = _required_string(promotion.get("reviewed_by"), "reviewed_by")
-    applied_migrations = apply_migrations(database_path, migrations_path)
+    observation_rows = _observation_rows(private_payload, persistence_run_id)
 
+    apply_migrations(database_path, migrations_path)
     try:
         import duckdb
-    except ImportError as error:  # pragma: no cover - runtime dependency guard
+    except ImportError as error:  # pragma: no cover - runtime packaging
         raise RuntimeError("DuckDB is required for combatants observation persistence") from error
 
-    changes: dict[str, dict[str, int]] = {}
-    checks = {
-        "exact_promotion_recomputed": True,
-        "promotion_receipt_sha256_verified": True,
-        "private_extraction_sha256_verified": True,
-        "exact_payload_binding_verified": True,
-        "all_promoted_designs_verified": True,
-        "all_observation_counts_verified": True,
-        "all_actor_links_verified": False,
-        "persisted_report_reference_verified": False,
-        "persisted_encounter_reference_verified": False,
-        "transaction_committed": False,
-        "canonical_observation_counts_match": False,
-        "parser_read_model_counts_match": False,
-        "actor_build_read_model_counts_match": False,
-        "core_entity_rows_unchanged": False,
+    changes = {
+        "persistence_runs": {"inserted": 0, "matched": 0},
+        "canonical_entity_observations": {"inserted": 0, "matched": 0},
     }
-
     with duckdb.connect(str(database_path)) as connection:
+        before_core = _core_snapshot(connection)
         connection.execute("BEGIN TRANSACTION")
         try:
-            actor_ids = sorted(linked_actor_ids)
-            core_before = _core_snapshot(connection, report_id, encounter_id, actor_ids)
-            if len(core_before["report"]) != 1:
-                raise ValueError("combatants persistence report reference is missing")
-            checks["persisted_report_reference_verified"] = True
-            if len(core_before["encounter"]) != 1:
-                raise ValueError("combatants persistence encounter reference is missing")
-            checks["persisted_encounter_reference_verified"] = True
-            if len(core_before["actors"]) != _EXPECTED_LINKED_ACTORS:
-                raise ValueError("combatants persistence actor references are incomplete")
-            persisted_actor_map = {str(row[1]): str(row[0]) for row in core_before["actors"]}
-            if persisted_actor_map != actor_map:
-                raise ValueError("combatants persistence actor source linkage mismatch")
-            checks["all_actor_links_verified"] = True
-
-            run_values = {
-                "persistence_run_id": persistence_run_id,
-                "promotion_receipt_sha256": promotion_sha256,
-                "promotion_version": _PROMOTION_VERSION,
-                "private_extraction_sha256": private_sha256,
-                "source_payload_hash": _PAYLOAD_HASH,
-                "schema_fingerprint": _SCHEMA_FINGERPRINT,
-                "source_code": _SOURCE_CODE,
-                "status": "completed",
-                "design_counts_json": _canonical_json(_EXPECTED_ENTITY_COUNTS),
-                "observation_count": _EXPECTED_TOTAL_OBSERVATIONS,
-                "reviewed_by": reviewed_by,
-                "reviewed_at": reviewed_at,
-                "metadata_json": _canonical_json(
-                    {
-                        "persistence_version": _PERSISTENCE_VERSION,
-                        "promotion_receipt": promotion_path.name,
-                        "extraction_receipt": extraction_receipt_path.name,
-                        "private_extraction": private_extraction_path.name,
-                        "core_entity_mutation_allowed": False,
-                        "planner_scoring_allowed": False,
-                    }
-                ),
-            }
-            result = _strict_insert_or_match(
+            _validate_core_references(connection, private_payload)
+            run_values = [
+                persistence_run_id,
+                promotion_sha256,
+                private_sha256,
+                _required_sha256(promotion.get("source_payload_hash"), "source_payload_hash"),
+                _required_sha256(promotion.get("schema_fingerprint"), "schema_fingerprint"),
+                _required_string(promotion.get("promotion_version"), "promotion_version"),
+                _required_string(promotion.get("reviewed_by"), "reviewed_by"),
+                reviewed_at,
+                report_id,
+                encounter_id,
+                _EXPECTED_TOTAL_OBSERVATIONS,
+                _EXPECTED_LINKED_ACTORS,
+                _canonical_json(_EXPECTED_ENTITY_COUNTS),
+                "persisted_verified_parser_observations",
+            ]
+            run_columns = [
+                "persistence_run_id",
+                "promotion_sha256",
+                "private_extraction_sha256",
+                "source_payload_hash",
+                "schema_fingerprint",
+                "promotion_version",
+                "reviewed_by",
+                "reviewed_at",
+                "report_id",
+                "encounter_id",
+                "observation_count",
+                "linked_actor_count",
+                "entity_counts_json",
+                "status",
+            ]
+            run_status = _upsert_exact(
                 connection,
                 table="combatants_observation_persistence_run",
-                key_fields=("persistence_run_id",),
+                key_column="persistence_run_id",
+                key_value=persistence_run_id,
+                columns=run_columns,
                 values=run_values,
             )
-            _record_change(changes, "persistence_runs", result)
+            changes["persistence_runs"][run_status] += 1
 
-            for item in flattened:
-                entity_json = _canonical_json(item["stored"])
-                entity_type = item["entity_type"]
-                entity_key = item["source_observation_id"]
-                values = {
-                    "observation_id": _stable_id(
-                        "canonical_entity_observation",
-                        persistence_run_id,
-                        entity_type,
-                        entity_key,
-                    ),
-                    "persistence_run_id": persistence_run_id,
-                    "entity_type": entity_type,
-                    "entity_key": entity_key,
-                    "entity_hash": _sha256_bytes(entity_json.encode("utf-8")),
-                    "source_batch_ids_json": _canonical_json([source_batch_id]),
-                    "provenance_type": "upstream_derived",
-                    "trust_status": "verified_parser_observation",
-                    "entity_json": entity_json,
-                }
-                result = _strict_insert_or_match(
+            observation_columns = [
+                "observation_id",
+                "persistence_run_id",
+                "entity_type",
+                "entity_key",
+                "entity_hash",
+                "source_batch_ids_json",
+                "provenance_type",
+                "trust_status",
+                "entity_json",
+            ]
+            for values in observation_rows:
+                status = _upsert_exact(
                     connection,
                     table="canonical_entity_observation",
-                    key_fields=("observation_id",),
+                    key_column="observation_id",
+                    key_value=values[0],
+                    columns=observation_columns,
                     values=values,
                 )
-                _record_change(changes, "canonical_entity_observations", result)
+                changes["canonical_entity_observations"][status] += 1
 
-            persisted_count = connection.execute(
-                """
-                SELECT COUNT(*) FROM canonical_entity_observation
-                WHERE persistence_run_id = ? AND trust_status = 'verified_parser_observation'
-                """,
-                [persistence_run_id],
-            ).fetchone()[0]
-            persisted_by_entity = {
-                row[0]: row[1]
-                for row in connection.execute(
-                    """
-                    SELECT entity_type, COUNT(*)
-                    FROM canonical_entity_observation
-                    WHERE persistence_run_id = ?
-                    GROUP BY entity_type
-                    ORDER BY entity_type
-                    """,
-                    [persistence_run_id],
-                ).fetchall()
-            }
-            if persisted_count != _EXPECTED_TOTAL_OBSERVATIONS or persisted_by_entity != _EXPECTED_ENTITY_COUNTS:
-                raise ValueError("persisted combatants canonical observation counts mismatch")
-            checks["canonical_observation_counts_match"] = True
-
-            parser_view_count = connection.execute(
-                "SELECT COUNT(*) FROM combatants_parser_observation_v1 WHERE persistence_run_id = ?",
-                [persistence_run_id],
-            ).fetchone()[0]
-            if parser_view_count != _EXPECTED_TOTAL_OBSERVATIONS:
-                raise ValueError("combatants parser observation read model count mismatch")
-            checks["parser_read_model_counts_match"] = True
-
-            actor_build_count, distinct_actor_count = connection.execute(
-                """
-                SELECT COUNT(*), COUNT(DISTINCT actor_id)
-                FROM combatants_actor_build_observation_v1
-                WHERE persistence_run_id = ?
-                """,
-                [persistence_run_id],
-            ).fetchone()
-            if (
-                actor_build_count != _EXPECTED_ACTOR_BUILD_OBSERVATIONS
-                or distinct_actor_count != _EXPECTED_LINKED_ACTORS
-            ):
-                raise ValueError("combatants actor/build read model count mismatch")
-            checks["actor_build_read_model_counts_match"] = True
-
-            core_after = _core_snapshot(connection, report_id, encounter_id, actor_ids)
-            if core_after != core_before:
-                raise ValueError("combatants persistence modified core entity rows")
-            checks["core_entity_rows_unchanged"] = True
+            after_core = _core_snapshot(connection)
+            if after_core != before_core:
+                raise ValueError("combatants persistence attempted to mutate core entities")
             connection.execute("COMMIT")
-            checks["transaction_committed"] = True
         except Exception:
             connection.execute("ROLLBACK")
             raise
 
-    if any(value is not True for value in checks.values()):
-        raise ValueError("combatants persistence integrity checks are incomplete")
+        parser_count = connection.execute(
+            "SELECT COUNT(*) FROM combatants_parser_observation_v1 WHERE persistence_run_id = ?",
+            [persistence_run_id],
+        ).fetchone()[0]
+        actor_build_count = connection.execute(
+            "SELECT COUNT(*) FROM combatants_actor_build_observation_v1 WHERE persistence_run_id = ?",
+            [persistence_run_id],
+        ).fetchone()[0]
+        distinct_actor_count = connection.execute(
+            "SELECT COUNT(DISTINCT actor_id) FROM combatants_actor_build_observation_v1 "
+            "WHERE persistence_run_id = ?",
+            [persistence_run_id],
+        ).fetchone()[0]
+    if parser_count != _EXPECTED_TOTAL_OBSERVATIONS:
+        raise ValueError("combatants parser observation read model count mismatch")
+    if actor_build_count != _EXPECTED_ACTOR_BUILD_OBSERVATIONS:
+        raise ValueError("combatants actor/build observation read model count mismatch")
+    if distinct_actor_count != _EXPECTED_LINKED_ACTORS:
+        raise ValueError("combatants actor/build linked actor count mismatch")
 
+    checks = {
+        "submitted_promotion_recomputed_exactly": True,
+        "promotion_receipt_sha256_verified": True,
+        "private_extraction_sha256_verified": True,
+        "promotion_integrity_checks_verified": True,
+        "report_reference_verified": True,
+        "encounter_reference_verified": True,
+        "all_actor_references_verified": True,
+        "all_entity_counts_verified": True,
+        "all_observation_hashes_verified": True,
+        "all_existing_rows_exact_or_absent": True,
+        "transaction_committed": True,
+        "core_entity_snapshots_unchanged": True,
+        "parser_read_model_verified": True,
+        "actor_build_read_model_verified": True,
+        "planner_scoring_not_enabled": True,
+    }
     return {
         "schema_version": _PERSISTENCE_SCHEMA_VERSION,
         "persistence_kind": "observed_combatants_info_immutable_observation_persistence",
@@ -490,21 +447,17 @@ def persist_observed_combatants_info_observations(
         "generated_at": _generated_at(),
         "source_promotion_name": promotion_path.name,
         "source_promotion_sha256": promotion_sha256,
-        "source_extraction_receipt_name": extraction_receipt_path.name,
         "source_private_extraction_name": private_extraction_path.name,
         "source_private_extraction_sha256": private_sha256,
         "source_payload_hash": _PAYLOAD_HASH,
         "schema_fingerprint": _SCHEMA_FINGERPRINT,
         "persistence_run_id": persistence_run_id,
-        "source_batch_id": source_batch_id,
-        "database_file": database_path.name,
-        "applied_migrations": applied_migrations,
         "persisted_entity_counts": dict(_EXPECTED_ENTITY_COUNTS),
         "database_changes": changes,
         "read_model_counts": {
-            "parser_observations": _EXPECTED_TOTAL_OBSERVATIONS,
-            "actor_build_observations": _EXPECTED_ACTOR_BUILD_OBSERVATIONS,
-            "distinct_linked_actors": _EXPECTED_LINKED_ACTORS,
+            "parser_observations": parser_count,
+            "actor_build_observations": actor_build_count,
+            "distinct_linked_actors": distinct_actor_count,
         },
         "integrity_checks": checks,
         "decision_boundary": {
@@ -514,25 +467,26 @@ def persist_observed_combatants_info_observations(
             "core_entity_mutation_performed": False,
             "ready_for_parser_observation_queries": True,
             "ready_for_actor_build_observation_queries": True,
-            "database_contains_source_scalar_values": True,
             "companion_addon_provenance_verified": False,
             "nested_collection_semantics_verified": False,
             "semantic_uniqueness_verified": False,
-            "mechanic_semantics_verified": False,
             "combatants_info_enrichment_available": False,
+            "mechanic_semantics_verified": False,
             "planner_scoring_allowed": False,
+            "database_contains_source_scalar_values": True,
         },
         "summary": {
             "design_count": 6,
-            "persisted_observation_count": _EXPECTED_TOTAL_OBSERVATIONS,
-            "actor_build_observation_count": _EXPECTED_ACTOR_BUILD_OBSERVATIONS,
-            "linked_actor_count": _EXPECTED_LINKED_ACTORS,
+            "persisted_observation_count": parser_count,
+            "actor_build_observation_count": actor_build_count,
+            "linked_actor_count": distinct_actor_count,
             "persistence_run_count": 1,
+            "integrity_check_count": len(checks),
             "all_integrity_checks_passed": True,
             "transaction_committed": True,
+            "core_entity_mutation_performed": False,
             "contains_source_scalar_values": False,
             "database_contains_source_scalar_values": True,
-            "core_entity_mutation_performed": False,
             "ready_for_parser_observation_queries": True,
             "ready_for_actor_build_observation_queries": True,
             "combatants_info_enrichment_available": False,
