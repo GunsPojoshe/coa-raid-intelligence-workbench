@@ -3,13 +3,15 @@
   "mapping_id": "coa-armory-character-v1",
   "source_code": "coa_ascension_logs",
   "mapping_version": "1",
-  "status": "candidate",
+  "status": "verified",
   "endpoint_kind": "character",
   "route_template": "/api/armory/character/{character_id}",
   "schema_fingerprint": "efbcf618291d824667ba586c22af4ed031fa146d69b11a5539ec17a41d042621",
   "reviewed_payload_hash": "2a9d752d7af72d41cd9d41836d670069c78e408df7260f5d9caa83b07430985f",
   "review_packet_schema_version": 2,
   "provenance_type": "upstream_derived",
+  "reviewed_by": "GunsPojoshe (operator), OpenAI-assisted review",
+  "reviewed_at": "2026-07-29T15:34:00+03:00",
   "singletons": {
     "capture_id": {"selector": "/capture/capture_id", "review_path": "/capture/capture_id", "types": ["string"], "nullable": false, "required": true},
     "captured_at": {"selector": "/capture/captured_at", "review_path": "/capture/captured_at", "types": ["string"], "nullable": false, "required": true},
@@ -90,10 +92,10 @@
     "/stats_summary/sourcesByStat"
   ],
   "review_notes": [
-    "Candidate mapping derived from one immutable character payload and mapping-review schema v2.",
+    "Verified against one immutable character payload and mapping-review schema v2.",
+    "Raw-archive validation confirmed exact payload hash, schema fingerprint, route template, 19 singleton values and 328 extracted values.",
     "Field names describe source structure only and do not confirm gameplay mechanics.",
     "cao_id and bisbeard_tree retain source-specific names because their gameplay semantics were not independently verified.",
-    "Detailed gear, source decomposition and locally derived stat internals remain deferred.",
-    "Promotion to verified requires explicit human review, raw-archive selector validation and a separate code change."
+    "Detailed gear, source decomposition and locally derived stat internals remain deferred."
   ]
 }
