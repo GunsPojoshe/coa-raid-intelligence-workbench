@@ -169,7 +169,7 @@ def _raw_payload() -> dict:
     }
 
 
-def test_candidate_armory_mappings_load_and_match_review_contracts():
+def test_verified_armory_mappings_load_and_match_review_contracts():
     character = ArmoryMappingContract.from_path(CHARACTER_MAPPING)
     talent_grid = ArmoryMappingContract.from_path(TALENT_GRID_MAPPING)
     packet = _synthetic_review_packet(character, talent_grid)
@@ -194,16 +194,24 @@ def test_candidate_armory_mappings_load_and_match_review_contracts():
         talent_grid.collections["connections"].fields["source_talent_id"].selector
         == "@ancestor[1]/talent_id"
     )
-    assert character_result["production_ready"] is False
-    assert talent_grid_result["production_ready"] is False
+    assert character.status == "verified"
+    assert talent_grid.status == "verified"
+    assert character.reviewed_by == "GunsPojoshe (operator), OpenAI-assisted review"
+    assert talent_grid.reviewed_by == "GunsPojoshe (operator), OpenAI-assisted review"
+    assert character_result["production_ready"] is True
+    assert talent_grid_result["production_ready"] is True
 
 
 @pytest.mark.parametrize("mapping_path", [CHARACTER_MAPPING, TALENT_GRID_MAPPING])
-def test_candidate_armory_mapping_is_blocked_from_production(mapping_path):
+def test_verified_armory_mappings_pass_production_gate(mapping_path):
     contract = ArmoryMappingContract.from_path(mapping_path)
 
+    contract.require_verified()
+
+
+def test_candidate_armory_mapping_is_blocked_from_production():
     with pytest.raises(ValueError, match="is not verified"):
-        contract.require_verified()
+        _raw_contract().require_verified()
 
 
 def test_armory_mapping_rejects_review_type_drift():
