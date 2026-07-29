@@ -97,7 +97,7 @@ The review does not establish:
 - location value semantics;
 - any gameplay mechanic.
 
-## Completed promotion gate
+## Exact validation results
 
 The local validator executed every selected field against the exact immutable archive and confirmed:
 
@@ -113,7 +113,7 @@ The local validator executed every selected field against the exact immutable ar
 10. zero nullable values among the seven selected fields;
 11. no source scalar values in validation output.
 
-User-local pre-promotion result:
+Pre-promotion result:
 
 ```text
 mapping_id: coa-public-report-discovery-v1
@@ -131,11 +131,11 @@ can_promote: false
 contains_source_scalar_values: false
 ```
 
-`production_ready: false` was expected because the checked-in mapping still had status `candidate` during that exact-archive run. `can_promote: false` means automatic promotion is forbidden; the decision is manual and documented here.
+`production_ready: false` was expected because the checked-in mapping still had status `candidate`. `can_promote: false` means automatic promotion is forbidden.
 
 ## Promotion decision
 
-The mapping was promoted to `verified` on 2026-07-29 after:
+The mapping was manually promoted to `verified` on 2026-07-29 after:
 
 - scalar-free field/type/nullability review;
 - unique `/reports/*` candidate-selector review;
