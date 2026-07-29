@@ -131,11 +131,11 @@ can_promote: false
 contains_source_scalar_values: false
 ```
 
-`production_ready: false` was expected because the checked-in mapping still had status `candidate` during this exact-archive run. `can_promote: false` means automatic promotion is forbidden; the decision is manual and documented here.
+`production_ready: false` was expected because the checked-in mapping still had status `candidate` during that exact-archive run. `can_promote: false` means automatic promotion is forbidden; the decision is manual and documented here.
 
 ## Promotion decision
 
-The mapping is promoted to `verified` on 2026-07-29 after:
+The mapping was promoted to `verified` on 2026-07-29 after:
 
 - scalar-free field/type/nullability review;
 - unique `/reports/*` candidate-selector review;
@@ -151,12 +151,17 @@ reviewed_by: GunsPojoshe (operator), OpenAI-assisted review
 reviewed_at: 2026-07-29T16:41:00+03:00
 ```
 
-A repeated local validator run after pulling the promotion commits must produce:
+## Completed post-promotion validation
+
+After pulling the promotion commits, the same local validator was executed against the same private archive and produced:
 
 ```text
+mapping_id: coa-public-report-discovery-v1
 status: verified
 all_structurally_consistent: true
 all_raw_archive_selectors_consistent: true
+route_matched: true
+raw_payload_validated: true
 report_item_count: 5
 field_contract_count: 7
 extracted_value_count: 35
@@ -165,6 +170,8 @@ production_ready: true
 can_promote: false
 contains_source_scalar_values: false
 ```
+
+This completes the exact public-report parser/schema production gate. `can_promote: false` remains correct because automatic promotion is forbidden and the manual promotion is already complete.
 
 ## Interpretation boundary
 
