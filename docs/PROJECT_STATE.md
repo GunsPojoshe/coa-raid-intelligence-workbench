@@ -16,9 +16,9 @@ main
 Latest verified code checkpoint before this documentation update:
 
 ```text
-commit: 939679b44b738c459bf40b16206c00a51b8c7de9
+commit: 0c5b2f8372e9d488b1b000c1f2adfbf86b723195
 workflow: Verify repository
-run: #152
+run: #165
 conclusion: success
 Ubuntu: success
 Windows: success
@@ -54,7 +54,10 @@ Documentation commits follow that checkpoint. Не считать HEAD и CI sta
 - one-page bounded public-report discovery collector;
 - exact report-discovery archive structural review;
 - full-root scalar-free report mapping-review tooling;
-- PowerShell-safe scalar-free report mapping summary tooling.
+- PowerShell-safe scalar-free report mapping summary tooling;
+- versioned public-report mapping contract;
+- exact public-report raw-archive selector validation;
+- verified public-report discovery mapping for seven reviewed scalar fields.
 
 ## Trust boundary
 
@@ -244,14 +247,18 @@ top_level_keys=true
 top_level_kind=true
 ```
 
-Exact scalar-free mapping review:
+Exact scalar-free mapping review and summary:
 
 ```text
-schema_version: 1
 review_kind: report_discovery_mapping_review
+summary_kind: report_discovery_mapping_summary
+field_path_count: 24
 node_occurrence_count: 84
 numeric_map_path_count: 0
 candidate_collection_count: 6
+array_path_count: 2
+nullable_path_count: 3
+report_field_count: 11
 contains_source_scalar_values: false
 ready_for_manual_mapping_review: true
 ```
@@ -274,57 +281,138 @@ Candidate collection review established:
   entity scores: 0
 ```
 
-Therefore `/reports` is the only report-like collection in this exact payload and `/reports/*` is the bounded candidate item selector. This remains a structural candidate, not a verified source semantic contract. The five returned objects prove only that this single response matched the requested `limit=5`; consistent limit enforcement is not yet established.
+Therefore `/reports` is the only report-like collection in this exact payload and `/reports/*` is the reviewed bounded item selector. The five returned objects prove only that this single response matched the requested `limit=5`; consistent limit enforcement is not established.
 
-Implemented files:
+Nullable observations:
 
 ```text
+/reports/*/guild_id                         null x 5
+/reports/*/guild_name                       null x 5
+/reports/*/highest_difficulty/trial_level   null x 5
+```
+
+## Verified public-report mapping
+
+Verified mapping:
+
+```text
+config/mappings/coa_public_report_discovery_v1.json
+mapping_id: coa-public-report-discovery-v1
+status: verified
+collection: /reports/*
+selected fields: 7
+```
+
+Selected fields:
+
+```text
+source_report_id
+created_at
+start_time
+end_time
+title
+visibility
+uploader_username
+```
+
+Deferred scopes:
+
+```text
+/pagination
+/reports/*/guild_id
+/reports/*/guild_name
+/reports/*/highest_difficulty
+/reports/*/locations
+```
+
+Reviewer metadata:
+
+```text
+reviewed_by: GunsPojoshe (operator), OpenAI-assisted review
+reviewed_at: 2026-07-29T16:41:00+03:00
+```
+
+Review decisions and interpretation boundaries are recorded in `docs/REPORT_DISCOVERY_MAPPING_REVIEW_V1.md`.
+
+## Public-report promotion gate
+
+User-local exact-archive validation before promotion:
+
+```text
+mapping_id: coa-public-report-discovery-v1
+status: candidate
+all_structurally_consistent: true
+all_raw_archive_selectors_consistent: true
+route_matched: true
+raw_payload_validated: true
+report_item_count: 5
+field_contract_count: 7
+extracted_value_count: 35
+nullable_value_count: 0
+production_ready: false
+can_promote: false
+contains_source_scalar_values: false
+```
+
+The mapping was then manually promoted to `verified`. A repeated local run against the same private archive must confirm `production_ready: true`. Automatic promotion remains forbidden; `can_promote` remains false by design.
+
+Implemented report-discovery files include:
+
+```text
+config/mappings/coa_public_report_discovery_v1.json
+docs/REPORT_DISCOVERY_MAPPING_REVIEW_V1.md
 src/coa_workbench/collector/report_discovery.py
 src/coa_workbench/collector/report_discovery_review.py
 src/coa_workbench/collector/report_discovery_mapping_review.py
 src/coa_workbench/collector/report_discovery_mapping_summary.py
+src/coa_workbench/collector/report_discovery_mapping_text.py
+src/coa_workbench/normalizer/report_discovery_mapping.py
 scripts/capture_report_discovery.py
 scripts/review_report_discovery.py
 scripts/build_report_discovery_mapping_review.py
 scripts/summarize_report_discovery_mapping_review.py
+scripts/validate_report_discovery_mapping.py
 tests/unit/test_report_discovery.py
 tests/unit/test_report_discovery_review.py
 tests/unit/test_report_discovery_mapping_review.py
 tests/unit/test_report_discovery_mapping_summary.py
+tests/unit/test_report_discovery_mapping_text.py
+tests/unit/test_report_discovery_mapping.py
 ```
 
-The mapping-review and mapping-summary outputs contain paths, observed JSON types, required/observed object keys, array lengths/item types, numeric-map counts and reproducibility identifiers only. They do not emit report IDs, names, timestamps or other source scalar values.
+The review, summary and validation outputs contain only structural counts, paths, JSON types and reproducibility identifiers. They do not emit report IDs, names, timestamps or other source scalar values.
 
 Still unverified:
 
-- exact direct-field type and nullable decisions until the safe summary is run locally;
 - consistent enforcement of the requested limit across observations;
 - meaning of source category/filter fields;
 - whether additional pages exist;
 - source pagination metadata and stopping rules;
-- deterministic cross-page/category selection.
+- deterministic cross-page/category selection;
+- guild field semantics;
+- highest-difficulty and trial-level semantics;
+- location value semantics.
 
 `local_category` is only a local label. It must not be treated as a source-supported category.
 
 ## Current blockers
 
-1. The PowerShell-safe mapping summary must be generated for the exact private review files.
-2. A candidate versioned report mapping and exact raw-selector validation do not yet exist.
-3. Source category/filter semantics and pagination policy remain unverified.
-4. A complete report/encounter/roster slice is not normalized.
-5. Evidence coverage remains narrow.
-6. No corroborated gameplay mechanic is ready for canonical planner scoring.
-7. `docs/PROJECT_MASTER_CONTEXT.md` contains historical sections and must not override this operational state without code verification.
+1. Repeat the exact public-report validator locally after promotion and confirm `production_ready: true`.
+2. Source category/filter semantics and pagination policy remain unverified.
+3. A complete report/encounter/roster slice is not normalized.
+4. Evidence coverage remains narrow.
+5. No corroborated gameplay mechanic is ready for canonical planner scoring.
+6. `docs/PROJECT_MASTER_CONTEXT.md` contains historical sections and must not override this operational state without code verification.
 
 ## Next bounded tasks
 
-1. Generate the scalar-free report mapping summary for payload hash `2203e527...`.
-2. Review direct report field types, required keys, nullable paths and array item types.
-3. Add a candidate versioned mapping for `/reports/*` with exact hash/fingerprint provenance.
-4. Add exact raw-archive selector validation; keep status `candidate` until manual review.
-5. Investigate filters/categories/pagination only through separate explicit observations.
-6. Promote a report mapping only after exact archive validation and manual review.
-7. Select and normalize one complete report/encounter/roster slice after a verified mapping exists.
+1. Complete the post-promotion exact public-report mapping validation.
+2. Investigate filters/categories/pagination only through separate explicit observations.
+3. Discover an encounter route or payload only from observed application behavior; do not invent routes.
+4. Capture one bounded report/encounter/roster slice immutably.
+5. Build scalar-free structural and mapping review for that slice.
+6. Normalize only after a verified exact mapping exists.
+7. Preserve deferred public-report scopes until separately observed and reviewed.
 
 ## Completion gate
 
