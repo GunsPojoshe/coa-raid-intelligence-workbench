@@ -59,6 +59,7 @@ from .report_slice_capture import (
     capture_observed_report_slice,
     observed_report_slice_capture_to_dict,
 )
+from .report_slice_field_selection import select_observed_report_slice_fields
 from .report_slice_mapping_review import build_observed_report_slice_mapping_review
 from .report_slice_mapping_summary import summarize_observed_report_slice_mapping_review
 from .report_slice_review import review_observed_report_slice_capture
@@ -135,6 +136,7 @@ __all__ = [
     "review_report_discovery_capture",
     "sanitize_url",
     "schema_fingerprint",
+    "select_observed_report_slice_fields",
     "summarize_observed_report_slice_mapping_review",
     "summarize_report_discovery_mapping_review",
 ]
