@@ -64,14 +64,8 @@ def main() -> int:
     print(f"selected_scope_count={summary['selected_scope_count']}")
     print(f"selected_field_contract_count={summary['selected_field_contract_count']}")
     print(f"deferred_scope_count={summary['deferred_scope_count']}")
-    print(
-        "contains_source_scalar_values="
-        f"{str(summary['contains_source_scalar_values']).lower()}"
-    )
-    print(
-        "candidate_mapping_files_ready="
-        f"{str(summary['candidate_mapping_files_ready']).lower()}"
-    )
+    print(f"contains_source_scalar_values={str(summary['contains_source_scalar_values']).lower()}")
+    print(f"candidate_mapping_files_ready={str(summary['candidate_mapping_files_ready']).lower()}")
     print(f"can_promote={str(boundary['can_promote']).lower()}")
     print(f"normalization_allowed={str(boundary['normalization_allowed']).lower()}")
     print()
