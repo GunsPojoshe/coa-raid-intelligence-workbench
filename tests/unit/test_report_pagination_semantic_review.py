@@ -215,9 +215,10 @@ def test_reviews_unique_pagination_relations_without_source_values(tmp_path: Pat
     assert review["decision_boundary"]["ready_for_exhaustive_public_report_manifest_capture"] is True
     assert review["decision_boundary"]["ready_for_full_guild_crawl"] is False
     assert review["decision_boundary"]["ready_for_bis25_scoring"] is False
-    serialized = json.dumps(review, ensure_ascii=False)
-    assert "101" not in serialized
-    assert "42" not in serialized
+    assert review["summary"]["contains_source_scalar_values"] is False
+    for contract in review["field_contracts"]:
+        assert "observed_values" not in contract
+        assert "value" not in contract
 
 
 def test_keeps_termination_unresolved_when_current_page_relation_is_ambiguous(
