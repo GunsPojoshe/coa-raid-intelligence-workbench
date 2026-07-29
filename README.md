@@ -2,20 +2,12 @@
 
 Локальное браузерное приложение для подготовки рейдовых составов и evidence-first анализа Classless / Ascension WoW.
 
-## Главная цель
+## Цель
 
-Система объединяет:
+Проект объединяет два контура:
 
-- конструктор рейда FLEX / 10 / 25 / 40;
-- хранение планов в DuckDB;
-- автоматический сбор наблюдений с `coa.ascensionlogs.gg`;
-- immutable raw archive;
-- schema fingerprinting;
-- verified normalization;
-- Aura State Engine;
-- hypotheses, supporting и contradicting evidence;
-- trust-aware planner scoring;
-- объяснимые рекомендации с provenance.
+1. **Raid Planner** — конструктор рейда FLEX / 10 / 25 / 40, валидация состава и хранение планов в DuckDB.
+2. **Raid Intelligence** — воспроизводимый сбор и анализ наблюдений с `coa.ascensionlogs.gg` без подмены фактов источника локальными выводами.
 
 Канонический принцип:
 
@@ -24,11 +16,7 @@ combat-log event = observation
 combat-log event != proof of a general game mechanic
 ```
 
-Полный контекст проекта находится в:
-
-```text
-docs/PROJECT_MASTER_CONTEXT.md
-```
+В planner scoring допускаются только механики со статусом `corroborated` или `confirmed`.
 
 ## Архитектура
 
@@ -43,118 +31,184 @@ Evidence pipeline:
 
 ```text
 source response
--> immutable raw observation
+-> immutable raw archive
 -> SHA-256 + schema fingerprint
--> reviewed verified mapping
--> canonical normalized records
--> deterministic state reconstruction
+-> reviewed mapping
+-> verified parser normalization
+-> deterministic reconstruction
+-> immutable observations
 -> mechanic hypothesis
 -> supporting / contradicting evidence
 -> corroborated / confirmed mechanic
 -> planner scoring
 ```
 
-Только `corroborated` и `confirmed` mechanics допускаются в canonical scoring.
+## Текущий подтверждённый статус
 
-## Реализовано
+Operational baseline актуализирован **30 июля 2026 года**.
 
-### Product foundation
+Активная ветка и PR:
+
+```text
+main
+└── e2/log-evidence-refactor        PR #3 -> main, Draft
+    └── e3/real-log-capture         PR #7 -> e2, Draft
+```
+
+Последний green baseline перед обновлением документации:
+
+```text
+commit: 2b92b3d02339a3748d146c1b15a6718f84494e6f
+workflow: Verify repository
+run: #280
+Ubuntu: success
+Windows: success
+```
+
+### Реализованный product foundation
 
 - localhost FastAPI runtime;
 - браузерный конструктор до 40 слотов;
 - FLEX / 10 / 25 / 40;
 - class/spec/role catalog;
 - Python validation;
-- DuckDB persistence;
 - create/read/update/delete raid plans;
+- DuckDB persistence;
 - request IDs и diagnostic logging;
 - localhost-only bind по умолчанию.
 
-### Evidence foundation
+### Реализованный evidence foundation
 
-- source registry;
-- safe source probe;
-- immutable raw archive;
-- deduplicated payload body + separate observations;
-- JSON/HAR import;
-- privacy-safe deterministic HAR inventory;
-- archived gzip JSON inspection;
-- schema fingerprinting;
-- verified mapping gate;
+- source registry и safe probes;
+- immutable content-addressed raw archive;
+- отдельные retrieval observations при дедупликации payload body;
+- JSON/HAR import и privacy-safe inventory;
+- schema inspection и fingerprints;
+- versioned verified mappings;
 - canonical report/encounter/actor/participant/aura records;
-- rejects;
+- normalization rejects;
 - Aura State Engine;
 - hypotheses и evidence links;
 - trust/weighting policies;
-- migrations `0001`–`0006`;
-- reproducible repository verifier;
-- GitHub Actions Ubuntu + Windows.
+- migrations `0001`–`0007`;
+- repository verifier;
+- GitHub Actions на Ubuntu и Windows.
 
-### Real observations
+### Реальные данные, прошедшие gates
 
-- verified full same-origin HTTP profile `coa-fetch-context-v1`;
-- real Armory identity for `Gunspojoshe / Vol'Jin`;
-- real immutable `armory_api_by_name` payload;
-- real immutable `armory_api_captures` payload;
-- real aura normalization checkpoints for encounters `64795` and `64796`;
-- exact reconstructed interval comparison with `debuff_sources` for spell `968746`.
+- verified Armory character и talent-grid mappings;
+- verified bounded public-report discovery mapping;
+- archive-only SPA route inventory;
+- immutable capture трёх report-slice endpoints;
+- verified mappings:
+  - `config/mappings/coa_report_detail_v1.json`;
+  - `config/mappings/coa_encounter_detail_v1.json`;
+- selected-parser normalization;
+- deterministic reconstruction;
+- selected-parser persistence в локальный DuckDB;
+- bounded structural review и candidate extraction для `combatants-info`.
 
-Текущие ограничения и hashes описаны в `docs/PROJECT_STATE.md` и `docs/PROJECT_MASTER_CONTEXT.md`.
-
-## Проверенный HTTP profile
-
-```text
-Accept: application/json, text/plain, */*
-Accept-Language: en-US,en;q=0.9
-Cache-Control: no-cache
-Pragma: no-cache
-User-Agent: Chromium-like
-Referer: https://coa.ascensionlogs.gg/
-Sec-Fetch-Dest: empty
-Sec-Fetch-Mode: cors
-Sec-Fetch-Site: same-origin
-```
-
-Проверен только полный profile. Не доказано минимальное подмножество headers и необходимость cookie/order dependency для fresh Armory-first session.
-
-## Текущий этап
-
-Активная работа:
+Report/encounter pipeline завершён для exact reviewed payloads:
 
 ```text
-PR #7: e3/real-log-capture -> e2/log-evidence-refactor
-PR #3: e2/log-evidence-refactor -> main
+normalized input:
+  reports:      2
+  encounters:  15
+  actors:      31
+  participants:31
+  aura_events: 0
+  rejects:     0
+
+reconstructed output:
+  reports:      1
+  encounters:  14
+  actors:      31
+  participants:31
+  aura_events: 0
+  rejects:     0
+
+persisted:
+  canonical entity observations: 77
+  transaction committed: true
 ```
 
-Оба PR остаются Draft.
+Combatants candidate extraction для exact payload:
 
-Ближайший bounded plan:
+```text
+source matches:       1350
+output observations:  1343
+deduplicated matches: 7
+linked actors:        11
+integrity checks:     12/12
+core mutations:       0
+```
 
-1. исправить Ruff blockers и вернуть green CI;
-2. добавить endpoint-isolated Armory capture;
-3. получить `armory/character/{id}` и `talent-grid/{class}` payloads;
-4. выполнить safe structural review и mappings;
-5. автоматизировать bounded report discovery;
-6. нормализовать полный report/encounter/roster slice;
-7. расширить supporting и contradicting evidence;
-8. интегрировать только corroborated/confirmed mechanics в planner.
+Этот результат подтверждает parser/linkage для exact payload. Он **не** подтверждает companion-addon provenance, nested collection semantics, игровые механики или planner scoring.
 
-## Требования
+## Observed report routes
+
+```text
+/api/reports/{template}
+/api/reports/{template}/encounters/{template}
+/api/reports/{template}/encounters/{template}/combatants-info
+```
+
+Отдельный `/roster` route не наблюдался.
+
+Exact bindings:
+
+```text
+report_detail
+payload:      161739896f0b8321f884bcc24d1896efb894a9c6e05166269189f9871c64cba9
+fingerprint:  3d533a4178b67957bbd31544ddf5484bd5959635ebd5edcdd0c7689a4bace216
+
+encounter_detail
+payload:      955437d6c9c287cc7db280dd2388b88603af2785508061b95c7811dcd272fe22
+fingerprint:  567f36824efb37a29b835df01ce9b1fcc79eae57d6230202d16a6265c6ca0e85
+
+combatants_info
+payload:      45672e0f0ff9eb461c575bdd38385795daa6326378bc3f8ad51474276140dc14
+fingerprint:  41d6d15422c668f83d2ccae1ec0ff2969671861f9e43b21cb371578961c5f8ff
+```
+
+## Текущая граница
+
+Разрешено:
+
+- использовать published report/encounter mappings для exact reviewed hashes/fingerprints;
+- воспроизводить normalized и reconstructed parser slice;
+- выполнять локальные parser-observation queries;
+- использовать scalar-free evidence receipts в Git.
+
+Не разрешено:
+
+- автоматически сохранять combatants candidate extraction;
+- изменять core actor rows из nested addon data;
+- считать `cao_id`, `entry_id`, slot или display name глобально уникальными;
+- интерпретировать talents/gear как подтверждённые gameplay semantics;
+- включать observed/candidate data в planner scoring;
+- считать report slice полным: в нём пока нет aura events.
+
+## Ближайший bounded этап
+
+1. проверить candidate extraction как manual validation packet;
+2. создать отдельный promotion/persistence gate для шести immutable combatants observation types;
+3. сохранить их без core actor mutation;
+4. добавить deterministic query/read model для actor build observations;
+5. отдельно исследовать aura endpoints и довести report slice до aura observations;
+6. только после независимых supporting/contradicting observations повышать trust игровых механик.
+
+## Установка и проверка
+
+Требования:
 
 ```text
 Python >= 3.12
 uv
 ```
 
-Locked environment:
-
 ```powershell
 uv sync --frozen --extra dev
-```
-
-Полная проверка:
-
-```powershell
 uv run python scripts/verify_repo.py
 ```
 
@@ -164,19 +218,12 @@ uv run python scripts/verify_repo.py
 uv run coa-workbench serve
 ```
 
-Адрес:
-
 ```text
 http://127.0.0.1:8000
-```
-
-OpenAPI:
-
-```text
 http://127.0.0.1:8000/docs
 ```
 
-## Основные команды
+Основные команды:
 
 ```powershell
 uv run coa-workbench doctor --project-root .
@@ -189,32 +236,40 @@ uv run coa-workbench inventory-har <browser-export.har> --output <inventory.json
 uv run coa-workbench inspect-json <payload.json>
 uv run coa-workbench inspect-archived <payload-path-or-hash>
 uv run coa-workbench normalize-json <payload.json> --mapping <verified-mapping.json>
-uv run coa-workbench serve
 uv run pytest
 ```
 
-## Privacy
+## Data policy
 
-Никогда не коммитить:
+Локально разрешено использовать полный приватный контекст для разработки и проверки. В Git по умолчанию версионируются только код, reviewed mappings, документация и scalar-free receipts.
 
-- HAR;
-- raw payloads;
-- local DuckDB;
-- cookies;
-- Authorization headers;
-- tokens;
-- browser profiles;
-- unsanitized private query values;
-- absolute local paths containing usernames.
+Не коммитить без отдельного осознанного решения:
+
+- raw payloads и HAR;
+- DuckDB и WAL;
+- normalized/reconstructed/extracted private batches;
+- cookies, Authorization headers, tokens и browser profiles;
+- `.env` и private query values;
+- абсолютные локальные пути с username.
+
+Gitignored local paths:
+
+```text
+data/raw/
+data/warehouse/
+data/normalized/
+data/reconstructed/
+data/extracted/
+data/exchange/in/
+data/exchange/out/
+```
 
 ## Документация
 
-```text
-AGENTS.md
-README.md
-docs/PROJECT_MASTER_CONTEXT.md
-docs/PROJECT_STATE.md
-docs/CONTINUATION_PROMPT.md
-docs/REAL_LOG_CAPTURE.md
-docs/ADR_012_LOG_EVIDENCE_TRUTH_MODEL.md
-```
+- `docs/PROJECT_MASTER_CONTEXT.md` — каноническая архитектура и правила проекта;
+- `docs/PROJECT_STATE.md` — изменяемое фактическое состояние;
+- `docs/REAL_LOG_CAPTURE.md` — capture/normalization/persistence protocol;
+- `docs/CONTINUATION_PROMPT.md` — стартовый контекст для нового агента;
+- `docs/ADR_012_LOG_EVIDENCE_TRUTH_MODEL.md` — truth model;
+- `evidence/real-data/README.md` — versioned scalar-free evidence checkpoint;
+- `AGENTS.md` — обязательные инструкции разработчикам и агентам.
