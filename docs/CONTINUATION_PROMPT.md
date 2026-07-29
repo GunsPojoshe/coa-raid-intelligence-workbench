@@ -39,8 +39,8 @@ main
 На момент handoff:
 
 ```text
-HEAD: d251460ea97a8b861b6cec77294108c3beddbb17
-Verify repository run #115: success
+HEAD: 3f8789c7becfc02fcb3c65e6aafbe72656c4e275
+Verify repository run #118: success
 ```
 
 Фактический HEAD и CI всегда перепроверить.
