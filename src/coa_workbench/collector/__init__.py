@@ -68,6 +68,7 @@ from .report_slice_mapping_validation import (
     validate_observed_report_slice_candidate_mappings,
 )
 from .report_slice_normalization import normalize_observed_report_slice_selected_parser_mappings
+from .report_slice_reconstruction import reconstruct_observed_report_slice
 from .report_slice_review import review_observed_report_slice_capture
 from .report_slice_scope_review import build_observed_report_slice_scope_review
 from .route_discovery import discover_api_route_candidates
@@ -138,6 +139,7 @@ __all__ = [
     "promote_observed_report_slice_candidate_mappings",
     "publish_observed_report_slice_mappings",
     "read_response_resilient",
+    "reconstruct_observed_report_slice",
     "render_report_discovery_mapping_summary_text",
     "report_discovery_capture_to_dict",
     "request_key_from_url",
