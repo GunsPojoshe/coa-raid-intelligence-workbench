@@ -45,6 +45,7 @@ from .report_discovery import (
     capture_public_report_discovery,
     report_discovery_capture_to_dict,
 )
+from .report_discovery_review import review_report_discovery_capture
 from .route_discovery import discover_api_route_candidates
 from .source_registry import (
     SourceRegistry,
@@ -98,6 +99,7 @@ __all__ = [
     "read_response_resilient",
     "report_discovery_capture_to_dict",
     "request_key_from_url",
+    "review_report_discovery_capture",
     "sanitize_url",
     "schema_fingerprint",
 ]
