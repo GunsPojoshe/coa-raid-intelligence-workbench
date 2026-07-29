@@ -57,13 +57,9 @@ def main() -> int:
     print(f"raw_archive_count={summary['raw_archive_count']}")
     print(f"candidate_collection_count={summary['candidate_collection_count']}")
     print(f"all_archives_consistent={str(summary['all_archives_consistent']).lower()}")
+    print(f"contains_source_scalar_values={str(summary['contains_source_scalar_values']).lower()}")
     print(
-        "contains_source_scalar_values="
-        f"{str(summary['contains_source_scalar_values']).lower()}"
-    )
-    print(
-        "semantic_verification_required="
-        f"{str(summary['semantic_verification_required']).lower()}"
+        f"semantic_verification_required={str(summary['semantic_verification_required']).lower()}"
     )
     print(f"normalization_allowed={str(summary['normalization_allowed']).lower()}")
     print()
