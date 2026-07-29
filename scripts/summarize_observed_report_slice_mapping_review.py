@@ -64,16 +64,11 @@ def main() -> int:
     print(f"endpoint_count={totals['endpoint_count']}")
     print(f"field_path_count={totals['field_path_count']}")
     print(f"node_occurrence_count={totals['node_occurrence_count']}")
-    print(
-        "source_candidate_collection_count="
-        f"{totals['source_candidate_collection_count']}"
-    )
+    print(f"source_candidate_collection_count={totals['source_candidate_collection_count']}")
     print(f"aggregated_candidate_path_count={totals['aggregated_candidate_path_count']}")
     print(f"shortlist_row_count={totals['shortlist_row_count']}")
     print(f"all_archives_consistent={str(totals['all_archives_consistent']).lower()}")
-    print(
-        f"contains_source_scalar_values={str(totals['contains_source_scalar_values']).lower()}"
-    )
+    print(f"contains_source_scalar_values={str(totals['contains_source_scalar_values']).lower()}")
     print(
         "ready_for_manual_scope_selection="
         f"{str(totals['ready_for_manual_scope_selection']).lower()}"
