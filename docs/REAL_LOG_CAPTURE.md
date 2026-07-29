@@ -114,7 +114,7 @@ If a transfer ends with `IncompleteRead`, timeout or disconnect:
 - do not treat partial bytes as valid evidence unless they form complete valid JSON and policy explicitly permits it;
 - never create a verified mapping from a transport-damaged payload.
 
-## Current Armory checkpoint
+## Verified Armory checkpoint
 
 Subject:
 
@@ -191,14 +191,19 @@ Review decisions are recorded in:
 docs/ARMORY_MAPPING_REVIEW_V1.md
 ```
 
-## Candidate mappings
+## Verified Armory mappings
 
 ```text
 config/mappings/coa_armory_character_v1.json
 config/mappings/coa_armory_talent_grid_v1.json
 ```
 
-Candidate status is intentional. `require_verified()` rejects both mappings from production use.
+Reviewer metadata:
+
+```text
+reviewed_by: GunsPojoshe (operator), OpenAI-assisted review
+reviewed_at: 2026-07-29T15:34:00+03:00
+```
 
 Review preserves source-specific identifiers instead of inventing semantics:
 
@@ -209,9 +214,7 @@ Talent records, connection records and rank-text records preserve parent talent/
 
 Deferred scopes include detailed gear, hero build, derived stat internals and item schemas for currently empty `lock_rules` and `rank_spell_ids` arrays.
 
-## Raw-archive mapping validation
-
-Type-only review is necessary but not sufficient for promotion.
+## Completed Armory production gate
 
 Run the validator against the exact immutable archives:
 
@@ -221,6 +224,17 @@ uv run --no-sync python scripts/validate_armory_mappings.py `
     --manifest "data\exchange\out\armory-endpoint-capture.json" `
     --raw-root "data\raw" `
     --output "data\exchange\out\armory-mapping-validation.json"
+```
+
+Final user-local result after promotion:
+
+```text
+schema_version: 2
+mapping_count: 2
+raw_archive_count: 2
+all_structurally_consistent: true
+all_raw_archives_consistent: true
+all_production_ready: true
 ```
 
 The validator checks:
@@ -236,33 +250,74 @@ The validator checks:
 9. required field presence;
 10. observed JSON types.
 
-Expected result before promotion:
+Verified mapping means reproducible extraction from the reviewed source schema. It does not confirm runtime magnitude, stacking, overwrite, scope, provider equivalence or planner criticality.
+
+## Bounded public-report capture
+
+Implemented collector and CLI:
 
 ```text
-schema_version: 2
-all_structurally_consistent: true
-all_raw_archives_consistent: true
-all_production_ready: false
-mapping_count: 2
+src/coa_workbench/collector/report_discovery.py
+scripts/capture_report_discovery.py
+tests/unit/test_report_discovery.py
 ```
 
-`all_production_ready: false` remains correct while mappings are `candidate`.
+Only the observed request shape is accepted:
 
-The validation output contains counts and reproducibility identifiers, not source scalar values.
+```text
+GET /api/reports/public
+page=<explicit integer >= 1>
+limit=<1..5, default 5>
+sortBy=created_at
+sortOrder=desc
+```
 
-## Promotion gate
+Run one bounded page:
 
-A candidate Armory mapping may be promoted only after:
+```powershell
+uv run --no-sync python scripts/capture_report_discovery.py `
+    --local-category "public_recent" `
+    --page 1 `
+    --limit 5 `
+    --output "data\exchange\out\report-discovery-page.json"
+```
 
-1. exact archive validation succeeds;
-2. compact output is reviewed;
-3. mapping semantics remain bounded to source structure;
-4. deferred scopes remain explicit;
-5. a separate commit changes status to `verified`;
-6. `reviewed_by` and `reviewed_at` are recorded;
-7. repository CI is green.
+The command:
 
-Verified mapping means reproducible extraction from the reviewed source schema. It does not confirm runtime magnitude, stacking, overwrite, scope, provider equivalence or planner criticality.
+1. makes one request only;
+2. rejects `limit` greater than five;
+3. rejects unobserved sort values;
+4. archives the complete body before interpretation;
+5. records payload hash and schema fingerprint;
+6. writes an atomic compact result;
+7. does not include source report IDs, names or other scalar values in compact output;
+8. does not persist request-header values or cookies;
+9. archives invalid JSON but marks the result incomplete;
+10. does not create a false capture on transport failure.
+
+`local_category` is a local operator label. It is not evidence of a source category.
+
+Do not claim before real observations:
+
+- response field names or selectors;
+- number of returned reports;
+- source category/filter semantics;
+- presence or meaning of pagination metadata;
+- availability of additional pages;
+- cross-page ordering or stopping rules.
+
+After the first real page:
+
+```text
+immutable archive
+-> scalar-free structural review
+-> candidate report discovery mapping
+-> explicit filter/pagination observations
+-> reviewed verified mapping
+-> deterministic bounded selection
+```
+
+Do not print, attach or commit the raw response.
 
 ## Browser HAR capture
 
@@ -307,9 +362,10 @@ The import/inventory must:
 ## Automated report capture target
 
 ```text
-/api/reports/public
+/api/reports/public one-page observation
+-> scalar-free structural review
 -> verified filters and pagination
--> deterministic bounded selection, default up to 5 reports/category
+-> deterministic bounded selection, maximum 5 reports/category
 -> encounter discovery
 -> selected analytical endpoints
 -> immutable archive
