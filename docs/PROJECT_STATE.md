@@ -2,65 +2,54 @@
 
 Дата актуализации: 2026-07-29.
 
-Главный контекст:
+Главный архитектурный контекст: `docs/PROJECT_MASTER_CONTEXT.md`.
 
-```text
-docs/PROJECT_MASTER_CONTEXT.md
-```
-
-Этот документ фиксирует изменяемое operational state. Перед работой проверять GitHub и код заново.
+Этот документ фиксирует изменяемое operational state. Перед работой заново проверять GitHub, код, CI и локальные данные.
 
 ## Репозиторий
 
 - repository: `GunsPojoshe/coa-raid-intelligence-workbench`;
 - default branch: `main`;
 - evidence branch: `e2/log-evidence-refactor`;
-- active capture branch: `e3/real-log-capture`;
+- active branch: `e3/real-log-capture`;
 - PR #3: `e2/log-evidence-refactor -> main`, Draft;
 - PR #7: `e3/real-log-capture -> e2/log-evidence-refactor`, Draft;
-- PR #8 safe HAR inventory merged into PR #7;
-- current verified PR #7 head before this documentation series: `ad605cc`;
-- documentation commits after that head update the same active branch.
+- current verified PR #7 head for this checkpoint: `787ce2e35d66df7752ad7f9b1b6c83518bf68e40`.
 
-Не доверять commit count, HEAD или CI status из документа без проверки.
+Не доверять HEAD, commit count или CI status из документа без повторной проверки.
 
-## Current product/evidence foundation
+## Реализованный фундамент
 
-Реализовано:
-
-- localhost FastAPI application;
-- browser raid constructor FLEX / 10 / 25 / 40;
+- localhost FastAPI application и browser raid constructor;
 - DuckDB raid-plan persistence;
-- immutable raw archive;
-- separate observations and deduplicated payload bodies;
-- source registry;
-- JSON/HAR import;
-- safe HAR inventory;
+- immutable content-addressed raw archive;
+- observations отдельно от deduplicated payload bodies;
+- JSON/HAR import и privacy-safe HAR inventory;
 - schema fingerprints;
-- verified normalization mapping gate;
+- verified normalization gate;
 - canonical report/encounter/actor/participant/aura records;
 - Aura State Engine;
-- hypotheses and supporting/contradicting evidence;
-- trust and weighting policies;
+- hypotheses и supporting/contradicting evidence;
+- trust и weighting policies;
 - migrations `0001`–`0006`;
-- repository verifier and Ubuntu/Windows CI;
-- SPA/asset capture;
-- frontend route discovery;
-- Armory API collector;
+- repository verifier и Ubuntu/Windows CI;
+- SPA/asset discovery;
 - versioned HTTP profile `coa-fetch-context-v1`;
-- persistent same-origin session with in-memory cookie jar;
-- resilient HTTP read with timeout, retry, `IncompleteRead` and disconnect handling.
+- persistent same-origin session с in-memory cookie jar;
+- bounded timeout/retry/incomplete-response handling;
+- endpoint-isolated progressive/resumable Armory capture;
+- structural Armory review и type-only mapping review packet;
+- candidate Armory mapping contracts с production gate.
 
 ## Real aura checkpoint
+
+Report `2987`, spell `968746`.
 
 ### Encounter 64795
 
 ```text
-report: 2987
-spell: 968746
 fingerprint: 2994424cb95c2a7e1997651226b7942367ebe77003e0f4614aae5da4920f8b98
-mapping: coa-aura-timeline-single-encounter-v1
-mapping status: verified
+mapping: coa-aura-timeline-single-encounter-v1, verified
 canonical events: 6
 reconstructed intervals: 3
 reference intervals: 3
@@ -71,8 +60,6 @@ anomalies: 0
 ### Encounter 64796
 
 ```text
-report: 2987
-spell: 968746
 window: 10382–38265 ms
 full duration: 117215 ms
 fingerprint: d8b6dd869d6adf8f3433f9e285b8270cd1aa8d640839c915a42c80b2211cbf0b
@@ -85,204 +72,163 @@ anomalies: 0
 
 Это подтверждает technical behavior normalizer/Aura State Engine, но не numeric/runtime mechanic `Ninja's Focus`.
 
-## Safe HAR inventory snapshot
-
-Последний документированный локальный inventory:
-
-```text
-1367 entries
-525 archived bodies
-124 JSON objects
-498 unique payloads
-59 unique schema fingerprints
-```
-
-Structural candidates включают roster, buff uptimes, casts, aura detail, aura timeline и debuff sources.
-
-HAR остаётся локальным и gitignored.
-
 ## HTTP access finding
 
-Полный same-origin profile возвращал HTTP 200 для:
-
-- `/api/reports/public`;
-- `/api/characters/search`;
-- `/api/armory/by-name/...`.
-
-Profile:
-
-```text
-Accept: application/json, text/plain, */*
-Accept-Language: en-US,en;q=0.9
-Cache-Control: no-cache
-Pragma: no-cache
-User-Agent: Chromium-like
-Referer: https://coa.ascensionlogs.gg/
-Sec-Fetch-Dest: empty
-Sec-Fetch-Mode: cors
-Sec-Fetch-Site: same-origin
-```
+Полный same-origin profile `coa-fetch-context-v1` возвращал HTTP 200 для public reports, character search, Armory by-name и endpoint-isolated Armory endpoints.
 
 Не доказано:
 
 - минимальное подмножество headers;
 - обязательность cookie;
-- порядок request dependency;
+- независимость от request order;
 - Armory-first behavior в completely fresh session.
 
-## Real Armory capture state
+## Real Armory checkpoint
 
-Тестовый subject:
-
-```text
-Gunspojoshe
-Vol'Jin
-Tyrant
-phase 0
-World Bosses
-normal
-```
-
-Identity подтверждена:
+Subject:
 
 ```text
 character_id: 156120
 character_class: Felsworn
-has_armory: true
-identity_source: by_name
-profile: coa-fetch-context-v1
+realm: Vol'Jin
+class_slug: felsworn
+http_profile_version: coa-fetch-context-v1
 ```
 
-Успешно сохранено:
-
-### armory_api_by_name
+### character
 
 ```text
+route: /api/armory/character/156120
 HTTP: 200
-keys: character, has_armory, latest_capture, success
-payload hash: a81bb54342ee1573017b314af418e54da3ec56c51131f62bd2dd5efe826d5cff
-fingerprint: 108ea5ed6a659d7161904ab087b4631df0f5c2ec69f94e1f2d90cbbaeaea0c37
+bytes: 59910
+payload hash: 2a9d752d7af72d41cd9d41836d670069c78e408df7260f5d9caa83b07430985f
+fingerprint: efbcf618291d824667ba586c22af4ed031fa146d69b11a5539ec17a41d042621
+keys: capture, ci_resolved, stats_summary, success
 ```
 
-### armory_api_captures
+### talent_grid
 
 ```text
+route: /api/armory/talent-grid/felsworn
 HTTP: 200
-bytes: 3151
-keys: captures, success
-payload hash: 34192051026d918ec0dcb311efc236c5873fda2f7748bc2acad128e5f5ec7851
-fingerprint: e03d3b0d7c308ab4740280720cbaaaf60740a19e50826d23eb2194124397b814
+bytes: 63025
+payload hash: 11be25407ec00898547c1b7f342d4596268b3164df9fe0f120bb911559cc5206
+fingerprint: 7e3b3bfc3966ddc5d0160c8d466e5ba92edbe55440449619d7204102a25b3240
+keys: class_name, success, trees
 ```
 
-Не завершено:
+Оба payloads:
 
-- `armory_api_character` body;
-- `armory_api_talent_grid` body.
+- захвачены endpoint-isolated collector;
+- сохранены локально как immutable gzip JSON;
+- повторно проверены по SHA-256, размеру и fingerprint;
+- перечислены в progressive resumable manifest;
+- не коммитятся в repository.
 
-Наблюдаемое поведение:
+## Mapping review checkpoint
 
-- status успевал стать 200;
-- body read зависал;
-- были `TimeoutError` и один incomplete chunked transfer;
-- `IncompleteRead` handling добавлен;
-- последний повторный capture пользователь остановил во время второй попытки после 180-second timeout;
-- aggregate result file не был создан;
-- локальная DuckDB и уже сохранённые payloads не повреждены.
-
-## Local DuckDB snapshot
-
-Зафиксированный snapshot одного запуска:
+Type-only packet schema version `2`:
 
 ```text
-migrations: 6
-unique raw objects: 786
-fetch observations: 1603
-HTTP 200: 1552
-HTTP 201: 46
-HTTP 401: 2
-HTTP 403: 3
+endpoint_count: 2
+archive_verified: 2
+field_path_count: 470
+node_occurrence_count: 6106
+numeric_map_path_count: 4
+contains_source_scalar_values: false
+ready_for_manual_mapping_review: true
 ```
 
-Armory snapshot позднее:
+Endpoint summaries:
 
 ```text
-armory_api_by_name: 2 unique payloads, 4 observations
-armory_api_captures: 1 unique payload, 1 observation
+character: 445 paths, 3312 node occurrences, 4 numeric maps
+talent_grid: 25 paths, 2794 node occurrences
 ```
 
-Это локальное изменяемое состояние, не repository fixture.
+Candidate mappings:
+
+```text
+config/mappings/coa_armory_character_v1.json
+config/mappings/coa_armory_talent_grid_v1.json
+```
+
+Оба имеют status `candidate` и блокируются production gate до явного ручного перевода в `verified`.
+
+Локальная validation пользователя:
+
+```text
+all_structurally_consistent: true
+all_production_ready: false
+mapping_count: 2
+character: 19 singletons, 5 collections, 36 fields
+talent_grid: 2 singletons, 4 collections, 17 fields
+```
+
+`all_production_ready: false` является ожидаемым состоянием candidate mappings.
+
+## Mapping scope
+
+Character mapping включает:
+
+- capture/encounter context;
+- player identity и basic context;
+- active specialization index;
+- selected talent ranks;
+- primary/offensive/defensive/resistance summaries.
+
+Deferred:
+
+- detailed gear semantics;
+- hero build semantics;
+- internal character talent-tree representation;
+- `_gearOnly`, `derived`, `raw`, `sourcesByStat` computational internals.
+
+Talent-grid mapping включает trees, talents, IDs, coordinates, node type, ranks, connections and rank text. `lock_rules` и `rank_spell_ids` deferred, поскольку в проверенном payload их массивы пустые.
 
 ## Tests and CI
 
-Последний проверенный CI для commit `ad605cc`:
+Последний проверенный CI для commit `787ce2e35d66df7752ad7f9b1b6c83518bf68e40`:
 
 ```text
 workflow: Verify repository
-run number: 65
-Windows: success
-Ubuntu: failure
-Ubuntu full pytest: 78 passed, 1 warning
+run number: 98
+status: completed
+conclusion: success
 ```
 
-Ubuntu failure вызван Ruff gates, не tests/runtime:
+Предыдущие Ruff blockers и отсутствие `character`/`talent_grid` больше не являются актуальными blockers.
 
-- unused `ssl` in `scripts/diagnose_armory_access.py`;
-- unused `FETCH_CONTEXT_PROFILE_VERSION` in `armory_api_capture.py`;
-- formatting required for `scripts/diagnose_armory_access.py`;
-- formatting required for `scripts/import_armory_har.py`.
-
-Последний локальный targeted collector suite:
-
-```text
-12 passed
-```
-
-## Local Windows environment issue
-
-`uv sync --frozen --extra dev` локально попытался build Ruff source distribution и завершился из-за отсутствующего MSVC `link.exe`.
-
-При этом:
-
-- runtime and targeted tests через `uv run --no-sync` работают;
-- GitHub Actions Windows locked sync прошёл;
-- не устанавливать Visual Studio Build Tools автоматически без отдельной диагностики wheel selection/cache/index behavior.
+Локальная Windows caveat сохраняется: `uv sync --frozen --extra dev` ранее пытался собрать Ruff из source distribution без MSVC `link.exe`. Targeted commands через `uv run --no-sync` и GitHub Actions Windows работают.
 
 ## Current blockers
 
-1. Ruff CI blockers.
-2. No complete `character` payload.
-3. No complete `talent_grid` payload.
-4. Full chain capture waits too long per endpoint.
-5. Aggregate result is written only after the full chain.
-6. No resumable/progressive endpoint manifest.
-7. Armory mappings are not reviewed.
-8. Full report/encounter/roster slice is not normalized.
-9. Evidence coverage is still narrow.
-10. No corroborated gameplay mechanic ready for canonical planner scoring.
+1. Candidate Armory mappings ещё не прошли явный semantic/manual review и не имеют status `verified`.
+2. Нет bounded automated report discovery с проверенными filters/pagination.
+3. Не нормализован полный report/encounter/roster slice.
+4. Evidence coverage остаётся узкой.
+5. Нет corroborated gameplay mechanic для canonical planner scoring.
 
 ## Next bounded tasks
 
-1. Fix Ruff only; obtain green CI.
-2. Implement endpoint-isolated Armory capture.
-3. Add short bounded timeout and progressive result writing.
-4. Capture only missing `character` and `talent_grid` endpoints.
-5. Inspect and fingerprint their real structures.
-6. Create reviewed mappings.
-7. Implement bounded report discovery, default up to 5 reports/category.
-8. Normalize complete report/encounter/roster slice.
-9. Expand supporting and contradicting evidence.
-10. Integrate only corroborated/confirmed mechanics into planner.
+1. Выполнить ручной review candidate Armory mappings без расширения игровой семантики.
+2. Зафиксировать решение review и только затем решить, какие mappings допустимо перевести в `verified`.
+3. Реализовать bounded report discovery, default до 5 reports/category.
+4. Проверить filters и pagination на реальных observations/frontend behavior.
+5. Нормализовать один полный report/encounter/roster slice.
+6. Расширить supporting и contradicting evidence.
+7. Допускать в planner только corroborated/confirmed mechanics.
 
 ## Completion gate
 
-PR #3 remains Draft until:
+PR #3 остаётся Draft до выполнения полного evidence checkpoint:
 
 - real immutable payloads;
 - stable fingerprints;
-- verified mappings;
-- normalized report/encounter/actors/participants/aura events;
+- reviewed verified mappings;
+- complete normalized report/encounter/actors/participants/aura events;
 - reconstructed intervals;
 - independent supporting observations;
 - contradicting evidence review;
-- reproducible versioned output;
+- reproducible versioned output with provenance;
 - green Ubuntu and Windows verification.
