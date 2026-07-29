@@ -1,17 +1,39 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import json
 from pathlib import Path
+from types import ModuleType
+from typing import Callable
 
 import pytest
 
 from coa_workbench.collector.combatants_candidate_promotion_compat import (
     promote_observed_combatants_info_candidates,
 )
-from tests.unit.test_combatants_candidate_promotion import _packet
 
 _CONTEXT_DESIGN_ID = "coa-combatants-instance-context-v1"
+
+
+def _load_fixture_packet() -> Callable[[Path], tuple[Path, Path]]:
+    fixture_path = Path(__file__).with_name("test_combatants_candidate_promotion.py")
+    spec = importlib.util.spec_from_file_location(
+        "combatants_candidate_promotion_fixture",
+        fixture_path,
+    )
+    if spec is None or spec.loader is None:
+        raise RuntimeError("combatants candidate promotion fixture module cannot be loaded")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    fixture_module = module if isinstance(module, ModuleType) else None
+    packet = getattr(fixture_module, "_packet", None)
+    if not callable(packet):
+        raise RuntimeError("combatants candidate promotion fixture is missing _packet")
+    return packet
+
+
+_packet = _load_fixture_packet()
 
 
 def _rewrite_receipt_hash(receipt_path: Path, private_path: Path) -> None:
