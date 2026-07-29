@@ -10,6 +10,7 @@ _ALLOWED_STATUSES = {"candidate", "verified"}
 _ALLOWED_ENDPOINT_KINDS = {"character", "talent_grid"}
 _MAPPING_SCHEMA_VERSION = 1
 _MISSING = object()
+_NO_DEFAULT = object()
 
 
 def _required_string(value: object, name: str) -> str:
@@ -57,7 +58,7 @@ def _escape_pointer_segment(segment: str) -> str:
     return segment.replace("~", "~0").replace("/", "~1")
 
 
-def _pointer_get(value: Any, pointer: str, default: Any = _MISSING) -> Any:
+def _pointer_get(value: Any, pointer: str, default: Any = _NO_DEFAULT) -> Any:
     if pointer in {"", "/"}:
         return value
     current = value
@@ -72,7 +73,7 @@ def _pointer_get(value: Any, pointer: str, default: Any = _MISSING) -> Any:
             else:
                 raise KeyError(pointer)
         except (KeyError, IndexError, TypeError, ValueError):
-            if default is _MISSING:
+            if default is _NO_DEFAULT:
                 raise KeyError(pointer) from None
             return default
     return current
@@ -118,6 +119,7 @@ def _find_matches(root: Any, pattern: str) -> tuple[_ArmoryMatch, ...]:
                 )
             )
             return
+
         segment = segments[offset]
         if segment == "*":
             if isinstance(current, list):
@@ -139,6 +141,7 @@ def _find_matches(root: Any, pattern: str) -> tuple[_ArmoryMatch, ...]:
                         None,
                     )
             return
+
         child = _pointer_get(current, "/" + segment, _MISSING)
         if child is _MISSING:
             return
@@ -156,7 +159,12 @@ def _find_matches(root: Any, pattern: str) -> tuple[_ArmoryMatch, ...]:
     return tuple(matches)
 
 
-def _select(match: _ArmoryMatch, root: Any, expression: str, default: Any = _MISSING) -> Any:
+def _select(
+    match: _ArmoryMatch,
+    root: Any,
+    expression: str,
+    default: Any = _MISSING,
+) -> Any:
     if expression == "@item":
         return match.value
     if expression == "@index":
@@ -205,24 +213,34 @@ class ArmoryFieldContract:
     note: str | None = None
 
     @classmethod
-    def from_dict(cls, payload: Mapping[str, Any], *, name: str) -> ArmoryFieldContract:
+    def from_dict(
+        cls,
+        payload: Mapping[str, Any],
+        *,
+        name: str,
+    ) -> ArmoryFieldContract:
         selector = _required_string(payload.get("selector"), f"{name}.selector")
         review_path = _required_string(payload.get("review_path"), f"{name}.review_path")
         if not review_path.startswith("/"):
             raise ValueError(f"Armory mapping field {name}.review_path must be an absolute path")
+
         raw_types = payload.get("types")
         if not isinstance(raw_types, list) or not raw_types:
             raise ValueError(f"Armory mapping field {name}.types must be a non-empty array")
-        types = tuple(sorted({_required_string(value, f"{name}.types[]") for value in raw_types}))
+        types = tuple(
+            sorted({_required_string(value, f"{name}.types[]") for value in raw_types})
+        )
         invalid = set(types) - _ALLOWED_JSON_TYPES
         if invalid:
             raise ValueError(f"Armory mapping field {name} has invalid JSON types: {sorted(invalid)}")
+
         nullable = payload.get("nullable", False)
         required = payload.get("required", True)
         if not isinstance(nullable, bool) or not isinstance(required, bool):
             raise ValueError(f"Armory mapping field {name} nullable/required flags must be boolean")
         if nullable != ("null" in types):
             raise ValueError(f"Armory mapping field {name} nullable flag does not match its types")
+
         note = payload.get("note")
         if note is not None and (not isinstance(note, str) or not note):
             raise ValueError(f"Armory mapping field {name}.note must be a non-empty string")
@@ -249,11 +267,15 @@ class ArmoryCollectionContract:
             payload.get("observed_occurrences"),
             f"collections.{name}.observed_occurrences",
         )
+
         raw_fields = payload.get("fields")
         if not isinstance(raw_fields, dict) or not raw_fields:
             raise ValueError(f"Armory collection {name} must contain fields")
         fields = {
-            _required_string(field_name, f"collections.{name}.fields key"): ArmoryFieldContract.from_dict(
+            _required_string(
+                field_name,
+                f"collections.{name}.fields key",
+            ): ArmoryFieldContract.from_dict(
                 field_payload,
                 name=f"collections.{name}.fields.{field_name}",
             )
@@ -296,12 +318,15 @@ class ArmoryMappingContract:
     def from_dict(cls, payload: Mapping[str, Any]) -> ArmoryMappingContract:
         if payload.get("mapping_schema_version") != _MAPPING_SCHEMA_VERSION:
             raise ValueError("unsupported Armory mapping schema version")
+
         status = _required_string(payload.get("status"), "status")
         if status not in _ALLOWED_STATUSES:
             raise ValueError(f"unsupported Armory mapping status: {status}")
+
         endpoint_kind = _required_string(payload.get("endpoint_kind"), "endpoint_kind")
         if endpoint_kind not in _ALLOWED_ENDPOINT_KINDS:
             raise ValueError(f"unsupported Armory endpoint kind: {endpoint_kind}")
+
         route_template = _required_string(payload.get("route_template"), "route_template")
         if not route_template.startswith("/api/armory/"):
             raise ValueError("Armory route_template must be an /api/armory/ route")
@@ -310,6 +335,7 @@ class ArmoryMappingContract:
         raw_collections = payload.get("collections", {})
         if not isinstance(raw_singletons, dict) or not isinstance(raw_collections, dict):
             raise ValueError("Armory mapping singletons and collections must be objects")
+
         singletons = {
             _required_string(name, "singletons key"): ArmoryFieldContract.from_dict(
                 spec,
@@ -320,6 +346,7 @@ class ArmoryMappingContract:
         }
         if len(singletons) != len(raw_singletons):
             raise ValueError("Armory mapping contains a non-object singleton contract")
+
         collections = {
             _required_string(name, "collections key"): ArmoryCollectionContract.from_dict(
                 spec,
@@ -337,10 +364,15 @@ class ArmoryMappingContract:
         raw_notes = payload.get("review_notes", [])
         if not isinstance(raw_deferred, list) or not isinstance(raw_notes, list):
             raise ValueError("Armory mapping deferred_scopes and review_notes must be arrays")
-        deferred_scopes = tuple(_required_string(value, "deferred_scopes[]") for value in raw_deferred)
+
+        deferred_scopes = tuple(
+            _required_string(value, "deferred_scopes[]") for value in raw_deferred
+        )
         if any(not value.startswith("/") for value in deferred_scopes):
             raise ValueError("Armory mapping deferred scopes must be absolute paths")
-        review_notes = tuple(_required_string(value, "review_notes[]") for value in raw_notes)
+        review_notes = tuple(
+            _required_string(value, "review_notes[]") for value in raw_notes
+        )
 
         reviewed_by = payload.get("reviewed_by")
         reviewed_at = payload.get("reviewed_at")
@@ -357,7 +389,10 @@ class ArmoryMappingContract:
             status=status,
             endpoint_kind=endpoint_kind,
             route_template=route_template,
-            schema_fingerprint=_sha256(payload.get("schema_fingerprint"), "schema_fingerprint"),
+            schema_fingerprint=_sha256(
+                payload.get("schema_fingerprint"),
+                "schema_fingerprint",
+            ),
             reviewed_payload_hash=_sha256(
                 payload.get("reviewed_payload_hash"),
                 "reviewed_payload_hash",
@@ -366,7 +401,10 @@ class ArmoryMappingContract:
                 payload.get("review_packet_schema_version"),
                 "review_packet_schema_version",
             ),
-            provenance_type=_required_string(payload.get("provenance_type"), "provenance_type"),
+            provenance_type=_required_string(
+                payload.get("provenance_type"),
+                "provenance_type",
+            ),
             singletons=singletons,
             collections=collections,
             deferred_scopes=deferred_scopes,
@@ -382,12 +420,16 @@ class ArmoryMappingContract:
             raise ValueError("Armory mapping file must contain a JSON object")
         return cls.from_dict(payload)
 
-    def validate_against_review_packet(self, packet: Mapping[str, Any]) -> dict[str, Any]:
+    def validate_against_review_packet(
+        self,
+        packet: Mapping[str, Any],
+    ) -> dict[str, Any]:
         errors: list[str] = []
         if packet.get("review_kind") != "armory_mapping_review":
             errors.append("review_kind mismatch")
         if packet.get("schema_version") != self.review_packet_schema_version:
             errors.append("review packet schema version mismatch")
+
         summary = packet.get("summary")
         if not isinstance(summary, Mapping):
             errors.append("review packet has no summary")
@@ -412,6 +454,7 @@ class ArmoryMappingContract:
         if not isinstance(endpoint, Mapping):
             errors.append(f"review packet has no endpoint {self.endpoint_kind}")
             endpoint = {}
+
         if endpoint.get("schema_fingerprint") != self.schema_fingerprint:
             errors.append("schema fingerprint mismatch")
         if endpoint.get("payload_hash") != self.reviewed_payload_hash:
@@ -435,6 +478,7 @@ class ArmoryMappingContract:
             if not isinstance(shape, Mapping):
                 errors.append(f"{name}: review path not found: {contract.review_path}")
                 return
+
             type_counts = shape.get("type_counts")
             observed_types = set(type_counts) if isinstance(type_counts, Mapping) else set()
             if observed_types != set(contract.types):
@@ -447,10 +491,13 @@ class ArmoryMappingContract:
 
         for name, contract in self.singletons.items():
             validate_field(f"singletons.{name}", contract)
+
         for collection_name, collection in self.collections.items():
             collection_shape = shape_by_path.get(collection.path)
             if not isinstance(collection_shape, Mapping):
-                errors.append(f"collections.{collection_name}: path not found: {collection.path}")
+                errors.append(
+                    f"collections.{collection_name}: path not found: {collection.path}"
+                )
             elif collection_shape.get("occurrence_count") != collection.observed_occurrences:
                 errors.append(
                     f"collections.{collection_name}: occurrence mismatch "
@@ -458,10 +505,16 @@ class ArmoryMappingContract:
                     f"review={collection_shape.get('occurrence_count')}"
                 )
             for field_name, contract in collection.fields.items():
-                validate_field(f"collections.{collection_name}.fields.{field_name}", contract)
+                validate_field(
+                    f"collections.{collection_name}.fields.{field_name}",
+                    contract,
+                )
 
         if errors:
-            raise ValueError("Armory mapping review validation failed: " + "; ".join(errors))
+            raise ValueError(
+                "Armory mapping review validation failed: " + "; ".join(errors)
+            )
+
         return {
             "mapping_id": self.mapping_id,
             "mapping_version": self.mapping_version,
@@ -493,7 +546,7 @@ class ArmoryMappingContract:
             errors.append(f"route mismatch: template={self.route_template} route={route}")
 
         extracted_value_count = 0
-        singleton_values = 0
+        singleton_value_count = 0
         collection_counts: dict[str, int] = {}
         root_match = _ArmoryMatch(payload, "/", (), None)
 
@@ -501,32 +554,34 @@ class ArmoryMappingContract:
             name: str,
             field: ArmoryFieldContract,
             match: _ArmoryMatch,
-        ) -> None:
+        ) -> bool:
             nonlocal extracted_value_count
             value = _select(match, payload, field.selector, _MISSING)
             if value is _MISSING:
                 if field.required:
                     errors.append(f"{name}: required selector missing at {match.path}")
-                return
+                return False
+
             try:
                 value_type = _json_type(value)
             except TypeError as exc:
                 errors.append(f"{name}: {exc}")
-                return
+                return False
+
             if value_type not in field.types:
                 errors.append(
                     f"{name}: extracted type {value_type} is not allowed; "
                     f"expected={sorted(field.types)} path={match.path}"
                 )
-            if (value is None) is not field.nullable and value is None:
+            if value is None and not field.nullable:
                 errors.append(f"{name}: extracted null from non-nullable field at {match.path}")
+
             extracted_value_count += 1
+            return True
 
         for name, field in self.singletons.items():
-            before = extracted_value_count
-            validate_value(f"singletons.{name}", field, root_match)
-            if extracted_value_count > before:
-                singleton_values += 1
+            if validate_value(f"singletons.{name}", field, root_match):
+                singleton_value_count += 1
 
         for collection_name, collection in self.collections.items():
             matches = _find_matches(payload, collection.path)
@@ -545,7 +600,10 @@ class ArmoryMappingContract:
                     )
 
         if errors:
-            raise ValueError("Armory raw payload validation failed: " + "; ".join(errors))
+            raise ValueError(
+                "Armory raw payload validation failed: " + "; ".join(errors)
+            )
+
         return {
             "mapping_id": self.mapping_id,
             "endpoint_kind": self.endpoint_kind,
@@ -553,7 +611,7 @@ class ArmoryMappingContract:
             "schema_fingerprint": self.schema_fingerprint,
             "route_template": self.route_template,
             "route_matched": route is not None,
-            "singleton_value_count": singleton_values,
+            "singleton_value_count": singleton_value_count,
             "collection_counts": collection_counts,
             "extracted_value_count": extracted_value_count,
             "raw_payload_validated": True,
