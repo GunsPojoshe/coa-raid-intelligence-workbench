@@ -216,7 +216,7 @@ sortOrder=desc
 Verified in code/tests:
 
 - one explicitly requested page per invocation;
-- hard maximum of five returned source records requested from the endpoint;
+- hard maximum request limit of five source records;
 - exact observed sort keys only;
 - response archived before JSON interpretation;
 - invalid JSON remains archived but the result is incomplete;
@@ -229,6 +229,7 @@ Not yet verified from a real report-discovery response:
 
 - top-level response shape and field paths;
 - actual number of returned records;
+- whether the endpoint respects the requested limit;
 - meaning of any source category/filter fields;
 - whether additional pages exist;
 - source pagination metadata or stopping rules;
