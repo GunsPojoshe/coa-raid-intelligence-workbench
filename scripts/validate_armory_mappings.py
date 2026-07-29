@@ -7,7 +7,9 @@ import json
 from pathlib import Path
 from typing import Any
 
-from coa_workbench.collector.armory_structural_review import review_armory_capture_manifest
+from coa_workbench.collector.armory_structural_review import (
+    review_armory_capture_manifest,
+)
 from coa_workbench.normalizer.armory_mapping import ArmoryMappingContract
 from coa_workbench.normalizer.schema_inspector import structure_fingerprint
 
