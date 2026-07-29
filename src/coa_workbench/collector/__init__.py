@@ -56,6 +56,7 @@ from .source_registry import (
     UnverifiedSourceRouteError,
     load_source_registry,
 )
+from .spa_route_inventory import build_spa_route_inventory, normalize_api_route_shape
 
 _armory_capture._api_route_candidates = discover_api_route_candidates
 _armory_capture._read_response = read_response_resilient
@@ -87,6 +88,7 @@ __all__ = [
     "build_character_url",
     "build_page_capture_to_dict",
     "build_report_discovery_mapping_review",
+    "build_spa_route_inventory",
     "capture_armory_api",
     "capture_armory_endpoint",
     "capture_armory_endpoints_progressively",
@@ -98,6 +100,7 @@ __all__ = [
     "inspect_archived_payload",
     "inventory_har",
     "load_source_registry",
+    "normalize_api_route_shape",
     "probe_registry_route",
     "probe_result_to_dict",
     "read_response_resilient",
