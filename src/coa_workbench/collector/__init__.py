@@ -20,6 +20,7 @@ from .armory_endpoint_capture import (
     capture_armory_endpoint,
     capture_armory_endpoints_progressively,
 )
+from .combatants_candidate_extraction import extract_observed_combatants_info_candidates
 from .combatants_info_field_selection import select_observed_combatants_info_fields
 from .combatants_mapping_design import design_observed_combatants_info_mappings
 from .combatants_scope_review import build_observed_combatants_info_deep_scope_review
@@ -133,6 +134,7 @@ __all__ = [
     "capture_to_dict",
     "design_observed_combatants_info_mappings",
     "discover_api_route_candidates",
+    "extract_observed_combatants_info_candidates",
     "inspect_archived_payload",
     "inventory_har",
     "load_source_registry",
