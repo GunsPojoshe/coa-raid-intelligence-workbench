@@ -47,6 +47,7 @@ from .report_discovery import (
 )
 from .report_discovery_mapping_review import build_report_discovery_mapping_review
 from .report_discovery_mapping_summary import summarize_report_discovery_mapping_review
+from .report_discovery_mapping_text import render_report_discovery_mapping_summary_text
 from .report_discovery_review import review_report_discovery_capture
 from .route_discovery import discover_api_route_candidates
 from .source_registry import (
@@ -100,6 +101,7 @@ __all__ = [
     "probe_registry_route",
     "probe_result_to_dict",
     "read_response_resilient",
+    "render_report_discovery_mapping_summary_text",
     "report_discovery_capture_to_dict",
     "request_key_from_url",
     "review_report_discovery_capture",
