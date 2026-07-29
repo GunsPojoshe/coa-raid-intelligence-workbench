@@ -25,6 +25,7 @@ from .combatants_candidate_promotion import promote_observed_combatants_info_can
 from .combatants_info_field_selection import select_observed_combatants_info_fields
 from .combatants_mapping_design import design_observed_combatants_info_mappings
 from .combatants_scope_review import build_observed_combatants_info_deep_scope_review
+from .guild_report_collection_contract import build_guild_report_collection_contract
 from .har_inventory import inspect_archived_payload, inventory_har
 from .http_profile import (
     COA_FETCH_CONTEXT_V1,
@@ -119,6 +120,7 @@ __all__ = [
     "armory_api_capture_to_dict",
     "build_armory_url",
     "build_character_url",
+    "build_guild_report_collection_contract",
     "build_observed_combatants_info_deep_scope_review",
     "build_observed_report_slice_mapping_review",
     "build_observed_report_slice_scope_review",
