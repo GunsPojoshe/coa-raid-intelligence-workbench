@@ -1,403 +1,402 @@
-# Real CoA Logs capture protocol
+# Real CoA Logs capture and persistence protocol
+
+Дата актуализации: **2026-07-30**.
 
 ## Purpose
 
-This document defines privacy-safe real-data capture from `coa.ascensionlogs.gg`.
+Этот документ определяет безопасный и воспроизводимый путь от real response `coa.ascensionlogs.gg` до canonical observations.
 
-The goal is not to guess routes or mechanics. The goal is to:
+Цель:
 
-1. obtain real response bodies;
-2. archive them immutably;
-3. record safe request shape and transport facts;
-4. fingerprint JSON structures;
-5. review mappings explicitly;
-6. validate mappings against exact archives;
-7. normalize reproducibly;
-8. preserve supporting and contradicting evidence.
+1. получить complete real response;
+2. сохранить его immutably;
+3. зафиксировать safe transport facts;
+4. вычислить exact SHA-256 и schema fingerprint;
+5. выполнить structural/field review;
+6. создать и проверить mapping;
+7. вручную разрешить publication;
+8. нормализовать и реконструировать;
+9. сохранить provenance;
+10. не превращать parser result в gameplay claim.
+
+## Canonical pipeline
+
+```text
+HTTP response
+-> immutable raw payload
+-> retrieval observation manifest
+-> structural review
+-> mapping review / field selection
+-> candidate mapping or dedicated extractor design
+-> exact raw validation
+-> manual promotion/publication
+-> normalization/extraction
+-> deterministic reconstruction/deduplication
+-> atomic persistence
+-> scalar-free receipt
+```
 
 ## Capture paths
 
-### Preferred path: autonomous HTTP collector
+### Preferred: autonomous HTTP collector
 
-Use the versioned same-origin profile:
+Use:
 
 ```text
 coa-fetch-context-v1
 ```
 
-It includes the verified full header set and one persistent same-origin session with an in-memory cookie jar.
+Requirements:
 
-The collector must never archive cookie values or request-header values. Safe metadata may include:
+- persistent same-origin session;
+- in-memory cookie jar only;
+- bounded timeout;
+- at most bounded retry policy;
+- endpoint-isolated execution;
+- progressive safe manifest;
+- archive complete body before interpretation;
+- distinguish HTTP status from complete body read;
+- preserve transport errors;
+- never store cookie/header values.
+
+Safe metadata may include:
 
 - profile version;
 - request header names;
 - sanitized route shape;
-- HTTP status;
-- content type;
+- status and content type;
+- byte count;
 - transport warning;
-- response byte count;
 - payload hash;
 - schema fingerprint.
 
-### Fallback path: browser HAR
+### Fallback: browser HAR
 
-HAR remains a fallback when the autonomous collector cannot obtain a required payload.
+HAR is sensitive even in a private repository.
 
-A HAR may contain cookies, authorization headers, identifiers and private URLs.
+- store under `data/exchange/in/`;
+- never commit unsanitized HAR;
+- never paste cookies, Authorization headers or tokens;
+- inventory/import only through the safe tooling;
+- archive only allowed-host non-empty response bodies;
+- keep skip reasons for malformed entries.
 
-- Never commit a HAR.
-- Never attach an unsanitized HAR to GitHub or chat.
-- Store it only under a gitignored local path such as `data/exchange/in/`.
-- Do not copy authentication headers into configuration.
-- The original HAR remains sensitive after import.
+## Raw archive contract
 
-## Verified HTTP profile
+Raw payload:
 
-```text
-Accept: application/json, text/plain, */*
-Accept-Language: en-US,en;q=0.9
-Cache-Control: no-cache
-Pragma: no-cache
-User-Agent: Chromium-like
-Referer: https://coa.ascensionlogs.gg/
-Sec-Fetch-Dest: empty
-Sec-Fetch-Mode: cors
-Sec-Fetch-Site: same-origin
-```
+- immutable;
+- content-addressed by SHA-256;
+- gzip-compressed when JSON;
+- one body per content hash;
+- separate observation per retrieval;
+- schema-fingerprinted when valid JSON;
+- linked to sanitized request metadata.
 
-This full profile returned HTTP 200 for public reports, character search, Armory by-name, character detail and talent grid in the verified capture sequence.
+Do not alter archived bytes to satisfy tests.
 
-Do not claim:
+## Mapping contract
 
-- the minimum header subset is known;
-- cookies are unnecessary;
-- request order is irrelevant;
-- HTML bootstrap is required;
-- authorization, browser TLS impersonation or HAR is always required.
-
-## Autonomous collector rules
-
-### Endpoint isolation
-
-Real capture must be executable per endpoint.
-
-Each endpoint attempt should:
-
-1. use a bounded timeout;
-2. use bounded retries only for retryable failures;
-3. write progressive safe result state;
-4. archive a completed body before interpretation;
-5. preserve transport warnings;
-6. continue or stop according to explicit policy;
-7. allow resume without re-fetching successful payloads.
-
-### Status is not body completion
-
-These are separate facts:
+Mapping may be published only when:
 
 ```text
-HTTP status received
-response body read completed
-valid JSON parsed
-raw payload archived
-schema fingerprint recorded
+exact archived payload
++ exact payload hash
++ exact schema fingerprint
++ explicit collection/field selectors
++ reviewed occurrence/type/nullability facts
++ manual reviewer metadata
++ successful dry run
++ mapping status verified
 ```
 
-HTTP 200 alone is not a successful evidence capture.
+Unknown hash/fingerprint must be rejected and reviewed separately.
 
-### Partial bodies
+A verified mapping confirms parser compatibility only.
 
-If a transfer ends with `IncompleteRead`, timeout or disconnect:
+## Current verified Armory checkpoint
 
-- do not crash the entire batch;
-- record the transport error;
-- do not treat partial bytes as valid evidence unless they form complete valid JSON and policy explicitly permits it;
-- never create a verified mapping from a transport-damaged payload.
-
-## Verified Armory checkpoint
-
-Subject:
-
-```text
-character_id: 156120
-class_slug: felsworn
-```
-
-### Character
-
-```text
-route: /api/armory/character/156120
-HTTP: 200
-bytes: 59910
-payload hash: 2a9d752d7af72d41cd9d41836d670069c78e408df7260f5d9caa83b07430985f
-schema fingerprint: efbcf618291d824667ba586c22af4ed031fa146d69b11a5539ec17a41d042621
-top-level keys: capture, ci_resolved, stats_summary, success
-```
-
-### Talent grid
-
-```text
-route: /api/armory/talent-grid/felsworn
-HTTP: 200
-bytes: 63025
-payload hash: 11be25407ec00898547c1b7f342d4596268b3164df9fe0f120bb911559cc5206
-schema fingerprint: 7e3b3bfc3966ddc5d0160c8d466e5ba92edbe55440449619d7204102a25b3240
-top-level keys: class_name, success, trees
-```
-
-Capture manifest:
-
-```text
-data/exchange/out/armory-endpoint-capture.json
-```
-
-The manifest and raw archives remain local and gitignored.
-
-## Structural and mapping review
-
-Structural review verifies archive integrity without exposing scalar values:
-
-```powershell
-uv run --no-sync python scripts/review_armory_capture.py `
-    --manifest "data\exchange\out\armory-endpoint-capture.json" `
-    --raw-root "data\raw" `
-    --output "data\exchange\out\armory-structural-review.json"
-```
-
-Mapping-review packet:
-
-```powershell
-uv run --no-sync python scripts/build_armory_mapping_review.py `
-    --manifest "data\exchange\out\armory-endpoint-capture.json" `
-    --raw-root "data\raw" `
-    --output "data\exchange\out\armory-mapping-review-v2.json" `
-    --max-nodes 100000
-```
-
-Reviewed packet schema `2`:
-
-```text
-archive_verified: 2
-field_path_count: 470
-node_occurrence_count: 6106
-numeric_map_path_count: 4
-contains_source_scalar_values: false
-ready_for_manual_mapping_review: true
-```
-
-Review decisions are recorded in:
-
-```text
-docs/ARMORY_MAPPING_REVIEW_V1.md
-```
-
-## Verified Armory mappings
+Mappings:
 
 ```text
 config/mappings/coa_armory_character_v1.json
 config/mappings/coa_armory_talent_grid_v1.json
 ```
 
-Reviewer metadata:
+Both are exact-archive validated and production-ready for their reviewed schemas.
 
-```text
-reviewed_by: GunsPojoshe (operator), OpenAI-assisted review
-reviewed_at: 2026-07-29T15:34:00+03:00
-```
+Deferred gear, hero-build and empty-array item schemas remain outside the verified contract.
 
-Review preserves source-specific identifiers instead of inventing semantics:
+## Current verified public-report discovery
 
-- `cao_id` -> `source_cao_id`;
-- `bisbeard_tree` -> `source_bisbeard_tree`.
-
-Talent records, connection records and rank-text records preserve parent talent/tree relationships through ancestor selectors.
-
-Deferred scopes include detailed gear, hero build, derived stat internals and item schemas for currently empty `lock_rules` and `rank_spell_ids` arrays.
-
-## Completed Armory production gate
-
-Run the validator against the exact immutable archives:
-
-```powershell
-uv run --no-sync python scripts/validate_armory_mappings.py `
-    --review "data\exchange\out\armory-mapping-review-v2.json" `
-    --manifest "data\exchange\out\armory-endpoint-capture.json" `
-    --raw-root "data\raw" `
-    --output "data\exchange\out\armory-mapping-validation.json"
-```
-
-Final user-local result after promotion:
-
-```text
-schema_version: 2
-mapping_count: 2
-raw_archive_count: 2
-all_structurally_consistent: true
-all_raw_archives_consistent: true
-all_production_ready: true
-```
-
-The validator checks:
-
-1. review packet schema and privacy flags;
-2. structural manifest against immutable archives;
-3. payload SHA-256;
-4. schema fingerprint;
-5. route template;
-6. singleton selector extraction;
-7. collection occurrence counts;
-8. `@item`, `@index` and `@ancestor[n]` selectors;
-9. required field presence;
-10. observed JSON types.
-
-Verified mapping means reproducible extraction from the reviewed source schema. It does not confirm runtime magnitude, stacking, overwrite, scope, provider equivalence or planner criticality.
-
-## Bounded public-report capture
-
-Implemented collector and CLI:
-
-```text
-src/coa_workbench/collector/report_discovery.py
-scripts/capture_report_discovery.py
-tests/unit/test_report_discovery.py
-```
-
-Only the observed request shape is accepted:
+Observed request:
 
 ```text
 GET /api/reports/public
-page=<explicit integer >= 1>
-limit=<1..5, default 5>
+page=1
+limit=5
 sortBy=created_at
 sortOrder=desc
 ```
 
-Run one bounded page:
-
-```powershell
-uv run --no-sync python scripts/capture_report_discovery.py `
-    --local-category "public_recent" `
-    --page 1 `
-    --limit 5 `
-    --output "data\exchange\out\report-discovery-page.json"
-```
-
-The command:
-
-1. makes one request only;
-2. rejects a requested `limit` greater than five;
-3. rejects unobserved sort values;
-4. archives the complete body before interpretation;
-5. records payload hash and schema fingerprint;
-6. writes an atomic compact result;
-7. does not include source report IDs, names or other scalar values in compact output;
-8. does not persist request-header values or cookies;
-9. archives invalid JSON but marks the result incomplete;
-10. does not create a false capture on transport failure.
-
-`local_category` is a local operator label. It is not evidence of a source category.
-
-Do not claim before real observations:
-
-- response field names or selectors;
-- actual number of returned reports;
-- whether the endpoint respects the requested limit;
-- source category/filter semantics;
-- presence or meaning of pagination metadata;
-- availability of additional pages;
-- cross-page ordering or stopping rules.
-
-After the first real page:
+Mapping:
 
 ```text
-immutable archive
--> scalar-free structural review
--> candidate report discovery mapping
--> explicit filter/pagination observations
--> reviewed verified mapping
--> deterministic bounded selection
+config/mappings/coa_public_report_discovery_v1.json
+status: verified
+selected fields: 7
 ```
 
-Do not print, attach or commit the raw response.
+The collector performs one explicit page per invocation and does not infer pagination/category semantics.
 
-## Browser HAR capture
+## Current report-slice capture
 
-Use Chrome or another Chromium browser only when the autonomous path is insufficient.
-
-1. Open a real report with at least one completed encounter.
-2. Sign in only if required.
-3. Open Developer Tools with `F12`.
-4. Open Network.
-5. Enable Preserve log.
-6. Enable Disable cache while DevTools is open.
-7. Clear the request list.
-8. Reload.
-9. Open one completed encounter.
-10. Visit relevant summary, roster, casts, aura/buff/debuff views.
-11. Wait for visible requests to complete.
-12. Save all as HAR with content.
-13. Store locally under `data/exchange/in/`.
-
-Do not rename the HAR to JSON and do not edit it before import.
-
-## HAR import and inventory
-
-```powershell
-uv run coa-workbench init-db
-uv run coa-workbench import-har data/exchange/in/coa-report-YYYYMMDD.har
-uv run coa-workbench inventory-har data/exchange/in/coa-report-YYYYMMDD.har `
-  --output data/exchange/out/coa-report-inventory.json
-```
-
-The import/inventory must:
-
-- accept only the configured source host;
-- archive non-empty response bodies by SHA-256;
-- keep observations separate from payload bodies;
-- sanitize URLs;
-- record status/content type/fingerprint;
-- avoid request headers and cookies;
-- isolate malformed entries;
-- retain skip reasons.
-
-## Automated report capture target
+Observed routes:
 
 ```text
-/api/reports/public one-page observation
--> scalar-free structural review
--> verified filters and pagination
--> deterministic bounded selection, maximum requested limit 5 per reviewed category
--> encounter discovery
--> selected analytical endpoints
--> immutable archive
--> fingerprint
--> reviewed endpoint/schema parser
--> canonical normalization
+/api/reports/{template}
+/api/reports/{template}/encounters/{template}
+/api/reports/{template}/encounters/{template}/combatants-info
 ```
 
-Prefer report metadata, encounters, roster/combatants, aura timeline/detail/uptimes, casts and debuff sources.
+No separate `/roster` route was observed.
 
-Download full event streams only when compact endpoints cannot test the current hypothesis.
+### Exact payload bindings
 
-## First full checkpoint acceptance criteria
+```text
+report_detail
+payload:     161739896f0b8321f884bcc24d1896efb894a9c6e05166269189f9871c64cba9
+fingerprint: 3d533a4178b67957bbd31544ddf5484bd5959635ebd5edcdd0c7689a4bace216
 
-1. Real payloads retained locally and not committed.
-2. Response bodies archived immutably.
-3. Safe inventories generated.
-4. Stable fingerprints recorded.
-5. Mappings reviewed, raw-validated and marked `verified`.
-6. One complete report/encounter normalized.
-7. Actors, participants and aura events retain source pointers.
-8. Aura State Engine output reproducible from archived hashes.
-9. Anomalies and contradicting observations remain visible.
-10. Independent supporting observations exist for promoted gameplay mechanics.
-11. Ubuntu and Windows verification are green.
+encounter_detail
+payload:     955437d6c9c287cc7db280dd2388b88603af2785508061b95c7811dcd272fe22
+fingerprint: 567f36824efb37a29b835df01ce9b1fcc79eae57d6230202d16a6265c6ca0e85
 
-## Non-goals until the checkpoint
+combatants_info
+payload:     45672e0f0ff9eb461c575bdd38385795daa6326378bc3f8ad51474276140dc14
+fingerprint: 41d6d15422c668f83d2ccae1ec0ff2969671861f9e43b21cb371578961c5f8ff
+```
 
-- raid-wide scope inference;
-- overwrite/stacking rules;
-- class/spec provider assignment from one observation;
-- planner scoring from observed/candidate data;
-- uploading private logs;
-- treating parser correctness as mechanic confirmation.
+## Report and encounter production parser
+
+Published mappings:
+
+```text
+config/mappings/coa_report_detail_v1.json
+config/mappings/coa_encounter_detail_v1.json
+```
+
+The publication gate verified 54 field contracts and enabled selected-parser normalization only for the exact reviewed routes/hashes/fingerprints.
+
+It did not enable combatants or aura semantics.
+
+### Normalization result
+
+```text
+reports:       2
+encounters:   15
+actors:       31
+participants: 31
+aura_events:   0
+rejects:       0
+```
+
+### Reconstruction result
+
+```text
+reports:       1
+encounters:   14
+actors:       31
+participants: 31
+aura_events:   0
+rejects:       0
+field conflicts: 0
+```
+
+### Persistence result
+
+Migration:
+
+```text
+0007_selected_parser_persistence
+```
+
+```text
+reports:                       1
+encounters:                   14
+actors:                       31
+participants:                 31
+canonical entity observations:77
+transaction committed:         true
+```
+
+The local normalized/reconstructed files and DuckDB contain private source scalars and remain gitignored.
+
+## Combatants-info review pipeline
+
+Stages completed:
+
+```text
+full-root structural review
+-> deep bounded scope review
+-> manual field selection
+-> storage-aware mapping design
+-> dedicated candidate extraction dry run
+```
+
+Deep review:
+
+```text
+scope candidates: 12
+present:          10
+required:          4/4
+direct fields:    56
+```
+
+Selection:
+
+```text
+groups:          8
+selected fields:37
+deferred fields:19
+```
+
+Design:
+
+```text
+6 dedicated extractors
+immutable canonical_entity_observation targets
+core actor mutation forbidden
+```
+
+### Candidate extraction result
+
+```text
+source matches:       1350
+output observations:  1343
+deduplicated matches: 7
+linked actors:        11
+actor-name matches:   11
+integrity checks:     12/12
+core mutations:       0
+```
+
+Per unit:
+
+```text
+actor enrichment:       11
+instance context:         4
+talent container:        11
+classless talent ranks: 564
+hero build entries:     564
+gear slots:             189
+```
+
+The private extraction batch is local. The scalar-free receipt is versioned at:
+
+```text
+evidence/real-data/observed-combatants-info-candidate-extraction.json
+```
+
+### Combatants boundary
+
+Verified for exact payload:
+
+- archive and observation manifest;
+- route context;
+- persisted report/encounter references;
+- stable actor IDs;
+- exact existing actor names;
+- selected JSON types;
+- source counts;
+- record hashes;
+- no core mutation.
+
+Not verified:
+
+- companion-addon provenance;
+- nested ID uniqueness;
+- gameplay meaning of talents/gear;
+- canonical build snapshot semantics;
+- automatic persistence/promotion;
+- planner scoring.
+
+## Next persistence protocol
+
+The next implementation must:
+
+1. validate the versioned candidate extraction receipt and private file hash;
+2. create a manual promotion packet for parser observations;
+3. verify that migration `0007` can preserve all required provenance;
+4. add a new migration only for a demonstrated storage gap;
+5. persist the six observation types atomically and idempotently;
+6. never mutate core actor rows;
+7. create a scalar-free persistence receipt;
+8. keep all semantic/trust boundaries closed.
+
+## Aura capture gap
+
+The current report slice contains no aura events.
+
+Separate real fixtures for spell `968746` validate Aura State Engine technical behavior, but they do not complete the report slice and do not prove gameplay mechanics.
+
+Future aura work must:
+
+- observe exact aura-related route(s);
+- archive exact payloads;
+- review event fields/types;
+- publish verified mappings;
+- normalize source-linked aura events;
+- reconstruct intervals;
+- compare supporting and contradicting observations.
+
+## Local commands by stage
+
+Repository verification:
+
+```powershell
+uv sync --frozen --extra dev
+uv run python scripts/verify_repo.py
+```
+
+Capture/review scripts are intentionally explicit and versioned under `scripts/`. Run their `--help` before a new payload/schema and never reuse a receipt with a mismatched hash.
+
+## Data policy
+
+The repository is private and full local data may be used for development, but Git remains evidence-minimal.
+
+Versioned:
+
+- mappings;
+- code/tests;
+- migrations;
+- documentation;
+- scalar-free receipts.
+
+Local-only by default:
+
+```text
+data/raw/
+data/warehouse/
+data/normalized/
+data/reconstructed/
+data/extracted/
+data/exchange/in/
+data/exchange/out/
+```
+
+Never commit credentials, cookies, tokens, browser profiles, `.env` secrets or unsanitized HAR.
+
+## Acceptance criteria for E3
+
+- exact real payloads retained locally;
+- stable hashes/fingerprints;
+- reviewed/published required parsers;
+- persisted report/encounter/actors/participants;
+- reviewed combatants observations;
+- aura observations for the bounded report slice;
+- deterministic interval reconstruction;
+- independent supporting observations;
+- contradicting evidence review;
+- versioned provenance;
+- green Ubuntu and Windows CI.
