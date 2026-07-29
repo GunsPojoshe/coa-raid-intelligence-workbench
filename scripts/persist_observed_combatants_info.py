@@ -82,15 +82,16 @@ def main() -> int:
         f"{str(summary['ready_for_actor_build_observation_queries']).lower()}"
     )
     print(
-        "core_entity_mutation_performed="
-        f"{str(summary['core_entity_mutation_performed']).lower()}"
+        f"core_entity_mutation_performed={str(summary['core_entity_mutation_performed']).lower()}"
     )
     print(
         "combatants_info_enrichment_available="
         f"{str(boundary['combatants_info_enrichment_available']).lower()}"
     )
     print(f"planner_scoring_allowed={str(boundary['planner_scoring_allowed']).lower()}")
-    print(f"database_contains_source_scalar_values={str(summary['database_contains_source_scalar_values']).lower()}")
+    print(
+        f"database_contains_source_scalar_values={str(summary['database_contains_source_scalar_values']).lower()}"
+    )
     print(f"output={args.output.as_posix()}")
     return 0
 
