@@ -25,9 +25,7 @@ def _arguments() -> argparse.Namespace:
     parser.add_argument(
         "--validation",
         type=Path,
-        default=Path(
-            "data/exchange/out/observed-report-slice-candidate-mapping-validation.json"
-        ),
+        default=Path("data/exchange/out/observed-report-slice-candidate-mapping-validation.json"),
     )
     parser.add_argument(
         "--mapping-dir",
