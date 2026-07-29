@@ -12,21 +12,18 @@
 
 1. Проверь repository `GunsPojoshe/coa-raid-intelligence-workbench`.
 2. Проверь текущие branch, HEAD и working tree.
-3. Проверь PR #7 и base branch.
+3. Проверь PR #7 и его base branch.
 4. Проверь PR #3.
-5. Проверь последний GitHub Actions run и точную причину любого failure.
+5. Проверь latest GitHub Actions run и exact failure, если он есть.
 6. Прочитай полностью:
    - `AGENTS.md`;
    - `docs/PROJECT_MASTER_CONTEXT.md`;
    - `docs/PROJECT_STATE.md`;
-   - этот документ;
-   - `docs/ARMORY_MAPPING_REVIEW_V1.md`;
+   - `docs/REAL_LOG_CAPTURE.md`;
    - `docs/ADR_012_LOG_EVIDENCE_TRUTH_MODEL.md`;
-   - `docs/REAL_LOG_CAPTURE.md`.
-7. Сверь документированные claims с реальным кодом.
-8. Сообщи расхождения до изменения analytical model.
-
-Старые HEAD, commit counts, test counts и CI status не считать вечными.
+   - `evidence/real-data/README.md`.
+7. Сверь claims с кодом и versioned receipts.
+8. Не доверяй старым HEAD/test counts без проверки.
 
 ## Branch chain
 
@@ -36,16 +33,16 @@ main
     └── e3/real-log-capture         PR #7 -> e2, Draft
 ```
 
-Latest verified code checkpoint before documentation refresh:
+Green baseline перед documentation refresh:
 
 ```text
-HEAD: a1517d44f3024efcb237f1f47ca775de1fee1c33
-Verify repository run #133: success
+commit: 2b92b3d02339a3748d146c1b15a6718f84494e6f
+Verify repository run #280
 Ubuntu: success
 Windows: success
 ```
 
-Фактический HEAD и CI всегда перепроверить.
+Фактический HEAD и CI перепроверить.
 
 ## Миссия
 
@@ -60,295 +57,243 @@ Windows: success
 Канонический pipeline:
 
 ```text
-immutable raw observation
--> SHA-256 + schema fingerprint
--> reviewed verified mapping
--> canonical normalized records
+immutable raw payload
+-> exact SHA-256 + schema fingerprint
+-> structural and field review
+-> reviewed mapping
+-> exact raw validation
+-> manual promotion/publication
+-> canonical normalization
 -> deterministic reconstruction
--> mechanic hypothesis
--> supporting and contradicting evidence
--> corroborated / confirmed mechanic
+-> immutable observations
+-> hypothesis + supporting/contradicting evidence
+-> corroborated/confirmed mechanic
 -> planner scoring
 ```
 
-Combat-log event является observation, а не автоматическим доказательством общей mechanic.
+Combat-log event является observation, а не доказательством общей mechanic.
 
 ## Trust rules
 
 Нельзя придумывать:
 
-- routes;
-- query parameters;
+- routes и query parameters;
 - JSON fields;
 - pagination behavior;
-- event types;
-- Spell IDs;
+- event types и Spell IDs;
 - class/spec/provider mappings;
-- semantic meaning по route name;
+- semantic meaning по route или display name;
 - stacking, overwrite, coexistence или scope без evidence.
 
-Normalization разрешена только при:
+Normalization разрешена только для exact reviewed hash/fingerprint и mapping со статусом `verified`.
+
+В planner scoring допускаются только `corroborated` и `confirmed`. Contradicting evidence сохраняется всегда.
+
+## Privacy and Git
+
+Пользователь разрешает использовать весь локальный приватный контекст для анализа. Это не разрешает коммитить секреты.
+
+Versioned:
+
+- code/tests;
+- migrations;
+- reviewed mappings;
+- documentation;
+- scalar-free receipts.
+
+Local-only by default:
 
 ```text
-immutable archived payload
-+ exact fingerprint
-+ reviewed mapping
-+ mapping status verified
-+ matching payload hash/fingerprint
+data/raw/
+data/warehouse/
+data/normalized/
+data/reconstructed/
+data/extracted/
+data/exchange/in/
+data/exchange/out/
 ```
 
-В planner scoring допускаются только `corroborated` и `confirmed`. Всегда сохраняй contradicting evidence.
-
-Provenance разделять:
-
-```text
-raw_log
-upstream_derived
-companion_addon
-local_inference
-manual_override
-```
-
-## Privacy
-
-Никогда не коммить и не отправляй в чат:
-
-- HAR;
-- raw payloads;
-- DuckDB;
-- cookies;
-- Authorization headers;
-- tokens;
-- browser profiles;
-- private query values;
-- absolute paths containing username.
-
-Cookies разрешены только в памяти process.
-
-## Окружение пользователя
-
-```text
-Windows 11
-PowerShell
-Python 3.12.x
-uv
-Git
-local repo under C:\Users\<USER>\source\repos\...
-```
-
-Пользователь предпочитает автономную работу через GitHub, один полный PowerShell block, полный код без обрывов, минимум ручных действий и честное разделение verified / observed / planned.
+Никогда не коммить cookies, tokens, Authorization headers, browser profiles, `.env` secrets или unsanitized HAR.
 
 ## Подтверждённый фундамент
 
 - localhost FastAPI app;
-- browser raid constructor;
-- DuckDB persistence;
-- immutable raw archive;
-- observations отдельно от deduplicated payload bodies;
-- safe JSON/HAR import and inventory;
+- raid constructor and DuckDB plans;
+- immutable raw archive and retrieval observations;
+- JSON/HAR safe import/inventory;
 - schema fingerprints;
-- verified mapping gate;
+- verified mapping gates;
 - canonical report/encounter/actor/participant/aura records;
 - Aura State Engine;
-- hypotheses and evidence links;
-- trust/weighting policies;
-- migrations `0001`–`0006`;
-- repository verifier;
-- Ubuntu and Windows CI;
-- SPA route discovery;
-- versioned HTTP profile `coa-fetch-context-v1`;
-- endpoint-isolated progressive/resumable Armory capture;
-- structural and mapping-review packets;
-- raw-archive selector validation gate;
-- verified Armory character and talent-grid mappings;
-- bounded one-page public-report discovery collector and CLI.
+- hypotheses/evidence/trust policies;
+- migrations `0001`–`0007`;
+- repository verifier and Ubuntu/Windows CI;
+- verified Armory mappings;
+- verified public-report discovery mapping;
+- observed report/encounter/combatants routes;
+- published report and encounter mappings;
+- normalized, reconstructed and persisted selected-parser report slice.
 
-## Real aura checkpoint
+## Completed report/encounter slice
 
-Report `2987`, spell `968746`.
+Published mappings:
 
 ```text
-encounter 64795
-fingerprint: 2994424cb95c2a7e1997651226b7942367ebe77003e0f4614aae5da4920f8b98
-6 canonical events
-3 reconstructed intervals
-exact match with 3 debuff_sources intervals
-0 rejects, 0 anomalies
-
-encounter 64796
-window: 10382-38265 ms
-full duration: 117215 ms
-fingerprint: d8b6dd869d6adf8f3433f9e285b8270cd1aa8d640839c915a42c80b2211cbf0b
-3 canonical events
-2 reconstructed intervals
-exact match with 2 debuff_sources intervals
-0 rejects, 0 anomalies
+config/mappings/coa_report_detail_v1.json
+config/mappings/coa_encounter_detail_v1.json
 ```
 
-Это подтверждает normalizer/Aura State Engine behavior, но не numeric effect, stacking, overwrite, coexistence, scope или criticality.
-
-## Verified Armory checkpoint
+Normalized:
 
 ```text
-character_id: 156120
-character hash: 2a9d752d7af72d41cd9d41836d670069c78e408df7260f5d9caa83b07430985f
-character fingerprint: efbcf618291d824667ba586c22af4ed031fa146d69b11a5539ec17a41d042621
-
-class_slug: felsworn
-talent-grid hash: 11be25407ec00898547c1b7f342d4596268b3164df9fe0f120bb911559cc5206
-talent-grid fingerprint: 7e3b3bfc3966ddc5d0160c8d466e5ba92edbe55440449619d7204102a25b3240
+2 reports
+15 encounters
+31 actors
+31 participants
+0 aura events
+0 rejects
 ```
 
-Verified mappings:
+Reconstructed:
 
 ```text
-config/mappings/coa_armory_character_v1.json
-config/mappings/coa_armory_talent_grid_v1.json
+1 report
+14 encounters
+31 actors
+31 participants
+0 aura events
+0 rejects
+0 field conflicts
+9/9 linkage checks
 ```
 
-Reviewer metadata:
+Persisted through migration `0007`:
 
 ```text
-reviewed_by: GunsPojoshe (operator), OpenAI-assisted review
-reviewed_at: 2026-07-29T15:34:00+03:00
+1 report
+14 encounters
+31 actors
+31 participants
+77 canonical entity observations
+2 normalization mappings
+2 normalization runs
+2 observation batches
 ```
 
-Final local production gate:
+## Current combatants-info checkpoint
+
+Exact binding:
 
 ```text
-schema_version: 2
-mapping_count: 2
-raw_archive_count: 2
-all_structurally_consistent: true
-all_raw_archives_consistent: true
-all_production_ready: true
+payload:     45672e0f0ff9eb461c575bdd38385795daa6326378bc3f8ad51474276140dc14
+fingerprint: 41d6d15422c668f83d2ccae1ec0ff2969671861f9e43b21cb371578961c5f8ff
 ```
 
-Verified mappings prove reproducible extraction only for the exact reviewed hashes/fingerprints. Deferred scopes and interpretation boundaries are recorded in `docs/ARMORY_MAPPING_REVIEW_V1.md`.
-
-## Bounded report discovery implementation
-
-Implemented:
+Completed review/design:
 
 ```text
-src/coa_workbench/collector/report_discovery.py
-scripts/capture_report_discovery.py
-tests/unit/test_report_discovery.py
+12 bounded scope candidates
+10 present scopes
+56 direct fields
+8 selected groups
+37 selected fields
+19 deferred fields
+6 storage-aware design units
 ```
 
-Allowed request shape:
+Candidate extraction:
 
 ```text
-GET /api/reports/public
-page=<explicit integer >= 1>
-limit=<1..5, default 5>
-sortBy=created_at
-sortOrder=desc
+1350 source matches
+1343 output observations
+7 exact instance-context duplicates removed
+11 stable actor links
+11 exact actor-name matches
+12/12 integrity checks
+0 core mutations
 ```
 
-Guarantees:
-
-- one explicitly requested page per invocation;
-- no automatic pagination;
-- hard maximum requested `limit=5`;
-- only observed sort values accepted;
-- raw body archived before interpretation;
-- compact result excludes report IDs, names and source scalar values;
-- request-header values and cookies are not stored;
-- invalid JSON is archived but not marked complete;
-- transport failure does not create a false capture.
-
-Not yet verified:
-
-- real response top-level shape and field paths;
-- actual number of returned report records;
-- whether the endpoint respects the requested limit;
-- category/filter semantics;
-- pagination metadata, stopping rules or additional pages.
-
-`local_category` is a local label only and must not be represented as a source category.
-
-## Первая задача нового агента
-
-Run one real bounded public-report capture and inspect only its compact output.
-
-Required local command shape:
-
-```powershell
-uv run --no-sync python scripts/capture_report_discovery.py `
-    --local-category "public_recent" `
-    --page 1 `
-    --limit 5 `
-    --output "data\exchange\out\report-discovery-page.json"
-```
-
-Then verify only:
-
-- capture completed;
-- HTTP status/content type;
-- payload hash;
-- schema fingerprint;
-- response byte count;
-- top-level JSON kind and keys;
-- no source scalar values in the compact output.
-
-Do not print, attach or commit the raw archived response.
-
-After the real capture:
-
-1. build a scalar-free structural review from the exact archive;
-2. review response fields and occurrence counts;
-3. define candidate selectors only for structurally unambiguous fields;
-4. investigate filters/categories/pagination through separate explicit observations;
-5. do not implement auto-pagination or per-category selection before those observations.
-
-## Дальнейший pipeline
+Versioned scalar-free receipt:
 
 ```text
-real bounded report page
--> immutable archive
--> scalar-free structural review
--> reviewed report discovery mapping
--> explicit pagination/filter observations
--> deterministic bounded selection
--> encounter discovery
--> reviewed encounter/roster parsers
--> full report/encounter/roster normalization
--> evidence expansion
+evidence/real-data/observed-combatants-info-candidate-extraction.json
+```
+
+Current boundary:
+
+```text
+actor merge verified for exact payload: true
+route context verified:              true
+automatic persistence:               false
+can promote:                          false
+normalization allowed:                false
+planner scoring allowed:              false
+```
+
+## Первая bounded задача нового агента
+
+Не повторяй capture, field selection или mapping design.
+
+Выполни **manual candidate-extraction validation and persistence design**:
+
+1. Validate exact versioned extraction receipt and private extraction SHA-256.
+2. Confirm the six design result counts and all 12 integrity checks.
+3. Define an explicit manual promotion packet for parser observations only.
+4. Decide whether migration `0007` already represents all six entity types without loss of provenance.
+5. If sufficient, implement atomic/idempotent persistence into `canonical_entity_observation`.
+6. If insufficient, add one new deterministic migration; do not edit `0007`.
+7. Do not mutate core `actor` rows.
+8. Produce a scalar-free persistence receipt.
+9. Keep companion-addon provenance, nested semantics, gameplay mechanics and scoring unverified.
+
+Expected design units:
+
+```text
+coa-combatants-actor-enrichment-v1        11 observations
+coa-combatants-instance-context-v1         4 observations
+coa-combatants-talent-container-v1        11 observations
+coa-combatants-classless-talent-rank-v1  564 observations
+coa-combatants-hero-build-entry-v1       564 observations
+coa-combatants-gear-slot-v1              189 observations
+```
+
+## Следующие этапы
+
+```text
+manual extraction validation
+-> reviewed promotion packet
+-> atomic immutable persistence
+-> deterministic read model
+-> aura endpoint review/capture
+-> aura normalization and interval reconstruction
+-> independent supporting/contradicting evidence
+-> mechanic trust promotion
 -> planner integration
 ```
 
-Full event stream использовать только для hypotheses, которые нельзя проверить compact endpoints.
-
 ## Completion gate
 
-PR #3 и PR #7 остаются Draft до соответствующего evidence checkpoint:
+PR #7 остаётся Draft до:
 
-1. real immutable payloads;
-2. fingerprints;
-3. verified mappings;
-4. normalized report/encounter;
-5. linked actors/participants/aura events;
-6. reconstructed intervals;
-7. independent supporting observations;
-8. contradicting evidence review;
-9. versioned reproducible output;
-10. provenance;
-11. green Ubuntu + Windows CI.
+- reviewed combatants persistence;
+- aura events for the bounded report slice;
+- reconstructed intervals;
+- independent supporting observations;
+- contradicting evidence review;
+- reproducible versioned provenance;
+- green Ubuntu and Windows CI.
 
-## Формат отчёта после каждой задачи
+## Формат отчёта
 
-Сообщай:
+После каждой задачи сообщай:
 
-- фактически проверенное;
+- verified facts;
 - local-only observations;
-- устаревшие claims;
-- files changed;
-- migrations added;
-- exact commands run;
-- exact tests;
+- outdated claims corrected;
+- files and migrations changed;
+- exact tests/commands;
 - CI state;
-- remaining limitations;
+- remaining boundaries;
 - next bounded task.
 
-Не называй scaffolding, parser correctness или verified schema mapping подтверждённой игровой механикой.
+Не называй scaffolding, parser correctness или verified schema mapping подтверждённой gameplay mechanic.
