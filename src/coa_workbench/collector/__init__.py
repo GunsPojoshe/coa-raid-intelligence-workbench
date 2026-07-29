@@ -20,6 +20,7 @@ from .armory_endpoint_capture import (
     capture_armory_endpoint,
     capture_armory_endpoints_progressively,
 )
+from .combatants_info_field_selection import select_observed_combatants_info_fields
 from .combatants_scope_review import build_observed_combatants_info_deep_scope_review
 from .har_inventory import inspect_archived_payload, inventory_har
 from .http_profile import (
@@ -149,6 +150,7 @@ __all__ = [
     "review_report_discovery_capture",
     "sanitize_url",
     "schema_fingerprint",
+    "select_observed_combatants_info_fields",
     "select_observed_report_slice_fields",
     "summarize_observed_report_slice_mapping_review",
     "summarize_report_discovery_mapping_review",
