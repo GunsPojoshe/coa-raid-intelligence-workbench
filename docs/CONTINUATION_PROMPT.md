@@ -39,8 +39,8 @@ main
 Latest verified code checkpoint before documentation refresh:
 
 ```text
-HEAD: 0190937d6ba9364ef88ad03e164964fd18415ba7
-Verify repository run #126: success
+HEAD: a1517d44f3024efcb237f1f47ca775de1fee1c33
+Verify repository run #133: success
 Ubuntu: success
 Windows: success
 ```
@@ -97,14 +97,7 @@ immutable archived payload
 + matching payload hash/fingerprint
 ```
 
-В planner scoring допускаются только:
-
-```text
-corroborated
-confirmed
-```
-
-Всегда сохраняй contradicting evidence.
+В planner scoring допускаются только `corroborated` и `confirmed`. Всегда сохраняй contradicting evidence.
 
 Provenance разделять:
 
@@ -143,14 +136,7 @@ Git
 local repo under C:\Users\<USER>\source\repos\...
 ```
 
-Пользователь предпочитает:
-
-- автономную работу через GitHub;
-- один полный PowerShell block за раз;
-- полный код без обрывов;
-- прямые ответы;
-- минимум ручных действий;
-- честное разделение verified / observed / planned.
+Пользователь предпочитает автономную работу через GitHub, один полный PowerShell block, полный код без обрывов, минимум ручных действий и честное разделение verified / observed / planned.
 
 ## Подтверждённый фундамент
 
@@ -174,66 +160,46 @@ local repo under C:\Users\<USER>\source\repos\...
 - endpoint-isolated progressive/resumable Armory capture;
 - structural and mapping-review packets;
 - raw-archive selector validation gate;
-- verified Armory character and talent-grid mappings.
+- verified Armory character and talent-grid mappings;
+- bounded one-page public-report discovery collector and CLI.
 
 ## Real aura checkpoint
 
 Report `2987`, spell `968746`.
 
-### Encounter 64795
-
 ```text
+encounter 64795
 fingerprint: 2994424cb95c2a7e1997651226b7942367ebe77003e0f4614aae5da4920f8b98
-mapping: coa-aura-timeline-single-encounter-v1, verified
 6 canonical events
 3 reconstructed intervals
 exact match with 3 debuff_sources intervals
-0 rejects
-0 anomalies
-```
+0 rejects, 0 anomalies
 
-### Encounter 64796
-
-```text
+encounter 64796
 window: 10382-38265 ms
 full duration: 117215 ms
 fingerprint: d8b6dd869d6adf8f3433f9e285b8270cd1aa8d640839c915a42c80b2211cbf0b
 3 canonical events
 2 reconstructed intervals
 exact match with 2 debuff_sources intervals
-0 rejects
-0 anomalies
+0 rejects, 0 anomalies
 ```
 
 Это подтверждает normalizer/Aura State Engine behavior, но не numeric effect, stacking, overwrite, coexistence, scope или criticality.
 
-## Real Armory checkpoint
+## Verified Armory checkpoint
 
 ```text
 character_id: 156120
+character hash: 2a9d752d7af72d41cd9d41836d670069c78e408df7260f5d9caa83b07430985f
+character fingerprint: efbcf618291d824667ba586c22af4ed031fa146d69b11a5539ec17a41d042621
+
 class_slug: felsworn
-profile: coa-fetch-context-v1
+talent-grid hash: 11be25407ec00898547c1b7f342d4596268b3164df9fe0f120bb911559cc5206
+talent-grid fingerprint: 7e3b3bfc3966ddc5d0160c8d466e5ba92edbe55440449619d7204102a25b3240
 ```
 
-### Character
-
-```text
-route: /api/armory/character/156120
-bytes: 59910
-hash: 2a9d752d7af72d41cd9d41836d670069c78e408df7260f5d9caa83b07430985f
-fingerprint: efbcf618291d824667ba586c22af4ed031fa146d69b11a5539ec17a41d042621
-```
-
-### Talent grid
-
-```text
-route: /api/armory/talent-grid/felsworn
-bytes: 63025
-hash: 11be25407ec00898547c1b7f342d4596268b3164df9fe0f120bb911559cc5206
-fingerprint: 7e3b3bfc3966ddc5d0160c8d466e5ba92edbe55440449619d7204102a25b3240
-```
-
-## Verified Armory mappings
+Verified mappings:
 
 ```text
 config/mappings/coa_armory_character_v1.json
@@ -247,60 +213,111 @@ reviewed_by: GunsPojoshe (operator), OpenAI-assisted review
 reviewed_at: 2026-07-29T15:34:00+03:00
 ```
 
-Review document:
+Final local production gate:
 
 ```text
-docs/ARMORY_MAPPING_REVIEW_V1.md
+schema_version: 2
+mapping_count: 2
+raw_archive_count: 2
+all_structurally_consistent: true
+all_raw_archives_consistent: true
+all_production_ready: true
 ```
 
-Verified boundaries:
+Verified mappings prove reproducible extraction only for the exact reviewed hashes/fingerprints. Deferred scopes and interpretation boundaries are recorded in `docs/ARMORY_MAPPING_REVIEW_V1.md`.
 
-- exact reviewed hashes and fingerprints only;
-- character selectors: 19 singleton values, 328 extracted values;
-- talent-grid selectors: 2 singleton values, 2955 extracted values;
-- route templates matched after absolute URL path normalization;
-- parent tree/talent relations retained through ancestor selectors.
+## Bounded report discovery implementation
 
-Deferred:
+Implemented:
 
-- character detailed gear;
-- hero build numeric map;
-- nested character talent presentation trees;
-- `_gearOnly`, derived/raw stat internals and `sourcesByStat`;
-- talent `lock_rules` and `rank_spell_ids` item schemas.
+```text
+src/coa_workbench/collector/report_discovery.py
+scripts/capture_report_discovery.py
+tests/unit/test_report_discovery.py
+```
 
-Verified mappings do not prove gameplay mechanics.
+Allowed request shape:
+
+```text
+GET /api/reports/public
+page=<explicit integer >= 1>
+limit=<1..5, default 5>
+sortBy=created_at
+sortOrder=desc
+```
+
+Guarantees:
+
+- one explicitly requested page per invocation;
+- no automatic pagination;
+- hard maximum `limit=5`;
+- only observed sort values accepted;
+- raw body archived before interpretation;
+- compact result excludes report IDs, names and source scalar values;
+- request-header values and cookies are not stored;
+- invalid JSON is archived but not marked complete;
+- transport failure does not create a false capture.
+
+Not yet verified:
+
+- real response top-level shape and field paths;
+- number of returned report records;
+- category/filter semantics;
+- pagination metadata, stopping rules or additional pages.
+
+`local_category` is a local label only and must not be represented as a source category.
 
 ## Первая задача нового агента
 
-Перейти к **bounded report discovery**.
+Run one real bounded public-report capture and inspect only its compact output.
 
-Порядок:
+Required local command shape:
 
-1. Проверить latest HEAD, PR #7 и CI.
-2. Инвентаризировать существующий report discovery code, tests и frontend observations.
-3. Не придумывать filters, category semantics или pagination.
-4. Зафиксировать только подтверждённые routes/parameters/response shapes.
-5. Реализовать default limit не более 5 reports per category.
-6. Сохранить deterministic ordering и bounded pagination behavior.
-7. Добавить unit tests и safe compact validation output без raw scalar leakage.
-8. Не начинать full event-stream capture, пока compact report/encounter endpoints достаточны.
+```powershell
+uv run --no-sync python scripts/capture_report_discovery.py `
+    --local-category "public_recent" `
+    --page 1 `
+    --limit 5 `
+    --output "data\exchange\out\report-discovery-page.json"
+```
 
-Целевой следующий pipeline:
+Then verify only:
+
+- capture completed;
+- HTTP status/content type;
+- payload hash;
+- schema fingerprint;
+- response byte count;
+- top-level JSON kind and keys;
+- no source scalar values in the compact output.
+
+Do not print, attach or commit the raw archived response.
+
+After the real capture:
+
+1. build a scalar-free structural review from the exact archive;
+2. review response fields and occurrence counts;
+3. define candidate selectors only for structurally unambiguous fields;
+4. investigate filters/categories/pagination through separate explicit observations;
+5. do not implement auto-pagination or per-category selection before those observations.
+
+## Дальнейший pipeline
 
 ```text
-verified Armory mappings
--> bounded report discovery
--> filters/pagination review
--> default up to 5 reports per category
--> encounter discovery
--> selected analytical endpoints
+real bounded report page
 -> immutable archive
--> reviewed parsers
+-> scalar-free structural review
+-> reviewed report discovery mapping
+-> explicit pagination/filter observations
+-> deterministic bounded selection
+-> encounter discovery
+-> reviewed encounter/roster parsers
 -> full report/encounter/roster normalization
 -> evidence expansion
 -> planner integration
 ```
+
+Full event stream использовать только для hypotheses, которые нельзя проверить compact endpoints.
 
 ## Completion gate
 
