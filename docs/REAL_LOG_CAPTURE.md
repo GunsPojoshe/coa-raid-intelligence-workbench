@@ -4,54 +4,52 @@
 
 This document defines privacy-safe real-data capture from `coa.ascensionlogs.gg`.
 
-The pipeline is:
+The goal is not to guess routes or mechanics. The goal is to:
 
-1. obtain a real response body;
-2. archive it immutably;
-3. record safe request and transport facts;
-4. fingerprint the JSON structure;
+1. obtain real response bodies;
+2. archive them immutably;
+3. record safe request shape and transport facts;
+4. fingerprint JSON structures;
 5. review mappings explicitly;
-6. normalize only through a verified mapping;
-7. preserve supporting and contradicting evidence.
+6. validate mappings against exact archives;
+7. normalize reproducibly;
+8. preserve supporting and contradicting evidence.
 
-Do not guess routes, fields, pagination or gameplay mechanics.
+## Capture paths
 
-## Preferred capture path
+### Preferred path: autonomous HTTP collector
 
-Use the autonomous collector with the versioned same-origin profile:
+Use the versioned same-origin profile:
 
 ```text
 coa-fetch-context-v1
 ```
 
-The implementation uses one persistent same-origin session and an in-memory cookie jar.
+It includes the verified full header set and one persistent same-origin session with an in-memory cookie jar.
 
-Safe output may contain:
+The collector must never archive cookie values or request-header values. Safe metadata may include:
 
-- HTTP profile version;
-- request header names, never values;
+- profile version;
+- request header names;
 - sanitized route shape;
 - HTTP status;
 - content type;
 - transport warning;
 - response byte count;
-- payload SHA-256;
-- schema fingerprint;
-- relative archive path.
+- payload hash;
+- schema fingerprint.
 
-Never archive or emit cookie values, authorization values or private query values.
+### Fallback path: browser HAR
 
-## HAR fallback
+HAR remains a fallback when the autonomous collector cannot obtain a required payload.
 
-HAR remains a fallback only when autonomous capture cannot obtain a required payload.
-
-A HAR can contain cookies, credentials, identifiers and private URLs.
+A HAR may contain cookies, authorization headers, identifiers and private URLs.
 
 - Never commit a HAR.
 - Never attach an unsanitized HAR to GitHub or chat.
-- Store it under a gitignored local path such as `data/exchange/in/`.
+- Store it only under a gitignored local path such as `data/exchange/in/`.
 - Do not copy authentication headers into configuration.
-- Treat the original HAR as sensitive after import.
+- The original HAR remains sensitive after import.
 
 ## Verified HTTP profile
 
@@ -67,11 +65,11 @@ Sec-Fetch-Mode: cors
 Sec-Fetch-Site: same-origin
 ```
 
-The complete profile has returned HTTP 200 for public reports, character search, Armory by-name and the endpoint-isolated character/talent-grid capture sequence.
+This full profile returned HTTP 200 for public reports, character search, Armory by-name, character detail and talent grid in the verified capture sequence.
 
 Do not claim:
 
-- the minimum required header subset is known;
+- the minimum header subset is known;
 - cookies are unnecessary;
 - request order is irrelevant;
 - HTML bootstrap is required;
@@ -81,19 +79,19 @@ Do not claim:
 
 ### Endpoint isolation
 
-Real capture must be executable per endpoint. Avoid a long all-or-nothing chain.
+Real capture must be executable per endpoint.
 
-Each endpoint attempt must:
+Each endpoint attempt should:
 
 1. use a bounded timeout;
 2. use bounded retries only for retryable failures;
-3. write progressive safe state immediately;
+3. write progressive safe result state;
 4. archive a completed body before interpretation;
 5. preserve transport warnings;
-6. support resume without re-fetching already verified payloads;
-7. verify reused gzip, SHA-256, byte count and fingerprint.
+6. continue or stop according to explicit policy;
+7. allow resume without re-fetching successful payloads.
 
-### HTTP status is not body completion
+### Status is not body completion
 
 These are separate facts:
 
@@ -109,12 +107,12 @@ HTTP 200 alone is not a successful evidence capture.
 
 ### Partial bodies
 
-For `IncompleteRead`, timeout or disconnect:
+If a transfer ends with `IncompleteRead`, timeout or disconnect:
 
-- do not crash the whole batch;
+- do not crash the entire batch;
 - record the transport error;
-- do not treat partial bytes as valid evidence;
-- never create a verified mapping from transport-damaged data.
+- do not treat partial bytes as valid evidence unless they form complete valid JSON and policy explicitly permits it;
+- never create a verified mapping from a transport-damaged payload.
 
 ## Current Armory checkpoint
 
@@ -122,13 +120,10 @@ Subject:
 
 ```text
 character_id: 156120
-character_class: Felsworn
-realm: Vol'Jin
 class_slug: felsworn
-http_profile_version: coa-fetch-context-v1
 ```
 
-### character
+### Character
 
 ```text
 route: /api/armory/character/156120
@@ -139,7 +134,7 @@ schema fingerprint: efbcf618291d824667ba586c22af4ed031fa146d69b11a5539ec17a41d04
 top-level keys: capture, ci_resolved, stats_summary, success
 ```
 
-### talent_grid
+### Talent grid
 
 ```text
 route: /api/armory/talent-grid/felsworn
@@ -150,38 +145,38 @@ schema fingerprint: 7e3b3bfc3966ddc5d0160c8d466e5ba92edbe55440449619d7204102a25b
 top-level keys: class_name, success, trees
 ```
 
-Both payloads were:
-
-- captured independently;
-- written to a progressive/resumable manifest;
-- stored locally as immutable gzip JSON;
-- verified by hash, byte count, fingerprint and relative archive path;
-- kept out of Git.
-
-Earlier timeout and incomplete-transfer observations remain valid historical transport observations, but they are no longer current blockers.
-
-## Structural review
-
-The structural review verifies:
-
-- manifest endpoint state;
-- expected payload hash;
-- expected schema fingerprint;
-- uncompressed byte count;
-- safe relative archive location;
-- candidate collection paths.
-
-It does not claim gameplay semantics.
-
-## Type-only mapping review packet
-
-The mapping review packet reads only verified local archives and emits no source scalar values.
-
-Current packet:
+Capture manifest:
 
 ```text
-schema_version: 2
-endpoint_count: 2
+data/exchange/out/armory-endpoint-capture.json
+```
+
+The manifest and raw archives remain local and gitignored.
+
+## Structural and mapping review
+
+Structural review verifies archive integrity without exposing scalar values:
+
+```powershell
+uv run --no-sync python scripts/review_armory_capture.py `
+    --manifest "data\exchange\out\armory-endpoint-capture.json" `
+    --raw-root "data\raw" `
+    --output "data\exchange\out\armory-structural-review.json"
+```
+
+Mapping-review packet:
+
+```powershell
+uv run --no-sync python scripts/build_armory_mapping_review.py `
+    --manifest "data\exchange\out\armory-endpoint-capture.json" `
+    --raw-root "data\raw" `
+    --output "data\exchange\out\armory-mapping-review-v2.json" `
+    --max-nodes 100000
+```
+
+Reviewed packet schema `2`:
+
+```text
 archive_verified: 2
 field_path_count: 470
 node_occurrence_count: 6106
@@ -190,121 +185,126 @@ contains_source_scalar_values: false
 ready_for_manual_mapping_review: true
 ```
 
-Endpoint summary:
+Review decisions are recorded in:
 
 ```text
-character: 445 paths, 3312 node occurrences, 4 numeric maps
-talent_grid: 25 paths, 2794 node occurrences
+docs/ARMORY_MAPPING_REVIEW_V1.md
 ```
 
-Numeric object maps such as gear slots and build entries are represented with wildcard paths rather than one schema path per numeric key.
-
-## Candidate Armory mappings
+## Candidate mappings
 
 ```text
 config/mappings/coa_armory_character_v1.json
 config/mappings/coa_armory_talent_grid_v1.json
 ```
 
-Both mappings:
+Candidate status is intentional. `require_verified()` rejects both mappings from production use.
 
-- are bound to exact payload hash and schema fingerprint;
-- record review packet schema version `2`;
-- declare paths, observed types, nullability and occurrence counts;
-- retain `upstream_derived` provenance;
-- have status `candidate`;
-- are rejected by the production gate until explicitly verified.
+Review preserves source-specific identifiers instead of inventing semantics:
 
-Local validation checkpoint:
+- `cao_id` -> `source_cao_id`;
+- `bisbeard_tree` -> `source_bisbeard_tree`.
+
+Talent records, connection records and rank-text records preserve parent talent/tree relationships through ancestor selectors.
+
+Deferred scopes include detailed gear, hero build, derived stat internals and item schemas for currently empty `lock_rules` and `rank_spell_ids` arrays.
+
+## Raw-archive mapping validation
+
+Type-only review is necessary but not sufficient for promotion.
+
+Run the validator against the exact immutable archives:
+
+```powershell
+uv run --no-sync python scripts/validate_armory_mappings.py `
+    --review "data\exchange\out\armory-mapping-review-v2.json" `
+    --manifest "data\exchange\out\armory-endpoint-capture.json" `
+    --raw-root "data\raw" `
+    --output "data\exchange\out\armory-mapping-validation.json"
+```
+
+The validator checks:
+
+1. review packet schema and privacy flags;
+2. structural manifest against immutable archives;
+3. payload SHA-256;
+4. schema fingerprint;
+5. route template;
+6. singleton selector extraction;
+7. collection occurrence counts;
+8. `@item`, `@index` and `@ancestor[n]` selectors;
+9. required field presence;
+10. observed JSON types.
+
+Expected result before promotion:
 
 ```text
+schema_version: 2
 all_structurally_consistent: true
+all_raw_archives_consistent: true
 all_production_ready: false
 mapping_count: 2
 ```
 
-`all_production_ready: false` is expected for candidate mappings.
+`all_production_ready: false` remains correct while mappings are `candidate`.
 
-### Character mapping scope
+The validation output contains counts and reproducibility identifiers, not source scalar values.
 
-Included:
+## Promotion gate
 
-- capture and encounter context;
-- player identity/basic context;
-- active specialization index;
-- selected talent ranks;
-- primary, offensive, defensive and resistance summaries.
+A candidate Armory mapping may be promoted only after:
 
-Deferred:
+1. exact archive validation succeeds;
+2. compact output is reviewed;
+3. mapping semantics remain bounded to source structure;
+4. deferred scopes remain explicit;
+5. a separate commit changes status to `verified`;
+6. `reviewed_by` and `reviewed_at` are recorded;
+7. repository CI is green.
 
-- detailed gear semantics;
-- hero-build semantics;
-- internal character talent-tree representation;
-- `_gearOnly`, `derived`, `raw` and `sourcesByStat` computational internals.
+Verified mapping means reproducible extraction from the reviewed source schema. It does not confirm runtime magnitude, stacking, overwrite, scope, provider equivalence or planner criticality.
 
-### Talent-grid mapping scope
+## Browser HAR capture
 
-Included:
+Use Chrome or another Chromium browser only when the autonomous path is insufficient.
 
-- trees;
-- talent nodes;
-- talent/spell IDs;
-- names and icons;
-- coordinates and node type;
-- maximum ranks;
-- nullable group ID;
-- connected node IDs;
-- rank text.
+1. Open a real report with at least one completed encounter.
+2. Sign in only if required.
+3. Open Developer Tools with `F12`.
+4. Open Network.
+5. Enable Preserve log.
+6. Enable Disable cache while DevTools is open.
+7. Clear the request list.
+8. Reload.
+9. Open one completed encounter.
+10. Visit relevant summary, roster, casts, aura/buff/debuff views.
+11. Wait for visible requests to complete.
+12. Save all as HAR with content.
+13. Store locally under `data/exchange/in/`.
 
-Deferred:
+Do not rename the HAR to JSON and do not edit it before import.
 
-- `lock_rules` item schema;
-- `rank_spell_ids` item schema.
-
-Both arrays were empty in the reviewed payload, so their future element structure is not established.
-
-## Mapping gate
-
-A mapping may become production-ready only after manual review.
-
-Required:
-
-- exact schema fingerprint;
-- reviewed payload hash;
-- explicit paths and field contracts;
-- provenance type;
-- mapping ID/version;
-- status `verified`;
-- explicit reviewer and review timestamp.
-
-Candidate or mismatched mappings remain rejected.
-
-A verified mapping confirms parser/schema compatibility only. It does not confirm a gameplay mechanic.
-
-## Validation commands
-
-Build review packet:
+## HAR import and inventory
 
 ```powershell
-uv run --no-sync python scripts/build_armory_mapping_review.py `
-  --manifest data/exchange/out/armory-endpoint-capture.json `
-  --raw-root data/raw `
-  --output data/exchange/out/armory-mapping-review-v2.json
+uv run coa-workbench init-db
+uv run coa-workbench import-har data/exchange/in/coa-report-YYYYMMDD.har
+uv run coa-workbench inventory-har data/exchange/in/coa-report-YYYYMMDD.har `
+  --output data/exchange/out/coa-report-inventory.json
 ```
 
-Validate candidate mappings:
+The import/inventory must:
 
-```powershell
-uv run --no-sync python scripts/validate_armory_mappings.py `
-  --review data/exchange/out/armory-mapping-review-v2.json `
-  --output data/exchange/out/armory-mapping-validation.json
-```
-
-The generated review and validation files remain local and gitignored.
+- accept only the configured source host;
+- archive non-empty response bodies by SHA-256;
+- keep observations separate from payload bodies;
+- sanitize URLs;
+- record status/content type/fingerprint;
+- avoid request headers and cookies;
+- isolate malformed entries;
+- retain skip reasons.
 
 ## Automated report capture target
-
-The target is not manual download of every full log.
 
 ```text
 /api/reports/public
@@ -318,26 +318,29 @@ The target is not manual download of every full log.
 -> canonical normalization
 ```
 
-Prefer report metadata, encounters, roster/combatants, aura timeline/detail/uptimes, casts and debuff sources. Download full event streams only when compact endpoints cannot test the current hypothesis.
+Prefer report metadata, encounters, roster/combatants, aura timeline/detail/uptimes, casts and debuff sources.
+
+Download full event streams only when compact endpoints cannot test the current hypothesis.
 
 ## First full checkpoint acceptance criteria
 
 1. Real payloads retained locally and not committed.
 2. Response bodies archived immutably.
-3. Stable fingerprints recorded.
-4. Mapping manually reviewed and marked `verified`.
-5. One complete report/encounter normalized.
-6. Actors, participants and aura events retain source pointers.
-7. Aura State Engine output is reproducible from archived hashes.
-8. Anomalies and contradicting observations remain visible.
-9. Independent supporting observations exist for any promoted gameplay mechanic.
-10. Ubuntu and Windows verification are green.
+3. Safe inventories generated.
+4. Stable fingerprints recorded.
+5. Mappings reviewed, raw-validated and marked `verified`.
+6. One complete report/encounter normalized.
+7. Actors, participants and aura events retain source pointers.
+8. Aura State Engine output reproducible from archived hashes.
+9. Anomalies and contradicting observations remain visible.
+10. Independent supporting observations exist for promoted gameplay mechanics.
+11. Ubuntu and Windows verification are green.
 
 ## Non-goals until the checkpoint
 
 - raid-wide scope inference;
 - overwrite/stacking rules;
-- provider assignment from one observation;
+- class/spec provider assignment from one observation;
 - planner scoring from observed/candidate data;
 - uploading private logs;
 - treating parser correctness as mechanic confirmation.
