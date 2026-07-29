@@ -46,6 +46,7 @@ from .report_discovery import (
     report_discovery_capture_to_dict,
 )
 from .report_discovery_mapping_review import build_report_discovery_mapping_review
+from .report_discovery_mapping_summary import summarize_report_discovery_mapping_review
 from .report_discovery_review import review_report_discovery_capture
 from .route_discovery import discover_api_route_candidates
 from .source_registry import (
@@ -104,4 +105,5 @@ __all__ = [
     "review_report_discovery_capture",
     "sanitize_url",
     "schema_fingerprint",
+    "summarize_report_discovery_mapping_review",
 ]
