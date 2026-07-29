@@ -13,12 +13,12 @@ main
     └── e3/real-log-capture         PR #7 -> e2, Draft
 ```
 
-Latest verified checkpoint:
+Latest verified checkpoint before this documentation update:
 
 ```text
-commit: 6053ea3f6d3f933026f88d67f398d4a2d92b0a3a
+commit: be42e97c86956687911f5cd09e00c50edd011054
 workflow: Verify repository
-run: #193
+run: #199
 conclusion: success
 Ubuntu: success
 Windows: success
@@ -51,13 +51,11 @@ Windows: success
 - verified Armory character and talent-grid mappings;
 - bounded one-page public-report discovery collector;
 - exact public-report structural and mapping reviews;
-- scalar-free plain-text mapping summary;
-- versioned public-report mapping contract;
-- exact public-report raw-archive selector validation;
 - completed verified public-report production gate for seven reviewed scalar fields;
 - archive-only SPA API route inventory;
 - inventory-gated observed report-slice capture;
-- exact report-slice structural review implementation.
+- exact offline structural review for report detail, encounter detail and combatants info;
+- scalar-free full-root report-slice mapping-review tooling.
 
 ## Trust boundary
 
@@ -114,6 +112,13 @@ config/mappings/coa_armory_character_v1.json
 config/mappings/coa_armory_talent_grid_v1.json
 ```
 
+Reviewer metadata:
+
+```text
+reviewed_by: GunsPojoshe (operator), OpenAI-assisted review
+reviewed_at: 2026-07-29T15:34:00+03:00
+```
+
 User-local post-promotion validation:
 
 ```text
@@ -139,6 +144,14 @@ sortBy=created_at
 sortOrder=desc
 ```
 
+Exact immutable capture:
+
+```text
+HTTP: 200
+payload hash: 2203e52709fad4fbc8d5235bc3699abeec6b85cf1e13b9df3e24091ddf8775c2
+schema fingerprint: 4f47885820e6931cd76db538cabd68405b4969778c1bede9dee53a7f1e005ed4
+```
+
 Verified mapping:
 
 ```text
@@ -149,26 +162,10 @@ collection: /reports/*
 selected fields: 7
 reviewed_by: GunsPojoshe (operator), OpenAI-assisted review
 reviewed_at: 2026-07-29T16:41:00+03:00
-```
-
-User-local post-promotion exact-archive validation:
-
-```text
-status: verified
-all_structurally_consistent: true
-all_raw_archive_selectors_consistent: true
-route_matched: true
-raw_payload_validated: true
-report_item_count: 5
-field_contract_count: 7
-extracted_value_count: 35
-nullable_value_count: 0
 production_ready: true
-can_promote: false
-contains_source_scalar_values: false
 ```
 
-Deferred scopes remain:
+Deferred scopes:
 
 ```text
 /pagination
@@ -178,13 +175,13 @@ Deferred scopes remain:
 /reports/*/locations
 ```
 
+Any new payload hash or schema fingerprint requires a new review decision.
+
 ## Archived SPA route inventory
 
-User-local archive-only inventory:
+Local archive-only inventory:
 
 ```text
-schema_version: 1
-inventory_kind: archived_spa_api_route_inventory
 archive_count: 1
 route_candidate_count: 24
 lexically_relevant_candidate_count: 10
@@ -192,9 +189,10 @@ all_archives_verified: true
 contains_source_record_scalar_values: false
 semantic_verification_required: true
 network_requests_performed: false
+route inventory hash: f66d683319b0efc141134e5314038e8984fcd698bac083818d462ed5d1cf240f
 ```
 
-Observed route shapes used for the bounded report slice:
+Observed route shapes selected for the bounded slice:
 
 ```text
 /api/reports/{template}
@@ -202,11 +200,11 @@ Observed route shapes used for the bounded report slice:
 /api/reports/{template}/encounters/{template}/combatants-info
 ```
 
-A route name is not proof of payload semantics. No separate `/roster` route was observed in this archived asset.
+No separate `/roster` route was observed. `combatants-info` remains only a roster-adjacent candidate until mapping review establishes usable fields.
 
 ## Observed report-slice capture
 
-The inventory-gated local capture completed all three observed endpoints with HTTP 200 and JSON bodies.
+All three endpoints returned HTTP 200 JSON and were archived immutably.
 
 ### Report detail
 
@@ -225,9 +223,8 @@ route: /api/reports/{template}/encounters/{template}
 payload hash: 955437d6c9c287cc7db280dd2388b88603af2785508061b95c7811dcd272fe22
 schema fingerprint: 567f36824efb37a29b835df01ce9b1fcc79eae57d6230202d16a6265c6ca0e85
 bytes: 734084
+top-level keys: character_stats, character_target_damage, encounter, healing_by_character, healing_targets_by_source_and_spell, rankings, success, target_damage_by_source
 ```
-
-The console line containing the encounter top-level keys was truncated. Exact keys must be read from the saved compact capture manifest and verified against the immutable archive; they must not be reconstructed from the truncated console output.
 
 ### Combatants info
 
@@ -239,44 +236,79 @@ bytes: 637520
 top-level keys: combatants, success
 ```
 
-Capture guarantees:
+Capture boundary:
 
 ```text
 route_inventory_verified: true
-route_inventory_hash: f66d683319b0efc141134e5314038e8984fcd698bac083818d462ed5d1cf240f
-http_profile_version: coa-fetch-context-v1
 contains_source_scalar_values: false
+semantic_verification_required: true
 normalization_allowed: false
 ```
 
-Implemented offline structural review:
+## Completed report-slice structural gate
+
+User-local exact offline structural review:
 
 ```text
-src/coa_workbench/collector/report_slice_review.py
-scripts/review_observed_report_slice.py
-tests/unit/test_report_slice_review.py
+schema_version: 1
+review_kind: observed_report_slice_structural_review
+route_inventory_hash: f66d683319b0efc141134e5314038e8984fcd698bac083818d462ed5d1cf240f
+raw_archive_count: 3
+candidate_collection_count: 1452
+all_archives_consistent: true
+contains_source_scalar_values: false
+semantic_verification_required: true
+normalization_allowed: false
 ```
 
-The review validates the exact inventory hash, required route set, all three payload hashes, schema fingerprints, byte counts, HTTP/content-type consistency and top-level shapes. It emits no report, encounter, player or combatant scalar values.
+All three endpoint kinds were present exactly once:
+
+```text
+report_detail
+encounter_detail
+combatants_info
+```
+
+The structural review revalidated each payload hash, schema fingerprint, uncompressed byte count, HTTP status, content type, top-level kind and top-level keys directly against the immutable archives.
+
+## Report-slice mapping-review readiness
+
+Implemented:
+
+```text
+src/coa_workbench/collector/report_slice_mapping_review.py
+scripts/build_observed_report_slice_mapping_review.py
+tests/unit/test_report_slice_mapping_review.py
+```
+
+The mapping review:
+
+- reruns the exact structural gate before reading payloads;
+- profiles the full root `/` of each endpoint;
+- emits only JSON Pointer paths, occurrence counts, JSON types and object/array shapes;
+- replaces numeric-map keys with `*`;
+- limits traversal to 500000 nodes per endpoint by default;
+- keeps every endpoint at `review_status: candidate`;
+- keeps `normalization_allowed: false`.
 
 ## Current blockers
 
-1. Exact local structural review of the three new archives must complete.
-2. Scalar-free mapping-review packets for report detail, encounter detail and combatants info are not built.
-3. Exact versioned mappings for the new schemas are not reviewed or verified.
-4. A complete report/encounter/roster slice is not normalized.
-5. Source category/filter semantics and pagination policy remain unverified.
-6. Evidence coverage remains narrow.
-7. No corroborated gameplay mechanic is ready for canonical planner scoring.
-8. `docs/PROJECT_MASTER_CONTEXT.md` contains historical sections and must not override this operational state without code verification.
+1. Report, encounter and combatants mapping packets have not yet been manually reviewed.
+2. Exact versioned mappings for the three report-slice endpoints do not exist yet.
+3. A complete report/encounter/participants slice is not normalized.
+4. Evidence coverage remains narrow.
+5. No corroborated gameplay mechanic is ready for canonical planner scoring.
+6. Source category/filter semantics and pagination policy remain unverified.
 
 ## Next bounded tasks
 
-1. Run the offline structural review against the exact local archives.
-2. Build scalar-free mapping-review packets only after structural consistency is confirmed.
-3. Review exact report, encounter and combatants mappings.
-4. Normalize only after mappings are explicitly promoted to `verified`.
-5. Preserve all deferred public-report and gameplay-semantic scopes.
+1. Build the scalar-free full-root mapping-review packet locally from the exact three archives.
+2. Review candidate collections and field shapes without assigning unsupported semantics.
+3. Select minimal report, encounter and combatants fields for candidate mappings.
+4. Validate mappings against exact payload hashes and schema fingerprints.
+5. Promote mappings manually only after review.
+6. Normalize only after all required mappings are `verified`.
+7. Preserve all deferred public-report scopes until separately observed and reviewed.
 
 ## Completion gate
 
