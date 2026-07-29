@@ -7,6 +7,9 @@ from pathlib import Path
 from coa_workbench.collector.report_discovery_mapping_summary import (
     summarize_report_discovery_mapping_review,
 )
+from coa_workbench.collector.report_discovery_mapping_text import (
+    render_report_discovery_mapping_summary_text,
+)
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -31,6 +34,12 @@ def _parser() -> argparse.ArgumentParser:
         type=Path,
         default=Path("data/exchange/out/report-discovery-mapping-summary.json"),
     )
+    parser.add_argument(
+        "--stdout-format",
+        choices=("json", "text"),
+        default="json",
+        help="Output format written to stdout. The --output file always remains JSON.",
+    )
     return parser
 
 
@@ -40,12 +49,15 @@ def main() -> int:
         args.mapping_review,
         args.structural_review,
     )
-    rendered = json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    rendered_json = json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
     args.output.parent.mkdir(parents=True, exist_ok=True)
     temporary = args.output.with_suffix(args.output.suffix + ".tmp")
-    temporary.write_text(rendered, encoding="utf-8")
+    temporary.write_text(rendered_json, encoding="utf-8")
     temporary.replace(args.output)
-    print(rendered, end="")
+    if args.stdout_format == "text":
+        print(render_report_discovery_mapping_summary_text(result), end="")
+    else:
+        print(rendered_json, end="")
     return 0
 
 
