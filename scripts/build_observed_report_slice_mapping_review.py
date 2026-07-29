@@ -65,22 +65,14 @@ def main() -> int:
     print(f"array_path_count={summary['array_path_count']}")
     print(f"object_path_count={summary['object_path_count']}")
     print(f"candidate_collection_count={summary['candidate_collection_count']}")
+    print(f"all_archives_consistent={str(summary['all_archives_consistent']).lower()}")
+    print(f"contains_source_scalar_values={str(summary['contains_source_scalar_values']).lower()}")
     print(
-        "all_archives_consistent="
-        f"{str(summary['all_archives_consistent']).lower()}"
-    )
-    print(
-        "contains_source_scalar_values="
-        f"{str(summary['contains_source_scalar_values']).lower()}"
-    )
-    print(
-        "semantic_verification_required="
-        f"{str(summary['semantic_verification_required']).lower()}"
+        f"semantic_verification_required={str(summary['semantic_verification_required']).lower()}"
     )
     print(f"normalization_allowed={str(summary['normalization_allowed']).lower()}")
     print(
-        "ready_for_manual_mapping_review="
-        f"{str(summary['ready_for_manual_mapping_review']).lower()}"
+        f"ready_for_manual_mapping_review={str(summary['ready_for_manual_mapping_review']).lower()}"
     )
     print()
     print("ENDPOINT_MAPPING_SUMMARIES")
