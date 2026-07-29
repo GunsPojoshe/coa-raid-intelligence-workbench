@@ -13,18 +13,16 @@ main
     └── e3/real-log-capture         PR #7 -> e2, Draft
 ```
 
-Latest verified code checkpoint before this documentation update:
+Latest verified checkpoint:
 
 ```text
-commit: 322b98e4c18da1ff870eca945591ff36ec8012bb
+commit: 84e0773f4259005da572731f1e839473f867055f
 workflow: Verify repository
-run: #219
+run: #220
 conclusion: success
 Ubuntu: success
 Windows: success
 ```
-
-This documentation commit requires its own CI verification.
 
 ## Реализованный фундамент
 
@@ -342,7 +340,7 @@ The candidate scores are navigation hints only. They do not select scopes, estab
 
 ## Explicit scope-review readiness
 
-Implemented:
+Implemented and CI-verified:
 
 ```text
 src/coa_workbench/collector/report_slice_scope_review.py
