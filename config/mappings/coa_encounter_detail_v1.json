@@ -1,0 +1,589 @@
+{
+  "deferred_fields": [
+    "/character_stats/*/pet_contributions",
+    "/encounter/boss_character_id",
+    "/encounter/boss_icon",
+    "/encounter/cast_event_count",
+    "/encounter/created_at",
+    "/encounter/damage_event_count",
+    "/encounter/has_damage_rules",
+    "/encounter/has_healing_rules",
+    "/encounter/heal_event_count",
+    "/encounter/kill_time",
+    "/encounter/processing_status",
+    "/encounter/validation_status"
+  ],
+  "deferred_scopes": [],
+  "entities": {
+    "actors": {
+      "collection": "/character_stats/*",
+      "fields": {
+        "actor_type": "@item/character_type",
+        "class": "@item/class",
+        "level": "@item/level",
+        "name": "@item/name",
+        "source_actor_id": "@item/character_id",
+        "spec": "@item/spec"
+      },
+      "required": [
+        "source_actor_id",
+        "name",
+        "actor_type"
+      ]
+    },
+    "encounters": {
+      "collection": "/encounter",
+      "fields": {
+        "boss_id": "@item/boss_id",
+        "creature_id": "@item/creature_id",
+        "difficulty": "@item/difficulty",
+        "duration_seconds": "@item/duration_seconds",
+        "end_time": "@item/end_time",
+        "is_boss_encounter": "@item/is_boss_encounter",
+        "name": "@item/name",
+        "player_count": "@item/player_count",
+        "source_encounter_id": "@item/id",
+        "source_report_id": "@item/report_id",
+        "start_time": "@item/start_time",
+        "success": "@item/success",
+        "trial_level": "@item/trial_level",
+        "wipe_percent": "@item/wipe_percent",
+        "zone": "@item/zone"
+      },
+      "required": [
+        "source_encounter_id",
+        "source_report_id",
+        "name",
+        "start_time",
+        "end_time",
+        "success",
+        "difficulty",
+        "duration_seconds",
+        "player_count",
+        "zone",
+        "is_boss_encounter",
+        "boss_id",
+        "creature_id"
+      ]
+    },
+    "participants": {
+      "collection": "/character_stats/*",
+      "fields": {
+        "avg_dps": "@item/avg_dps",
+        "avg_hps": "@item/avg_hps",
+        "damage_taken": "@item/damage_taken",
+        "deaths": "@item/deaths",
+        "effective_healing": "@item/effective_healing",
+        "encounter_duration": "@item/encounter_duration",
+        "is_consolidated": "@item/is_consolidated",
+        "source_actor_id": "@item/character_id",
+        "source_encounter_id": "@item/encounter_id",
+        "total_absorbs": "@item/total_absorbs",
+        "total_damage": "@item/total_damage",
+        "total_healing": "@item/total_healing"
+      },
+      "required": [
+        "source_encounter_id",
+        "source_actor_id",
+        "avg_dps",
+        "avg_hps",
+        "encounter_duration",
+        "is_consolidated"
+      ]
+    },
+    "reports": {
+      "collection": "/encounter",
+      "fields": {
+        "realm": "@item/report_realm",
+        "source_report_id": "@item/report_id"
+      },
+      "required": [
+        "source_report_id"
+      ]
+    }
+  },
+  "event_type_map": {},
+  "field_contracts": [
+    {
+      "canonical_field": "source_report_id",
+      "entity": "reports",
+      "expression": "@item/report_id",
+      "nullable": false,
+      "required": true,
+      "review_path": "/encounter/report_id",
+      "review_scope": "/encounter",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "integer"
+      ]
+    },
+    {
+      "canonical_field": "realm",
+      "entity": "reports",
+      "expression": "@item/report_realm",
+      "nullable": false,
+      "required": true,
+      "review_path": "/encounter/report_realm",
+      "review_scope": "/encounter",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "source_encounter_id",
+      "entity": "encounters",
+      "expression": "@item/id",
+      "nullable": false,
+      "required": true,
+      "review_path": "/encounter/id",
+      "review_scope": "/encounter",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "integer"
+      ]
+    },
+    {
+      "canonical_field": "source_report_id",
+      "entity": "encounters",
+      "expression": "@item/report_id",
+      "nullable": false,
+      "required": true,
+      "review_path": "/encounter/report_id",
+      "review_scope": "/encounter",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "integer"
+      ]
+    },
+    {
+      "canonical_field": "name",
+      "entity": "encounters",
+      "expression": "@item/name",
+      "nullable": false,
+      "required": true,
+      "review_path": "/encounter/name",
+      "review_scope": "/encounter",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "start_time",
+      "entity": "encounters",
+      "expression": "@item/start_time",
+      "nullable": false,
+      "required": true,
+      "review_path": "/encounter/start_time",
+      "review_scope": "/encounter",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "end_time",
+      "entity": "encounters",
+      "expression": "@item/end_time",
+      "nullable": false,
+      "required": true,
+      "review_path": "/encounter/end_time",
+      "review_scope": "/encounter",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "success",
+      "entity": "encounters",
+      "expression": "@item/success",
+      "nullable": false,
+      "required": true,
+      "review_path": "/encounter/success",
+      "review_scope": "/encounter",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "boolean"
+      ]
+    },
+    {
+      "canonical_field": "difficulty",
+      "entity": "encounters",
+      "expression": "@item/difficulty",
+      "nullable": false,
+      "required": true,
+      "review_path": "/encounter/difficulty",
+      "review_scope": "/encounter",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "duration_seconds",
+      "entity": "encounters",
+      "expression": "@item/duration_seconds",
+      "nullable": false,
+      "required": true,
+      "review_path": "/encounter/duration_seconds",
+      "review_scope": "/encounter",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "player_count",
+      "entity": "encounters",
+      "expression": "@item/player_count",
+      "nullable": false,
+      "required": true,
+      "review_path": "/encounter/player_count",
+      "review_scope": "/encounter",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "integer"
+      ]
+    },
+    {
+      "canonical_field": "zone",
+      "entity": "encounters",
+      "expression": "@item/zone",
+      "nullable": false,
+      "required": true,
+      "review_path": "/encounter/zone",
+      "review_scope": "/encounter",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "is_boss_encounter",
+      "entity": "encounters",
+      "expression": "@item/is_boss_encounter",
+      "nullable": false,
+      "required": true,
+      "review_path": "/encounter/is_boss_encounter",
+      "review_scope": "/encounter",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "boolean"
+      ]
+    },
+    {
+      "canonical_field": "boss_id",
+      "entity": "encounters",
+      "expression": "@item/boss_id",
+      "nullable": false,
+      "required": true,
+      "review_path": "/encounter/boss_id",
+      "review_scope": "/encounter",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "integer"
+      ]
+    },
+    {
+      "canonical_field": "creature_id",
+      "entity": "encounters",
+      "expression": "@item/creature_id",
+      "nullable": false,
+      "required": true,
+      "review_path": "/encounter/creature_id",
+      "review_scope": "/encounter",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "integer"
+      ]
+    },
+    {
+      "canonical_field": "trial_level",
+      "entity": "encounters",
+      "expression": "@item/trial_level",
+      "nullable": true,
+      "required": false,
+      "review_path": "/encounter/trial_level",
+      "review_scope": "/encounter",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "null"
+      ]
+    },
+    {
+      "canonical_field": "wipe_percent",
+      "entity": "encounters",
+      "expression": "@item/wipe_percent",
+      "nullable": true,
+      "required": false,
+      "review_path": "/encounter/wipe_percent",
+      "review_scope": "/encounter",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "null"
+      ]
+    },
+    {
+      "canonical_field": "source_actor_id",
+      "entity": "actors",
+      "expression": "@item/character_id",
+      "nullable": false,
+      "required": true,
+      "review_path": "/character_stats/*/character_id",
+      "review_scope": "/character_stats/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "integer"
+      ]
+    },
+    {
+      "canonical_field": "name",
+      "entity": "actors",
+      "expression": "@item/name",
+      "nullable": false,
+      "required": true,
+      "review_path": "/character_stats/*/name",
+      "review_scope": "/character_stats/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "actor_type",
+      "entity": "actors",
+      "expression": "@item/character_type",
+      "nullable": false,
+      "required": true,
+      "review_path": "/character_stats/*/character_type",
+      "review_scope": "/character_stats/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "class",
+      "entity": "actors",
+      "expression": "@item/class",
+      "nullable": true,
+      "required": false,
+      "review_path": "/character_stats/*/class",
+      "review_scope": "/character_stats/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "spec",
+      "entity": "actors",
+      "expression": "@item/spec",
+      "nullable": true,
+      "required": false,
+      "review_path": "/character_stats/*/spec",
+      "review_scope": "/character_stats/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "level",
+      "entity": "actors",
+      "expression": "@item/level",
+      "nullable": true,
+      "required": false,
+      "review_path": "/character_stats/*/level",
+      "review_scope": "/character_stats/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "null"
+      ]
+    },
+    {
+      "canonical_field": "source_encounter_id",
+      "entity": "participants",
+      "expression": "@item/encounter_id",
+      "nullable": false,
+      "required": true,
+      "review_path": "/character_stats/*/encounter_id",
+      "review_scope": "/character_stats/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "integer"
+      ]
+    },
+    {
+      "canonical_field": "source_actor_id",
+      "entity": "participants",
+      "expression": "@item/character_id",
+      "nullable": false,
+      "required": true,
+      "review_path": "/character_stats/*/character_id",
+      "review_scope": "/character_stats/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "integer"
+      ]
+    },
+    {
+      "canonical_field": "avg_dps",
+      "entity": "participants",
+      "expression": "@item/avg_dps",
+      "nullable": false,
+      "required": true,
+      "review_path": "/character_stats/*/avg_dps",
+      "review_scope": "/character_stats/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "number"
+      ]
+    },
+    {
+      "canonical_field": "avg_hps",
+      "entity": "participants",
+      "expression": "@item/avg_hps",
+      "nullable": false,
+      "required": true,
+      "review_path": "/character_stats/*/avg_hps",
+      "review_scope": "/character_stats/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "integer",
+        "number"
+      ]
+    },
+    {
+      "canonical_field": "damage_taken",
+      "entity": "participants",
+      "expression": "@item/damage_taken",
+      "nullable": false,
+      "required": true,
+      "review_path": "/character_stats/*/damage_taken",
+      "review_scope": "/character_stats/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "integer"
+      ]
+    },
+    {
+      "canonical_field": "deaths",
+      "entity": "participants",
+      "expression": "@item/deaths",
+      "nullable": false,
+      "required": true,
+      "review_path": "/character_stats/*/deaths",
+      "review_scope": "/character_stats/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "integer"
+      ]
+    },
+    {
+      "canonical_field": "effective_healing",
+      "entity": "participants",
+      "expression": "@item/effective_healing",
+      "nullable": false,
+      "required": true,
+      "review_path": "/character_stats/*/effective_healing",
+      "review_scope": "/character_stats/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "integer"
+      ]
+    },
+    {
+      "canonical_field": "encounter_duration",
+      "entity": "participants",
+      "expression": "@item/encounter_duration",
+      "nullable": false,
+      "required": true,
+      "review_path": "/character_stats/*/encounter_duration",
+      "review_scope": "/character_stats/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "number"
+      ]
+    },
+    {
+      "canonical_field": "is_consolidated",
+      "entity": "participants",
+      "expression": "@item/is_consolidated",
+      "nullable": false,
+      "required": true,
+      "review_path": "/character_stats/*/is_consolidated",
+      "review_scope": "/character_stats/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "boolean"
+      ]
+    },
+    {
+      "canonical_field": "total_absorbs",
+      "entity": "participants",
+      "expression": "@item/total_absorbs",
+      "nullable": false,
+      "required": true,
+      "review_path": "/character_stats/*/total_absorbs",
+      "review_scope": "/character_stats/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "integer"
+      ]
+    },
+    {
+      "canonical_field": "total_damage",
+      "entity": "participants",
+      "expression": "@item/total_damage",
+      "nullable": false,
+      "required": true,
+      "review_path": "/character_stats/*/total_damage",
+      "review_scope": "/character_stats/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "integer"
+      ]
+    },
+    {
+      "canonical_field": "total_healing",
+      "entity": "participants",
+      "expression": "@item/total_healing",
+      "nullable": false,
+      "required": true,
+      "review_path": "/character_stats/*/total_healing",
+      "review_scope": "/character_stats/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "integer"
+      ]
+    }
+  ],
+  "mapping_id": "coa-encounter-detail-v1",
+  "mapping_schema_version": 1,
+  "mapping_version": "1",
+  "mechanic_semantics_verified": false,
+  "promotion_validation_kind": "observed_report_slice_candidate_mapping_validation",
+  "promotion_validation_name": "observed-report-slice-candidate-mapping-validation.json",
+  "provenance_type": "upstream_derived",
+  "review_notes": [
+    "Creates a minimal report reference from /encounter/report_id so the generic normalizer can preserve exact report-to-encounter linkage inside this payload.",
+    "Normalizes one exact encounter, thirty-one actor rows and thirty-one participant rows.",
+    "Pet contributions, rankings, target damage and healing breakdowns remain deferred.",
+    "Manual promotion verifies selectors, JSON types, nullability, exact raw archive identity, dry-run counts and cross-payload linkage.",
+    "Promotion does not verify gameplay mechanics, class/spec codebooks, combatants-info enrichment or aura semantics."
+  ],
+  "review_summary_schema_version": 1,
+  "reviewed_at": "2026-07-29T18:28:00+03:00",
+  "reviewed_by": "GunsPojoshe (operator), OpenAI-assisted review",
+  "reviewed_payload_hash": "955437d6c9c287cc7db280dd2388b88603af2785508061b95c7811dcd272fe22",
+  "route_template": "/api/reports/{template}/encounters/{template}",
+  "schema_fingerprint": "567f36824efb37a29b835df01ce9b1fcc79eae57d6230202d16a6265c6ca0e85",
+  "source_code": "coa_ascension_logs",
+  "status": "verified",
+  "verification_scope": "parser_schema_raw_archive_dry_run_and_cross_payload_linkage_only"
+}
