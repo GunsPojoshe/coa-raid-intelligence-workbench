@@ -36,9 +36,9 @@
       "path": "/ci_resolved/specialization/resolved_ca_talent_ranks/*",
       "observed_occurrences": 51,
       "fields": {
-        "source_talent_id": {"selector": "/cao_id", "review_path": "/ci_resolved/specialization/resolved_ca_talent_ranks/*/cao_id", "types": ["integer"], "nullable": false, "required": true},
+        "source_cao_id": {"selector": "/cao_id", "review_path": "/ci_resolved/specialization/resolved_ca_talent_ranks/*/cao_id", "types": ["integer"], "nullable": false, "required": true},
         "rank": {"selector": "/rank", "review_path": "/ci_resolved/specialization/resolved_ca_talent_ranks/*/rank", "types": ["integer"], "nullable": false, "required": true},
-        "source_tree": {"selector": "/bisbeard_tree", "review_path": "/ci_resolved/specialization/resolved_ca_talent_ranks/*/bisbeard_tree", "types": ["string"], "nullable": false, "required": true},
+        "source_bisbeard_tree": {"selector": "/bisbeard_tree", "review_path": "/ci_resolved/specialization/resolved_ca_talent_ranks/*/bisbeard_tree", "types": ["string"], "nullable": false, "required": true},
         "display_name": {"selector": "/name", "review_path": "/ci_resolved/specialization/resolved_ca_talent_ranks/*/name", "types": ["string"], "nullable": false, "required": true},
         "icon": {"selector": "/icon", "review_path": "/ci_resolved/specialization/resolved_ca_talent_ranks/*/icon", "types": ["string"], "nullable": false, "required": true}
       }
@@ -92,7 +92,8 @@
   "review_notes": [
     "Candidate mapping derived from one immutable character payload and mapping-review schema v2.",
     "Field names describe source structure only and do not confirm gameplay mechanics.",
+    "cao_id and bisbeard_tree retain source-specific names because their gameplay semantics were not independently verified.",
     "Detailed gear, source decomposition and locally derived stat internals remain deferred.",
-    "Promotion to verified requires explicit human review and a separate code change."
+    "Promotion to verified requires explicit human review, raw-archive selector validation and a separate code change."
   ]
 }
