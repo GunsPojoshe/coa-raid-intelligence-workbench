@@ -13,18 +13,18 @@ main
     └── e3/real-log-capture         PR #7 -> e2, Draft
 ```
 
-Latest verified code checkpoint before this documentation update:
+Latest verified checkpoint before this documentation update:
 
 ```text
-commit: 0c5b2f8372e9d488b1b000c1f2adfbf86b723195
+commit: 8d2c92404b7c155b2b2177f1ed83529c5b35aa16
 workflow: Verify repository
-run: #165
+run: #166
 conclusion: success
 Ubuntu: success
 Windows: success
 ```
 
-Documentation commits follow that checkpoint. Не считать HEAD и CI status из документа вечными.
+Documentation commits after this checkpoint require their own CI verification.
 
 ## Реализованный фундамент
 
@@ -51,10 +51,9 @@ Documentation commits follow that checkpoint. Не считать HEAD и CI sta
 - structural review and mapping-review packet schema v2;
 - raw-archive selector validation;
 - verified Armory character and talent-grid mappings;
-- one-page bounded public-report discovery collector;
-- exact report-discovery archive structural review;
-- full-root scalar-free report mapping-review tooling;
-- PowerShell-safe scalar-free report mapping summary tooling;
+- bounded one-page public-report discovery collector;
+- exact public-report structural and mapping reviews;
+- scalar-free plain-text mapping summary;
 - versioned public-report mapping contract;
 - exact public-report raw-archive selector validation;
 - verified public-report discovery mapping for seven reviewed scalar fields.
@@ -139,18 +138,7 @@ keys: class_name, success, trees
 
 Raw payloads и local review/validation outputs остаются gitignored.
 
-## Armory mapping review
-
-Review packet schema `2`:
-
-```text
-archive_verified: 2
-field_path_count: 470
-node_occurrence_count: 6106
-numeric_map_path_count: 4
-contains_source_scalar_values: false
-ready_for_manual_mapping_review: true
-```
+## Completed Armory production gate
 
 Verified mappings:
 
@@ -166,11 +154,7 @@ reviewed_by: GunsPojoshe (operator), OpenAI-assisted review
 reviewed_at: 2026-07-29T15:34:00+03:00
 ```
 
-Review decisions and deferred scopes are recorded in `docs/ARMORY_MAPPING_REVIEW_V1.md`.
-
-## Completed Armory production gate
-
-User-local validation against the exact private archives after promotion:
+User-local post-promotion validation:
 
 ```text
 schema_version: 2
@@ -181,7 +165,7 @@ all_raw_archives_consistent: true
 all_production_ready: true
 ```
 
-Per-mapping raw validation established before promotion:
+Per-mapping exact raw validation:
 
 ```text
 coa-armory-character-v1
@@ -197,7 +181,7 @@ coa-armory-talent-grid-v1
   extracted_value_count: 2955
 ```
 
-Any new payload hash or fingerprint requires a new review decision.
+Review decisions and deferred scopes are recorded in `docs/ARMORY_MAPPING_REVIEW_V1.md`.
 
 ## Real bounded report discovery
 
@@ -224,7 +208,7 @@ top-level keys: pagination, reports, success
 candidate collections: 6
 ```
 
-Structural review result:
+Structural review:
 
 ```text
 schema_version: 1
@@ -233,18 +217,6 @@ archive_verified: 1
 all archive comparisons: true
 category_semantics_verified: false
 pagination_policy_verified: false
-```
-
-Verified comparisons:
-
-```text
-bytes_uncompressed=true
-content_type=true
-http_status=true
-payload_hash=true
-schema_fingerprint=true
-top_level_keys=true
-top_level_kind=true
 ```
 
 Exact scalar-free mapping review and summary:
@@ -263,25 +235,23 @@ contains_source_scalar_values: false
 ready_for_manual_mapping_review: true
 ```
 
-Candidate collection review established:
+The only report-like collection is `/reports`, with five object items. The reviewed bounded item selector is `/reports/*`. The other five candidate collections are the non-object `locations` arrays under those reports.
+
+All eleven source keys were present on all five report objects:
 
 ```text
-/reports
-  item_count: 5
-  object_item_count: 5
-  report score: 0.6
-  matched hints: created_at, start_time, title
-  observed keys:
-    created_at, end_time, guild_id, guild_name, highest_difficulty,
-    id, locations, start_time, title, uploader_username, visibility
-
-/reports/0/locations ... /reports/4/locations
-  item_count: 1 each
-  object_item_count: 0
-  entity scores: 0
+created_at
+end_time
+guild_id
+guild_name
+highest_difficulty
+id
+locations
+start_time
+title
+uploader_username
+visibility
 ```
-
-Therefore `/reports` is the only report-like collection in this exact payload and `/reports/*` is the reviewed bounded item selector. The five returned objects prove only that this single response matched the requested `limit=5`; consistent limit enforcement is not established.
 
 Nullable observations:
 
@@ -291,7 +261,9 @@ Nullable observations:
 /reports/*/highest_difficulty/trial_level   null x 5
 ```
 
-## Verified public-report mapping
+The five returned objects prove only that this one response matched the requested `limit=5`; consistent limit enforcement is not established.
+
+## Completed public-report production gate
 
 Verified mapping:
 
@@ -301,6 +273,8 @@ mapping_id: coa-public-report-discovery-v1
 status: verified
 collection: /reports/*
 selected fields: 7
+reviewed_by: GunsPojoshe (operator), OpenAI-assisted review
+reviewed_at: 2026-07-29T16:41:00+03:00
 ```
 
 Selected fields:
@@ -325,22 +299,11 @@ Deferred scopes:
 /reports/*/locations
 ```
 
-Reviewer metadata:
-
-```text
-reviewed_by: GunsPojoshe (operator), OpenAI-assisted review
-reviewed_at: 2026-07-29T16:41:00+03:00
-```
-
-Review decisions and interpretation boundaries are recorded in `docs/REPORT_DISCOVERY_MAPPING_REVIEW_V1.md`.
-
-## Public-report promotion gate
-
-User-local exact-archive validation before promotion:
+User-local post-promotion exact-archive validation:
 
 ```text
 mapping_id: coa-public-report-discovery-v1
-status: candidate
+status: verified
 all_structurally_consistent: true
 all_raw_archive_selectors_consistent: true
 route_matched: true
@@ -349,14 +312,18 @@ report_item_count: 5
 field_contract_count: 7
 extracted_value_count: 35
 nullable_value_count: 0
-production_ready: false
+production_ready: true
 can_promote: false
 contains_source_scalar_values: false
 ```
 
-The mapping was then manually promoted to `verified`. A repeated local run against the same private archive must confirm `production_ready: true`. Automatic promotion remains forbidden; `can_promote` remains false by design.
+`can_promote: false` remains correct: automatic promotion is forbidden, while the manual promotion is complete and documented.
 
-Implemented report-discovery files include:
+Review decisions and interpretation boundaries are recorded in `docs/REPORT_DISCOVERY_MAPPING_REVIEW_V1.md`.
+
+Any new payload hash or schema fingerprint requires a new review decision.
+
+Implemented public-report files include:
 
 ```text
 config/mappings/coa_public_report_discovery_v1.json
@@ -397,8 +364,8 @@ Still unverified:
 
 ## Current blockers
 
-1. Repeat the exact public-report validator locally after promotion and confirm `production_ready: true`.
-2. Source category/filter semantics and pagination policy remain unverified.
+1. Source category/filter semantics and pagination policy remain unverified.
+2. Encounter/roster discovery for a complete report slice is not established.
 3. A complete report/encounter/roster slice is not normalized.
 4. Evidence coverage remains narrow.
 5. No corroborated gameplay mechanic is ready for canonical planner scoring.
@@ -406,13 +373,13 @@ Still unverified:
 
 ## Next bounded tasks
 
-1. Complete the post-promotion exact public-report mapping validation.
-2. Investigate filters/categories/pagination only through separate explicit observations.
-3. Discover an encounter route or payload only from observed application behavior; do not invent routes.
-4. Capture one bounded report/encounter/roster slice immutably.
-5. Build scalar-free structural and mapping review for that slice.
-6. Normalize only after a verified exact mapping exists.
-7. Preserve deferred public-report scopes until separately observed and reviewed.
+1. Investigate filters/categories/pagination only through separate explicit observations.
+2. Discover an encounter or roster route only from observed application behavior; do not invent routes.
+3. Capture one bounded report/encounter/roster slice immutably.
+4. Build scalar-free structural and mapping review for that slice.
+5. Create and validate exact versioned mappings.
+6. Normalize only after the exact mappings are verified.
+7. Preserve all deferred public-report scopes until separately observed and reviewed.
 
 ## Completion gate
 
