@@ -80,8 +80,7 @@ def main() -> int:
     print(f"duplicate_encounter_count={summary['duplicate_encounter_count']}")
     print(f"field_conflict_count={summary['field_conflict_count']}")
     print(
-        "all_input_batch_hashes_verified="
-        f"{str(summary['all_input_batch_hashes_verified']).lower()}"
+        f"all_input_batch_hashes_verified={str(summary['all_input_batch_hashes_verified']).lower()}"
     )
     print(f"all_linkage_checks_passed={str(summary['all_linkage_checks_passed']).lower()}")
     print(
