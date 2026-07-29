@@ -19,8 +19,8 @@ docs/PROJECT_MASTER_CONTEXT.md
 - PR #3: `e2/log-evidence-refactor -> main`, Draft;
 - PR #7: `e3/real-log-capture -> e2/log-evidence-refactor`, Draft;
 - PR #8 safe HAR inventory merged into PR #7;
-- latest verified branch head: `6e3097d7ed9438c3befda28911547874c4e7463a`;
-- latest verified workflow: `Verify repository`, run #117, success.
+- latest verified branch head: `7772eac950e005f93b28d5b90bb6935f04a3da74`;
+- latest verified workflow: `Verify repository`, run #119, success.
 
 Не доверять commit count, HEAD или CI status из документа без проверки.
 
@@ -187,7 +187,7 @@ After review refinement the talent-grid mapping contains 22 fields because paren
 
 ### Implemented raw-archive validation
 
-The validator now also checks the exact immutable gzip archives:
+The validator checks the exact immutable gzip archives:
 
 - payload hash;
 - schema fingerprint;
@@ -212,9 +212,9 @@ all_production_ready: false
 Latest verified checkpoint:
 
 ```text
-commit: 6e3097d7ed9438c3befda28911547874c4e7463a
+commit: 7772eac950e005f93b28d5b90bb6935f04a3da74
 workflow: Verify repository
-run: #117
+run: #119
 conclusion: success
 Ubuntu repository verifier: success
 Windows pytest/doctor/DuckDB initialization: success
