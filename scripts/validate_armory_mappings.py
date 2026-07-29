@@ -86,7 +86,8 @@ def main() -> int:
     packet = _load_object(args.review, "Armory mapping review packet")
     structural = review_armory_capture_manifest(args.manifest, raw_root=args.raw_root)
     endpoints = {
-        str(endpoint["endpoint_kind"]): endpoint for endpoint in structural["endpoints"]
+        str(endpoint["endpoint_kind"]): endpoint
+        for endpoint in structural["endpoints"]
     }
 
     results = []
