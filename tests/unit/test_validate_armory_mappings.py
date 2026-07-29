@@ -1,4 +1,13 @@
-from scripts.validate_armory_mappings import _route_path
+from importlib.util import module_from_spec, spec_from_file_location
+from pathlib import Path
+
+
+SCRIPT_PATH = Path(__file__).resolve().parents[2] / "scripts" / "validate_armory_mappings.py"
+SPEC = spec_from_file_location("validate_armory_mappings", SCRIPT_PATH)
+assert SPEC is not None and SPEC.loader is not None
+MODULE = module_from_spec(SPEC)
+SPEC.loader.exec_module(MODULE)
+_route_path = MODULE._route_path
 
 
 def test_route_path_extracts_path_from_absolute_url():
