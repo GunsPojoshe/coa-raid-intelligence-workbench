@@ -4,7 +4,7 @@
 
 ## Scope
 
-Проверены candidate mappings:
+Проверены mappings:
 
 - `config/mappings/coa_armory_character_v1.json`;
 - `config/mappings/coa_armory_talent_grid_v1.json`.
@@ -16,7 +16,8 @@
 - exact payload hashes;
 - exact schema fingerprints;
 - type/nullability/occurrence inventory без source scalar values;
-- local structural validation пользователя.
+- local structural validation пользователя;
+- local raw-archive selector validation пользователя.
 
 ## Reviewed payloads
 
@@ -69,7 +70,7 @@ Talent-grid mapping:
 3. Talent records retain their parent `tree_slug` through an ancestor selector.
 4. Connection records retain both the source talent ID and tree slug.
 5. Rank-text records retain both the source talent ID and tree slug.
-6. Candidate mappings remain blocked by `require_verified()`.
+6. Absolute manifest URLs are normalized to URL paths before route-template comparison.
 
 These changes avoid losing relationships and avoid assigning unverified gameplay semantics to source-specific identifiers.
 
@@ -91,41 +92,71 @@ Talent grid:
 
 The latter arrays were empty in the reviewed payload, so their future item structures are not established.
 
-## Promotion gate
+## Completed promotion gate
 
-The type-only review packet is necessary but not sufficient for `verified` status.
-
-Before promotion, the validator must execute every selector against the exact immutable gzip archives and confirm:
+The validator executed every selected mapping field against the exact immutable gzip archives and confirmed:
 
 1. payload hash;
 2. schema fingerprint;
-3. route template;
+3. route template after URL-path normalization;
 4. singleton selector presence and JSON type;
 5. collection occurrence counts;
 6. item, ancestor and index selector behavior;
 7. required field presence;
 8. no raw scalar values in the validation output.
 
-Command:
+User-local result:
 
-```powershell
-uv run --no-sync python scripts/validate_armory_mappings.py `
-    --review "data\exchange\out\armory-mapping-review-v2.json" `
-    --manifest "data\exchange\out\armory-endpoint-capture.json" `
-    --raw-root "data\raw" `
-    --output "data\exchange\out\armory-mapping-validation.json"
+```text
+schema_version: 2
+mapping_count: 2
+raw_archive_count: 2
+all_structurally_consistent: true
+all_raw_archives_consistent: true
+all_production_ready: false
+
+coa-armory-character-v1:
+  raw_payload_validated: true
+  route_matched: true
+  singleton_value_count: 19
+  extracted_value_count: 328
+
+coa-armory-talent-grid-v1:
+  raw_payload_validated: true
+  route_matched: true
+  singleton_value_count: 2
+  extracted_value_count: 2955
 ```
 
-Expected gate before promotion:
+`all_production_ready: false` was the expected pre-promotion state because both files still had status `candidate` during that run.
+
+## Promotion decision
+
+Both mappings are promoted to `verified` on 2026-07-29 after:
+
+- documented field-by-field structural review;
+- successful type-only review-packet validation;
+- successful raw-archive selector execution;
+- exact hash/fingerprint/route checks;
+- green Ubuntu and Windows repository verification.
+
+Reviewer metadata stored in both mapping contracts:
+
+```text
+reviewed_by: GunsPojoshe (operator), OpenAI-assisted review
+reviewed_at: 2026-07-29T15:34:00+03:00
+```
+
+A repeated local validator run after pulling the promotion commits must now produce:
 
 ```text
 all_structurally_consistent: true
 all_raw_archives_consistent: true
-all_production_ready: false
+all_production_ready: true
 ```
-
-`all_production_ready: false` remains expected while status is `candidate`.
 
 ## Interpretation boundary
 
-A verified Armory mapping would confirm reproducible extraction from the reviewed source schemas. It would not confirm talent magnitude, runtime behavior, stacking, overwrite, scope, provider equivalence or planner criticality.
+A verified Armory mapping confirms reproducible extraction from the exact reviewed source schemas and payload hashes. It does not confirm talent magnitude, runtime behavior, stacking, overwrite, scope, provider equivalence or planner criticality.
+
+Any new payload hash or schema fingerprint requires a new review decision. Deferred scopes remain unavailable for canonical normalization until separately observed and reviewed.
