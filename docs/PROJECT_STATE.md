@@ -13,7 +13,7 @@ main
     └── e3/real-log-capture         PR #7 -> e2, Draft
 ```
 
-Latest verified checkpoint before this documentation update:
+Latest verified code checkpoint before this documentation update:
 
 ```text
 commit: be42e97c86956687911f5cd09e00c50edd011054
@@ -23,6 +23,8 @@ conclusion: success
 Ubuntu: success
 Windows: success
 ```
+
+This documentation commit requires its own CI verification.
 
 ## Реализованный фундамент
 
