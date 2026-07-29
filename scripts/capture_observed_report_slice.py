@@ -53,8 +53,7 @@ def _write_result(path: Path, result: ObservedReportSliceCaptureResult) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(
-        json.dumps(observed_report_slice_capture_to_dict(result), indent=2, sort_keys=True)
-        + "\n",
+        json.dumps(observed_report_slice_capture_to_dict(result), indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
     temporary.replace(path)
@@ -91,18 +90,9 @@ def main() -> int:
     )
     print(f"route_inventory_hash={rendered['provenance']['route_inventory_hash']}")
     print(f"http_profile_version={rendered['provenance']['http_profile_version']}")
-    print(
-        "expected_endpoint_count="
-        f"{rendered['summary']['expected_endpoint_count']}"
-    )
-    print(
-        "attempted_endpoint_count="
-        f"{rendered['summary']['attempted_endpoint_count']}"
-    )
-    print(
-        "complete_endpoint_count="
-        f"{rendered['summary']['complete_endpoint_count']}"
-    )
+    print(f"expected_endpoint_count={rendered['summary']['expected_endpoint_count']}")
+    print(f"attempted_endpoint_count={rendered['summary']['attempted_endpoint_count']}")
+    print(f"complete_endpoint_count={rendered['summary']['complete_endpoint_count']}")
     print(f"all_complete={str(rendered['summary']['all_complete']).lower()}")
     print(
         "contains_source_scalar_values="
@@ -112,10 +102,7 @@ def main() -> int:
         "semantic_verification_required="
         f"{str(rendered['summary']['semantic_verification_required']).lower()}"
     )
-    print(
-        "normalization_allowed="
-        f"{str(rendered['summary']['normalization_allowed']).lower()}"
-    )
+    print(f"normalization_allowed={str(rendered['summary']['normalization_allowed']).lower()}")
     print()
     print("ENDPOINTS")
     for endpoint in rendered["endpoints"]:
