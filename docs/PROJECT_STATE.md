@@ -19,8 +19,8 @@ docs/PROJECT_MASTER_CONTEXT.md
 - PR #3: `e2/log-evidence-refactor -> main`, Draft;
 - PR #7: `e3/real-log-capture -> e2/log-evidence-refactor`, Draft;
 - PR #8 safe HAR inventory merged into PR #7;
-- latest verified branch head: `c1ddccb96c1944283db8543d3aa1944719265ab3`;
-- latest verified workflow: `Verify repository`, run #114, success.
+- latest verified branch head: `6e3097d7ed9438c3befda28911547874c4e7463a`;
+- latest verified workflow: `Verify repository`, run #117, success.
 
 Не доверять commit count, HEAD или CI status из документа без проверки.
 
@@ -212,16 +212,16 @@ all_production_ready: false
 Latest verified checkpoint:
 
 ```text
-commit: c1ddccb96c1944283db8543d3aa1944719265ab3
+commit: 6e3097d7ed9438c3befda28911547874c4e7463a
 workflow: Verify repository
-run: #114
+run: #117
 conclusion: success
 Ubuntu repository verifier: success
 Windows pytest/doctor/DuckDB initialization: success
 full pytest: 96 passed, 1 warning
 ```
 
-The verifier now uses `ruff format --diff`, so formatting failures include the exact formatter patch.
+The verifier uses `ruff format --diff`, so formatting failures include the exact formatter patch.
 
 ## Local environment caveat
 
