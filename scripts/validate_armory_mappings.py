@@ -66,11 +66,7 @@ def _load_archived_payload(
 ) -> tuple[Any, str, str]:
     root = raw_root.resolve()
     path = (root / str(endpoint["payload_path"])).resolve()
-    if (
-        not path.is_relative_to(root)
-        or not path.is_file()
-        or not path.name.endswith(".json.gz")
-    ):
+    if not path.is_relative_to(root) or not path.is_file() or not path.name.endswith(".json.gz"):
         raise ValueError("Armory payload must be a gzip JSON archive below raw-root")
     body = gzip.decompress(path.read_bytes())
     payload_hash = hashlib.sha256(body).hexdigest()
@@ -87,10 +83,7 @@ def main() -> int:
     ]
     packet = _load_object(args.review, "Armory mapping review packet")
     structural = review_armory_capture_manifest(args.manifest, raw_root=args.raw_root)
-    endpoints = {
-        str(endpoint["endpoint_kind"]): endpoint
-        for endpoint in structural["endpoints"]
-    }
+    endpoints = {str(endpoint["endpoint_kind"]): endpoint for endpoint in structural["endpoints"]}
 
     results = []
     for mapping_path in mapping_paths:
@@ -98,9 +91,7 @@ def main() -> int:
         review_result = contract.validate_against_review_packet(packet)
         endpoint = endpoints.get(contract.endpoint_kind)
         if endpoint is None:
-            raise ValueError(
-                f"Armory capture manifest has no endpoint {contract.endpoint_kind!r}"
-            )
+            raise ValueError(f"Armory capture manifest has no endpoint {contract.endpoint_kind!r}")
         payload, payload_hash, fingerprint = _load_archived_payload(
             endpoint,
             raw_root=args.raw_root,
