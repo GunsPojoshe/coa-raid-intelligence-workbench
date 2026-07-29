@@ -34,6 +34,13 @@ def _synthetic_review_packet(*contracts: ArmoryMappingContract) -> dict:
         for field in contract.singletons.values():
             add_shape(field.review_path, field.types, field.nullable, 1)
         for collection in contract.collections.values():
+            for field in collection.fields.values():
+                add_shape(
+                    field.review_path,
+                    field.types,
+                    field.nullable,
+                    collection.observed_occurrences,
+                )
             shapes.setdefault(
                 collection.path,
                 {
@@ -43,13 +50,6 @@ def _synthetic_review_packet(*contracts: ArmoryMappingContract) -> dict:
                     "nullable": False,
                 },
             )
-            for field in collection.fields.values():
-                add_shape(
-                    field.review_path,
-                    field.types,
-                    field.nullable,
-                    collection.observed_occurrences,
-                )
         total_paths += len(shapes)
         endpoints.append(
             {
@@ -84,13 +84,13 @@ def test_candidate_armory_mappings_load_and_match_review_contracts():
     assert character.reviewed_payload_hash == (
         "2a9d752d7af72d41cd9d41836d670069c78e408df7260f5d9caa83b07430985f"
     )
-    assert character_result["field_count"] == 34
+    assert character_result["field_count"] == 36
     assert character_result["collection_count"] == 5
     assert talent_grid.mapping_id == "coa-armory-talent-grid-v1"
     assert talent_grid.reviewed_payload_hash == (
         "11be25407ec00898547c1b7f342d4596268b3164df9fe0f120bb911559cc5206"
     )
-    assert talent_grid_result["field_count"] == 16
+    assert talent_grid_result["field_count"] == 17
     assert talent_grid_result["collection_count"] == 4
     assert character_result["production_ready"] is False
     assert talent_grid_result["production_ready"] is False
