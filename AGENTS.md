@@ -10,249 +10,236 @@ Read in this order:
 2. `docs/PROJECT_MASTER_CONTEXT.md`;
 3. `docs/PROJECT_STATE.md`;
 4. `docs/CONTINUATION_PROMPT.md`;
-5. relevant ADR and capture documents.
+5. relevant ADR/capture/review documents;
+6. `evidence/real-data/README.md`.
 
-`PROJECT_MASTER_CONTEXT.md` contains the full product and architecture context. `PROJECT_STATE.md` contains mutable operational facts. Neither replaces checking GitHub, code and CI.
+Documentation does not replace checking GitHub, code, local receipts and CI.
 
 ## Mission
 
 Build a localhost-first raid intelligence system for Classless / Ascension WoW that derives explainable planning recommendations from evidence captured from `coa.ascensionlogs.gg`.
 
-Keep these layers separate:
+A combat-log event is an observation, not automatic proof of a general game mechanic.
 
-1. immutable raw observations;
-2. upstream-derived fields;
-3. canonical normalized events;
-4. deterministic local reconstruction;
-5. locally inferred hypotheses;
-6. supporting and contradicting evidence;
-7. corroborated or confirmed mechanics;
-8. planner scoring and recommendations.
-
-A combat-log event is an observation. It is not automatic proof of a general game mechanic.
-
-## Mandatory first step
+## Required start sequence
 
 Before modifying code:
 
-1. inspect the current branch, HEAD and working tree;
-2. inspect the active pull request and base branch;
-3. inspect the latest CI run and exact failures;
-4. read the canonical context documents;
-5. compare documented claims with actual implementation;
-6. run available verification commands;
-7. report discrepancies before extending the analytical model.
+1. inspect current branch, HEAD and working tree;
+2. inspect active PR and base branch;
+3. inspect latest CI run and exact failures;
+4. read canonical context documents;
+5. compare documentation with implementation and versioned receipts;
+6. run relevant verification;
+7. report material discrepancies before changing analytical semantics.
 
-Do not trust old commit counts, test counts, branch state or implementation claims without checking them.
+Do not trust old commit/test counts without checking.
 
 ## Current milestone
 
-The active branch is `e3/real-log-capture`, PR #7 into `e2/log-evidence-refactor`.
+```text
+main
+└── e2/log-evidence-refactor        PR #3 -> main, Draft
+    └── e3/real-log-capture         PR #7 -> e2, Draft
+```
 
-The parent evidence branch is `e2/log-evidence-refactor`, PR #3 into `main`.
+Completed in E3:
 
-Both remain Draft until their acceptance criteria are met unless the user explicitly changes this instruction.
+- verified Armory mappings;
+- verified public-report discovery mapping;
+- exact report/encounter/combatants capture;
+- published report and encounter mappings;
+- selected-parser normalization;
+- deterministic reconstruction;
+- selected-parser persistence through migration `0007`;
+- combatants deep review, field selection, design and candidate extraction.
 
 Current bounded sequence:
 
-1. restore green Ruff/CI baseline;
-2. implement endpoint-isolated and progressive Armory capture;
-3. capture missing real `character` and `talent-grid` payloads;
-4. inventory and fingerprint those payloads;
-5. create reviewed mappings only after structural review;
-6. automate bounded report discovery;
-7. normalize a complete report/encounter/roster slice;
-8. expand supporting and contradicting evidence;
-9. integrate only corroborated/confirmed mechanics into planner scoring.
+1. manually validate/promote the exact combatants candidate extraction;
+2. persist six immutable observation types atomically and idempotently;
+3. add deterministic observation read models;
+4. investigate and normalize aura endpoints for the bounded report slice;
+5. gather independent supporting and contradicting evidence;
+6. integrate only corroborated/confirmed mechanics into planner scoring.
 
-Update this section when the project moves to a new branch or phase.
+Do not repeat already completed capture, selection or mapping-design stages unless a hash/fingerprint changes.
 
-## Source and data-trust rules
+## Source and trust rules
 
-- `coa.ascensionlogs.gg` is the primary observation source.
-- Never invent source routes, request parameters, JSON fields, event types, spell mappings, class mappings or pagination behavior.
-- Probe and fingerprint a real payload before creating a mapping.
-- Normalization requires an explicitly verified mapping and a matching schema fingerprint.
-- Keep `raw_log`, `upstream_derived`, `companion_addon`, `local_inference` and `manual_override` provenance distinct.
+- Never invent routes, parameters, JSON fields, event types, Spell IDs, pagination or provider semantics.
+- Probe and fingerprint real payloads before creating mappings.
+- Bind every parser to exact reviewed hashes/fingerprints.
+- Unknown fingerprint means reject and review.
+- Keep `raw_log`, `upstream_derived`, `companion_addon`, `local_inference` and `manual_override` distinct.
 - Preserve contradicting evidence.
-- Keep global mechanics separate from guild and player execution.
-- Only `corroborated` and `confirmed` mechanics may participate in canonical planner scoring.
-- Historical static catalogs are `legacy_unverified` and non-canonical.
-- A verified normalizer behavior does not corroborate a gameplay mechanic.
+- Keep global mechanics separate from guild/player execution.
+- Only `corroborated` and `confirmed` mechanics may enter canonical planner scoring.
+- Parser/mapping correctness does not promote mechanic trust.
 
-## Verified HTTP finding
-
-The full versioned request profile `coa-fetch-context-v1` has returned HTTP 200 for public reports, character search and Armory by-name routes:
+## Current exact report-slice facts
 
 ```text
-Accept: application/json, text/plain, */*
-Accept-Language: en-US,en;q=0.9
-Cache-Control: no-cache
-Pragma: no-cache
-User-Agent: Chromium-like
-Referer: https://coa.ascensionlogs.gg/
-Sec-Fetch-Dest: empty
-Sec-Fetch-Mode: cors
-Sec-Fetch-Site: same-origin
+report_detail
+payload:     161739896f0b8321f884bcc24d1896efb894a9c6e05166269189f9871c64cba9
+fingerprint: 3d533a4178b67957bbd31544ddf5484bd5959635ebd5edcdd0c7689a4bace216
+
+encounter_detail
+payload:     955437d6c9c287cc7db280dd2388b88603af2785508061b95c7811dcd272fe22
+fingerprint: 567f36824efb37a29b835df01ce9b1fcc79eae57d6230202d16a6265c6ca0e85
+
+combatants_info
+payload:     45672e0f0ff9eb461c575bdd38385795daa6326378bc3f8ad51474276140dc14
+fingerprint: 41d6d15422c668f83d2ccae1ec0ff2969671861f9e43b21cb371578961c5f8ff
 ```
 
-Do not overstate it:
+Published report/encounter mappings:
 
-- only the complete profile is verified;
-- the minimum required subset is unknown;
-- cookie and request-order dependencies are not isolated;
-- Armory-first behavior in a completely fresh session is not proven;
-- old 403 responses do not prove authorization-only, browser-only or TLS-fingerprint-only access.
+```text
+config/mappings/coa_report_detail_v1.json
+config/mappings/coa_encounter_detail_v1.json
+```
 
-Implementation requirements:
+Current persisted selected-parser slice:
 
-- one persistent same-origin session/opener;
-- in-memory cookies only;
-- no cookie or header values in output metadata;
-- record profile version and safe header names;
-- HAR remains fallback, not a primary requirement.
+```text
+1 report
+14 encounters
+31 actors
+31 participants
+77 canonical entity observations
+0 rejects
+```
+
+Current combatants candidate extraction:
+
+```text
+1350 source matches
+1343 output observations
+7 deduplicated instance-context matches
+11 actor links
+12/12 integrity checks
+0 core mutations
+```
+
+## Combatants persistence rules
+
+- The six design units target immutable `canonical_entity_observation` records.
+- Do not mutate core `actor` rows from candidate addon-derived fields.
+- Require exact private extraction SHA-256 and versioned receipt validation.
+- Preserve raw match path/selected record hash identity for nested rows.
+- Do not claim semantic uniqueness for `cao_id`, `entry_id`, gear slot or display names.
+- Promotion must be manual and parser-only.
+- Keep companion-addon provenance and nested semantics unverified.
 
 ## Raw data and privacy
 
-- Raw payloads are immutable and content-addressed by SHA-256.
-- Repeated retrieval of the same payload creates another observation, not another payload body.
-- Never commit cookies, authorization headers, access tokens or unsanitized HAR files.
-- Never commit browser profiles, local DuckDB files or private raw payloads.
-- Never commit absolute local paths containing usernames.
-- Do not modify archived raw payloads to make tests pass.
-- Cookies may exist only in process memory.
+The user permits full use of local private data for development. Git remains minimal by default.
 
-## Automated report capture
+Versioned:
 
-The intended design is not manual download and per-file parsing.
+- code/tests;
+- migrations;
+- reviewed mappings;
+- docs;
+- scalar-free receipts.
+
+Local-only paths:
 
 ```text
-public report discovery
--> verified filters and pagination
--> bounded deterministic selection, normally up to 5 reports per category
--> encounter discovery
--> selected analytical endpoints
--> immutable archive
--> fingerprint
--> endpoint/schema parser
--> canonical normalization
+data/raw/
+data/warehouse/
+data/normalized/
+data/reconstructed/
+data/extracted/
+data/exchange/in/
+data/exchange/out/
 ```
 
-Prefer specialized payloads over a full event stream. Download the full event stream only when compact endpoint data cannot test the current temporal or causal hypothesis.
+Never commit:
 
-Many similar raw files are expected. Implement one versioned parser per reviewed endpoint/schema. Unknown fingerprints must be rejected and queued for review.
+- cookies, tokens or Authorization headers;
+- browser profiles;
+- `.env` secrets;
+- unsanitized HAR;
+- credentials;
+- absolute local paths containing usernames.
+
+Never modify archived raw payloads to make tests pass.
 
 ## Database migrations
 
 - Never edit a migration already published to branch history.
-- Add a new migration for every schema correction.
-- Test migrations on a clean temporary DuckDB database.
-- Test repeatability and checksum behavior.
-- Keep migrations deterministic and independent of external network access.
+- Add a new migration only for a demonstrated schema gap.
+- Test on a clean temporary DuckDB twice.
+- Preserve deterministic checksums and repeatability.
+- Prefer existing migration `0007` for combatants observations when it can represent required provenance without loss.
 
-## Aura State Engine
+## Collector/extractor rules
 
-Before building scope, overwrite, stacking or order-sensitive inference, verify:
-
-- normal apply/remove;
-- refresh;
-- stack changes;
-- missing remove;
-- duplicate events;
-- out-of-order events;
-- two sources;
-- two targets;
-- encounter-end closure;
-- observed-window boundaries.
-
-Do not silently discard anomalies. Return or persist them with deterministic reason codes.
-
-The real `Ninja's Focus` checkpoints verify normalizer and interval reconstruction behavior only. They do not confirm numeric effect, stacking, overwrite, provider equivalence or strategic criticality.
-
-## Collector development rules
-
-- Live-network tests must not be unit tests.
-- Use deterministic fake openers/responses for unit coverage.
+- Live-network behavior is not a unit test.
+- Use deterministic fake responses/payloads for tests.
 - Use bounded real capture only after deterministic tests pass.
-- Prefer endpoint-isolated capture over a long all-or-nothing chain.
-- Write progressive safe result state after each endpoint.
-- Make capture resumable where practical.
-- Do not re-fetch already archived successful payloads without a reason.
-- Treat HTTP status and completed body capture as separate facts.
-- Preserve transport warnings without treating partial invalid bytes as valid evidence.
+- Treat status receipt and completed body read as separate facts.
+- Archive before interpretation.
+- Validate exact manifest, payload hash and schema fingerprint.
+- Write scalar-free receipts atomically.
+- Private output files must remain local and gitignored.
 
 ## Development scope
 
 - Complete one bounded analytical slice at a time.
-- Do not mix unrelated UI redesign with evidence-pipeline work.
-- Do not perform broad refactors unless required by current acceptance criteria.
-- Do not create speculative CoA Logs mappings or mechanics.
-- Heavy analytics belongs in Python, not frontend JavaScript.
-- Algorithms, mappings, policies, HTTP profiles and inference outputs must be versioned.
-- Results must carry provenance and reproducibility identifiers.
-- Temporary diagnostic workflows should become tested production code or manual-only probes.
+- Do not mix unrelated UI redesign with evidence work.
+- Do not broadly refactor without acceptance need.
+- Heavy analytics belongs in Python.
+- Version parsers, mappings, policies, migrations and inference outputs.
+- Carry provenance and reproducibility identifiers.
 
 ## Required verification
 
-Use the locked environment when possible:
-
-```bash
+```powershell
 uv sync --frozen --extra dev
-```
-
-Run the repository verifier:
-
-```bash
 uv run python scripts/verify_repo.py
 ```
 
-Run change-specific tests when the verifier does not isolate changed behavior.
+Additionally:
 
-For migration/storage changes, initialize a clean temporary database twice.
+- run focused tests for changed behavior;
+- run CLI `--help` and deterministic smoke tests for CLI changes;
+- initialize a clean DuckDB twice for migration/storage changes;
+- inspect exact Actions logs for CI failures.
 
-For CLI changes, run `--help` and a deterministic smoke test.
+Never claim a check passed unless it ran.
 
-For collector changes, use fake-opener tests and one bounded real capture.
+## Git rules
 
-Never claim a test passed unless it actually ran. If a check cannot run, state the exact reason and what ran instead.
-
-Local `uv run --no-sync` targeted tests are useful diagnostics but do not replace locked full verification.
-
-## Git and concurrent work
-
-- Do not overwrite unrelated user or agent changes.
-- Re-check branch and remote state before publishing.
-- Avoid concurrent writes to the same files.
+- Re-check branch and remote before publishing.
+- Do not overwrite unrelated work.
 - Keep commits coherent and bounded.
-- Leave the working tree clean.
-- Do not add private local data to a commit.
+- Do not use `git add -A` on a mixed worktree.
+- Leave the working tree clean except intentional gitignored private data.
 
 ## User interaction
 
 The user prefers:
 
 - autonomous GitHub work;
-- one complete PowerShell block for local actions;
+- one complete PowerShell block for unavoidable local actions;
 - full code without omissions;
 - direct answers;
-- no unnecessary manual steps;
-- explicit verified/observed/planned distinctions.
-
-Do not request broad manual testing before the evidence pipeline reaches the agreed checkpoint. Narrow local capture is acceptable when private data must remain local and the corresponding collector path is already implemented and tested.
+- no repeated requests for already supplied facts;
+- explicit verified/observed/candidate/planned distinctions.
 
 ## Completion report
 
-Every completed task reports:
+Report:
 
-- what was verified;
+- verified facts;
 - local-only observations;
-- outdated or incorrect prior claims;
-- files changed;
-- migrations added;
-- exact commands executed;
-- exact tests and results;
-- CI state;
-- remaining limitations;
+- outdated claims corrected;
+- files/migrations changed;
+- exact checks and CI state;
+- remaining boundaries;
 - next bounded task.
 
 Do not describe scaffolding, parser correctness or schema mapping as confirmed gameplay knowledge.
