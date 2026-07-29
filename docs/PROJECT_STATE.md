@@ -56,7 +56,7 @@ Documentation commits after this checkpoint require their own CI verification.
 - scalar-free plain-text mapping summary;
 - versioned public-report mapping contract;
 - exact public-report raw-archive selector validation;
-- verified public-report discovery mapping for seven reviewed scalar fields.
+- completed verified public-report production gate for seven reviewed scalar fields.
 
 ## Trust boundary
 
