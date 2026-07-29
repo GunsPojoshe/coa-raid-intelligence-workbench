@@ -37,6 +37,14 @@ from .raw_archive import (
     sanitize_url,
     schema_fingerprint,
 )
+from .report_discovery import (
+    REPORT_DISCOVERY_DEFAULT_LIMIT,
+    REPORT_DISCOVERY_MAX_LIMIT,
+    REPORTS_PUBLIC_ROUTE,
+    ReportDiscoveryCapture,
+    capture_public_report_discovery,
+    report_discovery_capture_to_dict,
+)
 from .route_discovery import discover_api_route_candidates
 from .source_registry import (
     SourceRegistry,
@@ -60,8 +68,12 @@ __all__ = [
     "FETCH_CONTEXT_PROFILE_VERSION",
     "HttpRequestProfile",
     "ProbeResult",
+    "REPORTS_PUBLIC_ROUTE",
+    "REPORT_DISCOVERY_DEFAULT_LIMIT",
+    "REPORT_DISCOVERY_MAX_LIMIT",
     "RawArchive",
     "RawCapture",
+    "ReportDiscoveryCapture",
     "SameOriginHttpSession",
     "SourceRegistry",
     "SourceRoute",
@@ -75,6 +87,7 @@ __all__ = [
     "capture_armory_endpoints_progressively",
     "capture_asset_with_archive_fallback",
     "capture_character_build_pages",
+    "capture_public_report_discovery",
     "capture_to_dict",
     "discover_api_route_candidates",
     "inspect_archived_payload",
@@ -83,6 +96,7 @@ __all__ = [
     "probe_registry_route",
     "probe_result_to_dict",
     "read_response_resilient",
+    "report_discovery_capture_to_dict",
     "request_key_from_url",
     "sanitize_url",
     "schema_fingerprint",
