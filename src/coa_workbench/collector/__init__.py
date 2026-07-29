@@ -45,6 +45,7 @@ from .report_discovery import (
     capture_public_report_discovery,
     report_discovery_capture_to_dict,
 )
+from .report_discovery_mapping_review import build_report_discovery_mapping_review
 from .report_discovery_review import review_report_discovery_capture
 from .route_discovery import discover_api_route_candidates
 from .source_registry import (
@@ -83,6 +84,7 @@ __all__ = [
     "build_armory_url",
     "build_character_url",
     "build_page_capture_to_dict",
+    "build_report_discovery_mapping_review",
     "capture_armory_api",
     "capture_armory_endpoint",
     "capture_armory_endpoints_progressively",
