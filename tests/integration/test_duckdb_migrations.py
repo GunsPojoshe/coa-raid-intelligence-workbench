@@ -18,6 +18,7 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         "0004_raw_capture_archive",
         "0005_canonical_normalization",
         "0006_aura_interval_provenance",
+        "0007_selected_parser_persistence",
     ]
     assert apply_migrations(database, root / "migrations") == []
     with duckdb.connect(str(database)) as connection:
@@ -42,6 +43,14 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
             row[0]
             for row in connection.execute("DESCRIBE aura_state_interval").fetchall()
         }
+        persistence_run_columns = {
+            row[0]
+            for row in connection.execute("DESCRIBE parser_slice_persistence_run").fetchall()
+        }
+        entity_observation_columns = {
+            row[0]
+            for row in connection.execute("DESCRIBE canonical_entity_observation").fetchall()
+        }
     assert {"source_endpoint", "raw_object", "raid_plan", "raid_slot", "job"} <= tables
     assert {
         "observation_batch",
@@ -57,6 +66,8 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         "normalization_mapping",
         "normalization_run",
         "normalization_reject",
+        "parser_slice_persistence_run",
+        "canonical_entity_observation",
     } <= tables
     assert "plan_name" in raid_plan_columns
     assert {"player_name", "class_code", "spec_code", "role"} <= raid_slot_columns
@@ -75,3 +86,21 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         "state_status",
         "metadata_json",
     } <= interval_columns
+    assert {
+        "persistence_run_id",
+        "reconstruction_sha256",
+        "reconstruction_version",
+        "persisted_counts_json",
+        "source_batch_hashes_json",
+    } <= persistence_run_columns
+    assert {
+        "observation_id",
+        "persistence_run_id",
+        "entity_type",
+        "entity_key",
+        "entity_hash",
+        "source_batch_ids_json",
+        "provenance_type",
+        "trust_status",
+        "entity_json",
+    } <= entity_observation_columns
