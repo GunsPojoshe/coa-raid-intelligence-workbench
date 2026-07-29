@@ -1,30 +1,46 @@
 # Real-data evidence checkpoint
 
-This directory contains versioned, scalar-free receipts that make the observed CoA Logs pipeline reproducible without committing private payload contents.
+Дата актуализации: **2026-07-30**.
 
-## Versioned here
+Этот каталог содержит versioned scalar-free receipts и описание trust boundary для real CoA Logs pipeline. Он делает результат проверяемым без публикации private payload contents.
 
-- parser and extraction stage receipts that contain hashes, counts, route shapes and boolean integrity gates;
-- reviewed mapping contracts and source/schema fingerprints;
-- documentation of the current trust and promotion boundary.
+## Versioned artifacts
 
-## Local only
+```text
+observed-combatants-info-candidate-extraction.json
+```
 
-The following directories may contain source-derived names, GUIDs, talents, gear, report identifiers, reconstructed entities or a local DuckDB warehouse. They are intentionally ignored by Git:
+Receipt содержит:
 
-- `data/raw/`
-- `data/warehouse/`
-- `data/normalized/`
-- `data/reconstructed/`
-- `data/extracted/`
-- `data/exchange/in/`
-- `data/exchange/out/`
+- exact source payload hash и schema fingerprint;
+- source/design filenames;
+- private extraction filename и SHA-256;
+- counts по каждому design unit;
+- boolean integrity gates;
+- decision boundary;
+- отсутствие source scalar values в receipt.
 
-Never commit HAR files, cookies, tokens, browser profiles, `.env` files, DuckDB files or raw response bodies.
+## Local-only artifacts
 
-## Current observed report slice
+Следующие каталоги могут содержать names, GUIDs, talents, gear, report/encounter identifiers, normalized entities или DuckDB:
 
-Observed route shapes:
+```text
+data/raw/
+data/warehouse/
+data/normalized/
+data/reconstructed/
+data/extracted/
+data/exchange/in/
+data/exchange/out/
+```
+
+Они gitignored. Полный локальный контекст разрешено использовать для анализа, но Git по умолчанию хранит только минимальный воспроизводимый evidence layer.
+
+Never commit credentials, cookies, tokens, Authorization headers, browser profiles, `.env` secrets or unsanitized HAR.
+
+## Observed report slice
+
+Routes:
 
 ```text
 /api/reports/{template}
@@ -32,7 +48,7 @@ Observed route shapes:
 /api/reports/{template}/encounters/{template}/combatants-info
 ```
 
-Exact payload bindings:
+Bindings:
 
 ```text
 report_detail
@@ -48,18 +64,102 @@ payload:     45672e0f0ff9eb461c575bdd38385795daa6326378bc3f8ad51474276140dc14
 fingerprint: 41d6d15422c668f83d2ccae1ec0ff2969671861f9e43b21cb371578961c5f8ff
 ```
 
-## Current combatants-info boundary
+## Completed report/encounter evidence chain
 
-The candidate extractor validates exact archive, observation manifest, route context, persisted report/encounter references, stable actor IDs, actor names, selected field types and record hashes.
+```text
+published mappings: 2
+field contracts:    54
 
-The current exact payload produced:
+normalized:
+  reports:       2
+  encounters:   15
+  actors:       31
+  participants: 31
+  aura_events:   0
+  rejects:       0
+
+reconstructed:
+  reports:       1
+  encounters:   14
+  actors:       31
+  participants: 31
+  aura_events:   0
+  rejects:       0
+  field conflicts: 0
+
+persisted:
+  canonical entity observations: 77
+  transaction committed: true
+```
+
+The full normalized/reconstructed records and DuckDB are private local artifacts.
+
+## Combatants-info evidence chain
+
+```text
+deep review:
+  scope candidates: 12
+  present scopes:   10
+  direct fields:    56
+
+field selection:
+  groups:            8
+  selected fields:  37
+  deferred fields:  19
+
+mapping design:
+  dedicated units:   6
+  core mutations:    forbidden
+```
+
+Exact candidate extraction:
 
 ```text
 source matches:       1350
 output observations:  1343
 deduplicated matches: 7
 linked actors:        11
+actor name matches:   11
 integrity checks:     12/12
+core mutations:       0
 ```
 
-This verifies parser linkage for the exact payload only. It does not verify companion-addon provenance, nested collection semantics, gameplay mechanics or planner scoring. Automatic persistence, promotion and core entity mutation remain disabled.
+Per design unit:
+
+```text
+actor enrichment:       11
+instance context:         4
+talent container:        11
+classless talent rank:  564
+hero build entry:       564
+gear slot:              189
+```
+
+## Trust boundary
+
+Verified for this exact payload:
+
+- archive and observation manifest;
+- route context;
+- persisted report/encounter references;
+- stable actor IDs;
+- exact existing actor names;
+- selected field types;
+- source counts;
+- record hashes;
+- no core mutation.
+
+Not verified:
+
+- companion-addon provenance;
+- nested collection semantics;
+- global uniqueness of nested IDs;
+- gameplay meaning of talents/gear;
+- automatic persistence or promotion;
+- canonical build snapshot projection;
+- mechanic semantics;
+- planner scoring.
+
+## Next evidence artifact
+
+The next versioned artifact should be a scalar-free manual promotion/persistence receipt for the six immutable combatants observation types. It must reference the exact private extraction SHA-256 and preserve all current semantic boundaries.
