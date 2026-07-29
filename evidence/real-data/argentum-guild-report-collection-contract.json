@@ -1,0 +1,140 @@
+{
+  "collection_phases": [
+    {
+      "code": "pagination_evidence",
+      "phase": 1,
+      "status": "ready_for_bounded_capture"
+    },
+    {
+      "code": "guild_identity_binding",
+      "phase": 2,
+      "status": "blocked"
+    },
+    {
+      "code": "guild_report_manifest",
+      "phase": 3,
+      "status": "blocked"
+    },
+    {
+      "code": "per_report_evidence_capture",
+      "phase": 4,
+      "status": "blocked"
+    },
+    {
+      "code": "multi_report_character_graph",
+      "phase": 5,
+      "status": "blocked"
+    },
+    {
+      "code": "performance_and_global_benchmark",
+      "phase": 6,
+      "status": "blocked"
+    },
+    {
+      "code": "bis25_roster_optimization",
+      "phase": 7,
+      "status": "blocked"
+    }
+  ],
+  "contract_kind": "guild_wide_report_collection_contract",
+  "contract_version": "guild-report-collection-contract-v1",
+  "decision_boundary": {
+    "automatic_network_collection": false,
+    "contains_source_scalar_values": false,
+    "planner_scoring_allowed": false,
+    "ready_for_bis25_scoring": false,
+    "ready_for_bounded_pagination_capture": true,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_global_benchmark": false,
+    "ready_for_guild_filtering": false,
+    "ready_for_multi_report_character_graph": false,
+    "ready_for_performance_model": false,
+    "status": "collection_contract_only"
+  },
+  "generated_at": "2026-07-29T23:46:08.387781Z",
+  "required_evidence_gates": {
+    "cross_report_character_identity": {
+      "requirements": [
+        "verify_stable_source_actor_or_character_identifiers_across_reports",
+        "record_aliases_without_using_nickname_as_the_primary_identity",
+        "detect_collisions_splits_and_renames_before_aggregation"
+      ],
+      "status": "single_payload_only"
+    },
+    "guild_identity": {
+      "requirements": [
+        "observe_a_non_null_guild_identifier_or_an_independent_guild_identity_route",
+        "bind_the_observed_source_identity_to_the_operator_label",
+        "reject_title_uploader_and_nickname_heuristics_as_guild_identity"
+      ],
+      "status": "unresolved"
+    },
+    "pagination": {
+      "requirements": [
+        "capture_multiple_consecutive_pages_with_the_same_observed_query_shape",
+        "review_exact_pagination_object_fields_without_guessing_names_or_meanings",
+        "prove_a_deterministic_termination_condition",
+        "verify_cross_page_source_report_id_deduplication",
+        "verify_limit_behavior_before_raising_the_current_limit_of_5"
+      ],
+      "status": "unverified"
+    },
+    "performance_and_benchmark": {
+      "requirements": [
+        "collect_versioned_encounter_performance_observations",
+        "define_comparable_boss_difficulty_role_and_time_cohorts",
+        "build_global_distributions_before_assigning_player_scores",
+        "separate_player_strength_consistency_and_raid_composition_utility"
+      ],
+      "status": "not_started"
+    }
+  },
+  "schema_version": 1,
+  "summary": {
+    "blocked_phase_count": 6,
+    "collection_phase_count": 7,
+    "contains_source_scalar_values": false,
+    "current_exact_payload_actor_count": 11,
+    "deferred_discovery_scope_count": 5,
+    "final_roster_size": 25,
+    "minimum_candidate_character_count": 30,
+    "open_phase_count": 1,
+    "persisted_actor_build_observation_count": 1339,
+    "persisted_parser_observation_count": 1343,
+    "preferred_candidate_character_count": 40,
+    "ready_for_bis25_scoring": false,
+    "ready_for_bounded_pagination_capture": true,
+    "ready_for_full_guild_crawl": false,
+    "verified_discovery_field_count": 7
+  },
+  "target": {
+    "final_roster_size": 25,
+    "guild_identity_status": "operator_named_target_unresolved",
+    "guild_label": "Argentum",
+    "minimum_candidate_characters": 30,
+    "preferred_candidate_characters": 40,
+    "verified_source_guild_id": false,
+    "verified_source_guild_name": false
+  },
+  "verified_foundation": {
+    "combatants_persistence_run_id": "6d969c852a72077e0329224f41bcae9114c4e863a422e2cb4f5c5ab816a188e3",
+    "exact_payload_linked_actors": 11,
+    "persisted_actor_build_observations": 1339,
+    "persisted_parser_observations": 1343,
+    "report_discovery_mapping_id": "coa-public-report-discovery-v1",
+    "report_discovery_reviewed_payload_hash": "2203e52709fad4fbc8d5235bc3699abeec6b85cf1e13b9df3e24091ddf8775c2",
+    "report_discovery_route": "/api/reports/public",
+    "report_discovery_schema_fingerprint": "4f47885820e6931cd76db538cabd68405b4969778c1bede9dee53a7f1e005ed4",
+    "reviewed_discovery_page_count": 1,
+    "reviewed_discovery_record_count": 5,
+    "verified_discovery_fields": [
+      "source_report_id",
+      "title",
+      "created_at",
+      "start_time",
+      "end_time",
+      "visibility",
+      "uploader_username"
+    ]
+  }
+}
