@@ -16,9 +16,9 @@ main
 Latest verified code checkpoint before this documentation update:
 
 ```text
-commit: a1517d44f3024efcb237f1f47ca775de1fee1c33
+commit: dea32e612a68f9d073338a4761cbbe8d5154138c
 workflow: Verify repository
-run: #133
+run: #147
 conclusion: success
 Ubuntu: success
 Windows: success
@@ -51,7 +51,9 @@ Documentation commits follow that checkpoint. Не считать HEAD и CI sta
 - structural review and mapping-review packet schema v2;
 - raw-archive selector validation;
 - verified Armory character and talent-grid mappings;
-- one-page bounded public-report discovery collector and CLI.
+- one-page bounded public-report discovery collector;
+- exact report-discovery archive structural review;
+- full-root scalar-free report mapping-review tooling.
 
 ## Trust boundary
 
@@ -193,54 +195,85 @@ coa-armory-talent-grid-v1
 
 Any new payload hash or fingerprint requires a new review decision.
 
-## Bounded report discovery scaffold
+## Real bounded report discovery
+
+Observed request:
+
+```text
+GET /api/reports/public
+page=1
+limit=5
+sortBy=created_at
+sortOrder=desc
+```
+
+Exact immutable capture:
+
+```text
+HTTP: 200
+content type: application/json
+payload hash: 2203e52709fad4fbc8d5235bc3699abeec6b85cf1e13b9df3e24091ddf8775c2
+schema fingerprint: 4f47885820e6931cd76db538cabd68405b4969778c1bede9dee53a7f1e005ed4
+duplicate payload: false
+duplicate observation: false
+candidate collections: 6
+```
+
+Structural review result:
+
+```text
+schema_version: 1
+review_kind: report_discovery_structural_review
+archive_verified: 1
+all archive comparisons: true
+category_semantics_verified: false
+pagination_policy_verified: false
+```
+
+Verified comparisons:
+
+```text
+bytes_uncompressed=true
+content_type=true
+http_status=true
+payload_hash=true
+schema_fingerprint=true
+top_level_keys=true
+top_level_kind=true
+```
 
 Implemented files:
 
 ```text
 src/coa_workbench/collector/report_discovery.py
+src/coa_workbench/collector/report_discovery_review.py
+src/coa_workbench/collector/report_discovery_mapping_review.py
 scripts/capture_report_discovery.py
+scripts/review_report_discovery.py
+scripts/build_report_discovery_mapping_review.py
 tests/unit/test_report_discovery.py
+tests/unit/test_report_discovery_review.py
+tests/unit/test_report_discovery_mapping_review.py
 ```
 
-The collector is deliberately limited to the observed request shape:
+The mapping-review builder profiles the full JSON root and emits only paths, observed JSON types, required/observed object keys, array lengths/item types, numeric-map counts and reproducibility identifiers. It does not emit report IDs, names, timestamps or other source scalar values. Its output remains `candidate` until manual review and raw-selector validation.
 
-```text
-GET /api/reports/public
-page=<explicit integer >= 1>
-limit=<1..5, default 5>
-sortBy=created_at
-sortOrder=desc
-```
+Still unverified:
 
-Verified in code/tests:
-
-- one explicitly requested page per invocation;
-- hard maximum request limit of five source records;
-- exact observed sort keys only;
-- response archived before JSON interpretation;
-- invalid JSON remains archived but the result is incomplete;
-- transport failure does not create a false raw capture;
-- compact output contains hashes, fingerprint and top-level shape only;
-- compact output does not expose report IDs, names or other source scalar values;
-- request header values and cookies are not persisted.
-
-Not yet verified from a real report-discovery response:
-
-- top-level response shape and field paths;
-- actual number of returned records;
-- whether the endpoint respects the requested limit;
-- meaning of any source category/filter fields;
+- actual number of source report records in the response;
+- whether the endpoint consistently respects the requested limit;
+- which candidate collection is the canonical report list;
+- meaning of source category/filter fields;
 - whether additional pages exist;
-- source pagination metadata or stopping rules;
+- source pagination metadata and stopping rules;
 - deterministic cross-page/category selection.
 
 `local_category` is only a local label. It must not be treated as a source-supported category.
 
 ## Current blockers
 
-1. One real `/api/reports/public` page has not yet been captured with the new bounded collector.
-2. Report response shape has not been reviewed against an immutable archive.
+1. The exact report mapping-review packet has not yet been generated and reviewed locally.
+2. Candidate selectors and a versioned report mapping do not yet exist.
 3. Source category/filter semantics and pagination policy remain unverified.
 4. A complete report/encounter/roster slice is not normalized.
 5. Evidence coverage remains narrow.
@@ -249,13 +282,13 @@ Not yet verified from a real report-discovery response:
 
 ## Next bounded tasks
 
-1. Run one local bounded capture with `page=1`, `limit=5`, `sortBy=created_at`, `sortOrder=desc`.
-2. Review only the compact output and archive identifiers; do not print or commit the raw response.
-3. Build a scalar-free structural review for the captured response.
-4. Confirm response shape before defining report selectors or mappings.
-5. Investigate filters/categories/pagination only from additional explicit observations.
-6. Select and normalize one complete report/encounter/roster slice after reviewed mappings exist.
-7. Expand supporting and contradicting evidence.
+1. Generate the scalar-free mapping-review packet for payload hash `2203e527...`.
+2. Review field paths, required keys, nullable fields and the six candidate collections without printing source scalars.
+3. Select candidate report selectors only from the reviewed packet.
+4. Add a candidate versioned mapping and exact raw-archive selector validation.
+5. Investigate filters/categories/pagination only through separate explicit observations.
+6. Promote a report mapping only after exact archive validation and manual review.
+7. Select and normalize one complete report/encounter/roster slice after a verified mapping exists.
 
 ## Completion gate
 
