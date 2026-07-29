@@ -285,7 +285,7 @@ uv run --no-sync python scripts/capture_report_discovery.py `
 The command:
 
 1. makes one request only;
-2. rejects `limit` greater than five;
+2. rejects a requested `limit` greater than five;
 3. rejects unobserved sort values;
 4. archives the complete body before interpretation;
 5. records payload hash and schema fingerprint;
@@ -300,7 +300,8 @@ The command:
 Do not claim before real observations:
 
 - response field names or selectors;
-- number of returned reports;
+- actual number of returned reports;
+- whether the endpoint respects the requested limit;
 - source category/filter semantics;
 - presence or meaning of pagination metadata;
 - availability of additional pages;
@@ -365,7 +366,7 @@ The import/inventory must:
 /api/reports/public one-page observation
 -> scalar-free structural review
 -> verified filters and pagination
--> deterministic bounded selection, maximum 5 reports/category
+-> deterministic bounded selection, maximum requested limit 5 per reviewed category
 -> encounter discovery
 -> selected analytical endpoints
 -> immutable archive
