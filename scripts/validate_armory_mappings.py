@@ -17,7 +17,7 @@ def _arguments() -> argparse.Namespace:
         description=(
             "Validate candidate Armory mapping contracts against a safe review packet "
             "and the exact immutable raw archives."
-        )
+        ),
     )
     parser.add_argument(
         "--review",
