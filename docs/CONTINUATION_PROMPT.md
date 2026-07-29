@@ -28,7 +28,7 @@
 
 Старые HEAD, commit counts, test counts и CI status не считать вечными.
 
-## Репозиторий и branch chain
+## Branch chain
 
 ```text
 main
@@ -36,11 +36,13 @@ main
     └── e3/real-log-capture         PR #7 -> e2, Draft
 ```
 
-На момент handoff:
+Latest verified code checkpoint before documentation refresh:
 
 ```text
-HEAD: 3f8789c7becfc02fcb3c65e6aafbe72656c4e275
-Verify repository run #118: success
+HEAD: 0190937d6ba9364ef88ad03e164964fd18415ba7
+Verify repository run #126: success
+Ubuntu: success
+Windows: success
 ```
 
 Фактический HEAD и CI всегда перепроверить.
@@ -87,11 +89,13 @@ Combat-log event является observation, а не автоматическ�
 
 Normalization разрешена только при:
 
-- immutable archived payload;
-- exact fingerprint;
-- reviewed mapping;
-- mapping status `verified`;
-- matching fingerprint.
+```text
+immutable archived payload
++ exact fingerprint
++ reviewed mapping
++ mapping status verified
++ matching payload hash/fingerprint
+```
 
 В planner scoring допускаются только:
 
@@ -169,12 +173,12 @@ local repo under C:\Users\<USER>\source\repos\...
 - versioned HTTP profile `coa-fetch-context-v1`;
 - endpoint-isolated progressive/resumable Armory capture;
 - structural and mapping-review packets;
-- candidate Armory mapping contracts;
-- raw-archive selector validation gate.
+- raw-archive selector validation gate;
+- verified Armory character and talent-grid mappings.
 
 ## Real aura checkpoint
 
-Report `2987`, spell `968746`:
+Report `2987`, spell `968746`.
 
 ### Encounter 64795
 
@@ -229,24 +233,18 @@ hash: 11be25407ec00898547c1b7f342d4596268b3164df9fe0f120bb911559cc5206
 fingerprint: 7e3b3bfc3966ddc5d0160c8d466e5ba92edbe55440449619d7204102a25b3240
 ```
 
-## Mapping review state
-
-Review packet schema `2`:
-
-```text
-archive_verified: 2
-field_path_count: 470
-node_occurrence_count: 6106
-numeric_map_path_count: 4
-contains_source_scalar_values: false
-ready_for_manual_mapping_review: true
-```
-
-Candidate mappings:
+## Verified Armory mappings
 
 ```text
 config/mappings/coa_armory_character_v1.json
 config/mappings/coa_armory_talent_grid_v1.json
+```
+
+Reviewer metadata:
+
+```text
+reviewed_by: GunsPojoshe (operator), OpenAI-assisted review
+reviewed_at: 2026-07-29T15:34:00+03:00
 ```
 
 Review document:
@@ -255,82 +253,40 @@ Review document:
 docs/ARMORY_MAPPING_REVIEW_V1.md
 ```
 
-Review corrections:
+Verified boundaries:
 
-- `cao_id` retained as `source_cao_id`;
-- `bisbeard_tree` retained as `source_bisbeard_tree`;
-- talent records preserve parent tree;
-- connections preserve source talent/tree;
-- rank texts preserve source talent/tree;
-- empty `lock_rules` and `rank_spell_ids` item schemas remain deferred.
+- exact reviewed hashes and fingerprints only;
+- character selectors: 19 singleton values, 328 extracted values;
+- talent-grid selectors: 2 singleton values, 2955 extracted values;
+- route templates matched after absolute URL path normalization;
+- parent tree/talent relations retained through ancestor selectors.
 
-Mappings are still `candidate` and blocked from production.
+Deferred:
 
-## Raw-archive validation gate
+- character detailed gear;
+- hero build numeric map;
+- nested character talent presentation trees;
+- `_gearOnly`, derived/raw stat internals and `sourcesByStat`;
+- talent `lock_rules` and `rank_spell_ids` item schemas.
 
-`scripts/validate_armory_mappings.py` now validates:
-
-1. safe type-only review packet;
-2. structural manifest against exact gzip archives;
-3. payload hash;
-4. schema fingerprint;
-5. route template;
-6. singleton selector extraction;
-7. collection occurrence counts;
-8. `@item`, `@index`, `@ancestor[n]` selectors;
-9. required field presence and JSON types.
-
-Unit coverage verifies selector execution and controlled rejection of drift.
-
-Repository CI:
-
-```text
-96 passed, 1 warning
-Ubuntu verifier: success
-Windows pytest/doctor/DuckDB initialization: success
-```
-
-The real private archives have not yet been run through the new raw selector gate.
+Verified mappings do not prove gameplay mechanics.
 
 ## Первая задача нового агента
 
-1. Проверить latest HEAD and CI.
-2. Попросить пользователя выполнить один local PowerShell block:
+Перейти к **bounded report discovery**.
 
-```powershell
-Set-StrictMode -Version Latest
-$ErrorActionPreference = "Stop"
+Порядок:
 
-Set-Location "C:\Users\<USER>\source\repos\coa-raid-intelligence-workbench"
+1. Проверить latest HEAD, PR #7 и CI.
+2. Инвентаризировать существующий report discovery code, tests и frontend observations.
+3. Не придумывать filters, category semantics или pagination.
+4. Зафиксировать только подтверждённые routes/parameters/response shapes.
+5. Реализовать default limit не более 5 reports per category.
+6. Сохранить deterministic ordering и bounded pagination behavior.
+7. Добавить unit tests и safe compact validation output без raw scalar leakage.
+8. Не начинать full event-stream capture, пока compact report/encounter endpoints достаточны.
 
-git fetch origin
-git switch e3/real-log-capture
-git pull --ff-only origin e3/real-log-capture
-
-uv run --no-sync python scripts/validate_armory_mappings.py `
-    --review "data\exchange\out\armory-mapping-review-v2.json" `
-    --manifest "data\exchange\out\armory-endpoint-capture.json" `
-    --raw-root "data\raw" `
-    --output "data\exchange\out\armory-mapping-validation.json"
-
-Get-Content "data\exchange\out\armory-mapping-validation.json" -Raw
-```
-
-3. Проверить ожидаемое:
-
-```text
-schema_version: 2
-all_structurally_consistent: true
-all_raw_archives_consistent: true
-all_production_ready: false
-mapping_count: 2
-```
-
-4. Не переводить mappings в `verified`, пока реальный raw result не проверен.
-5. После successful raw validation выполнить отдельный explicit promotion change с `reviewed_by` и `reviewed_at`.
-6. Затем перейти к bounded report discovery.
-
-## Дальнейший план
+Целевой следующий pipeline:
 
 ```text
 verified Armory mappings
@@ -345,8 +301,6 @@ verified Armory mappings
 -> evidence expansion
 -> planner integration
 ```
-
-Full event stream использовать только для hypotheses, которые нельзя проверить compact endpoints.
 
 ## Completion gate
 
