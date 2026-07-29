@@ -16,9 +16,9 @@ main
 Latest verified code checkpoint before this documentation update:
 
 ```text
-commit: dea32e612a68f9d073338a4761cbbe8d5154138c
+commit: 939679b44b738c459bf40b16206c00a51b8c7de9
 workflow: Verify repository
-run: #147
+run: #152
 conclusion: success
 Ubuntu: success
 Windows: success
@@ -53,7 +53,8 @@ Documentation commits follow that checkpoint. Не считать HEAD и CI sta
 - verified Armory character and talent-grid mappings;
 - one-page bounded public-report discovery collector;
 - exact report-discovery archive structural review;
-- full-root scalar-free report mapping-review tooling.
+- full-root scalar-free report mapping-review tooling;
+- PowerShell-safe scalar-free report mapping summary tooling.
 
 ## Trust boundary
 
@@ -216,6 +217,7 @@ payload hash: 2203e52709fad4fbc8d5235bc3699abeec6b85cf1e13b9df3e24091ddf8775c2
 schema fingerprint: 4f47885820e6931cd76db538cabd68405b4969778c1bede9dee53a7f1e005ed4
 duplicate payload: false
 duplicate observation: false
+top-level keys: pagination, reports, success
 candidate collections: 6
 ```
 
@@ -242,27 +244,61 @@ top_level_keys=true
 top_level_kind=true
 ```
 
+Exact scalar-free mapping review:
+
+```text
+schema_version: 1
+review_kind: report_discovery_mapping_review
+node_occurrence_count: 84
+numeric_map_path_count: 0
+candidate_collection_count: 6
+contains_source_scalar_values: false
+ready_for_manual_mapping_review: true
+```
+
+Candidate collection review established:
+
+```text
+/reports
+  item_count: 5
+  object_item_count: 5
+  report score: 0.6
+  matched hints: created_at, start_time, title
+  observed keys:
+    created_at, end_time, guild_id, guild_name, highest_difficulty,
+    id, locations, start_time, title, uploader_username, visibility
+
+/reports/0/locations ... /reports/4/locations
+  item_count: 1 each
+  object_item_count: 0
+  entity scores: 0
+```
+
+Therefore `/reports` is the only report-like collection in this exact payload and `/reports/*` is the bounded candidate item selector. This remains a structural candidate, not a verified source semantic contract. The five returned objects prove only that this single response matched the requested `limit=5`; consistent limit enforcement is not yet established.
+
 Implemented files:
 
 ```text
 src/coa_workbench/collector/report_discovery.py
 src/coa_workbench/collector/report_discovery_review.py
 src/coa_workbench/collector/report_discovery_mapping_review.py
+src/coa_workbench/collector/report_discovery_mapping_summary.py
 scripts/capture_report_discovery.py
 scripts/review_report_discovery.py
 scripts/build_report_discovery_mapping_review.py
+scripts/summarize_report_discovery_mapping_review.py
 tests/unit/test_report_discovery.py
 tests/unit/test_report_discovery_review.py
 tests/unit/test_report_discovery_mapping_review.py
+tests/unit/test_report_discovery_mapping_summary.py
 ```
 
-The mapping-review builder profiles the full JSON root and emits only paths, observed JSON types, required/observed object keys, array lengths/item types, numeric-map counts and reproducibility identifiers. It does not emit report IDs, names, timestamps or other source scalar values. Its output remains `candidate` until manual review and raw-selector validation.
+The mapping-review and mapping-summary outputs contain paths, observed JSON types, required/observed object keys, array lengths/item types, numeric-map counts and reproducibility identifiers only. They do not emit report IDs, names, timestamps or other source scalar values.
 
 Still unverified:
 
-- actual number of source report records in the response;
-- whether the endpoint consistently respects the requested limit;
-- which candidate collection is the canonical report list;
+- exact direct-field type and nullable decisions until the safe summary is run locally;
+- consistent enforcement of the requested limit across observations;
 - meaning of source category/filter fields;
 - whether additional pages exist;
 - source pagination metadata and stopping rules;
@@ -272,8 +308,8 @@ Still unverified:
 
 ## Current blockers
 
-1. The exact report mapping-review packet has not yet been generated and reviewed locally.
-2. Candidate selectors and a versioned report mapping do not yet exist.
+1. The PowerShell-safe mapping summary must be generated for the exact private review files.
+2. A candidate versioned report mapping and exact raw-selector validation do not yet exist.
 3. Source category/filter semantics and pagination policy remain unverified.
 4. A complete report/encounter/roster slice is not normalized.
 5. Evidence coverage remains narrow.
@@ -282,10 +318,10 @@ Still unverified:
 
 ## Next bounded tasks
 
-1. Generate the scalar-free mapping-review packet for payload hash `2203e527...`.
-2. Review field paths, required keys, nullable fields and the six candidate collections without printing source scalars.
-3. Select candidate report selectors only from the reviewed packet.
-4. Add a candidate versioned mapping and exact raw-archive selector validation.
+1. Generate the scalar-free report mapping summary for payload hash `2203e527...`.
+2. Review direct report field types, required keys, nullable paths and array item types.
+3. Add a candidate versioned mapping for `/reports/*` with exact hash/fingerprint provenance.
+4. Add exact raw-archive selector validation; keep status `candidate` until manual review.
 5. Investigate filters/categories/pagination only through separate explicit observations.
 6. Promote a report mapping only after exact archive validation and manual review.
 7. Select and normalize one complete report/encounter/roster slice after a verified mapping exists.
