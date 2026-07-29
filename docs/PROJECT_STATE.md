@@ -16,9 +16,9 @@ main
 Latest verified code checkpoint before this documentation update:
 
 ```text
-commit: 37f24b12512b7486c857e9fe5199bf10a60cd777
+commit: 322b98e4c18da1ff870eca945591ff36ec8012bb
 workflow: Verify repository
-run: #213
+run: #219
 conclusion: success
 Ubuntu: success
 Windows: success
@@ -57,8 +57,9 @@ This documentation commit requires its own CI verification.
 - archive-only SPA API route inventory;
 - inventory-gated observed report-slice capture;
 - exact offline structural review for report detail, encounter detail and combatants info;
-- completed scalar-free full-root report-slice mapping review;
-- wildcarded candidate-path aggregation and manual scope-selection summary tooling.
+- scalar-free full-root report-slice mapping review;
+- wildcarded scalar-free report-slice mapping summary;
+- explicit direct-field scope-review tooling.
 
 ## Trust boundary
 
@@ -203,7 +204,7 @@ Observed route shapes selected for the bounded slice:
 /api/reports/{template}/encounters/{template}/combatants-info
 ```
 
-No separate `/roster` route was observed. `combatants-info` remains only a roster-adjacent candidate until reviewed mappings establish usable fields.
+No separate `/roster` route was observed. `combatants-info` remains only a roster-adjacent candidate until mapping review establishes usable fields.
 
 ## Observed report-slice capture
 
@@ -264,9 +265,17 @@ semantic_verification_required: true
 normalization_allowed: false
 ```
 
-All three endpoint kinds were present exactly once. The structural review revalidated each payload hash, schema fingerprint, uncompressed byte count, HTTP status, content type, top-level kind and top-level keys directly against the immutable archives.
+All three endpoint kinds were present exactly once:
 
-## Completed report-slice mapping review
+```text
+report_detail
+encounter_detail
+combatants_info
+```
+
+The structural review revalidated each payload hash, schema fingerprint, uncompressed byte count, HTTP status, content type, top-level kind and top-level keys directly against the immutable archives.
+
+## Completed report-slice mapping-review gate
 
 User-local scalar-free full-root mapping review:
 
@@ -297,31 +306,68 @@ encounter_detail: field paths 126, nodes 34987, candidate collections 533
 combatants_info: field paths 682, nodes 34856, candidate collections 917
 ```
 
-All endpoints remain `review_status: candidate`. No endpoint is production-ready and no normalization is enabled.
+All three endpoints remain `review_status: candidate`.
 
-## Mapping scope-selection summary readiness
+## Completed wildcarded mapping-summary gate
+
+User-local scalar-free mapping summary:
+
+```text
+schema_version: 1
+summary_kind: observed_report_slice_mapping_summary
+endpoint_count: 3
+field_path_count: 860
+node_occurrence_count: 70011
+source_candidate_collection_count: 1452
+aggregated_candidate_path_count: 73
+shortlist_row_count: 22
+all_archives_consistent: true
+contains_source_scalar_values: false
+semantic_verification_required: true
+normalization_allowed: false
+ready_for_manual_scope_selection: true
+automatic_scope_selection: false
+can_promote: false
+```
+
+Per endpoint:
+
+```text
+report_detail: aggregated paths 2, shortlist rows 3
+encounter_detail: aggregated paths 8, shortlist rows 8
+combatants_info: aggregated paths 63, shortlist rows 11
+```
+
+The candidate scores are navigation hints only. They do not select scopes, establish roster semantics or authorize mapping promotion.
+
+## Explicit scope-review readiness
 
 Implemented:
 
 ```text
-src/coa_workbench/collector/report_slice_mapping_summary.py
-scripts/summarize_observed_report_slice_mapping_review.py
-tests/unit/test_report_slice_mapping_summary.py
+src/coa_workbench/collector/report_slice_scope_review.py
+scripts/review_observed_report_slice_scopes.py
+tests/unit/test_report_slice_scope_review.py
 ```
 
-The summary:
+The bounded packet reviews direct fields under these observed structural roots:
 
-- validates mapping and structural reviews against each other;
-- aggregates sampled numeric-index paths into wildcard paths such as `/combatants/*/...`;
-- preserves candidate counts, observed keys, matched hints and structural scores;
-- emits bounded shortlists for report, encounter, actor and aura-event review;
-- does not automatically select scopes;
-- keeps `can_promote: false` and `normalization_allowed: false`.
+```text
+report_detail: /report
+report_detail: /encounters/*
+encounter_detail: /encounter
+encounter_detail: /character_stats/*
+combatants_info: /combatants/*
+combatants_info: /combatants/*/ci_resolved
+combatants_info: /combatants/*/ci_resolved/specialization
+```
+
+The CLI writes both JSON and a PowerShell-safe UTF-8 text packet. It performs no network requests, automatic scope selection, automatic field selection, promotion or normalization.
 
 ## Current blockers
 
-1. Wildcarded candidate shortlists have not yet been reviewed locally.
-2. Minimal report, encounter and combatants scopes have not been selected.
+1. Direct fields under the seven explicit candidate scopes have not yet been reviewed.
+2. Minimal report, encounter and combatant field sets have not yet been selected.
 3. Exact versioned mappings for the three report-slice endpoints do not exist yet.
 4. A complete report/encounter/participants slice is not normalized.
 5. Evidence coverage remains narrow.
@@ -330,13 +376,13 @@ The summary:
 
 ## Next bounded tasks
 
-1. Build the scalar-free wildcarded mapping summary locally.
-2. Review top-level fields and candidate shortlists without assigning unsupported semantics.
-3. Select minimal report, encounter and combatants scopes for candidate mappings.
-4. Validate mappings against exact payload hashes and schema fingerprints.
-5. Promote mappings manually only after review.
-6. Normalize only after all required mappings are `verified`.
-7. Preserve all deferred public-report scopes until separately observed and reviewed.
+1. Build the explicit scalar-free direct-field scope packet locally.
+2. Review field presence, types, nullability and occurrence coverage.
+3. Select minimal fields without assigning unsupported semantics.
+4. Create exact candidate mappings bound to payload hashes and schema fingerprints.
+5. Validate candidate mappings against exact raw archives.
+6. Promote mappings manually only after review.
+7. Normalize only after all required mappings are `verified`.
 
 ## Completion gate
 
