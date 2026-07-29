@@ -63,10 +63,7 @@ def main() -> int:
     print(f"expected_outer_actor_link_count={summary['expected_outer_actor_link_count']}")
     print(f"deferred_field_count={summary['deferred_field_count']}")
     print(f"missing_optional_scope_count={summary['missing_optional_scope_count']}")
-    print(
-        "candidate_mapping_files_ready="
-        f"{str(summary['candidate_mapping_files_ready']).lower()}"
-    )
+    print(f"candidate_mapping_files_ready={str(summary['candidate_mapping_files_ready']).lower()}")
     print(
         "ready_for_candidate_extractor_implementation="
         f"{str(summary['ready_for_candidate_extractor_implementation']).lower()}"
