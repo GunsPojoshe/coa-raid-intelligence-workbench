@@ -250,7 +250,7 @@ Guarantees:
 
 - one explicitly requested page per invocation;
 - no automatic pagination;
-- hard maximum `limit=5`;
+- hard maximum requested `limit=5`;
 - only observed sort values accepted;
 - raw body archived before interpretation;
 - compact result excludes report IDs, names and source scalar values;
@@ -261,7 +261,8 @@ Guarantees:
 Not yet verified:
 
 - real response top-level shape and field paths;
-- number of returned report records;
+- actual number of returned report records;
+- whether the endpoint respects the requested limit;
 - category/filter semantics;
 - pagination metadata, stopping rules or additional pages.
 
