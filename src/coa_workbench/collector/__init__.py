@@ -67,6 +67,7 @@ from .report_slice_mapping_summary import summarize_observed_report_slice_mappin
 from .report_slice_mapping_validation import (
     validate_observed_report_slice_candidate_mappings,
 )
+from .report_slice_normalization import normalize_observed_report_slice_selected_parser_mappings
 from .report_slice_review import review_observed_report_slice_capture
 from .report_slice_scope_review import build_observed_report_slice_scope_review
 from .route_discovery import discover_api_route_candidates
@@ -130,6 +131,7 @@ __all__ = [
     "inventory_har",
     "load_source_registry",
     "normalize_api_route_shape",
+    "normalize_observed_report_slice_selected_parser_mappings",
     "observed_report_slice_capture_to_dict",
     "probe_registry_route",
     "probe_result_to_dict",
