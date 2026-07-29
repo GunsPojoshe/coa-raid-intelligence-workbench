@@ -4,7 +4,7 @@ import argparse
 import json
 from pathlib import Path
 
-from coa_workbench.collector.combatants_candidate_promotion import (
+from coa_workbench.collector.combatants_candidate_promotion_compat import (
     promote_observed_combatants_info_candidates,
 )
 
