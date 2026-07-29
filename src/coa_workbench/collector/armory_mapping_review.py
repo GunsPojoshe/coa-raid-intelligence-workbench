@@ -11,7 +11,7 @@ from typing import Any
 
 from .armory_structural_review import review_armory_capture_manifest
 
-_MAPPING_REVIEW_SCHEMA_VERSION = 1
+_MAPPING_REVIEW_SCHEMA_VERSION = 2
 _DEFAULT_MAX_NODES = 100_000
 _DEFAULT_SCOPES = {
     "character": ("/success", "/capture", "/ci_resolved", "/stats_summary"),
@@ -65,13 +65,28 @@ def _pointer_get(value: Any, pointer: str) -> Any:
     return current
 
 
+def _object_key_mode(value: dict[Any, Any]) -> str:
+    keys = [str(key) for key in value]
+    if not keys:
+        return "empty"
+    if all(key.isdecimal() for key in keys):
+        return "numeric_map"
+    return "fixed_fields"
+
+
 @dataclass(slots=True)
 class _ShapeAccumulator:
     occurrence_count: int = 0
     type_counts: Counter[str] = field(default_factory=Counter)
-    object_keys: set[str] = field(default_factory=set)
-    required_object_keys: set[str] | None = None
     object_count: int = 0
+    object_key_mode_counts: Counter[str] = field(default_factory=Counter)
+    fixed_object_count: int = 0
+    fixed_object_keys: set[str] = field(default_factory=set)
+    required_fixed_object_keys: set[str] | None = None
+    numeric_map_count: int = 0
+    numeric_map_total_entries: int = 0
+    numeric_map_min_entries: int | None = None
+    numeric_map_max_entries: int | None = None
     array_count: int = 0
     array_total_items: int = 0
     array_min_length: int | None = None
@@ -84,12 +99,30 @@ class _ShapeAccumulator:
         self.type_counts[value_type] += 1
         if isinstance(value, dict):
             keys = {str(key) for key in value}
+            key_mode = _object_key_mode(value)
             self.object_count += 1
-            self.object_keys.update(keys)
-            if self.required_object_keys is None:
-                self.required_object_keys = set(keys)
-            else:
-                self.required_object_keys.intersection_update(keys)
+            self.object_key_mode_counts[key_mode] += 1
+            if key_mode == "fixed_fields":
+                self.fixed_object_count += 1
+                self.fixed_object_keys.update(keys)
+                if self.required_fixed_object_keys is None:
+                    self.required_fixed_object_keys = set(keys)
+                else:
+                    self.required_fixed_object_keys.intersection_update(keys)
+            elif key_mode == "numeric_map":
+                entry_count = len(keys)
+                self.numeric_map_count += 1
+                self.numeric_map_total_entries += entry_count
+                self.numeric_map_min_entries = (
+                    entry_count
+                    if self.numeric_map_min_entries is None
+                    else min(self.numeric_map_min_entries, entry_count)
+                )
+                self.numeric_map_max_entries = (
+                    entry_count
+                    if self.numeric_map_max_entries is None
+                    else max(self.numeric_map_max_entries, entry_count)
+                )
         elif isinstance(value, list):
             length = len(value)
             self.array_count += 1
@@ -110,11 +143,24 @@ class _ShapeAccumulator:
             "nullable": self.type_counts.get("null", 0) > 0,
         }
         if self.object_count:
-            result["object"] = {
+            object_shape: dict[str, Any] = {
                 "occurrence_count": self.object_count,
-                "observed_keys": sorted(self.object_keys),
-                "required_keys": sorted(self.required_object_keys or ()),
+                "key_mode_counts": dict(sorted(self.object_key_mode_counts.items())),
             }
+            if self.fixed_object_count:
+                object_shape["fixed_fields"] = {
+                    "occurrence_count": self.fixed_object_count,
+                    "observed_keys": sorted(self.fixed_object_keys),
+                    "required_keys": sorted(self.required_fixed_object_keys or ()),
+                }
+            if self.numeric_map_count:
+                object_shape["numeric_map"] = {
+                    "occurrence_count": self.numeric_map_count,
+                    "total_entries": self.numeric_map_total_entries,
+                    "min_entries": self.numeric_map_min_entries,
+                    "max_entries": self.numeric_map_max_entries,
+                }
+            result["object"] = object_shape
         if self.array_count:
             result["array"] = {
                 "occurrence_count": self.array_count,
@@ -143,9 +189,14 @@ def _profile_scopes(
         accumulator = accumulators.setdefault(path, _ShapeAccumulator())
         accumulator.observe(value)
         if isinstance(value, dict):
-            for key in sorted(value):
-                child_path = f"{path}/{_escape_pointer_segment(str(key))}"
-                walk(value[key], child_path)
+            if _object_key_mode(value) == "numeric_map":
+                child_path = f"{path}/*"
+                for key in sorted(value, key=lambda item: int(str(item))):
+                    walk(value[key], child_path)
+            else:
+                for key in sorted(value, key=str):
+                    child_path = f"{path}/{_escape_pointer_segment(str(key))}"
+                    walk(value[key], child_path)
         elif isinstance(value, list):
             child_path = f"{path}/*"
             for child in value:
@@ -191,6 +242,7 @@ def build_armory_mapping_review(
     endpoints: list[dict[str, Any]] = []
     total_paths = 0
     total_nodes = 0
+    total_numeric_maps = 0
 
     for endpoint in structural["endpoints"]:
         endpoint_kind = str(endpoint["endpoint_kind"])
@@ -199,8 +251,12 @@ def build_armory_mapping_review(
             raise ValueError(f"unsupported Armory endpoint kind for mapping review: {endpoint_kind}")
         payload = _load_verified_payload(endpoint, raw_root=raw_root)
         fields, visited = _profile_scopes(payload, scopes, max_nodes=max_nodes)
+        numeric_map_paths = sum(
+            1 for field_shape in fields if field_shape.get("object", {}).get("numeric_map")
+        )
         total_paths += len(fields)
         total_nodes += visited
+        total_numeric_maps += numeric_map_paths
         endpoints.append(
             {
                 "endpoint_kind": endpoint_kind,
@@ -213,6 +269,7 @@ def build_armory_mapping_review(
                 "summary": {
                     "field_path_count": len(fields),
                     "node_occurrence_count": visited,
+                    "numeric_map_path_count": numeric_map_paths,
                 },
             }
         )
@@ -231,6 +288,7 @@ def build_armory_mapping_review(
             "archive_verified": structural["summary"]["archive_verified"],
             "field_path_count": total_paths,
             "node_occurrence_count": total_nodes,
+            "numeric_map_path_count": total_numeric_maps,
             "contains_source_scalar_values": False,
             "ready_for_manual_mapping_review": True,
         },
