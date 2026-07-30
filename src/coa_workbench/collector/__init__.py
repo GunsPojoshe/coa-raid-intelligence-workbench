@@ -46,6 +46,7 @@ from .raw_archive import (
 )
 from .report_discovery import (
     REPORT_DISCOVERY_DEFAULT_LIMIT,
+    REPORT_DISCOVERY_LIMIT_PROBE_MAX,
     REPORT_DISCOVERY_MAX_LIMIT,
     REPORTS_PUBLIC_ROUTE,
     ReportDiscoveryCapture,
@@ -58,6 +59,7 @@ from .report_discovery_mapping_text import render_report_discovery_mapping_summa
 from .report_discovery_review import review_report_discovery_capture
 from .report_pagination_boundary_probe import capture_report_pagination_boundary_probe
 from .report_pagination_evidence import capture_bounded_report_pagination_evidence
+from .report_pagination_limit_probe import capture_report_pagination_limit_probe
 from .report_pagination_semantic_review import review_report_pagination_semantics
 from .report_pagination_terminal_search import capture_report_pagination_terminal_search
 from .report_slice_capture import (
@@ -113,6 +115,7 @@ __all__ = [
     "REPORTS_PUBLIC_ROUTE",
     "REPORT_DETAIL_ROUTE_SHAPE",
     "REPORT_DISCOVERY_DEFAULT_LIMIT",
+    "REPORT_DISCOVERY_LIMIT_PROBE_MAX",
     "REPORT_DISCOVERY_MAX_LIMIT",
     "RawArchive",
     "RawCapture",
@@ -142,6 +145,7 @@ __all__ = [
     "capture_public_report_discovery",
     "capture_public_report_manifest",
     "capture_report_pagination_boundary_probe",
+    "capture_report_pagination_limit_probe",
     "capture_report_pagination_terminal_search",
     "capture_to_dict",
     "design_observed_combatants_info_mappings",
