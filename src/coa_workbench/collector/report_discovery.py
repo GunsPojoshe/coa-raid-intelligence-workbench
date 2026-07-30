@@ -17,6 +17,7 @@ REPORT_DISCOVERY_SORT_BY = "created_at"
 REPORT_DISCOVERY_SORT_ORDER = "desc"
 REPORT_DISCOVERY_DEFAULT_LIMIT = 5
 REPORT_DISCOVERY_MAX_LIMIT = 5
+REPORT_DISCOVERY_LIMIT_PROBE_MAX = 500
 _MAX_JSON_BYTES = 8 * 1024 * 1024
 
 
@@ -96,15 +97,21 @@ def capture_public_report_discovery(
     sort_order: str = REPORT_DISCOVERY_SORT_ORDER,
     timeout_seconds: float = 20.0,
     retry_count: int = 0,
+    allow_unverified_limit_probe: bool = False,
     opener: OpenUrl | Any | None = None,
     session: SameOriginHttpSession | None = None,
 ) -> ReportDiscoveryCapture:
-    """Capture one explicitly bounded public-report page without inferring report semantics."""
+    """Capture one explicit page; limits above five require an unverified probe opt-in."""
     prepared_category = _prepared_local_category(local_category)
     if page < 1:
         raise ValueError("page must be at least 1")
-    if limit < 1 or limit > REPORT_DISCOVERY_MAX_LIMIT:
-        raise ValueError(f"limit must be between 1 and {REPORT_DISCOVERY_MAX_LIMIT}")
+    maximum_limit = (
+        REPORT_DISCOVERY_LIMIT_PROBE_MAX
+        if allow_unverified_limit_probe
+        else REPORT_DISCOVERY_MAX_LIMIT
+    )
+    if limit < 1 or limit > maximum_limit:
+        raise ValueError(f"limit must be between 1 and {maximum_limit}")
     if sort_by != REPORT_DISCOVERY_SORT_BY:
         raise ValueError(f"sort_by must remain the observed value {REPORT_DISCOVERY_SORT_BY!r}")
     if sort_order != REPORT_DISCOVERY_SORT_ORDER:
@@ -169,6 +176,9 @@ def capture_public_report_discovery(
             "local_category": prepared_category,
             "page": page,
             "limit": limit,
+            "limit_contract": (
+                "unverified_probe" if allow_unverified_limit_probe else "verified_bounded"
+            ),
             "sort_by": sort_by,
             "sort_order": sort_order,
             **active_session.safe_request_metadata(request),
