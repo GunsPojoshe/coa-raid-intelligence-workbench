@@ -35,7 +35,7 @@ from .http_profile import (
 )
 from .http_read import read_response_resilient
 from .probe import ProbeResult, probe_registry_route, probe_result_to_dict
-from .public_report_manifest import capture_public_report_manifest
+from .public_report_manifest_compat import capture_public_report_manifest
 from .raw_archive import (
     RawArchive,
     RawCapture,
