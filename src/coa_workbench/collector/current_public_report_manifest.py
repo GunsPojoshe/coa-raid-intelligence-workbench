@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -20,11 +21,16 @@ _TEMPORAL_DRIFT_MARKERS = (
     "aggregate report count mismatch",
     "cross-page duplicate report ids",
 )
+_PAGE_REPORT_COUNT_DRIFT = re.compile(
+    r"^public report manifest page \d+ expected \d+ reports, got \d+$"
+)
 
 
 def _is_temporal_manifest_drift(error: ValueError) -> bool:
     message = str(error)
-    return any(marker in message for marker in _TEMPORAL_DRIFT_MARKERS)
+    return any(marker in message for marker in _TEMPORAL_DRIFT_MARKERS) or bool(
+        _PAGE_REPORT_COUNT_DRIFT.fullmatch(message)
+    )
 
 
 def _remove_manifest_state(
