@@ -58,6 +58,7 @@ from .report_discovery_review import review_report_discovery_capture
 from .report_pagination_boundary_probe import capture_report_pagination_boundary_probe
 from .report_pagination_evidence import capture_bounded_report_pagination_evidence
 from .report_pagination_semantic_review import review_report_pagination_semantics
+from .report_pagination_terminal_search import capture_report_pagination_terminal_search
 from .report_slice_capture import (
     COMBATANTS_INFO_ROUTE_SHAPE,
     ENCOUNTER_DETAIL_ROUTE_SHAPE,
@@ -139,6 +140,7 @@ __all__ = [
     "capture_observed_report_slice",
     "capture_public_report_discovery",
     "capture_report_pagination_boundary_probe",
+    "capture_report_pagination_terminal_search",
     "capture_to_dict",
     "design_observed_combatants_info_mappings",
     "discover_api_route_candidates",
