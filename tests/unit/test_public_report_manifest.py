@@ -391,6 +391,7 @@ def test_resumes_from_checkpoint_after_interruption(tmp_path: Path) -> None:
             private_output_path=tmp_path / "manifest.private.json",
             receipt_output_path=tmp_path / "manifest.json",
             request_delay_seconds=0,
+            retry_count=0,
             opener=first_opener,
         )
 
@@ -413,4 +414,4 @@ def test_resumes_from_checkpoint_after_interruption(tmp_path: Path) -> None:
 
     assert receipt["summary"]["report_occurrence_count"] == 17
     assert receipt["summary"]["resume_checkpoint_used"] is True
-    assert 1 not in second_opener.requested_pages[5:7]
+    assert second_opener.requested_pages[:2] == [3, 4]
