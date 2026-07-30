@@ -22,12 +22,14 @@ def test_refresh_terminal_removes_stale_checkpoint_before_manifest(
     cli = _load_cli()
     checkpoint = tmp_path / "manifest.checkpoint.json"
     output = tmp_path / "manifest.json"
+    private_output = tmp_path / "manifest.private.json"
     terminal_receipt = tmp_path / "terminal.json"
     terminal_private = tmp_path / "terminal.private.json"
     boundary_receipt = tmp_path / "boundary.json"
     boundary_private = tmp_path / "boundary.private.json"
     checkpoint.write_text("stale checkpoint", encoding="utf-8")
     output.write_text("stale receipt", encoding="utf-8")
+    private_output.write_text("stale private manifest", encoding="utf-8")
 
     registry = object()
     archive = object()
@@ -36,24 +38,19 @@ def test_refresh_terminal_removes_stale_checkpoint_before_manifest(
     monkeypatch.setattr(cli, "load_source_registry", lambda _path: registry)
     monkeypatch.setattr(cli, "RawArchive", lambda *_args, **_kwargs: archive)
 
-    def fake_terminal(*args, **kwargs):
+    def fake_current_manifest(*args, **kwargs):
         assert args == (registry, archive)
         assert kwargs["boundary_receipt_path"] == boundary_receipt
         assert kwargs["boundary_private_path"] == boundary_private
-        assert kwargs["receipt_output_path"] == terminal_receipt
-        assert kwargs["private_output_path"] == terminal_private
-        calls.append("terminal")
-        return {"summary": {"terminal_page": 1217, "terminal_page_report_count": 1}}
-
-    def fake_manifest(*args, **kwargs):
-        assert args == (registry, archive)
         assert kwargs["terminal_receipt_path"] == terminal_receipt
         assert kwargs["terminal_private_path"] == terminal_private
         assert kwargs["checkpoint_path"] == checkpoint
+        assert kwargs["private_output_path"] == private_output
         assert kwargs["receipt_output_path"] == output
         assert not checkpoint.exists()
         assert not output.exists()
-        calls.append("manifest")
+        assert not private_output.exists()
+        calls.append("current_manifest")
         return {
             "summary": {
                 "completed_page_count": 1217,
@@ -63,8 +60,7 @@ def test_refresh_terminal_removes_stale_checkpoint_before_manifest(
             "guild_field_summary": {"target_label_exact_match_report_count": 0},
         }
 
-    monkeypatch.setattr(cli, "capture_report_pagination_terminal_search", fake_terminal)
-    monkeypatch.setattr(cli, "capture_public_report_manifest", fake_manifest)
+    monkeypatch.setattr(cli, "capture_current_public_report_manifest", fake_current_manifest)
     monkeypatch.setattr(
         sys,
         "argv",
@@ -81,6 +77,8 @@ def test_refresh_terminal_removes_stale_checkpoint_before_manifest(
             str(boundary_private),
             "--checkpoint",
             str(checkpoint),
+            "--private-output",
+            str(private_output),
             "--output",
             str(output),
             "--mapping",
@@ -99,4 +97,4 @@ def test_refresh_terminal_removes_stale_checkpoint_before_manifest(
     )
 
     assert cli.main() == 0
-    assert calls == ["terminal", "manifest"]
+    assert calls == ["current_manifest"]
