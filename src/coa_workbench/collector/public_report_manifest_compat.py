@@ -6,6 +6,9 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from . import public_report_manifest as _implementation
+from .concurrent_promoted_public_report_manifest import (
+    capture_promoted_manifest_concurrently,
+)
 from .report_discovery import REPORT_DISCOVERY_PROMOTED_LIMIT
 
 TERMINAL_PRIVATE_SEARCH_KIND = "report_pagination_terminal_search_private_batch"
@@ -227,7 +230,7 @@ def capture_public_report_manifest(*args: Any, **kwargs: Any) -> dict[str, Any]:
     _implementation._validate_terminal_private = _validate_promoted_terminal_private
     _implementation.capture_public_report_discovery = capture_with_promoted_limit
     try:
-        return _implementation.capture_public_report_manifest(*args, **kwargs)
+        return capture_promoted_manifest_concurrently(*args, **kwargs)
     finally:
         _implementation._TERMINAL_PRIVATE_KIND = previous_kind
         _implementation._TERMINAL_VERSION = previous_version
