@@ -115,6 +115,7 @@ def test_capture_metadata_contains_profile_names_but_not_header_values(tmp_path)
     assert metadata["capture_mode"] == "bounded_report_discovery"
     assert metadata["local_category"] == "public_recent"
     assert metadata["limit"] == 5
+    assert metadata["limit_contract"] == "verified_bounded"
     serialized = json.dumps(metadata).casefold()
     assert "mozilla/5.0" not in serialized
     assert "same-origin" not in serialized
@@ -128,6 +129,48 @@ def test_capture_rejects_unbounded_limit(limit, tmp_path):
             _registry(),
             RawArchive(tmp_path / "raw"),
             limit=limit,
+            opener=lambda *_args, **_kwargs: None,
+        )
+
+
+def test_capture_allows_larger_limit_only_for_explicit_probe(tmp_path):
+    payload = {
+        "reports": [{"id": value} for value in range(25)],
+        "pagination": {
+            "page": 1,
+            "limit": 25,
+            "offset": 0,
+            "hasPrevious": False,
+            "hasMore": True,
+        },
+        "success": True,
+    }
+    opener = _RecordingOpener(payload)
+
+    result = capture_public_report_discovery(
+        _registry(),
+        RawArchive(tmp_path / "raw"),
+        limit=25,
+        allow_unverified_limit_probe=True,
+        opener=opener,
+    )
+
+    assert result.complete is True
+    assert urlsplit(opener.requests[0].full_url).query == (
+        "page=1&limit=25&sortBy=created_at&sortOrder=desc"
+    )
+    assert result.capture is not None
+    manifest = json.loads(Path(result.capture.manifest_path).read_text(encoding="utf-8"))
+    assert manifest["metadata"]["limit_contract"] == "unverified_probe"
+
+
+def test_capture_rejects_limit_above_probe_ceiling(tmp_path):
+    with pytest.raises(ValueError, match="between 1 and 500"):
+        capture_public_report_discovery(
+            _registry(),
+            RawArchive(tmp_path / "raw"),
+            limit=501,
+            allow_unverified_limit_probe=True,
             opener=lambda *_args, **_kwargs: None,
         )
 
