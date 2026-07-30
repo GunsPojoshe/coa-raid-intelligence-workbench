@@ -3,7 +3,12 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from coa_workbench.collector import RawArchive, capture_public_report_manifest, load_source_registry
+from coa_workbench.collector import (
+    RawArchive,
+    capture_public_report_manifest,
+    capture_report_pagination_terminal_search,
+    load_source_registry,
+)
 
 
 def main() -> int:
@@ -26,6 +31,21 @@ def main() -> int:
             "argentum-report-pagination-terminal-search.private.json"
         ),
     )
+    parser.add_argument(
+        "--boundary-receipt",
+        type=Path,
+        default=Path("data/exchange/out/argentum-report-pagination-boundary-probe.json"),
+    )
+    parser.add_argument(
+        "--boundary-private",
+        type=Path,
+        default=Path(
+            "data/extracted/report-discovery/"
+            "argentum-report-pagination-boundary-probe.private.json"
+        ),
+    )
+    parser.add_argument("--terminal-max-requests", type=int, default=16)
+    parser.add_argument("--refresh-terminal", action="store_true")
     parser.add_argument(
         "--mapping",
         type=Path,
@@ -75,6 +95,33 @@ def main() -> int:
         database_path=args.database,
         migrations_dir=args.migrations,
     )
+
+    if args.refresh_terminal:
+        terminal = capture_report_pagination_terminal_search(
+            registry,
+            archive,
+            boundary_receipt_path=args.boundary_receipt,
+            boundary_private_path=args.boundary_private,
+            private_output_path=args.terminal_private,
+            receipt_output_path=args.terminal_receipt,
+            expected_guild_label=args.guild_label,
+            max_requests=args.terminal_max_requests,
+            timeout_seconds=args.timeout_seconds,
+            retry_count=args.retry_count,
+        )
+        terminal_summary = terminal["summary"]
+        print(
+            "refreshed pagination terminal: "
+            f"page={terminal_summary['terminal_page']} "
+            f"reports={terminal_summary['terminal_page_report_count']}",
+            flush=True,
+        )
+        if args.checkpoint.exists():
+            args.checkpoint.unlink()
+            print(f"removed stale checkpoint: {args.checkpoint}", flush=True)
+
+    if args.output.exists():
+        args.output.unlink()
 
     last_manifest_progress = 0
 
