@@ -13,9 +13,26 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Capture the current public-report page range into a resumable private manifest "
-            "and a scalar-free integrity receipt. Temporal pagination drift refreshes the "
-            "terminal contract automatically; transport failures preserve the checkpoint."
+            "and a scalar-free integrity receipt. The manually promoted limit-25 contract "
+            "reduces temporal drift; transport failures preserve the checkpoint."
         )
+    )
+    parser.add_argument(
+        "--limit-promotion",
+        type=Path,
+        default=Path("evidence/real-data/argentum-report-pagination-limit-promotion.json"),
+    )
+    parser.add_argument(
+        "--limit-probe-receipt",
+        type=Path,
+        default=Path("data/exchange/out/argentum-report-pagination-limit-probe.json"),
+    )
+    parser.add_argument(
+        "--limit-probe-private",
+        type=Path,
+        default=Path(
+            "data/extracted/report-discovery/argentum-report-pagination-limit-probe.private.json"
+        ),
     )
     parser.add_argument(
         "--terminal-receipt",
@@ -42,7 +59,7 @@ def main() -> int:
             "data/extracted/report-discovery/argentum-report-pagination-boundary-probe.private.json"
         ),
     )
-    parser.add_argument("--terminal-max-requests", type=int, default=16)
+    parser.add_argument("--terminal-max-requests", type=int, default=20)
     parser.add_argument("--manifest-max-attempts", type=int, default=3)
     parser.add_argument("--refresh-terminal", action="store_true")
     parser.add_argument(
@@ -121,6 +138,9 @@ def main() -> int:
         checkpoint_path=args.checkpoint,
         private_output_path=args.private_output,
         receipt_output_path=args.output,
+        limit_promotion_path=args.limit_promotion,
+        limit_probe_receipt_path=args.limit_probe_receipt,
+        limit_probe_private_path=args.limit_probe_private,
         expected_guild_label=args.guild_label,
         terminal_max_requests=args.terminal_max_requests,
         manifest_max_attempts=args.manifest_max_attempts,
