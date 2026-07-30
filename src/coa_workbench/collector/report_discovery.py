@@ -110,16 +110,23 @@ def capture_public_report_discovery(
     if allow_promoted_limit and allow_unverified_limit_probe:
         raise ValueError("promoted and unverified limit modes are mutually exclusive")
 
-    if 1 <= limit <= REPORT_DISCOVERY_MAX_LIMIT:
+    if allow_unverified_limit_probe:
+        if limit < 1 or limit > REPORT_DISCOVERY_LIMIT_PROBE_MAX:
+            raise ValueError(
+                f"limit must be between 1 and {REPORT_DISCOVERY_LIMIT_PROBE_MAX}"
+            )
+        limit_contract = (
+            "verified_bounded"
+            if limit <= REPORT_DISCOVERY_MAX_LIMIT
+            else "unverified_probe"
+        )
+    elif 1 <= limit <= REPORT_DISCOVERY_MAX_LIMIT:
         limit_contract = "verified_bounded"
     elif allow_promoted_limit and limit == REPORT_DISCOVERY_PROMOTED_LIMIT:
         limit_contract = "manually_promoted_terminal_search"
-    elif allow_unverified_limit_probe and limit <= REPORT_DISCOVERY_LIMIT_PROBE_MAX:
-        limit_contract = "unverified_probe"
     else:
         raise ValueError(
-            "limit must be between 1 and 5 unless the exact promoted limit 25 or an "
-            "explicit unverified limit probe is enabled"
+            "limit must be between 1 and 5 unless the exact promoted limit 25 is enabled"
         )
 
     if sort_by != REPORT_DISCOVERY_SORT_BY:
