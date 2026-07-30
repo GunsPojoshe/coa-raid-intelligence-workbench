@@ -3,19 +3,18 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from coa_workbench.collector import (
-    RawArchive,
-    capture_public_report_manifest,
-    capture_report_pagination_terminal_search,
-    load_source_registry,
+from coa_workbench.collector import RawArchive, load_source_registry
+from coa_workbench.collector.current_public_report_manifest import (
+    capture_current_public_report_manifest,
 )
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
-            "Capture the verified public-report page range into a resumable private manifest "
-            "and a scalar-free integrity receipt."
+            "Capture the current public-report page range into a resumable private manifest "
+            "and a scalar-free integrity receipt. Temporal pagination drift refreshes the "
+            "terminal contract automatically; transport failures preserve the checkpoint."
         )
     )
     parser.add_argument(
@@ -44,6 +43,7 @@ def main() -> int:
         ),
     )
     parser.add_argument("--terminal-max-requests", type=int, default=16)
+    parser.add_argument("--manifest-max-attempts", type=int, default=3)
     parser.add_argument("--refresh-terminal", action="store_true")
     parser.add_argument(
         "--mapping",
@@ -95,32 +95,9 @@ def main() -> int:
         migrations_dir=args.migrations,
     )
 
-    if args.refresh_terminal:
-        terminal = capture_report_pagination_terminal_search(
-            registry,
-            archive,
-            boundary_receipt_path=args.boundary_receipt,
-            boundary_private_path=args.boundary_private,
-            private_output_path=args.terminal_private,
-            receipt_output_path=args.terminal_receipt,
-            expected_guild_label=args.guild_label,
-            max_requests=args.terminal_max_requests,
-            timeout_seconds=args.timeout_seconds,
-            retry_count=args.retry_count,
-        )
-        terminal_summary = terminal["summary"]
-        print(
-            "refreshed pagination terminal: "
-            f"page={terminal_summary['terminal_page']} "
-            f"reports={terminal_summary['terminal_page_report_count']}",
-            flush=True,
-        )
-        if args.checkpoint.exists():
-            args.checkpoint.unlink()
-            print(f"removed stale checkpoint: {args.checkpoint}", flush=True)
-
-    if args.output.exists():
-        args.output.unlink()
+    if args.refresh_terminal or args.no_resume:
+        for path in (args.checkpoint, args.private_output, args.output):
+            path.unlink(missing_ok=True)
 
     last_manifest_progress = 0
 
@@ -133,9 +110,11 @@ def main() -> int:
         else:
             print(f"{phase}: {current}/{total}", flush=True)
 
-    receipt = capture_public_report_manifest(
+    receipt = capture_current_public_report_manifest(
         registry,
         archive,
+        boundary_receipt_path=args.boundary_receipt,
+        boundary_private_path=args.boundary_private,
         terminal_receipt_path=args.terminal_receipt,
         terminal_private_path=args.terminal_private,
         mapping_path=args.mapping,
@@ -143,11 +122,13 @@ def main() -> int:
         private_output_path=args.private_output,
         receipt_output_path=args.output,
         expected_guild_label=args.guild_label,
+        terminal_max_requests=args.terminal_max_requests,
+        manifest_max_attempts=args.manifest_max_attempts,
         timeout_seconds=args.timeout_seconds,
         retry_count=args.retry_count,
         request_delay_seconds=args.request_delay_seconds,
-        resume=not args.no_resume,
         progress_callback=progress,
+        status_callback=lambda message: print(message, flush=True),
     )
 
     summary = receipt["summary"]
