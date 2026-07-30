@@ -35,6 +35,7 @@ from .http_profile import (
 )
 from .http_read import read_response_resilient
 from .probe import ProbeResult, probe_registry_route, probe_result_to_dict
+from .public_report_manifest import capture_public_report_manifest
 from .raw_archive import (
     RawArchive,
     RawCapture,
@@ -139,6 +140,7 @@ __all__ = [
     "capture_character_build_pages",
     "capture_observed_report_slice",
     "capture_public_report_discovery",
+    "capture_public_report_manifest",
     "capture_report_pagination_boundary_probe",
     "capture_report_pagination_terminal_search",
     "capture_to_dict",
@@ -169,6 +171,6 @@ __all__ = [
     "select_observed_combatants_info_fields",
     "select_observed_report_slice_fields",
     "summarize_observed_report_slice_mapping_review",
-    "summarize_report_discovery_mapping_review",
+    "summarize_report_discovery_mapping_summary_text",
     "validate_observed_report_slice_candidate_mappings",
 ]
