@@ -17,6 +17,7 @@ REPORT_DISCOVERY_SORT_BY = "created_at"
 REPORT_DISCOVERY_SORT_ORDER = "desc"
 REPORT_DISCOVERY_DEFAULT_LIMIT = 5
 REPORT_DISCOVERY_MAX_LIMIT = 5
+REPORT_DISCOVERY_PROMOTED_LIMIT = 25
 REPORT_DISCOVERY_LIMIT_PROBE_MAX = 500
 _MAX_JSON_BYTES = 8 * 1024 * 1024
 
@@ -97,21 +98,30 @@ def capture_public_report_discovery(
     sort_order: str = REPORT_DISCOVERY_SORT_ORDER,
     timeout_seconds: float = 20.0,
     retry_count: int = 0,
+    allow_promoted_limit: bool = False,
     allow_unverified_limit_probe: bool = False,
     opener: OpenUrl | Any | None = None,
     session: SameOriginHttpSession | None = None,
 ) -> ReportDiscoveryCapture:
-    """Capture one explicit page; limits above five require an unverified probe opt-in."""
+    """Capture one explicit page under a verified, promoted, or probe-only limit contract."""
     prepared_category = _prepared_local_category(local_category)
     if page < 1:
         raise ValueError("page must be at least 1")
-    maximum_limit = (
-        REPORT_DISCOVERY_LIMIT_PROBE_MAX
-        if allow_unverified_limit_probe
-        else REPORT_DISCOVERY_MAX_LIMIT
-    )
-    if limit < 1 or limit > maximum_limit:
-        raise ValueError(f"limit must be between 1 and {maximum_limit}")
+    if allow_promoted_limit and allow_unverified_limit_probe:
+        raise ValueError("promoted and unverified limit modes are mutually exclusive")
+
+    if 1 <= limit <= REPORT_DISCOVERY_MAX_LIMIT:
+        limit_contract = "verified_bounded"
+    elif allow_promoted_limit and limit == REPORT_DISCOVERY_PROMOTED_LIMIT:
+        limit_contract = "manually_promoted_terminal_search"
+    elif allow_unverified_limit_probe and limit <= REPORT_DISCOVERY_LIMIT_PROBE_MAX:
+        limit_contract = "unverified_probe"
+    else:
+        raise ValueError(
+            "limit must be between 1 and 5 unless the exact promoted limit 25 or an "
+            "explicit unverified limit probe is enabled"
+        )
+
     if sort_by != REPORT_DISCOVERY_SORT_BY:
         raise ValueError(f"sort_by must remain the observed value {REPORT_DISCOVERY_SORT_BY!r}")
     if sort_order != REPORT_DISCOVERY_SORT_ORDER:
@@ -176,9 +186,7 @@ def capture_public_report_discovery(
             "local_category": prepared_category,
             "page": page,
             "limit": limit,
-            "limit_contract": (
-                "unverified_probe" if allow_unverified_limit_probe else "verified_bounded"
-            ),
+            "limit_contract": limit_contract,
             "sort_by": sort_by,
             "sort_order": sort_order,
             **active_session.safe_request_metadata(request),
