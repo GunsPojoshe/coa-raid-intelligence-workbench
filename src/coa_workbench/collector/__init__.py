@@ -171,6 +171,6 @@ __all__ = [
     "select_observed_combatants_info_fields",
     "select_observed_report_slice_fields",
     "summarize_observed_report_slice_mapping_review",
-    "summarize_report_discovery_mapping_summary_text",
+    "summarize_report_discovery_mapping_review",
     "validate_observed_report_slice_candidate_mappings",
 ]
