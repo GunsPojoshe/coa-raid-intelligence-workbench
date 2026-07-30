@@ -300,12 +300,12 @@ def test_rejects_boundary_private_changed_after_probe(tmp_path: Path) -> None:
         )
 
 
-def test_rejects_has_more_true_on_successor_page(tmp_path: Path) -> None:
+def test_rejects_nonempty_successor_page(tmp_path: Path) -> None:
     boundary_path, private_path = _packet(tmp_path)
     payloads = _valid_payloads()
-    payloads[12] = _payload(12, has_more=True, count=0)
+    payloads[12] = _payload(12, has_more=False, count=1)
 
-    with pytest.raises(ValueError, match="successor page does not have hasMore=false"):
+    with pytest.raises(ValueError, match="successor page must be empty"):
         capture_report_pagination_terminal_search(
             _registry(),
             RawArchive(tmp_path / "raw"),
