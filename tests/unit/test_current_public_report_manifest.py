@@ -49,6 +49,41 @@ def test_refreshes_terminal_after_temporal_drift(tmp_path: Path, monkeypatch) ->
     assert terminal_calls == [False]
 
 
+def test_refreshes_terminal_after_terminal_page_count_drift(
+    tmp_path: Path, monkeypatch
+) -> None:
+    paths = _paths(tmp_path)
+    paths["checkpoint_path"].write_text("stale", encoding="utf-8")
+    paths["private_output_path"].write_text("stale", encoding="utf-8")
+    paths["receipt_output_path"].write_text("stale", encoding="utf-8")
+    terminal_calls = 0
+    manifest_calls = 0
+
+    def fake_terminal(*_args, **_kwargs):
+        nonlocal terminal_calls
+        terminal_calls += 1
+        assert not paths["checkpoint_path"].exists()
+        assert not paths["private_output_path"].exists()
+        assert not paths["receipt_output_path"].exists()
+        return {}
+
+    def fake_manifest(*_args, **_kwargs):
+        nonlocal manifest_calls
+        manifest_calls += 1
+        if manifest_calls == 1:
+            raise ValueError("public report manifest page 1217 expected 2 reports, got 3")
+        return {"summary": {"completed_page_count": 1218}}
+
+    monkeypatch.setattr(current, "capture_report_pagination_terminal_search", fake_terminal)
+    monkeypatch.setattr(current, "capture_public_report_manifest", fake_manifest)
+
+    receipt = current.capture_current_public_report_manifest(object(), object(), **paths)
+
+    assert receipt["summary"]["completed_page_count"] == 1218
+    assert manifest_calls == 2
+    assert terminal_calls == 1
+
+
 def test_preserves_checkpoint_for_transport_failure(tmp_path: Path, monkeypatch) -> None:
     paths = _paths(tmp_path)
     paths["checkpoint_path"].write_text("resume", encoding="utf-8")
