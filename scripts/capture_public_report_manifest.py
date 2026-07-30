@@ -40,8 +40,7 @@ def main() -> int:
         "--boundary-private",
         type=Path,
         default=Path(
-            "data/extracted/report-discovery/"
-            "argentum-report-pagination-boundary-probe.private.json"
+            "data/extracted/report-discovery/argentum-report-pagination-boundary-probe.private.json"
         ),
     )
     parser.add_argument("--terminal-max-requests", type=int, default=16)
