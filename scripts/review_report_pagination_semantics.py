@@ -23,8 +23,7 @@ def main() -> int:
         "--private-evidence",
         type=Path,
         default=Path(
-            "data/extracted/report-discovery/"
-            "argentum-report-pagination-evidence.private.json"
+            "data/extracted/report-discovery/argentum-report-pagination-evidence.private.json"
         ),
     )
     parser.add_argument("--guild-label", default="Argentum")
