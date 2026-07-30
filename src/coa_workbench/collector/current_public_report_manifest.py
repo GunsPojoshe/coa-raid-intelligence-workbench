@@ -5,9 +5,11 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from .promoted_report_pagination_terminal_search import (
+    capture_promoted_report_pagination_terminal_search as capture_report_pagination_terminal_search,
+)
 from .public_report_manifest_compat import capture_public_report_manifest
 from .raw_archive import RawArchive
-from .report_pagination_terminal_search import capture_report_pagination_terminal_search
 from .source_registry import SourceRegistry
 
 StatusCallback = Callable[[str], None]
@@ -54,8 +56,17 @@ def capture_current_public_report_manifest(
     checkpoint_path: Path,
     private_output_path: Path,
     receipt_output_path: Path,
+    limit_promotion_path: Path = Path(
+        "evidence/real-data/argentum-report-pagination-limit-promotion.json"
+    ),
+    limit_probe_receipt_path: Path = Path(
+        "data/exchange/out/argentum-report-pagination-limit-probe.json"
+    ),
+    limit_probe_private_path: Path = Path(
+        "data/extracted/report-discovery/argentum-report-pagination-limit-probe.private.json"
+    ),
     expected_guild_label: str = "Argentum",
-    terminal_max_requests: int = 16,
+    terminal_max_requests: int = 20,
     manifest_max_attempts: int = 3,
     timeout_seconds: float = 20.0,
     retry_count: int = 1,
@@ -64,7 +75,7 @@ def capture_current_public_report_manifest(
     progress_callback: ProgressCallback | None = None,
     status_callback: StatusCallback | None = None,
 ) -> dict[str, Any]:
-    """Resume a stable manifest or refresh its terminal contract after temporal drift."""
+    """Resume a limit-25 manifest or refresh its terminal contract after temporal drift."""
     if manifest_max_attempts < 1 or manifest_max_attempts > 5:
         raise ValueError("manifest_max_attempts must be between 1 and 5")
 
@@ -79,12 +90,13 @@ def capture_current_public_report_manifest(
         if use_existing_checkpoint:
             status(f"manifest attempt {attempt}: resuming existing checkpoint")
         else:
-            status(f"manifest attempt {attempt}: refreshing terminal contract")
+            status(f"manifest attempt {attempt}: refreshing promoted-limit terminal contract")
             capture_report_pagination_terminal_search(
                 registry,
                 archive,
-                boundary_receipt_path=boundary_receipt_path,
-                boundary_private_path=boundary_private_path,
+                promotion_path=limit_promotion_path,
+                probe_receipt_path=limit_probe_receipt_path,
+                probe_private_path=limit_probe_private_path,
                 private_output_path=terminal_private_path,
                 receipt_output_path=terminal_receipt_path,
                 expected_guild_label=expected_guild_label,
