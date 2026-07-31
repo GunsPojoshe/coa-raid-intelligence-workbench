@@ -31,9 +31,7 @@ def main() -> int:
     parser.add_argument(
         "--private-output",
         type=Path,
-        default=Path(
-            "data/extracted/report-discovery/argentum-guild-search-probe.private.json"
-        ),
+        default=Path("data/extracted/report-discovery/argentum-guild-search-probe.private.json"),
     )
     parser.add_argument(
         "--output",
