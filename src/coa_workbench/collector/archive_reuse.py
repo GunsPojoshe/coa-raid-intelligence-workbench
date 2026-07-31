@@ -216,11 +216,13 @@ def capture_asset_with_archive_fallback(
             max_bytes=_MAX_ASSET_BYTES,
         )
         if reused is None:
-            errors: list[str] = []
-            if live_error:
-                errors.append(f"live capture: {live_error}")
-            if fallback_error:
-                errors.append(f"archive fallback: {fallback_error}")
+            if live_error and fallback_error:
+                error = (
+                    f"live capture: {live_error}; "
+                    f"archive fallback: {fallback_error}"
+                )
+            else:
+                error = live_error or fallback_error or "asset capture failed"
             return BuildAssetCapture(
                 url,
                 asset_kind,
@@ -228,7 +230,7 @@ def capture_asset_with_archive_fallback(
                 content_type,
                 None,
                 (),
-                "; ".join(errors) or "asset capture failed",
+                error,
             )
         body = reused.body
         content_type = content_type or reused.content_type
