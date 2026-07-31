@@ -3,18 +3,11 @@
 
 # Security-sensitive automation and release boundaries.
 /.github/ @GunsPojoshe
-<<<<<<< HEAD
 /scripts/audit_public_release.py @GunsPojoshe
 /.gitignore @GunsPojoshe
 
 # Canonical data contracts and forward-only storage changes.
-/config/mappings/ @GunsPojoshe
-=======
-/.gitignore @GunsPojoshe
-
-# Canonical data contracts and forward-only storage changes.
 /config/ @GunsPojoshe
->>>>>>> origin/e2/log-evidence-refactor
 /migrations/ @GunsPojoshe
 /evidence/ @GunsPojoshe
 /docs/ADR_*.md @GunsPojoshe
