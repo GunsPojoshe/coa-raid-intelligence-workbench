@@ -18,6 +18,13 @@ _INVENTORY_VERSION = "guild-identity-search-schema-inventory-v1"
 _PUBLIC_REVIEW_KIND = "guild_identity_search_capture_review"
 _PUBLIC_REVIEW_VERSION = "guild-identity-search-capture-review-v1"
 _SELECTED_PROFILE = "spa_fetch_context"
+_CAPTURE_CORE_FIELDS = (
+    "bytes_uncompressed",
+    "observation_id",
+    "payload_hash",
+    "raw_id",
+    "schema_fingerprint",
+)
 _MAX_INVENTORY_NODES = 250
 _MAX_INVENTORY_DEPTH = 12
 
@@ -203,6 +210,28 @@ def _validate_public_review(
     return capture
 
 
+def _validate_capture_binding(
+    review_capture: Mapping[str, Any],
+    source_capture: Mapping[str, Any],
+    private_attempt: Mapping[str, Any],
+) -> None:
+    for field_name in _CAPTURE_CORE_FIELDS:
+        if review_capture.get(field_name) != source_capture.get(field_name):
+            raise ValueError(
+                "capture review and source diagnostic core binding differ: "
+                f"{field_name}"
+            )
+
+    if review_capture.get("selected_access_profile") != _SELECTED_PROFILE:
+        raise ValueError("capture review selected access profile mismatch")
+    if private_attempt.get("profile") != _SELECTED_PROFILE:
+        raise ValueError("source diagnostic selected access profile mismatch")
+    if review_capture.get("http_status") != private_attempt.get("http_status"):
+        raise ValueError("capture review and source diagnostic HTTP status differ")
+    if review_capture.get("content_type") != private_attempt.get("content_type"):
+        raise ValueError("capture review and source diagnostic content type differ")
+
+
 def inventory_guild_identity_search_schema(
     *,
     public_capture_review_path: Path,
@@ -251,8 +280,7 @@ def inventory_guild_identity_search_schema(
         private_probe_body=private_probe_body,
         expected_guild_label=expected_guild_label,
     )
-    if review_capture != source_capture:
-        raise ValueError("capture review and source diagnostic bindings differ")
+    _validate_capture_binding(review_capture, source_capture, private_attempt)
 
     manifest, payload, raw_body = _read_bound_payload(raw_root, source_capture)
     if payload != private_attempt.get("body"):
