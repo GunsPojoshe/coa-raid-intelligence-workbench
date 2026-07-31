@@ -18,32 +18,26 @@ def main() -> int:
     parser.add_argument(
         "--access-diagnostic-receipt",
         type=Path,
-        default=Path(
-            "evidence/real-data/argentum-guild-search-access-spa-context.json"
-        ),
+        default=Path("evidence/real-data/argentum-guild-search-access-spa-context.json"),
     )
     parser.add_argument(
         "--access-diagnostic-private",
         type=Path,
         default=Path(
-            "data/extracted/report-discovery/"
-            "argentum-guild-search-access-diagnostic.private.json"
+            "data/extracted/report-discovery/argentum-guild-search-access-diagnostic.private.json"
         ),
     )
     parser.add_argument(
         "--search-probe-private",
         type=Path,
-        default=Path(
-            "data/extracted/report-discovery/argentum-guild-search-probe.private.json"
-        ),
+        default=Path("data/extracted/report-discovery/argentum-guild-search-probe.private.json"),
     )
     parser.add_argument("--raw-root", type=Path, default=Path("data/raw"))
     parser.add_argument(
         "--private-output",
         type=Path,
         default=Path(
-            "data/extracted/report-discovery/"
-            "argentum-guild-search-capture-review.private.json"
+            "data/extracted/report-discovery/argentum-guild-search-capture-review.private.json"
         ),
     )
     parser.add_argument(
