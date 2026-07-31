@@ -114,36 +114,35 @@ def _validate_contract(
     *,
     expected_guild_label: str,
 ) -> None:
-    if receipt.get("schema_version") != 1:
-        raise ValueError("full-crawl contract schema mismatch")
-    if receipt.get("contract_kind") != _CONTRACT_KIND:
-        raise ValueError("full-crawl contract kind mismatch")
-    if receipt.get("contract_version") != _CONTRACT_VERSION:
-        raise ValueError("full-crawl contract version mismatch")
+    expected_root = {
+        "schema_version": 1,
+        "contract_kind": _CONTRACT_KIND,
+        "contract_version": _CONTRACT_VERSION,
+    }
+    for field_name, expected in expected_root.items():
+        if receipt.get(field_name) != expected:
+            raise ValueError(f"full-crawl contract mismatch: {field_name}")
 
     target = _required_object(receipt.get("target"), "full-crawl contract target")
     if target.get("guild_label") != expected_guild_label:
         raise ValueError("full-crawl contract guild label mismatch")
-    if target.get("source_guild_id_published") is not False:
-        raise ValueError("full-crawl contract publishes source guild ID")
-    if target.get("report_ids_published") is not False:
-        raise ValueError("full-crawl contract publishes report IDs")
+    for field_name in ("source_guild_id_published", "report_ids_published"):
+        if target.get(field_name) is not False:
+            raise ValueError(f"full-crawl contract privacy mismatch: {field_name}")
 
     summary = _required_object(receipt.get("summary"), "full-crawl contract summary")
-    if summary.get("all_integrity_checks_passed") is not True:
-        raise ValueError("full-crawl contract integrity checks failed")
-    if summary.get("contains_source_scalar_values") is not False:
-        raise ValueError("full-crawl contract contains source scalar values")
-    if summary.get("full_crawl_collection_contract_reviewed") is not True:
-        raise ValueError("full-crawl contract is not reviewed")
-    if summary.get("ready_for_bounded_route_semantics_capture") is not True:
-        raise ValueError("full-crawl contract does not allow bounded capture")
-    if summary.get("guild_api_route_semantics_verified") is not False:
-        raise ValueError("full-crawl contract overclaims route semantics")
-    if summary.get("ready_for_full_guild_crawl") is not False:
-        raise ValueError("full-crawl contract enables full crawl")
-    if summary.get("planner_scoring_allowed") is not False:
-        raise ValueError("full-crawl contract enables planner scoring")
+    expected_summary = {
+        "all_integrity_checks_passed": True,
+        "contains_source_scalar_values": False,
+        "full_crawl_collection_contract_reviewed": True,
+        "ready_for_bounded_route_semantics_capture": True,
+        "guild_api_route_semantics_verified": False,
+        "ready_for_full_guild_crawl": False,
+        "planner_scoring_allowed": False,
+    }
+    for field_name, expected in expected_summary.items():
+        if summary.get(field_name) != expected:
+            raise ValueError(f"full-crawl contract summary mismatch: {field_name}")
 
     boundary = _required_object(
         receipt.get("decision_boundary"),
@@ -185,20 +184,21 @@ def _validate_access_diagnostic(
     expected_guild_label: str,
     registry: SourceRegistry,
 ) -> tuple[str, int]:
-    if public.get("schema_version") != 1:
-        raise ValueError("public access diagnostic schema mismatch")
-    if public.get("diagnostic_kind") != _ACCESS_KIND:
-        raise ValueError("public access diagnostic kind mismatch")
-    if public.get("diagnostic_version") != _ACCESS_VERSION:
-        raise ValueError("public access diagnostic version mismatch")
+    expected_public = {
+        "schema_version": 1,
+        "diagnostic_kind": _ACCESS_KIND,
+        "diagnostic_version": _ACCESS_VERSION,
+    }
+    for field_name, expected in expected_public.items():
+        if public.get(field_name) != expected:
+            raise ValueError(f"public access diagnostic mismatch: {field_name}")
 
     target = _required_object(public.get("target"), "public access target")
     if target.get("guild_label") != expected_guild_label:
         raise ValueError("public access diagnostic guild label mismatch")
-    if target.get("request_url_published") is not False:
-        raise ValueError("public access diagnostic publishes request URL")
-    if target.get("source_guild_id_published") is not False:
-        raise ValueError("public access diagnostic publishes source guild ID")
+    for field_name in ("request_url_published", "source_guild_id_published"):
+        if target.get(field_name) is not False:
+            raise ValueError(f"public access diagnostic privacy mismatch: {field_name}")
 
     summary = _required_object(public.get("summary"), "public access summary")
     if summary.get("all_integrity_checks_passed") is not True:
@@ -230,16 +230,16 @@ def _validate_access_diagnostic(
     if _sha256_bytes(private_body) != expected_private_hash:
         raise ValueError("private access diagnostic SHA-256 mismatch")
 
-    if private.get("schema_version") != 1:
-        raise ValueError("private access diagnostic schema mismatch")
-    if private.get("diagnostic_kind") != _ACCESS_PRIVATE_KIND:
-        raise ValueError("private access diagnostic kind mismatch")
-    if private.get("diagnostic_version") != _ACCESS_VERSION:
-        raise ValueError("private access diagnostic version mismatch")
-    if private.get("target_guild_label") != expected_guild_label:
-        raise ValueError("private access diagnostic guild label mismatch")
-    if private.get("selected_profile") != _SELECTED_PROFILE:
-        raise ValueError("private access diagnostic selected profile mismatch")
+    expected_private = {
+        "schema_version": 1,
+        "diagnostic_kind": _ACCESS_PRIVATE_KIND,
+        "diagnostic_version": _ACCESS_VERSION,
+        "target_guild_label": expected_guild_label,
+        "selected_profile": _SELECTED_PROFILE,
+    }
+    for field_name, expected in expected_private.items():
+        if private.get(field_name) != expected:
+            raise ValueError(f"private access diagnostic mismatch: {field_name}")
 
     attempt = _selected_attempt(
         _required_list(private.get("attempts"), "private access attempts")
@@ -274,7 +274,11 @@ def _validate_access_diagnostic(
     return query["q"], int(limit_text)
 
 
-def _failure_class(return_code: int | None, timed_out: bool) -> str | None:
+def _failure_class(
+    return_code: int | None,
+    timed_out: bool,
+    http_status: int | None,
+) -> str | None:
     if timed_out or return_code == 28:
         return "timeout"
     if return_code in {5, 6, 7, 35, 52, 55, 60, 92}:
@@ -283,6 +287,8 @@ def _failure_class(return_code: int | None, timed_out: bool) -> str | None:
         return "response_too_large_or_write_failure"
     if return_code not in {None, 0}:
         return "curl_failure"
+    if http_status is not None and not 200 <= http_status <= 299:
+        return "http_status_failure"
     return None
 
 
@@ -516,7 +522,7 @@ def capture_guild_route_semantics(
         )
         content_type = stdout_lines[1].strip() if len(stdout_lines) > 1 else None
         body = temporary_body.read_bytes() if temporary_body.is_file() else None
-        failure_class = _failure_class(return_code, timed_out)
+        failure_class = _failure_class(return_code, timed_out, http_status)
         if body is not None and not body:
             body = None
             failure_class = failure_class or "empty_response"
@@ -540,7 +546,7 @@ def capture_guild_route_semantics(
             capture = archive.capture_bytes(
                 body,
                 source_code=registry.source_code,
-                endpoint_code="guild_route_semantics_capture",
+                endpoint_code=f"guild_route_semantics_{case_name}",
                 request_key=request_key_from_url("GET", request_url),
                 fetched_at=datetime.now(timezone.utc),
                 http_status=http_status,
@@ -643,12 +649,17 @@ def capture_guild_route_semantics(
         if row["response_candidate"]
     }
     exact_label_stable = all_completed and exact_label_counts == {1}
+    id_counts = {
+        int(row["shape_summary"]["distinct_non_null_id_count"])
+        for row in public_attempts
+        if row["response_candidate"]
+    }
     id_set_hashes = {
         str(row["shape_summary"]["id_value_set_sha256"])
         for row in public_attempts
         if row["response_candidate"]
     }
-    id_set_stable = all_completed and len(id_set_hashes) == 1
+    id_set_stable = all_completed and id_counts == {1} and len(id_set_hashes) == 1
     result_counts = {
         str(row["case"]): int(row["shape_summary"]["guild_result_count"])
         for row in public_attempts
