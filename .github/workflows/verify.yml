@@ -1,0 +1,50 @@
+name: Verify repository
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: "0.12.0"
+          enable-cache: false
+      - run: uv sync --frozen --extra dev
+      - run: uv run pytest
+      - run: uv run coa-workbench doctor --project-root .
+
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: "0.12.0"
+          enable-cache: false
+      - run: uv sync --frozen --extra dev
+      - run: uv run pytest
+      - run: uv run coa-workbench doctor --project-root .
+      - name: Initialize DuckDB twice
+        shell: pwsh
+        run: |
+          $database = Join-Path $env:RUNNER_TEMP "coa.duckdb"
+          uv run coa-workbench init-db --database $database --migrations migrations
+          uv run coa-workbench init-db --database $database --migrations migrations
