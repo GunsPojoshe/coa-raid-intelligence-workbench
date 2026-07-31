@@ -1,0 +1,111 @@
+{
+  "capture_binding": {
+    "bytes_uncompressed": 93,
+    "observation_id": "94e02a08a6010935a7dbb0c86dfc62dcf38e6614c1b5f04d0d91f9927a83498b",
+    "payload_hash": "3af0c236bbf2e012112be101f09b4d91a100fafd40adbb9aace76300f9a84186",
+    "raw_id": "51f04098b08d58af0708c34ab6197e11aae667fe47fb1f542abee5efb6425d9d",
+    "schema_fingerprint": "591a876403b641d0e834357beb50a7dfe7dfb2181f81d811334fd1b8493b04af"
+  },
+  "decision_boundary": {
+    "guild_api_route_candidates_observed": true,
+    "guild_api_route_semantics_verified": false,
+    "guild_identity_verified": false,
+    "guild_search_field_mapping_reviewed": true,
+    "guild_search_route_response_captured": true,
+    "guild_search_route_semantics_candidate_observed": true,
+    "guild_search_schema_inventory_complete": true,
+    "independent_source_identity_candidate_observed": true,
+    "independent_source_identity_verified": false,
+    "planner_scoring_allowed": false,
+    "ready_for_bis25_scoring": false,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_guild_filtering": false,
+    "ready_for_guild_identity_decision_review": true,
+    "ready_for_multi_report_character_graph": false,
+    "ready_for_performance_model": false,
+    "status": "independent_source_identity_candidate_observed"
+  },
+  "evidence_summary": {
+    "contains_raw_payload": false,
+    "contains_source_scalar_values": false,
+    "cross_endpoint_identity_candidate_observed": true,
+    "guild_id_source_candidate_match_count": 1,
+    "guild_name_casefold_match_count": 1,
+    "guild_name_exact_match_count": 0,
+    "guild_search_result_count": 1,
+    "realm_field_present": true,
+    "report_count_field_present": true
+  },
+  "field_mapping": {
+    "contains_scalar_values": false,
+    "mapped_field_count": 4,
+    "mapped_fields": [
+      {
+        "contains_scalar_value": false,
+        "normalization": "identity",
+        "path": "$.guilds[].id",
+        "semantic_name": "guild_id",
+        "source_candidate_match": true,
+        "source_type": "integer"
+      },
+      {
+        "contains_scalar_value": false,
+        "expected_label_match": true,
+        "normalization": "unicode_casefold_for_comparison",
+        "path": "$.guilds[].name",
+        "semantic_name": "guild_name",
+        "source_type": "string"
+      },
+      {
+        "contains_scalar_value": false,
+        "normalization": "identity_candidate",
+        "path": "$.guilds[].realm",
+        "semantic_name": "realm",
+        "source_type": "string"
+      },
+      {
+        "contains_scalar_value": false,
+        "normalization": "base10_nonnegative_integer_candidate",
+        "parseable_in_observed_payload": true,
+        "path": "$.guilds[].report_count",
+        "semantic_name": "report_count",
+        "source_type": "string"
+      }
+    ]
+  },
+  "integrity_checks": {
+    "capture_binding_verified": true,
+    "exact_object_field_set_verified": true,
+    "guild_id_integer_verified": true,
+    "guild_id_matches_source_candidate": true,
+    "guild_name_casefold_match_verified": true,
+    "private_schema_inventory_sha256_verified": true,
+    "public_mapping_contains_no_scalar_values": true,
+    "public_private_field_inventory_match_verified": true,
+    "public_schema_inventory_verified": true,
+    "raw_payload_not_published": true,
+    "realm_string_verified": true,
+    "report_count_string_verified": true,
+    "source_guild_id_not_published": true
+  },
+  "mapping_kind": "guild_identity_search_mapping_review",
+  "mapping_version": "guild-identity-search-mapping-review-v1",
+  "schema_version": 1,
+  "source_private_review_name": "argentum-guild-search-mapping-review.private.json",
+  "source_private_review_sha256": "f86b6f21050d0731694d8a2be6032a6a97ecd88ea19452cfd015ae1f9853fd7a",
+  "source_public_inventory_name": "argentum-guild-search-schema-inventory.json",
+  "source_public_inventory_sha256": "0bee876afff99d14016b942c4efd4f6c52cd8cc9df3a9455b4660d5f5ed1fbd0",
+  "summary": {
+    "all_integrity_checks_passed": true,
+    "contains_raw_payload": false,
+    "contains_source_scalar_values": false,
+    "cross_endpoint_identity_candidate_observed": true,
+    "mapped_field_count": 4,
+    "ready_for_guild_identity_decision_review": true
+  },
+  "target": {
+    "guild_label": "Argentum",
+    "raw_payload_published": false,
+    "source_guild_id_published": false
+  }
+}
