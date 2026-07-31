@@ -24,24 +24,19 @@ def main() -> int:
     parser.add_argument(
         "--search-probe-private",
         type=Path,
-        default=Path(
-            "data/extracted/report-discovery/argentum-guild-search-probe.private.json"
-        ),
+        default=Path("data/extracted/report-discovery/argentum-guild-search-probe.private.json"),
     )
     parser.add_argument(
         "--private-output",
         type=Path,
         default=Path(
-            "data/extracted/report-discovery/"
-            "argentum-guild-search-access-diagnostic.private.json"
+            "data/extracted/report-discovery/argentum-guild-search-access-diagnostic.private.json"
         ),
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path(
-            "data/exchange/out/argentum-guild-search-access-diagnostic.json"
-        ),
+        default=Path("data/exchange/out/argentum-guild-search-access-diagnostic.json"),
     )
     parser.add_argument(
         "--registry",
