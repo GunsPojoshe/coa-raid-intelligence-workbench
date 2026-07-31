@@ -89,7 +89,7 @@ def _write_inputs(tmp_path: Path) -> tuple[Path, Path, Path]:
                     "guilds": [
                         {
                             "id": 123456,
-                            "name": "Argentum",
+                            "name": "ARGENTUM",
                             "realm": "Test Realm",
                             "report_count": "17",
                         }
@@ -152,7 +152,7 @@ def _success_body() -> bytes:
             "guilds": [
                 {
                     "id": 123456,
-                    "name": "Argentum",
+                    "name": "ARGENTUM",
                     "realm": "Test Realm",
                     "report_count": "17",
                 }
@@ -209,7 +209,7 @@ def test_capture_is_review_ready_without_promoting_route_semantics(
     assert summary["ready_for_route_semantics_review"] is True
     assert review["route_shapes_observed"] is True
     assert review["response_shape_consistent"] is True
-    assert review["exact_label_result_stable"] is True
+    assert review["target_name_casefold_match_stable"] is True
     assert review["source_id_set_stable_by_hash"] is True
     assert review["limit_truncation_semantics_verified"] is False
     assert review["pagination_object_observed"] is False
@@ -222,7 +222,7 @@ def test_capture_is_review_ready_without_promoting_route_semantics(
     assert "123456" not in public_text
     assert "Test Realm" not in public_text
     assert "example.test" not in public_text
-    assert '"query_values_published": false' in public_text
+    assert '"request_urls_published": false' in public_text
     assert '"contains_source_scalar_values": false' in public_text
 
     assert len(runner.commands) == 3
