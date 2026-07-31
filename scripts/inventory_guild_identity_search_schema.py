@@ -26,8 +26,7 @@ def main() -> int:
         "--capture-review-private",
         type=Path,
         default=Path(
-            "data/extracted/report-discovery/"
-            "argentum-guild-search-capture-review.private.json"
+            "data/extracted/report-discovery/argentum-guild-search-capture-review.private.json"
         ),
     )
     parser.add_argument(
@@ -39,8 +38,7 @@ def main() -> int:
         "--access-diagnostic-private",
         type=Path,
         default=Path(
-            "data/extracted/report-discovery/"
-            "argentum-guild-search-access-diagnostic.private.json"
+            "data/extracted/report-discovery/argentum-guild-search-access-diagnostic.private.json"
         ),
     )
     parser.add_argument(
@@ -53,8 +51,7 @@ def main() -> int:
         "--private-output",
         type=Path,
         default=Path(
-            "data/extracted/report-discovery/"
-            "argentum-guild-search-schema-inventory.private.json"
+            "data/extracted/report-discovery/argentum-guild-search-schema-inventory.private.json"
         ),
     )
     parser.add_argument(
