@@ -7,15 +7,13 @@ import shutil
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable, Mapping, Sequence
+from typing import Any, Callable, Mapping
 from urllib.parse import parse_qsl, urlsplit
 
-from .raw_archive import RawArchive, request_key_from_url
+from .raw_archive import RawArchive, RawCapture, request_key_from_url
 from .source_registry import SourceRegistry
 
 _DIAGNOSTIC_VERSION = "guild-identity-search-access-diagnostic-v1"
-_PUBLIC_PROBE_KIND = "guild_identity_search_probe"
-_PRIVATE_PROBE_KIND = "guild_identity_search_probe_private"
 _PROBE_VERSION = "guild-identity-search-probe-v1"
 _SEARCH_ROUTE = "/api/guilds/search"
 _PROFILE_ORDER = (
@@ -39,10 +37,9 @@ def _sha256_bytes(value: bytes) -> str:
 def _load_object(path: Path, label: str) -> tuple[dict[str, Any], bytes]:
     try:
         body = path.read_bytes()
+        payload = json.loads(body)
     except OSError as exc:
         raise ValueError(f"unable to read {label}: {path}") from exc
-    try:
-        payload = json.loads(body)
     except json.JSONDecodeError as exc:
         raise ValueError(f"{label} is not valid JSON: {path}") from exc
     if not isinstance(payload, dict):
@@ -61,9 +58,7 @@ def _write_json(path: Path, payload: Mapping[str, Any]) -> bytes:
 
 def _required_object(value: object, field_name: str) -> dict[str, Any]:
     if not isinstance(value, dict):
-        raise ValueError(
-            f"guild search access diagnostic field {field_name} must be an object"
-        )
+        raise ValueError(f"guild search access field {field_name} must be an object")
     return value
 
 
@@ -85,44 +80,47 @@ def _validate_inputs(
     expected_guild_label: str,
     registry: SourceRegistry,
 ) -> str:
-    if public_probe.get("schema_version") != 1:
-        raise ValueError("public guild search probe schema mismatch")
-    if public_probe.get("probe_kind") != _PUBLIC_PROBE_KIND:
-        raise ValueError("public guild search probe kind mismatch")
-    if public_probe.get("probe_version") != _PROBE_VERSION:
-        raise ValueError("public guild search probe version mismatch")
+    expected_public = {
+        "schema_version": 1,
+        "probe_kind": "guild_identity_search_probe",
+        "probe_version": _PROBE_VERSION,
+    }
+    for field_name, expected in expected_public.items():
+        if public_probe.get(field_name) != expected:
+            raise ValueError(f"public guild search probe mismatch: {field_name}")
 
-    target = _required_object(public_probe.get("target"), "public_probe.target")
+    target = _required_object(public_probe.get("target"), "public.target")
     if target.get("guild_label") != expected_guild_label:
-        raise ValueError("public guild search probe guild label mismatch")
+        raise ValueError("public guild search guild label mismatch")
     if target.get("source_guild_id_published") is not False:
-        raise ValueError("public guild search probe publishes source guild ID")
+        raise ValueError("public guild search publishes source guild ID")
     if target.get("request_url_published") is not False:
-        raise ValueError("public guild search probe publishes request URL")
+        raise ValueError("public guild search publishes request URL")
 
-    summary = _required_object(public_probe.get("summary"), "public_probe.summary")
-    if summary.get("all_integrity_checks_passed") is not True:
-        raise ValueError("public guild search probe integrity checks did not pass")
-    if summary.get("contains_source_scalar_values") is not False:
-        raise ValueError("public guild search probe is not scalar-free")
-    if summary.get("contains_error_text") is not False:
-        raise ValueError("public guild search probe publishes error text")
-    if summary.get("response_completed") is not False:
-        raise ValueError("access diagnostic requires an incomplete search probe")
+    summary = _required_object(public_probe.get("summary"), "public.summary")
+    expected_summary = {
+        "all_integrity_checks_passed": True,
+        "response_completed": False,
+        "contains_source_scalar_values": False,
+        "contains_error_text": False,
+    }
+    for field_name, expected in expected_summary.items():
+        if summary.get(field_name) != expected:
+            raise ValueError(f"public guild search summary mismatch: {field_name}")
 
-    request = _required_object(public_probe.get("request"), "public_probe.request")
-    if request.get("route_template") != _SEARCH_ROUTE:
-        raise ValueError("public guild search route template mismatch")
-    if request.get("query_keys") != ["q", "limit"]:
-        raise ValueError("public guild search query keys changed")
-    if request.get("transport_profile") != "http1_1":
-        raise ValueError("public guild search transport profile mismatch")
-    if request.get("redirects_allowed") is not False:
-        raise ValueError("public guild search probe allowed redirects")
-    if request.get("credentials_supplied") is not False:
-        raise ValueError("public guild search probe supplied credentials")
+    request = _required_object(public_probe.get("request"), "public.request")
+    expected_request = {
+        "route_template": _SEARCH_ROUTE,
+        "query_keys": ["q", "limit"],
+        "transport_profile": "http1_1",
+        "redirects_allowed": False,
+        "credentials_supplied": False,
+    }
+    for field_name, expected in expected_request.items():
+        if request.get(field_name) != expected:
+            raise ValueError(f"public guild search request mismatch: {field_name}")
 
-    response = _required_object(public_probe.get("response"), "public_probe.response")
+    response = _required_object(public_probe.get("response"), "public.response")
     if response.get("http_status") != 403:
         raise ValueError("access diagnostic requires an HTTP 403 baseline")
     if response.get("failure_class") != "http_status_failure":
@@ -130,10 +128,7 @@ def _validate_inputs(
     if response.get("capture") is not None:
         raise ValueError("HTTP 403 baseline unexpectedly captured a body")
 
-    boundary = _required_object(
-        public_probe.get("decision_boundary"),
-        "public_probe.decision_boundary",
-    )
+    boundary = _required_object(public_probe.get("decision_boundary"), "public.boundary")
     if boundary.get("guild_api_route_candidates_observed") is not True:
         raise ValueError("guild API route candidate was not observed")
     for field_name in (
@@ -153,28 +148,23 @@ def _validate_inputs(
     if _sha256_bytes(private_probe_body) != expected_private_hash:
         raise ValueError("private guild search probe SHA-256 mismatch")
 
-    if private_probe.get("schema_version") != 1:
-        raise ValueError("private guild search probe schema mismatch")
-    if private_probe.get("probe_kind") != _PRIVATE_PROBE_KIND:
-        raise ValueError("private guild search probe kind mismatch")
-    if private_probe.get("probe_version") != _PROBE_VERSION:
-        raise ValueError("private guild search probe version mismatch")
-    if private_probe.get("target_guild_label") != expected_guild_label:
-        raise ValueError("private guild search probe guild label mismatch")
+    expected_private = {
+        "schema_version": 1,
+        "probe_kind": "guild_identity_search_probe_private",
+        "probe_version": _PROBE_VERSION,
+        "target_guild_label": expected_guild_label,
+    }
+    for field_name, expected in expected_private.items():
+        if private_probe.get(field_name) != expected:
+            raise ValueError(f"private guild search probe mismatch: {field_name}")
 
-    private_summary = _required_object(
-        private_probe.get("summary"),
-        "private_probe.summary",
-    )
+    private_summary = _required_object(private_probe.get("summary"), "private.summary")
     if private_summary.get("response_completed") is not False:
         raise ValueError("private guild search probe unexpectedly completed")
     if private_summary.get("contains_source_scalar_values") is not True:
         raise ValueError("private guild search scalar boundary mismatch")
 
-    transport = _required_object(
-        private_probe.get("transport"),
-        "private_probe.transport",
-    )
+    transport = _required_object(private_probe.get("transport"), "private.transport")
     if transport.get("profile") != "http1_1":
         raise ValueError("private guild search transport profile mismatch")
     if transport.get("http_status") != 403:
@@ -198,8 +188,6 @@ def _validate_inputs(
 
 
 def _profile_headers(profile: str, base_url: str) -> tuple[tuple[str, str], ...]:
-    if profile not in _PROFILE_ORDER:
-        raise ValueError(f"unsupported guild search access profile: {profile}")
     if profile == "minimal_http1_1":
         return (
             ("Accept", "application/json, text/plain, */*"),
@@ -208,7 +196,8 @@ def _profile_headers(profile: str, base_url: str) -> tuple[tuple[str, str], ...]
                 "CoA-Raid-Intelligence-Workbench/0.1 guild-search-access",
             ),
         )
-
+    if profile not in _PROFILE_ORDER:
+        raise ValueError(f"unsupported guild search access profile: {profile}")
     headers = (
         ("Accept", "application/json, text/plain, */*"),
         ("Accept-Language", "en-US,en;q=0.9"),
@@ -232,8 +221,8 @@ def _profile_headers(profile: str, base_url: str) -> tuple[tuple[str, str], ...]
     return headers
 
 
-def _failure_class(return_code: int | None, *, process_timed_out: bool) -> str | None:
-    if process_timed_out or return_code == 28:
+def _failure_class(return_code: int | None, timed_out: bool) -> str | None:
+    if timed_out or return_code == 28:
         return "timeout"
     if return_code in {5, 6, 7, 35, 52, 55, 60, 92}:
         return "network_or_tls_failure"
@@ -281,26 +270,29 @@ def _error_field_names(value: object) -> list[str]:
 
 
 def _denial_category(body: bytes, payload: object | None) -> str:
-    if payload is not None:
-        text = json.dumps(payload, ensure_ascii=False, sort_keys=True).casefold()
-    else:
-        text = body.decode("utf-8", errors="replace").casefold()
-    if "csrf" in text or "cross-site request forgery" in text:
-        return "csrf_required"
-    if any(token in text for token in ("captcha", "challenge", "cloudflare", "bot")):
-        return "bot_challenge"
-    if any(token in text for token in ("authenticate", "authentication", "login", "token")):
-        return "authentication_required"
-    if any(token in text for token in ("forbidden", "access denied", "permission")):
-        return "access_denied"
-    if any(token in text for token in ("rate limit", "too many requests")):
-        return "rate_limited"
-    if any(token in text for token in ("invalid", "required", "validation")):
-        return "validation_error"
+    text = (
+        json.dumps(payload, ensure_ascii=False, sort_keys=True)
+        if payload is not None
+        else body.decode("utf-8", errors="replace")
+    ).casefold()
+    categories = (
+        ("csrf_required", ("csrf", "cross-site request forgery")),
+        ("bot_challenge", ("captcha", "challenge", "cloudflare", "bot")),
+        (
+            "authentication_required",
+            ("authenticate", "authentication", "login", "token"),
+        ),
+        ("access_denied", ("forbidden", "access denied", "permission")),
+        ("rate_limited", ("rate limit", "too many requests")),
+        ("validation_error", ("invalid", "required", "validation")),
+    )
+    for category, tokens in categories:
+        if any(token in text for token in tokens):
+            return category
     return "unclassified"
 
 
-def _capture_summary(capture: object | None) -> dict[str, Any] | None:
+def _capture_summary(capture: RawCapture | None) -> dict[str, Any] | None:
     if capture is None:
         return None
     return {
@@ -326,7 +318,7 @@ def capture_guild_identity_search_access_diagnostic(
     max_bytes: int = _DEFAULT_MAX_BYTES,
     runner: RunCommand = subprocess.run,
 ) -> dict[str, Any]:
-    """Capture bounded denied bodies and test browser-like no-credential profiles."""
+    """Capture denied bodies and test bounded no-credential browser profiles."""
     if timeout_seconds < 10 or timeout_seconds > 300:
         raise ValueError("timeout_seconds must be between 10 and 300")
     if max_bytes < 64 * 1024 or max_bytes > 1024 * 1024:
@@ -360,14 +352,16 @@ def capture_guild_identity_search_access_diagnostic(
         )
         temporary_body.unlink(missing_ok=True)
         headers = _profile_headers(profile, registry.base_url)
-        if any(
-            name.casefold()
-            in {"authorization", "cookie", "proxy-authorization", "x-api-key"}
-            for name, _value in headers
-        ):
+        forbidden_headers = {
+            "authorization",
+            "cookie",
+            "proxy-authorization",
+            "x-api-key",
+        }
+        if any(name.casefold() in forbidden_headers for name, _value in headers):
             raise ValueError("guild search access profile contains credentials")
 
-        command: list[str] = [
+        command = [
             executable,
             "--silent",
             "--show-error",
@@ -398,7 +392,7 @@ def capture_guild_identity_search_access_diagnostic(
             )
         )
 
-        process_timed_out = False
+        timed_out = False
         stderr = ""
         try:
             completed = runner(
@@ -412,7 +406,7 @@ def capture_guild_identity_search_access_diagnostic(
             stdout_lines = str(completed.stdout or "").strip().splitlines()
             stderr = str(completed.stderr or "").strip()
         except subprocess.TimeoutExpired as exc:
-            process_timed_out = True
+            timed_out = True
             return_code = None
             stdout_lines = []
             stderr = str(exc)
@@ -424,10 +418,7 @@ def capture_guild_identity_search_access_diagnostic(
         )
         content_type = stdout_lines[1].strip() if len(stdout_lines) > 1 else None
         body = temporary_body.read_bytes() if temporary_body.is_file() else None
-        failure_class = _failure_class(
-            return_code,
-            process_timed_out=process_timed_out,
-        )
+        failure_class = _failure_class(return_code, timed_out)
         if body is not None and not body:
             body = None
             failure_class = failure_class or "empty_response"
@@ -444,7 +435,7 @@ def capture_guild_identity_search_access_diagnostic(
                 payload = json.loads(body)
                 json_valid = True
             except (UnicodeDecodeError, json.JSONDecodeError):
-                payload = None
+                pass
 
         capture = None
         if body is not None:
@@ -483,6 +474,7 @@ def capture_guild_identity_search_access_diagnostic(
             and http_status is not None
             and 200 <= http_status <= 299
         )
+        capture_summary = _capture_summary(capture)
 
         private_attempts.append(
             {
@@ -499,7 +491,7 @@ def capture_guild_identity_search_access_diagnostic(
                     if body is not None and not json_valid
                     else None
                 ),
-                "capture": _capture_summary(capture),
+                "capture": capture_summary,
                 "denial_category": denial_category,
                 "response_candidate": response_candidate,
             }
@@ -518,7 +510,7 @@ def capture_guild_identity_search_access_diagnostic(
                 "top_level_keys": top_level_keys,
                 "error_field_names": _error_field_names(payload),
                 "denial_category": denial_category,
-                "capture": _capture_summary(capture),
+                "capture": capture_summary,
                 "response_candidate": response_candidate,
                 "contains_source_scalar_values": False,
                 "contains_error_text": False,
@@ -536,7 +528,7 @@ def capture_guild_identity_search_access_diagnostic(
             if attempt["denial_category"] is not None
         }
     )
-    access_profile_candidate = selected_profile is not None
+    access_candidate = selected_profile is not None
     denial_observed = bool(denial_categories)
     checks = {
         "public_search_probe_verified": True,
@@ -577,7 +569,7 @@ def capture_guild_identity_search_access_diagnostic(
         "selected_profile": selected_profile,
         "summary": {
             "attempt_count": len(private_attempts),
-            "access_profile_candidate_observed": access_profile_candidate,
+            "access_profile_candidate_observed": access_candidate,
             "denial_categories": denial_categories,
             "contains_source_scalar_values": True,
         },
@@ -586,7 +578,7 @@ def capture_guild_identity_search_access_diagnostic(
 
     status = (
         "guild_search_access_profile_candidate_observed"
-        if access_profile_candidate
+        if access_candidate
         else "guild_search_access_denial_observed"
         if denial_observed
         else "guild_search_access_diagnostic_incomplete"
@@ -623,11 +615,9 @@ def capture_guild_identity_search_access_diagnostic(
             "guild_api_route_candidates_observed": True,
             "guild_search_http_403_baseline_observed": True,
             "guild_search_denial_category_observed": denial_observed,
-            "guild_search_access_profile_candidate_observed": (
-                access_profile_candidate
-            ),
+            "guild_search_access_profile_candidate_observed": access_candidate,
             "selected_access_profile": selected_profile,
-            "ready_for_profiled_guild_search_probe": access_profile_candidate,
+            "ready_for_profiled_guild_search_probe": access_candidate,
             "guild_api_route_semantics_verified": False,
             "independent_source_identity_verified": False,
             "guild_identity_verified": False,
@@ -643,7 +633,7 @@ def capture_guild_identity_search_access_diagnostic(
             "integrity_check_count": len(checks),
             "attempt_count": len(public_attempts),
             "selected_access_profile": selected_profile,
-            "access_profile_candidate_observed": access_profile_candidate,
+            "access_profile_candidate_observed": access_candidate,
             "denial_category_count": len(denial_categories),
             "denial_categories": denial_categories,
             "contains_source_scalar_values": False,
