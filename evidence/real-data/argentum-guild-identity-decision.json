@@ -1,0 +1,76 @@
+{
+  "decision_boundary": {
+    "guild_api_route_semantics_verified": false,
+    "guild_identity_verified": true,
+    "guild_search_field_mapping_reviewed": true,
+    "independent_source_identity_candidate_observed": true,
+    "independent_source_identity_verified": true,
+    "planner_scoring_allowed": false,
+    "ready_for_bis25_scoring": false,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_guild_filtering": true,
+    "ready_for_multi_report_character_graph": false,
+    "ready_for_performance_model": false,
+    "snapshot_internal_identity_consistent": true,
+    "status": "guild_identity_verified"
+  },
+  "decision_kind": "guild_identity_decision",
+  "decision_version": "guild-identity-decision-v1",
+  "evidence_summary": {
+    "contains_raw_payload": false,
+    "contains_source_scalar_values": false,
+    "cross_endpoint_name_casefold_equal": true,
+    "cross_endpoint_source_id_equal": true,
+    "guild_search_mapped_field_count": 4,
+    "guild_search_result_count": 1,
+    "snapshot_candidate_conflicting_name_count": 0,
+    "snapshot_distinct_target_guild_id_count": 1,
+    "snapshot_exact_label_report_count": 17,
+    "snapshot_report_count": 6454
+  },
+  "integrity_checks": {
+    "cross_endpoint_name_casefold_equality_verified": true,
+    "cross_endpoint_source_id_equality_verified": true,
+    "explicit_operator_promotion_recorded": true,
+    "private_manifest_recomputed_without_conflicts": true,
+    "private_manifest_sha256_verified": true,
+    "private_search_mapping_review_sha256_verified": true,
+    "private_snapshot_review_sha256_verified": true,
+    "public_decision_contains_no_source_scalar_values": true,
+    "public_manifest_verified": true,
+    "public_search_mapping_review_verified": true,
+    "public_snapshot_review_verified": true,
+    "raw_payload_not_published": true,
+    "single_search_result_verified": true,
+    "snapshot_conflicting_names_absent": true,
+    "snapshot_target_id_unique_verified": true,
+    "source_guild_id_not_published": true
+  },
+  "promotion": {
+    "evidence_policy": "consistent_snapshot_plus_independent_search",
+    "explicit_operator_promotion": true,
+    "promotion_mechanism": "required_cli_flag"
+  },
+  "schema_version": 1,
+  "source_private_decision_name": "argentum-guild-identity-decision.private.json",
+  "source_private_decision_sha256": "c9f9f3e80828bf5d999c64260f4081ce747d4c5a59c2fde4c24fa08bc00afea6",
+  "source_public_manifest_name": "argentum-public-report-manifest.json",
+  "source_public_manifest_sha256": "aaad2a9301bdb6a8e2af62a04fc74083a3d1fcd255c293b72dba3d4953b49e57",
+  "source_public_mapping_review_name": "argentum-guild-search-mapping-review.json",
+  "source_public_mapping_review_sha256": "0524067a0b4802341ef135bef39bdaf0354c116f89b07fc0f116e0cd766b3964",
+  "source_public_snapshot_review_name": "argentum-guild-identity-snapshot-review.json",
+  "source_public_snapshot_review_sha256": "fe033e9b06833ce3c28bc806c55f5971057eb3832f00a9b9e1ae40f2bcd7794e",
+  "summary": {
+    "all_integrity_checks_passed": true,
+    "contains_raw_payload": false,
+    "contains_source_scalar_values": false,
+    "guild_identity_verified": true,
+    "independent_source_identity_verified": true,
+    "ready_for_guild_filtering": true
+  },
+  "target": {
+    "guild_label": "Argentum",
+    "raw_payload_published": false,
+    "source_guild_id_published": false
+  }
+}
