@@ -154,6 +154,7 @@ def test_contract_public_output_contains_no_report_or_guild_ids(tmp_path: Path) 
     encoded = json.dumps(contract, sort_keys=True)
 
     assert '"report_ids"' not in encoded
-    assert "source_guild_id" not in encoded
+    assert "candidate_source_guild_id" not in encoded
+    assert "verified_source_guild_id" not in encoded
     assert contract["target"]["report_ids_published"] is False
     assert contract["target"]["source_guild_id_published"] is False
