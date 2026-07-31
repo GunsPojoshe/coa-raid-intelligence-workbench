@@ -2,121 +2,165 @@
 
 Ты продолжаешь разработку проекта **CoA Raid Intelligence Workbench**.
 
-## Обязательный порядок начала
+Repository:
 
-1. Проверь repository `GunsPojoshe/coa-raid-intelligence-workbench`.
-2. Проверь branch, HEAD и working tree.
-3. Проверь PR #7, его base и PR #3.
-4. Проверь latest GitHub Actions run и exact failures.
-5. Прочитай полностью:
+```text
+GunsPojoshe/coa-raid-intelligence-workbench
+```
+
+Активная ветка:
+
+```text
+e3/real-log-capture
+```
+
+Активный Draft PR:
+
+```text
+PR #7: e3/real-log-capture -> e2/log-evidence-refactor
+```
+
+## Обязательная проверка перед работой
+
+До любых изменений:
+
+1. Проверь repository, branch, remote HEAD и working tree.
+2. Проверь PR #7: state, Draft, mergeable, base, head SHA, commits и changed files.
+3. Проверь PR #3 и положение ветки PR #7 относительно его head.
+4. Проверь последний GitHub Actions run и все jobs.
+5. Прочитай полностью и в порядке:
    - `AGENTS.md`;
    - `docs/PROJECT_MASTER_CONTEXT.md`;
    - `docs/PROJECT_STATE.md`;
+   - `docs/CONTINUATION_PROMPT.md`;
    - `docs/REAL_LOG_CAPTURE.md`;
    - `docs/GUILD_WIDE_COLLECTION_CONTRACT.md`;
    - `docs/ADR_012_LOG_EVIDENCE_TRUTH_MODEL.md`;
    - `evidence/real-data/README.md`.
-6. Сверь claims с кодом и versioned receipts.
-7. Не доверяй старым HEAD/test counts без проверки.
+6. Сверь документацию с кодом, migrations, versioned receipts и CI.
+7. Не доверяй старым HEAD, test count, CI run, hashes, routes или source counts без проверки.
+8. До изменения аналитической семантики перечисли существенные расхождения.
 
-## Branch chain
-
-```text
-main
-└── e2/log-evidence-refactor        PR #3 -> main, Draft
-    └── e3/real-log-capture         PR #7 -> e2, Draft
-```
-
-Green baseline перед documentation refresh:
+## Последнее проверенное состояние до documentation refresh
 
 ```text
-commit: 00bae9ac4deb457eebc41cd50bdff6305bf3fe42
-Verify repository run #372
+PR #7:
+state: open
+Draft: true
+mergeable: true
+base: e2/log-evidence-refactor
+head: e3/real-log-capture
+implementation HEAD: 297895c5ce3b26ce2911befd9addf474ef3e1138
+commits: 449
+changed files: 225
+
+PR #3:
+state: open
+Draft: true
+base: main
+head: e2/log-evidence-refactor
+head SHA: 4b42a7d0735ba1125e4f0ef14dd01422d4b55afc
+
+Verify repository run #464:
+public-release-audit: success
 Ubuntu: success
 Windows: success
+reported tests: 300 passed
 ```
 
-Фактический HEAD и CI перепроверить.
+Documentation commits после этого baseline продвинули ветку. Фактический HEAD и CI перепроверь.
 
-## Миссия и trust rules
+## Главная цель проекта
 
-Build a localhost-first raid planning and evidence system. Combat-log event является observation, а не автоматическим доказательством общей mechanic.
-
-Нельзя придумывать routes, query parameters, JSON fields, pagination behavior, Spell IDs, provider mappings или semantic meaning по display name/label.
-
-Normalization разрешена только для exact reviewed hash/fingerprint и verified mapping/extractor contract. Planner scoring допускает только `corroborated` и `confirmed`. Contradicting evidence сохраняется.
-
-## Privacy and Git
-
-Пользователь разрешает использовать локальный private context для анализа. Это не разрешает коммитить source scalars или secrets.
-
-Versioned:
-
-- code/tests;
-- migrations;
-- reviewed mappings;
-- docs;
-- scalar-free receipts.
-
-Local-only:
+Построить evidence-first систему:
 
 ```text
-data/raw/
-data/warehouse/
-data/normalized/
-data/reconstructed/
-data/extracted/
-data/exchange/in/
-data/exchange/out/
+source response
+-> immutable raw archive
+-> SHA-256 and schema fingerprint
+-> reviewed verified mapping/extractor
+-> canonical normalization or dedicated extraction
+-> deterministic reconstruction
+-> immutable observations
+-> supporting and contradicting evidence
+-> corroborated or confirmed mechanic
+-> explainable planner scoring
 ```
 
-Never commit cookies, tokens, Authorization headers, browser profiles, `.env`, unsanitized HAR or absolute user paths.
+Долгосрочная прикладная цель:
 
-## Подтверждённый фундамент
+```text
+verified Argentum reports
+-> stable identity for 30-40 characters
+-> multi-report performance corpus
+-> comparable global benchmark
+-> role/utility/availability constraints
+-> explainable optimal BiS 25 roster
+```
 
-- localhost FastAPI raid planner and DuckDB plans;
-- immutable raw archive and retrieval observations;
-- JSON/HAR safe tooling;
-- verified mapping gates and schema fingerprints;
-- canonical parser records and Aura State Engine;
-- hypotheses/evidence/trust policies;
-- migrations `0001`–`0008`;
-- Ubuntu/Windows repository verification;
-- verified Armory/public-report/report/encounter mappings;
-- normalized, reconstructed and persisted report slice;
-- promoted and persisted combatants parser observations;
-- combatants parser and actor/build read models;
-- promoted `limit=25` pagination contract;
-- exhaustive public-report manifest.
+BiS 25 не является простым top-25 рейтингом. Оптимизатор должен учитывать роли, boss coverage, utility, defensives, устойчивость состава, confidence, sample volume, attendance и заменяемость.
 
-## Completed combatants checkpoint
+## Trust boundaries
+
+- Combat-log event является observation, не автоматическим доказательством общей mechanic.
+- Parser correctness не подтверждает gameplay semantics.
+- Label, nickname или display name не являются достаточным identity key.
+- Observed/candidate data не допускаются в canonical planner scoring.
+- Planner scoring разрешён только для `corroborated` и `confirmed` mechanics.
+- Contradicting evidence сохраняется.
+- Explicit operator promotion нельзя заменять автоматическим выводом.
+
+## Завершённые checkpoints
+
+### Armory
+
+- реальные character и talent-grid payloads получены;
+- immutable archives проверены;
+- mappings имеют статус verified;
+- exact raw production gate пройден.
+
+### Report/encounter slice
+
+Observed routes:
+
+```text
+/api/reports/{template}
+/api/reports/{template}/encounters/{template}
+/api/reports/{template}/encounters/{template}/combatants-info
+```
+
+Отдельный `/roster` route не наблюдался.
+
+```text
+normalized: 2 reports, 15 encounters, 31 actors, 31 participants, 0 aura events
+reconstructed: 1 report, 14 encounters, 31 actors, 31 participants, 0 field conflicts
+persisted through 0007: 77 canonical entity observations
+```
+
+### Combatants persistence
 
 ```text
 migration: 0008_combatants_observation_persistence
 persisted observations: 1343
 actor/build observations: 1339
-linked actors: 11
+distinct linked actors: 11
 integrity checks: 14/14
 core actor mutations: 0
 ```
 
-Receipt:
+Read models:
 
 ```text
-evidence/real-data/observed-combatants-info-persistence.json
+combatants_parser_observation_v1
+combatants_actor_build_observation_v1
 ```
 
-Companion-addon provenance, nested semantics, gameplay meaning and planner scoring remain unverified.
+This verifies parser structure and persistence for the exact reviewed payload only. Companion-addon provenance, nested semantics, gameplay meaning and scoring remain unverified.
 
-## Completed public manifest checkpoint
-
-Receipt:
+### Exhaustive public-report manifest
 
 ```text
-evidence/real-data/argentum-public-report-manifest.json
-```
-
-```text
+receipt: evidence/real-data/argentum-public-report-manifest.json
 route: /api/reports/public
 limit: 25
 pages: 259
@@ -125,59 +169,259 @@ unique report IDs: 6454
 duplicates: 0
 terminal page reports: 4
 integrity checks: 19/19
+sentinel stability: verified
+```
+
+Guild fields:
+
+```text
+reports with both guild fields: 1171
+distinct guild identity pairs: 88
 exact Argentum label reports: 17
 distinct non-null guild IDs for exact label: 1
 ```
 
-Boundary:
+### Snapshot identity review
 
 ```text
-manifest complete: true
-guild identity verified: false
-ready for guild identity review: true
-ready for guild filtering: false
-ready for full guild crawl: false
-planner scoring allowed: false
+receipt: evidence/real-data/argentum-guild-identity-snapshot-review.json
+exact label reports: 17
+candidate guild-ID reports: 17
+conflicting non-empty names: 0
+integrity checks: 10/10
+snapshot internal identity consistent: true
 ```
 
-## Первая bounded задача нового агента
+### Guild route and search evidence
 
-Не повторяй pagination probing, manifest capture или combatants persistence без hash change.
+Initial asset discovery/recovery failures were classified as timeout, TLS/network failure, partial-probe mismatch and access denial. They are not identity evidence.
 
-Выполни **local guild identity review**:
-
-1. Validate `evidence/real-data/argentum-public-report-manifest.json`.
-2. Load the local private manifest whose SHA-256 equals the receipt binding.
-3. Select the 17 rows where normalized `guild_name` exactly equals `Argentum`.
-4. Confirm all selected rows have the same non-null source guild ID.
-5. Check whether that ID appears with another non-empty guild name in the same exhaustive snapshot.
-6. Inspect available independent source identity evidence for the ID.
-7. Do not use report title, uploader or nickname as primary identity proof.
-8. Produce a scalar-free review receipt containing hashes, counts, conflict flags, reviewer and decision; do not expose the raw guild ID.
-9. Keep `guild_identity_verified=false` unless the evidence is sufficient and the manual promotion is explicit.
-10. Do not enable guild filtering, crawl or scoring before promotion.
-
-## Following sequence
+Profiled recovery succeeded:
 
 ```text
-guild identity review
--> explicit identity promotion
--> deterministic guild filtering
+receipt: evidence/real-data/argentum-guild-asset-profiled-recovery.json
+profile: http1_1
+HTTP status: 200
+asset bytes: 3881146
+API route candidates: 79
+guild route candidates: 3
+```
+
+Observed route shapes:
+
+```text
+/api/guilds/progression
+/api/guilds/search?q=<value>
+/api/guilds/search?q=<value>&limit=<value>
+```
+
+Access diagnostic:
+
+```text
+minimal_http1_1: HTTP 403
+spa_fetch_context: HTTP 200
+```
+
+Search schema inventory:
+
+```text
+receipt: evidence/real-data/argentum-guild-search-schema-inventory.json
+guild objects: 1
+field entries: 5
+casefold label matches: 1
+source ID matches: 1
+integrity checks: 15/15
+```
+
+Reviewed object shape:
+
+```text
+guilds[]
+├── id           integer
+├── name         string
+├── realm        string
+└── report_count string
+```
+
+Mapping review:
+
+```text
+receipt: evidence/real-data/argentum-guild-search-mapping-review.json
+mapped fields: 4
+search results: 1
+source ID matches: 1
+name casefold matches: 1
+integrity checks: 13/13
+cross-endpoint identity candidate observed: true
+ready for guild identity decision review: true
+```
+
+Reviewed mapping:
+
+```text
+$.guilds[].id           -> guild_id
+$.guilds[].name         -> guild_name
+$.guilds[].realm        -> realm
+$.guilds[].report_count -> report_count
+```
+
+The private evidence shows the manifest candidate and the single guild-search result share the same source ID. The names match after Unicode casefold. Public receipts contain no raw guild ID or raw payload.
+
+## Implemented but not yet executed checkpoint
+
+Explicit identity decision:
+
+```text
+scripts/decide_guild_identity.py
+src/coa_workbench/collector/guild_identity_decision.py
+```
+
+The CLI requires:
+
+```text
+--promote-identity
+```
+
+Without this flag the decision cannot be produced. Code existence does not verify identity.
+
+A successful run revalidates the complete evidence chain and may set only:
+
+```text
+independent_source_identity_verified: true
+guild_identity_verified: true
+ready_for_guild_filtering: true
+```
+
+It must keep false:
+
+```text
+guild_api_route_semantics_verified
+ready_for_full_guild_crawl
+ready_for_multi_report_character_graph
+ready_for_performance_model
+ready_for_bis25_scoring
+planner_scoring_allowed
+```
+
+## Текущая ближайшая задача
+
+Выполнить **explicit local guild identity decision**.
+
+Перед локальным запуском:
+
+1. Проверь текущую реализацию decision CLI и tests.
+2. Проверь, что CI текущего HEAD зелёный.
+3. Не повторяй pagination, manifest, snapshot review, route discovery, schema inventory или mapping review без hash/fingerprint change.
+4. Не публикуй raw guild ID, raw payload или private decision packet.
+5. Не объявляй identity verified до получения и проверки нового scalar-free receipt.
+
+Единственная локальная команда:
+
+```powershell
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+
+Set-Location "C:\Users\Simpa\source\repos\coa-raid-intelligence-workbench"
+
+git fetch origin
+git switch e3/real-log-capture
+git pull --ff-only origin e3/real-log-capture
+git status --short
+
+$Head = (git rev-parse HEAD).Trim()
+Write-Host "HEAD: $Head"
+
+uv run --no-sync python scripts/decide_guild_identity.py `
+    --promote-identity
+
+$ExitCode = $LASTEXITCODE
+if ($ExitCode -notin 0, 2) {
+    throw "Guild identity decision failed with exit code $ExitCode"
+}
+
+Write-Host "Guild identity decision exit code: $ExitCode"
+```
+
+После выполнения загрузить только:
+
+```text
+data\exchange\out\argentum-guild-identity-decision.json
+```
+
+Не загружать и не коммитить:
+
+```text
+data\extracted\report-discovery\argentum-guild-identity-decision.private.json
+```
+
+Ожидаемый код — `0`. Он означает, что explicit promotion и все integrity checks прошли. До проверки receipt не утверждать, что identity подтверждён.
+
+## После получения decision receipt
+
+Проверить:
+
+- decision kind/version;
+- exact public manifest, snapshot review и mapping review SHA bindings;
+- private decision SHA binding;
+- all integrity checks;
+- absence of source scalar values;
+- absence of raw payload;
+- explicit operator promotion flag;
+- cross-endpoint source-ID equality;
+- name casefold equality;
+- `guild_identity_verified=true`;
+- `ready_for_guild_filtering=true`;
+- all crawl/graph/performance/scoring flags remain false.
+
+После успешной проверки:
+
+1. добавить scalar-free receipt в `evidence/real-data/`;
+2. не добавлять private decision, private manifests, raw payloads или DuckDB;
+3. обновить canonical docs и PR #7;
+4. реализовать deterministic filtering by verified source guild ID;
+5. сформировать deduplicated guild report manifest;
+6. открыть full guild crawl только после отдельной проверки route semantics и collection contract.
+
+## Следующая последовательность
+
+```text
+explicit guild identity decision
+-> verified source-ID filtering
 -> guild report manifest
--> per-report capture
--> multi-report character graph
--> aura evidence and intervals
--> supporting/contradicting observations
--> mechanic trust promotion
--> planner integration
+-> reviewed full-crawl contract
+-> per-report report/encounter/combatants capture
+-> multi-report character identity graph
+-> 30-40 unique candidate characters
+-> performance observations
+-> comparable global benchmark corpus
+-> confidence-aware player scoring
+-> constrained BiS 25 optimizer
 ```
 
-## Completion gate
+## Жёсткие ограничения
 
-PR #7 remains Draft until reviewed guild identity and crawl boundaries, reviewed combatants observations, aura events and reconstructed intervals for the bounded report slice, independent supporting observations, contradicting evidence review, reproducible provenance, and green Ubuntu/Windows CI.
+- Не придумывать routes, parameters, fields, IDs или pagination rules.
+- Не считать route candidate подтверждённой semantics.
+- Не считать nickname/name достаточным identity key.
+- Не использовать observed/candidate data в planner scoring.
+- Не изменять опубликованные migrations.
+- Не коммитить raw payloads, private manifests, private decisions, checkpoints, DuckDB, cookies, tokens или browser profiles.
+- Не заявлять тесты/CI без фактической проверки.
+- Не путать parser verification с gameplay semantics.
+- Не игнорировать contradicting evidence.
+- Не выполнять automatic promotion аналитических выводов.
+- Пользователю давать один цельный короткий PowerShell-блок только для действий, невозможных через GitHub.
+- GitHub-действия выполнять через connector, а не перекладывать на пользователя.
 
-## Формат отчёта
+## Первый ответ нового агента
 
-После каждой задачи сообщай verified facts, local-only observations, outdated claims corrected, files/migrations changed, exact tests/commands, CI state, remaining boundaries, and the next bounded task.
+В первом ответе:
 
-Не называй parser correctness или mapping/persistence подтверждённой gameplay mechanic.
+1. покажи фактические repository, branch, HEAD, working tree (если доступен), PR #7, PR #3 и latest CI;
+2. перечисли расхождения документации, кода и receipts;
+3. подтверди completed manifest, snapshot review, search schema/mapping review;
+4. чётко раздели cross-endpoint candidate и explicit identity verification;
+5. назови один bounded task: выполнить и проверить identity decision receipt;
+6. сразу приступи к GitHub-части;
+7. для локального decision выдай только один PowerShell-блок;
+8. не заявляй identity verified до получения нового scalar-free receipt.
