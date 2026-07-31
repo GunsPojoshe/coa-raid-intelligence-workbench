@@ -167,8 +167,10 @@ def _validate_diagnostic(
     if not all_checks_passed:
         if checks.get("probe_size_bounded") is not False:
             raise ValueError("unsupported transport diagnostic integrity failure")
-        if attempt.get("return_code") != 63:
-            raise ValueError("range-ignored diagnostic must stop with curl code 63")
+        if attempt.get("return_code") not in {0, 63}:
+            raise ValueError(
+                "range-ignored diagnostic must finish with curl code 0 or 63"
+            )
         if not isinstance(probe_limit, int) or not isinstance(probe_bytes, int):
             raise ValueError("range-ignored diagnostic byte counts are missing")
         if probe_bytes <= probe_limit:
