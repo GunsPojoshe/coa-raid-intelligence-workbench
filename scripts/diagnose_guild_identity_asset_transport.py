@@ -19,31 +19,24 @@ def main() -> int:
     parser.add_argument(
         "--recovery-receipt",
         type=Path,
-        default=Path(
-            "evidence/real-data/argentum-guild-asset-recovery-tls-failure.json"
-        ),
+        default=Path("evidence/real-data/argentum-guild-asset-recovery-tls-failure.json"),
     )
     parser.add_argument(
         "--recovery-private",
         type=Path,
-        default=Path(
-            "data/extracted/report-discovery/argentum-guild-asset-recovery.private.json"
-        ),
+        default=Path("data/extracted/report-discovery/argentum-guild-asset-recovery.private.json"),
     )
     parser.add_argument(
         "--private-output",
         type=Path,
         default=Path(
-            "data/extracted/report-discovery/"
-            "argentum-guild-asset-transport-diagnostic.private.json"
+            "data/extracted/report-discovery/argentum-guild-asset-transport-diagnostic.private.json"
         ),
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path(
-            "data/exchange/out/argentum-guild-asset-transport-diagnostic.json"
-        ),
+        default=Path("data/exchange/out/argentum-guild-asset-transport-diagnostic.json"),
     )
     parser.add_argument(
         "--registry",
@@ -87,10 +80,7 @@ def main() -> int:
         )
     print(f"private output: {args.private_output}")
     print(f"receipt output: {args.output}")
-    print(
-        "ready for profiled asset recovery: "
-        f"{boundary['ready_for_profiled_asset_recovery']}"
-    )
+    print(f"ready for profiled asset recovery: {boundary['ready_for_profiled_asset_recovery']}")
     print("guild identity verified: false")
     print("ready for guild filtering: false")
     return 0 if boundary["ready_for_profiled_asset_recovery"] else 2
