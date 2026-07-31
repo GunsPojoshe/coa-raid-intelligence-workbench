@@ -35,7 +35,7 @@ Before changing code:
 3. inspect the latest CI run and all jobs;
 4. read the canonical context documents;
 5. compare documentation claims with code and versioned receipts;
-6. inspect required local private artifacts before running local-only decisions;
+6. inspect required local private artifacts before local-only decisions or filtering;
 7. run relevant verification;
 8. report material discrepancies before changing analytical semantics.
 
@@ -49,17 +49,7 @@ main
     └── e3/real-log-capture         PR #7 -> e2, Draft
 ```
 
-Implementation baseline before the current documentation refresh:
-
-```text
-HEAD: 297895c5ce3b26ce2911befd9addf474ef3e1138
-Verify repository run: #464
-public-release-audit: success
-Ubuntu: success
-Windows: success
-```
-
-Recheck the actual HEAD and CI because documentation commits may have advanced the branch.
+Recheck actual HEAD and CI before every task.
 
 ## Completed E3 checkpoints
 
@@ -70,34 +60,40 @@ Recheck the actual HEAD and CI because documentation commits may have advanced t
 - deterministic combatants parser and actor/build read models;
 - promoted public-report pagination limit `25`;
 - exhaustive deduplicated public-report manifest;
-- local snapshot identity review for the 17 `Argentum` rows;
+- snapshot identity review for the 17 `Argentum` rows;
 - profiled asset recovery and guild-route candidate inventory;
 - guild-search response capture through the reviewed SPA fetch context;
-- guild-search schema inventory;
-- reviewed mapping of `id`, `name`, `realm` and `report_count`;
-- cross-endpoint identity candidate linking the manifest candidate and the single guild-search result;
-- explicit identity-decision implementation requiring `--promote-identity`.
+- guild-search schema inventory and reviewed four-field mapping;
+- explicit operator guild identity decision;
+- deterministic filtering by the verified private source guild ID;
+- scalar-free deduplicated guild report manifest containing 17 selected reports.
 
-Do not repeat completed pagination, manifest, snapshot review, route discovery, schema inventory, mapping review or combatants persistence unless a bound hash/fingerprint changes.
+Do not repeat completed pagination, public manifest, snapshot review, route discovery, schema inventory, mapping review, identity decision, guild filtering or combatants persistence unless a bound hash/fingerprint changes.
 
 ## Current bounded sequence
 
-1. run the explicit local guild identity decision with `scripts/decide_guild_identity.py --promote-identity`;
-2. upload only `data/exchange/out/argentum-guild-identity-decision.json`;
-3. validate that the receipt is scalar-free and bound to the exact public/private evidence chain;
-4. version the receipt only after successful review;
-5. update documentation and PR #7 boundary to `guild_identity_verified=true` only if the receipt proves it;
-6. implement deterministic filtering by the verified source guild ID;
-7. produce a deduplicated guild report manifest;
-8. begin bounded per-report capture and multi-report character identity work.
+1. review and promote a full-crawl collection contract separately from identity/filtering;
+2. verify exact guild API route parameters, response contract, pagination and completeness semantics before using it for full crawl;
+3. compare any guild-API-derived report set with the verified 17-report public-manifest filter;
+4. preserve discrepancies and contradicting evidence;
+5. begin bounded per-report report/encounter/combatants capture only under the reviewed contract;
+6. build a multi-report character identity graph after stable identifiers are reviewed;
+7. continue aura and supporting/contradicting evidence work;
+8. admit only `corroborated` and `confirmed` mechanics to planner scoring.
 
-Until the decision receipt exists and is reviewed:
+Current boundary:
 
 ```text
-guild identity verified: false
-ready for guild filtering: false
+guild identity verified: true
+guild filtering completed: true
+guild report manifest deduplicated: true
+selected guild reports: 17
+full crawl collection contract reviewed: false
+guild API route semantics verified: false
 ready for full guild crawl: false
 ready for multi-report character graph: false
+ready for performance model: false
+ready for BiS 25 scoring: false
 planner scoring allowed: false
 ```
 
@@ -119,39 +115,31 @@ exact Argentum label reports: 17
 distinct non-null guild IDs for exact label: 1
 ```
 
-Snapshot identity review:
+Identity decision:
 
 ```text
-file: evidence/real-data/argentum-guild-identity-snapshot-review.json
-exact label reports: 17
-candidate guild-ID reports: 17
-conflicting non-empty names: 0
-integrity checks: 10/10
-snapshot internal identity consistent: true
+file: evidence/real-data/argentum-guild-identity-decision.json
+integrity checks: 16/16
+independent source identity verified: true
+guild identity verified: true
+ready for guild filtering: true
+contains raw payload: false
+contains source scalar values: false
 ```
 
-Independent guild-search chain:
+Verified guild report manifest:
 
 ```text
-profiled asset bytes: 3881146
-API route candidates: 79
-guild route candidates: 3
-guild search results: 1
-schema field entries: 5
-mapped semantic fields: 4
-source-ID matches: 1
-name casefold matches: 1
-cross-endpoint identity candidate observed: true
-ready for guild identity decision review: true
-```
-
-Reviewed mapping:
-
-```text
-$.guilds[].id           -> guild_id
-$.guilds[].name         -> guild_name
-$.guilds[].realm        -> realm
-$.guilds[].report_count -> report_count
+file: evidence/real-data/argentum-guild-report-manifest.json
+source reports: 6454
+selected reports: 17
+unique selected report IDs: 17
+duplicate selected occurrences: 0
+integrity checks: 14/14
+guild filtering completed: true
+report IDs published: false
+source guild ID published: false
+ready for full guild crawl: false
 ```
 
 Combatants persistence:
@@ -176,18 +164,17 @@ core actor mutations: 0
 - Preserve contradicting evidence.
 - Keep global mechanics separate from guild/player execution.
 - Parser correctness does not promote mechanic trust.
-- A label, repeated ID or cross-endpoint candidate is not automatic identity promotion.
+- Identity verification and filtering do not verify route semantics, crawl completeness, character identity, performance or scoring.
 - Explicit operator promotion must remain distinct from automatic evidence checks.
 
-## Guild identity rules
+## Guild identity and filtering rules
 
-- The public manifest is verified only for its captured time boundary and exact hashes.
-- The private manifest and private review packets remain local-only.
-- Public receipts must not expose the raw guild ID or raw payload.
+- Public receipts must not expose raw guild ID, report IDs or raw records.
 - Name matching alone cannot enable filtering.
-- Snapshot consistency plus independent search evidence creates a reviewable candidate, not a verified identity.
-- Identity promotion requires the explicit CLI flag and a reviewed scalar-free decision receipt.
-- Identity verification may enable filtering only; it does not verify guild API route semantics, full crawl, character identity, performance or scoring.
+- Filtering must use exact typed equality with the verified source guild ID loaded from the private decision.
+- Preserve source-manifest order and reject duplicate selected report IDs.
+- Private manifests and private decisions remain local-only.
+- The 17-report manifest is a verified filtered snapshot, not authorization for full guild crawl.
 
 ## Combatants rules
 
@@ -219,7 +206,7 @@ data/exchange/in/
 data/exchange/out/
 ```
 
-Never commit cookies, tokens, Authorization headers, browser profiles, `.env` secrets, unsanitized HAR, credentials, raw source scalars or absolute local paths containing usernames.
+Never commit cookies, tokens, Authorization headers, browser profiles, `.env` secrets, unsanitized HAR, credentials, raw source scalars, private report IDs or absolute local paths containing usernames.
 
 Never modify archived raw payloads to make tests pass.
 
@@ -262,4 +249,4 @@ The user prefers autonomous GitHub work, one complete PowerShell block for unavo
 
 Report verified facts, local-only observations, corrected stale claims, files/migrations changed, exact checks and CI state, remaining boundaries, and the next bounded task.
 
-Do not describe scaffolding, parser correctness, schema mapping or an unpromoted identity candidate as confirmed gameplay knowledge.
+Do not describe scaffolding, parser correctness, schema mapping, identity verification or filtering as confirmed gameplay knowledge.
