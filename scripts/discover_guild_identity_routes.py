@@ -71,14 +71,17 @@ def main() -> int:
 
     summary = receipt["summary"]
     inventory = receipt["route_inventory"]
+    failures = receipt["asset_failure_summary"]
     boundary = receipt["decision_boundary"]
     print(
         "guild identity route discovery: "
         f"page_completed={summary['page_capture_completed']} "
-        f"assets={summary['successful_asset_count']}/{summary['asset_count']} "
+        f"assets_captured={summary['captured_asset_count']}/{summary['asset_count']} "
         f"api_routes={summary['api_route_candidate_count']} "
         f"guild_routes={inventory['guild_api_route_shape_count']}"
     )
+    print(f"route candidate sources: {inventory['candidate_source_counts']}")
+    print(f"asset failure classes: {failures['failure_class_counts']}")
     print(f"private output: {args.private_output}")
     print(f"receipt output: {args.output}")
     print(f"ready for guild API route review: {boundary['ready_for_guild_api_route_review']}")
