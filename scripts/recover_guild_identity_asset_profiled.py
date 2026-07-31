@@ -20,9 +20,7 @@ def main() -> int:
     parser.add_argument(
         "--transport-diagnostic-receipt",
         type=Path,
-        default=Path(
-            "data/exchange/out/argentum-guild-asset-transport-diagnostic.json"
-        ),
+        default=Path("data/exchange/out/argentum-guild-asset-transport-diagnostic.json"),
     )
     parser.add_argument(
         "--transport-diagnostic-private",
@@ -34,30 +32,22 @@ def main() -> int:
     parser.add_argument(
         "--asset-recovery-receipt",
         type=Path,
-        default=Path(
-            "evidence/real-data/argentum-guild-asset-recovery-tls-failure.json"
-        ),
+        default=Path("evidence/real-data/argentum-guild-asset-recovery-tls-failure.json"),
     )
     parser.add_argument(
         "--asset-recovery-private",
         type=Path,
-        default=Path(
-            "data/extracted/report-discovery/argentum-guild-asset-recovery.private.json"
-        ),
+        default=Path("data/extracted/report-discovery/argentum-guild-asset-recovery.private.json"),
     )
     parser.add_argument(
         "--route-discovery-receipt",
         type=Path,
-        default=Path(
-            "evidence/real-data/argentum-guild-route-discovery-timeout.json"
-        ),
+        default=Path("evidence/real-data/argentum-guild-route-discovery-timeout.json"),
     )
     parser.add_argument(
         "--route-discovery-private",
         type=Path,
-        default=Path(
-            "data/extracted/report-discovery/argentum-guild-route-discovery.private.json"
-        ),
+        default=Path("data/extracted/report-discovery/argentum-guild-route-discovery.private.json"),
     )
     parser.add_argument(
         "--private-output",
@@ -69,9 +59,7 @@ def main() -> int:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path(
-            "data/exchange/out/argentum-guild-asset-profiled-recovery.json"
-        ),
+        default=Path("data/exchange/out/argentum-guild-asset-profiled-recovery.json"),
     )
     parser.add_argument(
         "--registry",
@@ -134,10 +122,7 @@ def main() -> int:
     )
     print(f"private output: {args.private_output}")
     print(f"receipt output: {args.output}")
-    print(
-        "ready for guild API route review: "
-        f"{boundary['ready_for_guild_api_route_review']}"
-    )
+    print(f"ready for guild API route review: {boundary['ready_for_guild_api_route_review']}")
     print("guild identity verified: false")
     print("ready for guild filtering: false")
     return 0 if boundary["ready_for_guild_api_route_review"] else 2
