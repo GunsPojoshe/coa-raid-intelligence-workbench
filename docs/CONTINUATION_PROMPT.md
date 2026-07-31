@@ -1,29 +1,23 @@
 # Стартовый PROMPT для продолжения CoA Raid Intelligence Workbench
 
-Скопируй этот документ в новый ChatGPT/Codex-чат или попроси агента прочитать его из репозитория.
-
----
-
 Ты продолжаешь разработку проекта **CoA Raid Intelligence Workbench**.
 
 ## Обязательный порядок начала
 
-До изменения кода:
-
 1. Проверь repository `GunsPojoshe/coa-raid-intelligence-workbench`.
-2. Проверь текущие branch, HEAD и working tree.
-3. Проверь PR #7 и его base branch.
-4. Проверь PR #3.
-5. Проверь latest GitHub Actions run и exact failure, если он есть.
-6. Прочитай полностью:
+2. Проверь branch, HEAD и working tree.
+3. Проверь PR #7, его base и PR #3.
+4. Проверь latest GitHub Actions run и exact failures.
+5. Прочитай полностью:
    - `AGENTS.md`;
    - `docs/PROJECT_MASTER_CONTEXT.md`;
    - `docs/PROJECT_STATE.md`;
    - `docs/REAL_LOG_CAPTURE.md`;
+   - `docs/GUILD_WIDE_COLLECTION_CONTRACT.md`;
    - `docs/ADR_012_LOG_EVIDENCE_TRUTH_MODEL.md`;
    - `evidence/real-data/README.md`.
-7. Сверь claims с кодом и versioned receipts.
-8. Не доверяй старым HEAD/test counts без проверки.
+6. Сверь claims с кодом и versioned receipts.
+7. Не доверяй старым HEAD/test counts без проверки.
 
 ## Branch chain
 
@@ -36,72 +30,35 @@ main
 Green baseline перед documentation refresh:
 
 ```text
-commit: 2b92b3d02339a3748d146c1b15a6718f84494e6f
-Verify repository run #280
+commit: 00bae9ac4deb457eebc41cd50bdff6305bf3fe42
+Verify repository run #372
 Ubuntu: success
 Windows: success
 ```
 
 Фактический HEAD и CI перепроверить.
 
-## Миссия
+## Миссия и trust rules
 
-Создать localhost-first browser application для:
+Build a localhost-first raid planning and evidence system. Combat-log event является observation, а не автоматическим доказательством общей mechanic.
 
-- подготовки рейдов FLEX / 10 / 25 / 40;
-- хранения планов в DuckDB;
-- автоматического сбора observations с `coa.ascensionlogs.gg`;
-- evidence-first вывода игровых механик;
-- explainable planner recommendations.
+Нельзя придумывать routes, query parameters, JSON fields, pagination behavior, Spell IDs, provider mappings или semantic meaning по display name/label.
 
-Канонический pipeline:
-
-```text
-immutable raw payload
--> exact SHA-256 + schema fingerprint
--> structural and field review
--> reviewed mapping
--> exact raw validation
--> manual promotion/publication
--> canonical normalization
--> deterministic reconstruction
--> immutable observations
--> hypothesis + supporting/contradicting evidence
--> corroborated/confirmed mechanic
--> planner scoring
-```
-
-Combat-log event является observation, а не доказательством общей mechanic.
-
-## Trust rules
-
-Нельзя придумывать:
-
-- routes и query parameters;
-- JSON fields;
-- pagination behavior;
-- event types и Spell IDs;
-- class/spec/provider mappings;
-- semantic meaning по route или display name;
-- stacking, overwrite, coexistence или scope без evidence.
-
-Normalization разрешена только для exact reviewed hash/fingerprint и mapping со статусом `verified`.
-
-В planner scoring допускаются только `corroborated` и `confirmed`. Contradicting evidence сохраняется всегда.
+Normalization разрешена только для exact reviewed hash/fingerprint и verified mapping/extractor contract. Planner scoring допускает только `corroborated` и `confirmed`. Contradicting evidence сохраняется.
 
 ## Privacy and Git
 
-Пользователь разрешает использовать весь локальный приватный контекст для анализа. Это не разрешает коммитить секреты.
+Пользователь разрешает использовать локальный private context для анализа. Это не разрешает коммитить source scalars или secrets.
 
 Versioned:
 
 - code/tests;
 - migrations;
 - reviewed mappings;
-- documentation;
+- docs;
 - scalar-free receipts.
 
-Local-only by default:
+Local-only:
 
 ```text
 data/raw/
@@ -113,187 +70,114 @@ data/exchange/in/
 data/exchange/out/
 ```
 
-Никогда не коммить cookies, tokens, Authorization headers, browser profiles, `.env` secrets или unsanitized HAR.
+Never commit cookies, tokens, Authorization headers, browser profiles, `.env`, unsanitized HAR or absolute user paths.
 
 ## Подтверждённый фундамент
 
-- localhost FastAPI app;
-- raid constructor and DuckDB plans;
+- localhost FastAPI raid planner and DuckDB plans;
 - immutable raw archive and retrieval observations;
-- JSON/HAR safe import/inventory;
-- schema fingerprints;
-- verified mapping gates;
-- canonical report/encounter/actor/participant/aura records;
-- Aura State Engine;
+- JSON/HAR safe tooling;
+- verified mapping gates and schema fingerprints;
+- canonical parser records and Aura State Engine;
 - hypotheses/evidence/trust policies;
-- migrations `0001`–`0007`;
-- repository verifier and Ubuntu/Windows CI;
-- verified Armory mappings;
-- verified public-report discovery mapping;
-- observed report/encounter/combatants routes;
-- published report and encounter mappings;
-- normalized, reconstructed and persisted selected-parser report slice.
+- migrations `0001`–`0008`;
+- Ubuntu/Windows repository verification;
+- verified Armory/public-report/report/encounter mappings;
+- normalized, reconstructed and persisted report slice;
+- promoted and persisted combatants parser observations;
+- combatants parser and actor/build read models;
+- promoted `limit=25` pagination contract;
+- exhaustive public-report manifest.
 
-## Completed report/encounter slice
-
-Published mappings:
+## Completed combatants checkpoint
 
 ```text
-config/mappings/coa_report_detail_v1.json
-config/mappings/coa_encounter_detail_v1.json
+migration: 0008_combatants_observation_persistence
+persisted observations: 1343
+actor/build observations: 1339
+linked actors: 11
+integrity checks: 14/14
+core actor mutations: 0
 ```
 
-Normalized:
+Receipt:
 
 ```text
-2 reports
-15 encounters
-31 actors
-31 participants
-0 aura events
-0 rejects
+evidence/real-data/observed-combatants-info-persistence.json
 ```
 
-Reconstructed:
+Companion-addon provenance, nested semantics, gameplay meaning and planner scoring remain unverified.
+
+## Completed public manifest checkpoint
+
+Receipt:
 
 ```text
-1 report
-14 encounters
-31 actors
-31 participants
-0 aura events
-0 rejects
-0 field conflicts
-9/9 linkage checks
+evidence/real-data/argentum-public-report-manifest.json
 ```
 
-Persisted through migration `0007`:
-
 ```text
-1 report
-14 encounters
-31 actors
-31 participants
-77 canonical entity observations
-2 normalization mappings
-2 normalization runs
-2 observation batches
+route: /api/reports/public
+limit: 25
+pages: 259
+reports: 6454
+unique report IDs: 6454
+duplicates: 0
+terminal page reports: 4
+integrity checks: 19/19
+exact Argentum label reports: 17
+distinct non-null guild IDs for exact label: 1
 ```
 
-## Current combatants-info checkpoint
-
-Exact binding:
+Boundary:
 
 ```text
-payload:     45672e0f0ff9eb461c575bdd38385795daa6326378bc3f8ad51474276140dc14
-fingerprint: 41d6d15422c668f83d2ccae1ec0ff2969671861f9e43b21cb371578961c5f8ff
-```
-
-Completed review/design:
-
-```text
-12 bounded scope candidates
-10 present scopes
-56 direct fields
-8 selected groups
-37 selected fields
-19 deferred fields
-6 storage-aware design units
-```
-
-Candidate extraction:
-
-```text
-1350 source matches
-1343 output observations
-7 exact instance-context duplicates removed
-11 stable actor links
-11 exact actor-name matches
-12/12 integrity checks
-0 core mutations
-```
-
-Versioned scalar-free receipt:
-
-```text
-evidence/real-data/observed-combatants-info-candidate-extraction.json
-```
-
-Current boundary:
-
-```text
-actor merge verified for exact payload: true
-route context verified:              true
-automatic persistence:               false
-can promote:                          false
-normalization allowed:                false
-planner scoring allowed:              false
+manifest complete: true
+guild identity verified: false
+ready for guild identity review: true
+ready for guild filtering: false
+ready for full guild crawl: false
+planner scoring allowed: false
 ```
 
 ## Первая bounded задача нового агента
 
-Не повторяй capture, field selection или mapping design.
+Не повторяй pagination probing, manifest capture или combatants persistence без hash change.
 
-Выполни **manual candidate-extraction validation and persistence design**:
+Выполни **local guild identity review**:
 
-1. Validate exact versioned extraction receipt and private extraction SHA-256.
-2. Confirm the six design result counts and all 12 integrity checks.
-3. Define an explicit manual promotion packet for parser observations only.
-4. Decide whether migration `0007` already represents all six entity types without loss of provenance.
-5. If sufficient, implement atomic/idempotent persistence into `canonical_entity_observation`.
-6. If insufficient, add one new deterministic migration; do not edit `0007`.
-7. Do not mutate core `actor` rows.
-8. Produce a scalar-free persistence receipt.
-9. Keep companion-addon provenance, nested semantics, gameplay mechanics and scoring unverified.
+1. Validate `evidence/real-data/argentum-public-report-manifest.json`.
+2. Load the local private manifest whose SHA-256 equals the receipt binding.
+3. Select the 17 rows where normalized `guild_name` exactly equals `Argentum`.
+4. Confirm all selected rows have the same non-null source guild ID.
+5. Check whether that ID appears with another non-empty guild name in the same exhaustive snapshot.
+6. Inspect available independent source identity evidence for the ID.
+7. Do not use report title, uploader or nickname as primary identity proof.
+8. Produce a scalar-free review receipt containing hashes, counts, conflict flags, reviewer and decision; do not expose the raw guild ID.
+9. Keep `guild_identity_verified=false` unless the evidence is sufficient and the manual promotion is explicit.
+10. Do not enable guild filtering, crawl or scoring before promotion.
 
-Expected design units:
-
-```text
-coa-combatants-actor-enrichment-v1        11 observations
-coa-combatants-instance-context-v1         4 observations
-coa-combatants-talent-container-v1        11 observations
-coa-combatants-classless-talent-rank-v1  564 observations
-coa-combatants-hero-build-entry-v1       564 observations
-coa-combatants-gear-slot-v1              189 observations
-```
-
-## Следующие этапы
+## Following sequence
 
 ```text
-manual extraction validation
--> reviewed promotion packet
--> atomic immutable persistence
--> deterministic read model
--> aura endpoint review/capture
--> aura normalization and interval reconstruction
--> independent supporting/contradicting evidence
+guild identity review
+-> explicit identity promotion
+-> deterministic guild filtering
+-> guild report manifest
+-> per-report capture
+-> multi-report character graph
+-> aura evidence and intervals
+-> supporting/contradicting observations
 -> mechanic trust promotion
 -> planner integration
 ```
 
 ## Completion gate
 
-PR #7 остаётся Draft до:
-
-- reviewed combatants persistence;
-- aura events for the bounded report slice;
-- reconstructed intervals;
-- independent supporting observations;
-- contradicting evidence review;
-- reproducible versioned provenance;
-- green Ubuntu and Windows CI.
+PR #7 remains Draft until reviewed guild identity and crawl boundaries, reviewed combatants observations, aura events and reconstructed intervals for the bounded report slice, independent supporting observations, contradicting evidence review, reproducible provenance, and green Ubuntu/Windows CI.
 
 ## Формат отчёта
 
-После каждой задачи сообщай:
+После каждой задачи сообщай verified facts, local-only observations, outdated claims corrected, files/migrations changed, exact tests/commands, CI state, remaining boundaries, and the next bounded task.
 
-- verified facts;
-- local-only observations;
-- outdated claims corrected;
-- files and migrations changed;
-- exact tests/commands;
-- CI state;
-- remaining boundaries;
-- next bounded task.
-
-Не называй scaffolding, parser correctness или verified schema mapping подтверждённой gameplay mechanic.
+Не называй parser correctness или mapping/persistence подтверждённой gameplay mechanic.
