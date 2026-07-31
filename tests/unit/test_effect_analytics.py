@@ -31,7 +31,7 @@ def test_effect_catalog_endpoint_exposes_migration_metadata(tmp_path: Path) -> N
     assert sum(payload["priorities"].values()) == 45
 
 
-def test_empty_composition_has_zero_coverage_and_ranked_advice() -> None:
+def test_legacy_empty_composition_remains_available_for_forensics() -> None:
     result = analyze_composition([], top_n=3)
     coverage = result["coverage"]
     assert coverage["total_effects"] == 45
@@ -39,12 +39,9 @@ def test_empty_composition_has_zero_coverage_and_ranked_advice() -> None:
     assert coverage["missing_effects"] == 45
     assert coverage["coverage_percent"] == 0.0
     assert len(result["recommendations"]) == 3
-    scores = [entry["score"] for entry in result["recommendations"]]
-    assert scores == sorted(scores, reverse=True)
-    assert result["scoring"]["role_targets_used"] is False
 
 
-def test_felsworn_tyrant_covers_known_effects() -> None:
+def test_legacy_felsworn_tyrant_fixture_is_not_deleted() -> None:
     result = analyze_composition(
         [
             {
@@ -61,11 +58,10 @@ def test_felsworn_tyrant_covers_known_effects() -> None:
     assert "Defensive Cooldown (Raid-Wide)" in covered_names
     assert "3% Damage Done (all)" in covered_names
     assert "Attack Speed Slow" in covered_names
-    assert result["coverage"]["covered_effects"] > 0
-    assert result["coverage"]["coverage_percent"] > 0
 
 
-def test_preview_contains_coverage_and_explainable_top_three(tmp_path: Path) -> None:
+def test_preview_disables_legacy_scoring_by_default(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("COA_ENABLE_LEGACY_EFFECTS", raising=False)
     response = client(tmp_path).post(
         "/api/plans/preview",
         json={
@@ -82,9 +78,34 @@ def test_preview_contains_coverage_and_explainable_top_three(tmp_path: Path) -> 
     )
     assert response.status_code == 200
     payload = response.json()
-    assert payload["coverage"]["total_effects"] == 45
+    assert payload["coverage"]["availability"] == "unavailable"
+    assert payload["coverage"]["data_trust_status"] == "legacy_unverified"
+    assert payload["coverage"]["total_effects"] == 0
+    assert payload["recommendations"] == []
+    assert payload["scoring"]["canonical"] is False
+    assert payload["scoring"]["algorithm"] == "disabled-unverified-data"
+
+
+def test_preview_can_enable_legacy_forensic_comparison(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("COA_ENABLE_LEGACY_EFFECTS", "1")
+    response = client(tmp_path).post(
+        "/api/plans/preview",
+        json={
+            "raid_format": "10",
+            "slots": [
+                {
+                    "slot_no": 1,
+                    "player_name": "Tank",
+                    "class_code": "felsworn",
+                    "spec_code": "tyrant",
+                }
+            ],
+        },
+    )
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["coverage"]["availability"] == "forensic_only"
+    assert payload["coverage"]["data_trust_status"] == "legacy_unverified"
     assert payload["coverage"]["covered_effects"] > 0
     assert len(payload["recommendations"]) == 3
-    assert all(item["score"] > 0 for item in payload["recommendations"])
-    assert all(item["new_effects"] for item in payload["recommendations"])
-    assert all(item["explanation"].startswith("Закрывает:") for item in payload["recommendations"])
+    assert payload["scoring"]["canonical"] is False

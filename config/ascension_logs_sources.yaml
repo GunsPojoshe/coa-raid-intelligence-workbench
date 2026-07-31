@@ -1,0 +1,95 @@
+schema_version: 2
+source_code: coa_ascension_logs
+base_url: https://coa.ascensionlogs.gg
+status: discovery
+truth_role: primary_observation_source
+
+principles:
+  - raw responses are immutable and content-addressed
+  - route discovery is separate from production ingestion
+  - observations are stored before any mechanic inference
+  - inferred mechanics never overwrite contradictory evidence
+  - newer observations receive greater weight through a versioned policy
+  - guild and global samples are retained as separate cohorts
+  - upstream class and spec labels are retained as derived observations, not raw mechanic truth
+
+routes:
+  - endpoint_code: public_home
+    route_template: /
+    method: GET
+    auth_mode: public
+    status: verified_html
+    use: availability_probe
+
+  - endpoint_code: public_reports
+    route_template: /reports
+    method: GET
+    auth_mode: public
+    status: verified_html
+    use: public_report_navigation_discovery
+
+  - endpoint_code: public_faq
+    route_template: /faq
+    method: GET
+    auth_mode: public
+    status: verified_html
+    use: parser_behavior_and_source_limitations
+
+  - endpoint_code: public_guild_progression
+    route_template: /guilds/progression
+    method: GET
+    auth_mode: public
+    status: verified_html
+    use: guild_and_report_navigation_discovery
+
+  - endpoint_code: report_metadata
+    route_template: null
+    method: GET
+    auth_mode: unknown
+    status: unverified
+    use: report_and_encounter_discovery
+
+  - endpoint_code: encounter_roster
+    route_template: null
+    method: GET
+    auth_mode: unknown
+    status: unverified
+    use: participant_identity_and_upstream_detected_spec
+
+  - endpoint_code: aura_timeline
+    route_template: null
+    method: GET
+    auth_mode: unknown
+    status: unverified
+    use: apply_refresh_remove_state_reconstruction
+
+  - endpoint_code: combat_events
+    route_template: null
+    method: GET
+    auth_mode: unknown
+    status: unverified
+    use: cast_target_and_order_sensitive_mechanic_inference
+
+required_event_fields:
+  - encounter_id
+  - timestamp_ms
+  - event_type
+  - source_actor_id
+  - target_actor_id
+  - spell_id
+
+optional_event_fields:
+  - stacks
+  - source_class_code
+  - source_spec_code
+  - target_type
+  - ability_name
+  - game_version
+
+prohibited_assumptions:
+  - class presence implies effect coverage
+  - equal display names imply equal aura state
+  - one observed application proves raid-wide scope
+  - absence in one log disproves a mechanic
+  - old and new game versions are directly interchangeable
+  - upstream detected specialization proves a provider mechanic
