@@ -24,7 +24,13 @@ This document defines collection and trust boundaries, not a scoring policy.
 11 exact combatants actor links
 ```
 
-Exhaustive public snapshot:
+## Completed phases
+
+### 1. Pagination evidence
+
+Verified page/limit/offset relations, `hasPrevious`, `hasMore`, exact `limit=25`, terminal transition, successor behavior, sentinels and cross-page report-ID uniqueness.
+
+### 2. Exhaustive public report manifest
 
 ```text
 receipt: evidence/real-data/argentum-public-report-manifest.json
@@ -39,36 +45,7 @@ exact Argentum label reports: 17
 distinct non-null guild IDs for exact label: 1
 ```
 
-## Phase status
-
-### 1. Pagination evidence — completed
-
-Verified page/limit/offset relations, `hasPrevious`, `hasMore`, exact `limit=25`, terminal transition, successor behavior, sentinels and cross-page report-ID uniqueness.
-
-### 2. Public report manifest — completed
-
-Verified pages `1..259`, 6454 expected/observed reports, 6454 unique IDs, zero duplicates, exact private-manifest SHA binding and scalar-free public receipt.
-
-### 3. Snapshot identity review — completed
-
-Verified 17 exact target-label rows, one non-null candidate source ID, zero conflicting non-empty names and 10/10 integrity checks.
-
-### 4. Independent guild-search evidence — completed
-
-Reviewed mapping:
-
-```text
-$.guilds[].id           -> guild_id
-$.guilds[].name         -> guild_name
-$.guilds[].realm        -> realm
-$.guilds[].report_count -> report_count
-```
-
-Private evidence confirms one search result, source-ID equality with the snapshot candidate and name equality after Unicode casefold. Public receipts expose neither raw payload nor source guild ID.
-
-Guild API route semantics remain unverified.
-
-### 5. Explicit guild identity decision — completed
+### 3. Guild identity verification
 
 ```text
 receipt: evidence/real-data/argentum-guild-identity-decision.json
@@ -77,29 +54,12 @@ integrity checks: 16/16
 independent source identity verified: true
 guild identity verified: true
 ready for guild filtering: true
-contains raw payload: false
-contains source scalar values: false
 ```
 
-### 6. Deterministic guild report filtering — completed
-
-Implementation:
+### 4. Deterministic guild report filtering
 
 ```text
-src/coa_workbench/collector/verified_guild_report_filter.py
-scripts/filter_verified_guild_reports.py
-tests/unit/test_verified_guild_report_filter.py
-```
-
-Versioned receipt:
-
-```text
-evidence/real-data/argentum-guild-report-manifest.json
-```
-
-Verified result:
-
-```text
+receipt: evidence/real-data/argentum-guild-report-manifest.json
 source reports: 6454
 selected reports: 17
 unique selected report IDs: 17
@@ -107,7 +67,6 @@ duplicate selected occurrences: 0
 integrity checks: 14/14
 guild filtering completed: true
 guild report manifest deduplicated: true
-contains source scalar values: false
 report IDs published: false
 source guild ID published: false
 ```
@@ -121,113 +80,131 @@ deduplication key: /reports/*/id
 selection order: source_manifest_order
 ```
 
-Exact report IDs and rows remain local-only in the private guild manifest.
+### 5. Full-crawl collection contract review
 
-### 7. Full-crawl collection contract review — open
-
-The current verified baseline is the 17-report set obtained from the exhaustive public manifest by exact verified source guild ID.
-
-The next contract must bind all three receipts:
+Implementation:
 
 ```text
-evidence/real-data/argentum-public-report-manifest.json
-evidence/real-data/argentum-guild-identity-decision.json
-evidence/real-data/argentum-guild-report-manifest.json
+src/coa_workbench/collector/guild_full_crawl_contract.py
+scripts/build_guild_full_crawl_contract.py
+tests/unit/test_guild_full_crawl_contract.py
 ```
 
-Required contract decisions:
-
-- identify the exact purpose of any guild API route;
-- separate route discovery from route semantics verification;
-- define bounded capture limits and stop conditions;
-- require immutable raw payload archive before interpretation;
-- require exact payload SHA-256 and schema fingerprint;
-- define pagination, termination and completeness evidence;
-- require deterministic comparison with the verified 17-report baseline;
-- preserve missing, extra and conflicting reports;
-- define partial-failure and resume behavior;
-- require explicit operator promotion before automatic full crawl;
-- keep report IDs and source guild ID private.
-
-Until the contract is reviewed:
+Versioned receipt:
 
 ```text
-full crawl collection contract reviewed: false
+evidence/real-data/argentum-guild-full-crawl-contract.json
+```
+
+The contract is bound to:
+
+```text
+argentum-public-report-manifest.json
+argentum-guild-identity-decision.json
+argentum-guild-report-manifest.json
+```
+
+Verified contract boundary:
+
+```text
+source public reports: 6454
+selected guild reports: 17
+integrity checks: 12/12
+full crawl collection contract reviewed: true
+ready for bounded route-semantics capture: true
 guild API route semantics verified: false
+automatic full guild crawl allowed: false
 ready for full guild crawl: false
+planner scoring allowed: false
 ```
 
-### 8. Guild API route semantics — blocked by contract review
+The verified 17-report public-manifest-filtered set is the comparison baseline.
 
-Before using guild API routes for exhaustive collection:
+## Route-semantics evidence requirements
 
-- verify exact request parameters and response contract;
-- capture immutable raw payloads;
-- review pagination and completeness semantics;
-- bind mappings/extractors to exact hashes/fingerprints;
-- compare the API-derived report set with the verified public-manifest filter;
-- preserve discrepancies and contradicting evidence;
-- publish a scalar-free route/collection decision receipt.
+Before any guild API full crawl:
 
-### 9. Bounded per-report evidence capture — blocked
+1. verify exact route template and query parameters;
+2. archive complete raw response before interpretation;
+3. bind the response to exact payload SHA-256 and schema fingerprint;
+4. review collection shape, field types and nullability;
+5. verify pagination, offset, page and limit relations if present;
+6. verify deterministic termination and successor behavior;
+7. verify completeness and capture-time boundaries;
+8. publish an explicit scalar-free route-semantics decision.
 
-For every selected report admitted by the reviewed contract:
+Observed route shapes remain candidates only:
 
-- capture report, encounter and combatants payloads;
-- normalize only through reviewed mappings/extractors;
-- persist immutable observations;
-- never mutate core identities implicitly;
-- preserve failed captures and incomplete coverage;
-- record coverage against the 17-report baseline.
+```text
+/api/guilds/progression
+/api/guilds/search?q=<value>
+/api/guilds/search?q=<value>&limit=<value>
+```
 
-### 10. Multi-report character graph — blocked
+No unverified route may be treated as complete or production-ready.
 
-- verify stable source actor/character identifiers across reports;
-- preserve aliases and rename history;
-- detect collisions and split identities;
-- never use nickname alone as primary identity;
-- target a reviewed pool of 30-40 unique candidate characters.
+## Set-comparison contract
 
-### 11. Performance and benchmark corpus — blocked
+Any future guild-API-derived report set must be compared with the verified private 17-report baseline and partitioned into:
 
-- collect versioned boss, difficulty, role and time-cohort observations;
-- separate performance, consistency, sample confidence and composition utility;
-- build comparable distributions before scores;
-- keep guild execution distinct from global mechanic evidence.
+```text
+matching_reports
+missing_from_guild_api
+extra_in_guild_api
+conflicting_report_records
+```
 
-### 12. BiS 25 optimization — blocked
+Rules:
 
-- select 25 from a verified 30-40 character pool;
-- enforce role, encounter, utility, defensive and availability constraints;
-- publish confidence, reasons, reserves and composition risks;
-- keep scoring policy versioned and auditable;
-- use only evidence admitted by the trust model.
+- deduplicate by source report ID;
+- preserve contradicting evidence;
+- keep report IDs private;
+- do not mark partial results complete;
+- preserve failed requests as observations;
+- require exact contract/checkpoint binding for resume;
+- keep retries bounded.
+
+## Remaining phases
+
+### Guild API route semantics — open for bounded capture
+
+The reviewed contract permits bounded evidence capture only. It does not permit automatic full crawl.
+
+### Full guild crawl — blocked
+
+Blocked until exact route semantics, pagination, termination, completeness and set comparison are explicitly promoted.
+
+### Per-report evidence capture — blocked
+
+After route/full-crawl promotion, capture report, encounter and combatants payloads under reviewed mappings, preserve failures and track coverage against the 17-report baseline.
+
+### Multi-report character graph — blocked
+
+Verify stable identifiers across reports, preserve aliases, detect collisions and never use nickname alone as primary identity.
+
+### Performance and benchmark corpus — blocked
+
+Build comparable versioned distributions before player scores. Separate strength, consistency, confidence and composition utility.
+
+### BiS 25 optimization — blocked
+
+Select 25 from a verified 30-40 character pool under role, encounter, utility, defensive and availability constraints.
 
 ## Current boundary
 
-Completed:
-
 ```text
-guild identity verified
-deterministic guild filtering
-17-report deduplicated scalar-free guild manifest
+guild identity verified: true
+guild filtering completed: true
+guild report manifest deduplicated: true
+full crawl collection contract reviewed: true
+ready for bounded route-semantics capture: true
+guild API route semantics verified: false
+automatic full guild crawl allowed: false
+ready for full guild crawl: false
+ready for multi-report character graph: false
+ready for performance model: false
+ready for BiS 25 scoring: false
+planner scoring allowed: false
 ```
 
-Open now:
-
-```text
-full-crawl collection contract review
-```
-
-Blocked now:
-
-```text
-guild API route semantic promotion
-full guild crawl
-multi-report character aggregation
-performance scoring
-global benchmark scoring
-BiS 25 roster optimization
-```
-
-Planner scoring remains disabled. Identity verification and filtering authorize neither full crawl nor scoring.
+Planner scoring remains disabled. Contract review authorizes evidence collection only, not full crawl or scoring.
