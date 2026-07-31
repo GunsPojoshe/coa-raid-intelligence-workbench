@@ -30,23 +30,17 @@ def main() -> int:
     parser.add_argument(
         "--public-snapshot-review",
         type=Path,
-        default=Path(
-            "evidence/real-data/argentum-guild-identity-snapshot-review.json"
-        ),
+        default=Path("evidence/real-data/argentum-guild-identity-snapshot-review.json"),
     )
     parser.add_argument(
         "--private-snapshot-review",
         type=Path,
-        default=Path(
-            "data/extracted/report-discovery/argentum-guild-identity-review.private.json"
-        ),
+        default=Path("data/extracted/report-discovery/argentum-guild-identity-review.private.json"),
     )
     parser.add_argument(
         "--public-mapping-review",
         type=Path,
-        default=Path(
-            "evidence/real-data/argentum-guild-search-mapping-review.json"
-        ),
+        default=Path("evidence/real-data/argentum-guild-search-mapping-review.json"),
     )
     parser.add_argument(
         "--private-mapping-review",
