@@ -4,19 +4,15 @@
 
 Prepare a reproducible guild-wide corpus for a future `BiS 25` roster calculation.
 
-Operator target:
-
 ```text
 guild label: Argentum
 candidate characters: 30-40
 final roster: 25
 ```
 
-This document defines collection boundaries, not a scoring policy.
+This document defines collection and trust boundaries, not a scoring policy.
 
 ## Verified foundation
-
-Current exact evidence includes:
 
 ```text
 1 persisted report
@@ -28,15 +24,10 @@ Current exact evidence includes:
 11 exact combatants actor links
 ```
 
-The exhaustive public snapshot is versioned at:
+Exhaustive public snapshot:
 
 ```text
-evidence/real-data/argentum-public-report-manifest.json
-```
-
-Manifest facts:
-
-```text
+receipt: evidence/real-data/argentum-public-report-manifest.json
 route: /api/reports/public
 limit: 25
 pages: 259
@@ -44,57 +35,93 @@ reports: 6454
 unique report IDs: 6454
 duplicates: 0
 integrity checks: 19/19
-```
-
-Guild-field facts:
-
-```text
-reports with both guild fields: 1171
-distinct guild identity pairs: 88
 exact Argentum label reports: 17
 distinct non-null guild IDs for exact label: 1
 ```
-
-The snapshot is exhaustive for its captured terminal contract. The source guild identity for the operator target remains unresolved.
 
 ## Phase status
 
 ### 1. Pagination evidence — completed
 
-Verified:
-
-- page, limit and offset relations;
-- `hasPrevious` and `hasMore` semantics;
-- promoted exact `limit=25` contract;
-- deterministic terminal transition;
-- successor empty-page behavior;
-- start/end sentinel stability;
-- cross-page report-ID uniqueness.
+Verified page/limit/offset relations, `hasPrevious`, `hasMore`, exact `limit=25`, terminal transition, successor behavior, sentinels and cross-page report-ID uniqueness.
 
 ### 2. Public report manifest — completed
 
+Verified pages `1..259`, 6454 expected/observed reports, 6454 unique IDs, zero duplicates, exact private-manifest SHA binding and scalar-free public receipt.
+
+### 3. Snapshot identity review — completed
+
+Receipt:
+
+```text
+evidence/real-data/argentum-guild-identity-snapshot-review.json
+```
+
 Verified:
 
-- pages `1..259` captured;
-- terminal page contains four reports;
-- 6454 expected and observed reports;
-- 6454 unique IDs;
-- zero duplicate occurrences;
-- private manifest bound by SHA-256;
-- scalar-free public receipt.
+```text
+17 exact target-label rows
+one non-null candidate source ID
+17 reports associated with that candidate ID
+zero conflicting non-empty guild names
+10/10 integrity checks
+snapshot internal identity consistent: true
+```
 
-### 3. Guild identity binding — open
+This is internal snapshot consistency, not independent identity verification.
 
-Required:
+### 4. Independent guild-search evidence — completed as candidate review
 
-- review the 17 exact `Argentum` rows in the private manifest;
-- verify that all map to the same non-null source guild ID;
-- check that the ID is not associated with another non-empty guild name in the same snapshot, or document conflicts;
-- inspect independent source identity evidence where available;
-- do not infer identity from title, uploader or nickname;
-- publish a scalar-free manual review/promotion receipt without exposing the raw ID.
+Profiled application-asset recovery exposed three guild route candidates. Search access required a reviewed SPA fetch context.
 
-Until this phase is explicitly promoted:
+Observed route shapes:
+
+```text
+/api/guilds/progression
+/api/guilds/search?q=<value>
+/api/guilds/search?q=<value>&limit=<value>
+```
+
+Schema inventory and mapping review verified one search result with:
+
+```text
+$.guilds[].id           -> guild_id
+$.guilds[].name         -> guild_name
+$.guilds[].realm        -> realm
+$.guilds[].report_count -> report_count
+```
+
+Private evidence shows:
+
+```text
+search results: 1
+source ID matches snapshot candidate: 1
+name matches Argentum after Unicode casefold: 1
+cross-endpoint identity candidate observed: true
+```
+
+Public receipts contain no raw guild ID or raw payload.
+
+Guild API route semantics remain unverified. The result is an independent identity candidate, not automatic promotion.
+
+### 5. Explicit guild identity decision — implemented, awaiting local receipt
+
+Implementation:
+
+```text
+scripts/decide_guild_identity.py
+src/coa_workbench/collector/guild_identity_decision.py
+```
+
+The decision requires:
+
+```text
+--promote-identity
+```
+
+It revalidates the public/private manifest, snapshot review, search mapping, cross-endpoint ID equality, name casefold equality and scalar-free boundary.
+
+Until the decision receipt is produced and reviewed:
 
 ```text
 guild identity verified: false
@@ -102,58 +129,95 @@ guild filtering allowed: false
 full guild crawl allowed: false
 ```
 
-### 4. Guild report filtering — blocked by identity review
+A successful decision may open only:
 
-After identity promotion:
+```text
+guild identity verified: true
+guild filtering allowed: true
+```
 
-- filter by the verified source guild ID, not by name alone;
+It must not open:
+
+```text
+guild API route semantics verified
+full guild crawl
+multi-report character graph
+performance model
+BiS 25 scoring
+planner scoring
+```
+
+### 6. Guild report filtering — blocked by explicit decision receipt
+
+After verified identity promotion:
+
+- filter by the verified source guild ID, not by name;
+- recompute the bound private manifest;
 - produce a deterministic deduplicated guild report list;
-- preserve raw archive references, observation IDs and payload hashes;
-- record captured time and completeness boundaries;
-- issue a scalar-free guild report manifest receipt.
+- preserve report IDs only in private artifacts;
+- preserve source manifest hashes and time boundary;
+- issue a scalar-free guild report manifest receipt;
+- do not infer full-crawl completeness from filtering alone.
 
-### 5. Per-report evidence capture — blocked
+### 7. Guild API route semantics and full crawl — separately blocked
 
-For every selected guild report:
+Before using guild API routes for exhaustive collection:
+
+- verify exact request parameters and response contract;
+- capture immutable raw payloads;
+- review pagination and completeness semantics;
+- bind mappings/extractors to exact hashes/fingerprints;
+- compare the API-derived report set with the verified public-manifest filter;
+- preserve discrepancies and contradicting evidence;
+- publish a scalar-free route/collection decision receipt.
+
+### 8. Per-report evidence capture — blocked
+
+For every selected report:
 
 - capture report, encounter and combatants payloads;
 - normalize only through reviewed mappings/extractors;
 - persist immutable observations;
-- never mutate core identities implicitly.
+- never mutate core identities implicitly;
+- preserve failed captures and incomplete coverage.
 
-### 6. Multi-report character graph — blocked
+### 9. Multi-report character graph — blocked
 
 - verify stable source actor/character identifiers across reports;
 - preserve aliases and rename history;
 - detect collisions and split identities;
-- never use nickname alone as primary identity.
+- never use nickname alone as primary identity;
+- target a reviewed pool of 30-40 unique candidate characters.
 
-### 7. Performance and benchmark corpus — blocked
+### 10. Performance and benchmark corpus — blocked
 
 - collect versioned boss, difficulty, role and time-cohort observations;
 - separate performance, consistency, sample confidence and composition utility;
-- build distributions before scores.
+- build comparable distributions before scores;
+- keep guild execution distinct from global mechanic evidence.
 
-### 8. BiS 25 optimization — blocked
+### 11. BiS 25 optimization — blocked
 
 - select 25 from a verified 30-40 character pool;
-- enforce role, encounter, utility and availability constraints;
+- enforce role, encounter, utility, defensive and availability constraints;
 - publish confidence, reasons, reserves and composition risks;
-- keep scoring policy versioned and auditable.
+- keep scoring policy versioned and auditable;
+- use only evidence admitted by the trust model.
 
 ## Current boundary
 
 Open now:
 
 ```text
-local guild identity review
-scalar-free identity decision receipt
+explicit local guild identity decision
+scalar-free identity decision receipt review
 ```
 
 Blocked now:
 
 ```text
 guild filtering
+guild API route semantic promotion
 full guild crawl
 multi-report character aggregation
 performance scoring
@@ -161,4 +225,4 @@ global benchmark scoring
 BiS 25 roster optimization
 ```
 
-Planner scoring remains disabled. Manifest completeness is not a scoring authorization.
+Planner scoring remains disabled. Manifest completeness, schema mapping and identity candidacy are not scoring authorization.
