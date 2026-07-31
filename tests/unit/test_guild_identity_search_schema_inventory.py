@@ -7,6 +7,7 @@ import pytest
 from coa_workbench.collector.guild_identity_search_schema_inventory import (
     _field_roles,
     _inventory_fields,
+    _validate_capture_binding,
     _value_kind,
 )
 
@@ -15,6 +16,59 @@ def _row_by_path(rows: list[dict[str, object]], path: str) -> dict[str, object]:
     matches = [row for row in rows if row["path"] == path]
     assert len(matches) == 1
     return matches[0]
+
+
+def _capture_core() -> dict[str, object]:
+    return {
+        "bytes_uncompressed": 93,
+        "observation_id": "observation-hash",
+        "payload_hash": "payload-hash",
+        "raw_id": "raw-hash",
+        "schema_fingerprint": "schema-hash",
+    }
+
+
+def _review_capture() -> dict[str, object]:
+    return {
+        **_capture_core(),
+        "http_status": 200,
+        "content_type": "application/json; charset=utf-8",
+        "selected_access_profile": "spa_fetch_context",
+    }
+
+
+def _private_attempt() -> dict[str, object]:
+    return {
+        "profile": "spa_fetch_context",
+        "http_status": 200,
+        "content_type": "application/json; charset=utf-8",
+    }
+
+
+def test_capture_binding_accepts_review_metadata_around_same_core_binding() -> None:
+    _validate_capture_binding(_review_capture(), _capture_core(), _private_attempt())
+
+
+def test_capture_binding_rejects_core_field_mismatch() -> None:
+    source_capture = _capture_core()
+    source_capture["payload_hash"] = "different-payload-hash"
+
+    with pytest.raises(ValueError, match="core binding differ: payload_hash"):
+        _validate_capture_binding(_review_capture(), source_capture, _private_attempt())
+
+
+def test_capture_binding_rejects_metadata_mismatch() -> None:
+    private_attempt = _private_attempt()
+    private_attempt["http_status"] = 204
+
+    with pytest.raises(ValueError, match="HTTP status differ"):
+        _validate_capture_binding(_review_capture(), _capture_core(), private_attempt)
+
+    private_attempt = _private_attempt()
+    private_attempt["content_type"] = "application/problem+json"
+
+    with pytest.raises(ValueError, match="content type differ"):
+        _validate_capture_binding(_review_capture(), _capture_core(), private_attempt)
 
 
 def test_inventory_fields_reports_shape_and_match_flags_without_values() -> None:
