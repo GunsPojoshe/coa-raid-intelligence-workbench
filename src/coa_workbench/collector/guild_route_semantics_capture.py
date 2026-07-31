@@ -59,7 +59,9 @@ def _load_object(path: Path, label: str) -> tuple[dict[str, Any], bytes]:
 
 def _write_json(path: Path, payload: Mapping[str, Any]) -> bytes:
     path.parent.mkdir(parents=True, exist_ok=True)
-    body = (json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode()
+    body = (
+        json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    ).encode()
     temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
     temporary.write_bytes(body)
     temporary.replace(path)
@@ -335,13 +337,15 @@ def _safe_payload_summary(
     objects = [row for row in rows if isinstance(row, dict)]
 
     field_types: dict[str, set[str]] = {}
-    exact_label_count = 0
+    target_name_casefold_match_count = 0
     id_values: list[str] = []
+    expected_name = expected_guild_label.casefold()
     for row in objects:
         for key, value in row.items():
             field_types.setdefault(str(key), set()).add(_value_type(value))
-        if row.get("name") == expected_guild_label:
-            exact_label_count += 1
+        name = row.get("name")
+        if isinstance(name, str) and name.casefold() == expected_name:
+            target_name_casefold_match_count += 1
         value = row.get("id")
         if isinstance(value, (int, str)) and not isinstance(value, bool):
             id_values.append(str(value))
@@ -371,7 +375,7 @@ def _safe_payload_summary(
         "guild_object_count": len(objects),
         "guild_field_inventory": field_inventory,
         "guild_field_inventory_sha256": _sha256_json(field_inventory),
-        "exact_label_match_count": exact_label_count,
+        "target_name_casefold_match_count": target_name_casefold_match_count,
         "distinct_non_null_id_count": len(id_hashes),
         "id_value_set_sha256": _sha256_json(id_hashes),
         "ordered_guild_records_sha256": _sha256_json(rows),
@@ -608,7 +612,6 @@ def capture_guild_route_semantics(
                 "case": case_name,
                 "route_template": _SEARCH_ROUTE,
                 "query_keys": query_keys,
-                "query_value_published": False,
                 "limit": limit,
                 "return_code": return_code,
                 "http_status": http_status,
@@ -643,12 +646,12 @@ def capture_guild_route_semantics(
         row["shape_summary"]["guild_collection_observed"]
         for row in public_attempts
     )
-    exact_label_counts = {
-        int(row["shape_summary"]["exact_label_match_count"])
+    target_name_match_counts = {
+        int(row["shape_summary"]["target_name_casefold_match_count"])
         for row in public_attempts
         if row["response_candidate"]
     }
-    exact_label_stable = all_completed and exact_label_counts == {1}
+    target_name_stable = all_completed and target_name_match_counts == {1}
     id_counts = {
         int(row["shape_summary"]["distinct_non_null_id_count"])
         for row in public_attempts
@@ -684,7 +687,7 @@ def capture_guild_route_semantics(
         and route_shapes_observed
         and shape_consistent
         and collection_observed
-        and exact_label_stable
+        and target_name_stable
         and id_set_stable
     )
 
@@ -750,7 +753,7 @@ def capture_guild_route_semantics(
         "source_private_capture_sha256": _sha256_bytes(private_body),
         "target": {
             "guild_label": expected_guild_label,
-            "query_values_published": False,
+            "request_urls_published": False,
             "source_guild_id_published": False,
             "report_ids_published": False,
         },
@@ -774,7 +777,7 @@ def capture_guild_route_semantics(
             "route_shapes_observed": route_shapes_observed,
             "response_shape_consistent": shape_consistent,
             "guild_collection_observed_on_all_cases": collection_observed,
-            "exact_label_result_stable": exact_label_stable,
+            "target_name_casefold_match_stable": target_name_stable,
             "source_id_set_stable_by_hash": id_set_stable,
             "limit_parameter_accepted": all_completed,
             "limit_truncation_semantics_verified": limit_truncation_verified,
