@@ -44,13 +44,9 @@ ALLOWED_LOCAL_ONLY_FILES = {f"{prefix}.gitkeep" for prefix in LOCAL_ONLY_PREFIXE
 
 # Construct token prefixes in pieces so this scanner does not match its own source.
 SECRET_PATTERNS = {
-    "private_key_material": re.compile(
-        rb"-----BEGIN (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----"
-    ),
+    "private_key_material": re.compile(rb"-----BEGIN (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----"),
     "github_classic_token": re.compile(b"g" + rb"h[pousr]_[A-Za-z0-9]{36,255}"),
-    "github_fine_grained_token": re.compile(
-        b"github" + rb"_pat_[A-Za-z0-9_]{50,255}"
-    ),
+    "github_fine_grained_token": re.compile(b"github" + rb"_pat_[A-Za-z0-9_]{50,255}"),
     "openai_api_key": re.compile(b"s" + rb"k-(?:proj-)?[A-Za-z0-9_-]{32,255}"),
     "aws_access_key_id": re.compile(
         rb"(?:A3T[A-Z0-9]|AKIA|ASIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASCA)[A-Z0-9]{16}"
@@ -109,9 +105,11 @@ def _line_number(body: bytes, offset: int) -> int:
 
 def _iter_reachable_objects() -> list[tuple[str, str]]:
     rows: list[tuple[str, str]] = []
-    for raw_line in _git("rev-list", "--objects", "--all").decode(
-        "utf-8", errors="surrogateescape"
-    ).splitlines():
+    for raw_line in (
+        _git("rev-list", "--objects", "--all")
+        .decode("utf-8", errors="surrogateescape")
+        .splitlines()
+    ):
         object_id, separator, path = raw_line.partition(" ")
         rows.append((object_id, path if separator else ""))
     return rows
