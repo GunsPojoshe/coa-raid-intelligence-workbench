@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import gzip
 import hashlib
 import json
 import os
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
@@ -11,13 +13,15 @@ from urllib.request import urlopen
 
 from .armory_capture import _capture_one_page, build_page_capture_to_dict
 from .raw_archive import RawArchive
+from .route_discovery import discover_api_route_candidates
 from .source_registry import SourceRegistry
 from .spa_route_inventory import normalize_api_route_shape
 
-_DISCOVERY_VERSION = "guild-identity-route-discovery-v1"
+_DISCOVERY_VERSION = "guild-identity-route-discovery-v2"
 _SNAPSHOT_REVIEW_VERSION = "guild-identity-snapshot-review-v1"
 _PUBLIC_REVIEW_KIND = "guild_identity_snapshot_review"
 _PRIVATE_REVIEW_KIND = "guild_identity_snapshot_private_review"
+_MAX_ARCHIVED_SCAN_BYTES = 16 * 1024 * 1024
 
 
 def _generated_at() -> str:
@@ -149,6 +153,49 @@ def _redacted_route_shape(candidate: str, source_guild_id: int | str) -> str:
     return normalize_api_route_shape(prepared)
 
 
+def _archived_capture_route_candidates(capture: object) -> tuple[str, ...]:
+    payload_path = getattr(capture, "payload_path", None)
+    payload_hash = getattr(capture, "payload_hash", None)
+    expected_size = getattr(capture, "bytes_uncompressed", None)
+    if not isinstance(payload_path, str) or not isinstance(payload_hash, str):
+        return ()
+    try:
+        with gzip.open(Path(payload_path), "rb") as stream:
+            body = stream.read(_MAX_ARCHIVED_SCAN_BYTES + 1)
+    except (OSError, EOFError):
+        return ()
+    if len(body) > _MAX_ARCHIVED_SCAN_BYTES:
+        return ()
+    if isinstance(expected_size, int) and len(body) != expected_size:
+        return ()
+    if _sha256_bytes(body) != payload_hash:
+        return ()
+    return discover_api_route_candidates(body)
+
+
+def _asset_failure_classes(asset: object) -> tuple[str, ...]:
+    classes: set[str] = set()
+    status = getattr(asset, "status", None)
+    error = str(getattr(asset, "error", "") or "").casefold()
+    if isinstance(status, int) and not 200 <= status < 300:
+        classes.add("http_status_failure")
+    if "timeout" in error or "timed out" in error:
+        classes.add("timeout")
+    if "incomplete" in error:
+        classes.add("incomplete_response")
+    if "exceeded" in error or "too large" in error:
+        classes.add("response_too_large")
+    if "remote disconnected" in error:
+        classes.add("remote_disconnect")
+    if "network" in error or "i/o" in error:
+        classes.add("network_error")
+    if "archive" in error:
+        classes.add("archive_fallback_unavailable")
+    if not classes:
+        classes.add("unclassified_failure")
+    return tuple(sorted(classes))
+
+
 def discover_guild_identity_route_candidates(
     registry: SourceRegistry,
     archive: RawArchive,
@@ -206,21 +253,40 @@ def discover_guild_identity_route_candidates(
         and asset.status is not None
         and 200 <= asset.status < 300
     ]
-    all_candidates = sorted(
-        {candidate for asset in result.assets for candidate in asset.api_route_candidates}
-    )
+    captured_assets = [asset for asset in result.assets if asset.capture is not None]
+    failed_assets = [asset for asset in result.assets if asset.capture is None]
+
+    page_candidates = set(_archived_capture_route_candidates(result.capture))
+    embedded_candidates = {
+        candidate
+        for embedded in result.embedded_json
+        for candidate in _archived_capture_route_candidates(embedded.capture)
+    }
+    asset_candidates = {
+        candidate for asset in result.assets for candidate in asset.api_route_candidates
+    }
+    all_candidates = sorted(page_candidates | embedded_candidates | asset_candidates)
     route_shapes = sorted(
         {_redacted_route_shape(candidate, source_guild_id) for candidate in all_candidates}
     )
     guild_route_shapes = [shape for shape in route_shapes if "guild" in shape.casefold()]
     source_tokens = {str(source_guild_id), quote(str(source_guild_id), safe="")}
     scalar_redaction_verified = all(
-        not any(token and token in shape for token in source_tokens)
-        for shape in route_shapes
+        not any(token and token in shape for token in source_tokens) for shape in route_shapes
     )
     all_asset_urls_same_origin = all(
         urlsplit(asset.url).hostname == source_host for asset in result.assets
     )
+    failure_class_counts = Counter(
+        failure_class
+        for asset in failed_assets
+        for failure_class in _asset_failure_classes(asset)
+    )
+    route_candidate_sources = {
+        "page_html": len(page_candidates),
+        "embedded_json": len(embedded_candidates),
+        "assets": len(asset_candidates),
+    }
 
     checks = {
         "public_snapshot_review_verified": True,
@@ -233,11 +299,7 @@ def discover_guild_identity_route_candidates(
         "public_receipt_scalar_boundary_preserved": True,
     }
     all_integrity_checks_passed = all(checks.values())
-    ready_for_route_review = (
-        all_integrity_checks_passed
-        and bool(guild_route_shapes)
-        and bool(successful_assets)
-    )
+    ready_for_route_review = all_integrity_checks_passed and bool(guild_route_shapes)
 
     private_payload = {
         "schema_version": 1,
@@ -252,6 +314,11 @@ def discover_guild_identity_route_candidates(
         "candidate_source_guild_id": source_guild_id,
         "guild_page_url": page_url,
         "page_capture": build_page_capture_to_dict(result),
+        "route_candidate_sources": {
+            "page_html": sorted(page_candidates),
+            "embedded_json": sorted(embedded_candidates),
+            "assets": sorted(asset_candidates),
+        },
         "api_route_candidates": all_candidates,
         "guild_api_route_candidates": [
             candidate for candidate in all_candidates if "guild" in candidate.casefold()
@@ -259,9 +326,13 @@ def discover_guild_identity_route_candidates(
         "summary": {
             "page_capture_completed": page_completed,
             "asset_count": len(result.assets),
-            "successful_asset_count": len(successful_assets),
+            "captured_asset_count": len(captured_assets),
+            "successful_live_asset_count": len(successful_assets),
+            "failed_asset_count": len(failed_assets),
             "api_route_candidate_count": len(all_candidates),
             "guild_api_route_candidate_count": len(guild_route_shapes),
+            "route_candidate_sources": route_candidate_sources,
+            "asset_failure_class_counts": dict(sorted(failure_class_counts.items())),
             "contains_source_scalar_values": True,
         },
     }
@@ -291,12 +362,21 @@ def discover_guild_identity_route_candidates(
             "guild_api_route_shapes": guild_route_shapes,
             "all_api_route_shape_count": len(route_shapes),
             "guild_api_route_shape_count": len(guild_route_shapes),
+            "candidate_source_counts": route_candidate_sources,
+        },
+        "asset_failure_summary": {
+            "failed_asset_count": len(failed_assets),
+            "failure_class_counts": dict(sorted(failure_class_counts.items())),
+            "contains_error_text": False,
+            "contains_asset_urls": False,
         },
         "summary": {
             "page_capture_completed": page_completed,
             "page_payload_archived": result.capture is not None,
             "asset_count": len(result.assets),
-            "successful_asset_count": len(successful_assets),
+            "captured_asset_count": len(captured_assets),
+            "successful_live_asset_count": len(successful_assets),
+            "failed_asset_count": len(failed_assets),
             "api_route_candidate_count": len(all_candidates),
             "guild_api_route_candidate_count": len(guild_route_shapes),
             "integrity_check_count": len(checks),
