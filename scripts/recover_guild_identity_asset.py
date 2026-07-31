@@ -24,16 +24,12 @@ def main() -> int:
     parser.add_argument(
         "--route-discovery-private",
         type=Path,
-        default=Path(
-            "data/extracted/report-discovery/argentum-guild-route-discovery.private.json"
-        ),
+        default=Path("data/extracted/report-discovery/argentum-guild-route-discovery.private.json"),
     )
     parser.add_argument(
         "--private-output",
         type=Path,
-        default=Path(
-            "data/extracted/report-discovery/argentum-guild-asset-recovery.private.json"
-        ),
+        default=Path("data/extracted/report-discovery/argentum-guild-asset-recovery.private.json"),
     )
     parser.add_argument(
         "--output",
