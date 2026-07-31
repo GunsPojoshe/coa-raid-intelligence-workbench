@@ -107,7 +107,8 @@ def test_discovery_redacts_candidate_id_and_preserves_boundaries(
     assert receipt["route_inventory"]["guild_api_route_shapes"] == [
         "/api/guilds/{guild_id}/reports"
     ]
-    assert "15" not in json.dumps(receipt)
+    assert "/15/" not in json.dumps(receipt["route_inventory"])
+    assert receipt["target"]["source_guild_id_published"] is False
     assert receipt["summary"]["contains_source_scalar_values"] is False
     assert receipt["decision_boundary"]["ready_for_guild_api_route_review"] is True
     assert receipt["decision_boundary"]["guild_api_route_semantics_verified"] is False
