@@ -1,46 +1,31 @@
 # Real CoA Logs capture and persistence protocol
 
-Дата актуализации: **2026-07-30**.
+Дата актуализации: **2026-07-31**.
 
 ## Purpose
 
-Этот документ определяет безопасный и воспроизводимый путь от real response `coa.ascensionlogs.gg` до canonical observations.
-
-Цель:
-
-1. получить complete real response;
-2. сохранить его immutably;
-3. зафиксировать safe transport facts;
-4. вычислить exact SHA-256 и schema fingerprint;
-5. выполнить structural/field review;
-6. создать и проверить mapping;
-7. вручную разрешить publication;
-8. нормализовать и реконструировать;
-9. сохранить provenance;
-10. не превращать parser result в gameplay claim.
-
-## Canonical pipeline
+Безопасный воспроизводимый путь от real response `coa.ascensionlogs.gg` до canonical observations:
 
 ```text
 HTTP response
 -> immutable raw payload
 -> retrieval observation manifest
--> structural review
--> mapping review / field selection
--> candidate mapping or dedicated extractor design
+-> SHA-256 + schema fingerprint
+-> structural/field review
+-> candidate mapping or extractor design
 -> exact raw validation
 -> manual promotion/publication
 -> normalization/extraction
--> deterministic reconstruction/deduplication
--> atomic persistence
+-> deterministic reconstruction
+-> atomic immutable persistence
 -> scalar-free receipt
 ```
 
-## Capture paths
+Parser result never becomes a gameplay claim automatically.
 
-### Preferred: autonomous HTTP collector
+## HTTP capture contract
 
-Use:
+Use versioned profile:
 
 ```text
 coa-fetch-context-v1
@@ -50,106 +35,39 @@ Requirements:
 
 - persistent same-origin session;
 - in-memory cookie jar only;
-- bounded timeout;
-- at most bounded retry policy;
+- bounded timeout and retry;
 - endpoint-isolated execution;
-- progressive safe manifest;
+- progressive checkpointing;
 - archive complete body before interpretation;
 - distinguish HTTP status from complete body read;
 - preserve transport errors;
 - never store cookie/header values.
 
-Safe metadata may include:
-
-- profile version;
-- request header names;
-- sanitized route shape;
-- status and content type;
-- byte count;
-- transport warning;
-- payload hash;
-- schema fingerprint.
-
-### Fallback: browser HAR
-
-HAR is sensitive even in a private repository.
-
-- store under `data/exchange/in/`;
-- never commit unsanitized HAR;
-- never paste cookies, Authorization headers or tokens;
-- inventory/import only through the safe tooling;
-- archive only allowed-host non-empty response bodies;
-- keep skip reasons for malformed entries.
+HAR fallback remains sensitive and local-only.
 
 ## Raw archive contract
 
-Raw payload:
-
-- immutable;
-- content-addressed by SHA-256;
-- gzip-compressed when JSON;
-- one body per content hash;
-- separate observation per retrieval;
-- schema-fingerprinted when valid JSON;
-- linked to sanitized request metadata.
+Raw payload is immutable, content-addressed by SHA-256, gzip-compressed when JSON, deduplicated by body hash, and linked to separate retrieval observations and sanitized request metadata.
 
 Do not alter archived bytes to satisfy tests.
 
-## Mapping contract
+## Mapping/extractor contract
 
-Mapping may be published only when:
+Production parser use requires:
 
 ```text
 exact archived payload
 + exact payload hash
 + exact schema fingerprint
-+ explicit collection/field selectors
-+ reviewed occurrence/type/nullability facts
-+ manual reviewer metadata
-+ successful dry run
-+ mapping status verified
++ explicit reviewed selectors/types/nullability
++ reviewer metadata
++ deterministic dry run
++ explicit manual promotion
 ```
 
-Unknown hash/fingerprint must be rejected and reviewed separately.
+Unknown hash/fingerprint means reject and review. Verified parser compatibility does not confirm mechanic semantics.
 
-A verified mapping confirms parser compatibility only.
-
-## Current verified Armory checkpoint
-
-Mappings:
-
-```text
-config/mappings/coa_armory_character_v1.json
-config/mappings/coa_armory_talent_grid_v1.json
-```
-
-Both are exact-archive validated and production-ready for their reviewed schemas.
-
-Deferred gear, hero-build and empty-array item schemas remain outside the verified contract.
-
-## Current verified public-report discovery
-
-Observed request:
-
-```text
-GET /api/reports/public
-page=1
-limit=5
-sortBy=created_at
-sortOrder=desc
-```
-
-Mapping:
-
-```text
-config/mappings/coa_public_report_discovery_v1.json
-status: verified
-selected fields: 7
-```
-
-The collector performs one explicit page per invocation and does not infer pagination/category semantics.
-
-## Current report-slice capture
+## Completed report/encounter pipeline
 
 Observed routes:
 
@@ -161,209 +79,135 @@ Observed routes:
 
 No separate `/roster` route was observed.
 
-### Exact payload bindings
+Exact report/encounter mappings are published and selected-parser results are persisted through migration `0007_selected_parser_persistence`:
 
 ```text
-report_detail
-payload:     161739896f0b8321f884bcc24d1896efb894a9c6e05166269189f9871c64cba9
-fingerprint: 3d533a4178b67957bbd31544ddf5484bd5959635ebd5edcdd0c7689a4bace216
+normalized: 2 reports, 15 encounters, 31 actors, 31 participants, 0 aura events
+reconstructed: 1 report, 14 encounters, 31 actors, 31 participants
+persisted canonical observations: 77
+rejects: 0
+```
 
-encounter_detail
-payload:     955437d6c9c287cc7db280dd2388b88603af2785508061b95c7811dcd272fe22
-fingerprint: 567f36824efb37a29b835df01ce9b1fcc79eae57d6230202d16a6265c6ca0e85
+## Completed combatants persistence
 
-combatants_info
+Exact combatants binding:
+
+```text
 payload:     45672e0f0ff9eb461c575bdd38385795daa6326378bc3f8ad51474276140dc14
 fingerprint: 41d6d15422c668f83d2ccae1ec0ff2969671861f9e43b21cb371578961c5f8ff
 ```
 
-## Report and encounter production parser
-
-Published mappings:
+Migration and receipt:
 
 ```text
-config/mappings/coa_report_detail_v1.json
-config/mappings/coa_encounter_detail_v1.json
-```
-
-The publication gate verified 54 field contracts and enabled selected-parser normalization only for the exact reviewed routes/hashes/fingerprints.
-
-It did not enable combatants or aura semantics.
-
-### Normalization result
-
-```text
-reports:       2
-encounters:   15
-actors:       31
-participants: 31
-aura_events:   0
-rejects:       0
-```
-
-### Reconstruction result
-
-```text
-reports:       1
-encounters:   14
-actors:       31
-participants: 31
-aura_events:   0
-rejects:       0
-field conflicts: 0
-```
-
-### Persistence result
-
-Migration:
-
-```text
-0007_selected_parser_persistence
+migrations/0008_combatants_observation_persistence.sql
+evidence/real-data/observed-combatants-info-persistence.json
 ```
 
 ```text
-reports:                       1
-encounters:                   14
-actors:                       31
-participants:                 31
-canonical entity observations:77
-transaction committed:         true
+persisted observations: 1343
+actor/build observations: 1339
+linked actors: 11
+integrity checks: 14/14
+core actor mutations: 0
+transaction committed: true
 ```
 
-The local normalized/reconstructed files and DuckDB contain private source scalars and remain gitignored.
+The private database contains source scalars and remains local. Read models are parser observation views, not canonical gameplay/build projections.
 
-## Combatants-info review pipeline
+## Completed public-report pagination and manifest
 
-Stages completed:
+The production bounded discovery default remains conservative. An explicit reviewed promotion permits exact `limit=25` use for terminal search and manifest capture.
+
+Manifest request:
 
 ```text
-full-root structural review
--> deep bounded scope review
--> manual field selection
--> storage-aware mapping design
--> dedicated candidate extraction dry run
+GET /api/reports/public
+page=1..259
+limit=25
+sortBy=created_at
+sortOrder=desc
 ```
 
-Deep review:
+Capture implementation uses bounded concurrency only for the promoted manifest path. Each worker has a separate HTTP session; raw archive writes are serialized; checkpoint state is flushed progressively. Start/end sentinels and aggregate integrity gates remain mandatory.
+
+Versioned receipt:
 
 ```text
-scope candidates: 12
-present:          10
-required:          4/4
-direct fields:    56
+evidence/real-data/argentum-public-report-manifest.json
 ```
 
-Selection:
+Result:
 
 ```text
-groups:          8
-selected fields:37
-deferred fields:19
+completed pages: 259
+reports: 6454
+unique report IDs: 6454
+duplicates: 0
+terminal page reports: 4
+integrity checks: 19/19
+sentinel stability: verified
+receipt contains source scalar values: false
+private manifest contains source scalar values: true
 ```
 
-Design:
+Guild fields:
 
 ```text
-6 dedicated extractors
-immutable canonical_entity_observation targets
-core actor mutation forbidden
+reports with both guild fields: 1171
+distinct guild identity pairs: 88
+exact Argentum label reports: 17
+distinct non-null guild IDs for exact label: 1
 ```
 
-### Candidate extraction result
+This proves captured snapshot completeness and consistency. It does not prove target guild identity.
+
+## Guild identity review protocol
+
+Input:
+
+- versioned scalar-free manifest receipt;
+- exact local private manifest whose SHA-256 matches the receipt;
+- optional independent source identity evidence.
+
+Required review:
+
+1. recompute the private manifest SHA-256;
+2. isolate exact normalized `guild_name == "Argentum"` rows;
+3. confirm the receipt counts (`17` rows, `1` distinct non-null guild ID);
+4. check whether that ID appears with another non-empty guild name in the same snapshot;
+5. inspect independent source evidence where available;
+6. do not infer identity from report title, uploader or nickname;
+7. record reviewer, evidence hashes, counts, conflict flags and decision;
+8. publish only a scalar-free receipt and keep the raw guild ID local.
+
+Possible decisions:
 
 ```text
-source matches:       1350
-output observations:  1343
-deduplicated matches: 7
-linked actors:        11
-actor-name matches:   11
-integrity checks:     12/12
-core mutations:       0
+verified_target_identity
+insufficient_evidence
+conflicting_evidence
+rejected_identity
 ```
 
-Per unit:
-
-```text
-actor enrichment:       11
-instance context:         4
-talent container:        11
-classless talent ranks: 564
-hero build entries:     564
-gear slots:             189
-```
-
-The private extraction batch is local. The scalar-free receipt is versioned at:
-
-```text
-evidence/real-data/observed-combatants-info-candidate-extraction.json
-```
-
-### Combatants boundary
-
-Verified for exact payload:
-
-- archive and observation manifest;
-- route context;
-- persisted report/encounter references;
-- stable actor IDs;
-- exact existing actor names;
-- selected JSON types;
-- source counts;
-- record hashes;
-- no core mutation.
-
-Not verified:
-
-- companion-addon provenance;
-- nested ID uniqueness;
-- gameplay meaning of talents/gear;
-- canonical build snapshot semantics;
-- automatic persistence/promotion;
-- planner scoring.
-
-## Next persistence protocol
-
-The next implementation must:
-
-1. validate the versioned candidate extraction receipt and private file hash;
-2. create a manual promotion packet for parser observations;
-3. verify that migration `0007` can preserve all required provenance;
-4. add a new migration only for a demonstrated storage gap;
-5. persist the six observation types atomically and idempotently;
-6. never mutate core actor rows;
-7. create a scalar-free persistence receipt;
-8. keep all semantic/trust boundaries closed.
+Only `verified_target_identity` may enable deterministic guild filtering. Identity verification does not enable performance or planner scoring.
 
 ## Aura capture gap
 
-The current report slice contains no aura events.
+The bounded report slice contains no aura events. Separate fixtures for report `2987`, spell `968746` validate technical Aura State Engine behavior but not magnitude, stacking, scope, provider equivalence or criticality.
 
-Separate real fixtures for spell `968746` validate Aura State Engine technical behavior, but they do not complete the report slice and do not prove gameplay mechanics.
+Future aura work must archive exact payloads, review fields/types, publish verified mappings, normalize events, reconstruct intervals, and compare supporting/contradicting observations.
 
-Future aura work must:
-
-- observe exact aura-related route(s);
-- archive exact payloads;
-- review event fields/types;
-- publish verified mappings;
-- normalize source-linked aura events;
-- reconstruct intervals;
-- compare supporting and contradicting observations.
-
-## Local commands by stage
-
-Repository verification:
+## Verification
 
 ```powershell
 uv sync --frozen --extra dev
 uv run python scripts/verify_repo.py
 ```
 
-Capture/review scripts are intentionally explicit and versioned under `scripts/`. Run their `--help` before a new payload/schema and never reuse a receipt with a mismatched hash.
+Run focused deterministic tests for collector/storage changes. Never use live-network behavior as a unit test.
 
 ## Data policy
-
-The repository is private and full local data may be used for development, but Git remains evidence-minimal.
 
 Versioned:
 
@@ -373,7 +217,7 @@ Versioned:
 - documentation;
 - scalar-free receipts.
 
-Local-only by default:
+Local-only:
 
 ```text
 data/raw/
@@ -385,18 +229,8 @@ data/exchange/in/
 data/exchange/out/
 ```
 
-Never commit credentials, cookies, tokens, browser profiles, `.env` secrets or unsanitized HAR.
+Never commit credentials, cookies, tokens, browser profiles, `.env`, unsanitized HAR or source-scalar private batches.
 
-## Acceptance criteria for E3
+## E3 acceptance boundary
 
-- exact real payloads retained locally;
-- stable hashes/fingerprints;
-- reviewed/published required parsers;
-- persisted report/encounter/actors/participants;
-- reviewed combatants observations;
-- aura observations for the bounded report slice;
-- deterministic interval reconstruction;
-- independent supporting observations;
-- contradicting evidence review;
-- versioned provenance;
-- green Ubuntu and Windows CI.
+E3 remains Draft until reviewed guild identity/crawl boundaries, reviewed combatants observations, aura observations and intervals for the bounded slice, independent supporting observations, contradicting evidence review, versioned provenance, and green Ubuntu/Windows CI are present.
