@@ -2,12 +2,13 @@ name: Diagnose Armory Access
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - e3/real-log-capture
 
 permissions:
   contents: read
+
+concurrency:
+  group: diagnose-armory-access
+  cancel-in-progress: true
 
 jobs:
   diagnose:
@@ -47,10 +48,10 @@ jobs:
 
           exit "$diagnostic_exit"
       - name: Upload diagnostic artifact
-        if: always()
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: armory-access-diagnostic
           path: artifacts/armory-access-diagnostic.json
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 3
