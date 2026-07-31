@@ -95,10 +95,7 @@ def main() -> int:
     )
     print(f"private output: {args.private_output}")
     print(f"receipt output: {args.output}")
-    print(
-        "guild API route semantics verified: "
-        f"{boundary['guild_api_route_semantics_verified']}"
-    )
+    print(f"guild API route semantics verified: {boundary['guild_api_route_semantics_verified']}")
     print(f"ready for full guild crawl: {boundary['ready_for_full_guild_crawl']}")
     print(f"planner scoring allowed: {boundary['planner_scoring_allowed']}")
     return 0 if boundary["ready_for_route_semantics_review"] else 2
