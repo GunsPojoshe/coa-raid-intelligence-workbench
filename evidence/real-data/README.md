@@ -13,13 +13,13 @@ observed-combatants-info-persistence.json
 argentum-report-pagination-limit-promotion.json
 argentum-public-report-manifest.json
 argentum-guild-identity-snapshot-review.json
-argentum-guild-route-discovery-incomplete.json
 argentum-guild-asset-profiled-recovery.json
 argentum-guild-search-schema-inventory.json
 argentum-guild-search-mapping-review.json
+argentum-guild-identity-decision.json
 ```
 
-Additional receipts document failed or incomplete bounded attempts. They remain evidence of classified transport/access behavior, not proof of guild identity.
+Additional receipts document failed or incomplete bounded attempts. They remain classified evidence, not successful identity or route-semantic decisions.
 
 ## Combatants evidence chain
 
@@ -39,7 +39,7 @@ core actor mutations: 0
 contains source scalar values: false
 ```
 
-This proves exact parser extraction and persistence reproducibility. It does not verify companion-addon provenance, nested collection semantics, gameplay meaning, canonical build projection or planner scoring.
+This proves parser extraction and persistence reproducibility. It does not verify companion-addon provenance, gameplay meaning, canonical build projection or planner scoring.
 
 ## Public-report manifest evidence chain
 
@@ -47,9 +47,8 @@ This proves exact parser extraction and persistence reproducibility. It does not
 pagination semantic review
 -> terminal search
 -> manual limit=25 promotion
--> promoted terminal search
--> checkpointed manifest capture with temporal-drift handling
--> scalar-free exhaustive manifest receipt
+-> checkpointed exhaustive manifest capture
+-> scalar-free public manifest receipt
 ```
 
 ```text
@@ -66,134 +65,85 @@ exact Argentum label reports: 17
 distinct non-null guild IDs for exact label: 1
 ```
 
-The current downstream binding for the public manifest receipt is:
-
-```text
-aaad2a9301bdb6a8e2af62a04fc74083a3d1fcd255c293b72dba3d4953b49e57
-```
-
 The receipt contains counts and hashes, not report rows or the raw guild ID.
 
-## Snapshot identity evidence
+## Guild identity evidence chain
 
 ```text
-public manifest + exact private manifest
--> recompute 6454 report rows
--> isolate 17 Argentum rows
--> confirm one non-null source ID
--> confirm no conflicting non-empty name for that ID
--> scalar-free snapshot review
+exhaustive public/private manifest
+-> scalar-free snapshot consistency review
+-> profiled asset recovery and route candidates
+-> independent guild-search capture
+-> scalar-free schema inventory
+-> reviewed four-field mapping
+-> cross-endpoint source-ID and name comparison
+-> explicit operator promotion
+-> scalar-free identity decision
 ```
 
-Receipt:
+Identity decision receipt:
 
 ```text
-argentum-guild-identity-snapshot-review.json
+argentum-guild-identity-decision.json
 ```
 
-```text
-exact label reports: 17
-candidate source-ID reports: 17
-conflicting non-empty names: 0
-integrity checks: 10/10
-snapshot internal identity consistent: true
-ready for independent source identity review: true
-```
-
-This verifies consistency inside one captured snapshot only.
-
-## Independent guild-search evidence
-
-Profiled asset recovery established reviewed route candidates:
+Verified facts:
 
 ```text
-asset bytes: 3881146
-API route candidates: 79
-guild route candidates: 3
-```
-
-Observed route shapes:
-
-```text
-/api/guilds/progression
-/api/guilds/search?q=<value>
-/api/guilds/search?q=<value>&limit=<value>
-```
-
-Guild-search access required the reviewed SPA fetch context. The captured response contains one guild object.
-
-Schema inventory:
-
-```text
-guild objects: 1
-field entries: 5
-casefold label matches: 1
-source ID matches: 1
-integrity checks: 15/15
-```
-
-Reviewed mapping:
-
-```text
-$.guilds[].id           -> guild_id
-$.guilds[].name         -> guild_name
-$.guilds[].realm        -> realm
-$.guilds[].report_count -> report_count
-```
-
-Mapping review:
-
-```text
+decision kind: guild_identity_decision
+decision version: guild-identity-decision-v1
+snapshot reports: 6454
+exact target-label reports: 17
+distinct target guild IDs: 1
+conflicting names: 0
+guild-search results: 1
 mapped fields: 4
-search results: 1
-source ID matches: 1
-name casefold matches: 1
-integrity checks: 13/13
-cross-endpoint identity candidate observed: true
-ready for guild identity decision review: true
+cross-endpoint source-ID equality: true
+name casefold equality: true
+explicit operator promotion: true
+integrity checks: 16/16
+contains raw payload: false
+contains source scalar values: false
+independent source identity verified: true
+guild identity verified: true
+ready for guild filtering: true
 ```
 
-The private evidence binds the same source ID across public-report and guild-search endpoints. Public receipts publish neither that ID nor the raw payload.
+The source guild ID and private decision packet remain local-only.
 
-## Current decision boundary
+## Preserved decision boundaries
 
-Completed:
+Identity verification does not verify guild API route semantics and does not authorize collection or scoring beyond deterministic filtering.
 
 ```text
-exhaustive snapshot capture
-snapshot-internal identity consistency
-independent guild-search capture
-schema inventory
-field mapping review
-cross-endpoint identity candidate
+guild API route semantics verified: false
+ready for full guild crawl: false
+ready for multi-report character graph: false
+ready for performance model: false
+ready for BiS 25 scoring: false
+planner scoring allowed: false
 ```
 
-Not completed:
+## Next evidence artifact
+
+Deterministic verified-ID filtering is implemented in:
 
 ```text
-explicit operator identity decision
-guild identity verification
-guild filtering
-full guild crawl
-character graph
-performance model
-BiS 25 scoring
-planner scoring
+src/coa_workbench/collector/verified_guild_report_filter.py
+scripts/filter_verified_guild_reports.py
 ```
 
-The explicit decision implementation requires `--promote-identity`. A successful scalar-free output is expected at:
+The next local execution should produce:
 
 ```text
-data/exchange/out/argentum-guild-identity-decision.json
+private:
+  data/extracted/report-discovery/argentum-guild-report-manifest.private.json
+
+scalar-free receipt:
+  data/exchange/out/argentum-guild-report-manifest.json
 ```
 
-The next versioned artifact must be:
-
-```text
-evidence/real-data/argentum-guild-identity-decision.json
-```
-
-It may be added only after verifying all evidence bindings, integrity checks, explicit promotion, scalar-free content and preservation of all crawl/performance/scoring gates.
+Only the scalar-free receipt may be reviewed for versioning. Filtering must use the verified source guild ID from the private identity decision, not name matching.
 
 ## Local-only artifacts
 
