@@ -1,62 +1,48 @@
 # CoA Raid Intelligence Workbench — канонический контекст проекта
 
-Дата полной сверки: **2026-07-30**.
+Дата полной сверки: **2026-07-31**.
 
-Этот документ определяет цель, архитектуру, truth model, границы доверия и текущее направление проекта. Изменяемые counts, HEAD и CI находятся в `docs/PROJECT_STATE.md` и всегда перепроверяются по GitHub.
+Этот документ определяет цель, архитектуру, truth model и границы доверия. Изменяемые counts, HEAD и CI фиксируются в `docs/PROJECT_STATE.md` и всегда перепроверяются.
 
 ## 1. Миссия
 
-Создать localhost-first браузерное приложение для:
-
-- подготовки рейдов FLEX / 10 / 25 / 40;
-- хранения и проверки планов;
-- сбора реальных наблюдений с `coa.ascensionlogs.gg`;
-- воспроизводимого evidence-first анализа;
-- формирования объяснимых рекомендаций только из достаточно подтверждённых механик.
-
-Главный принцип:
+Создать localhost-first браузерное приложение для подготовки рейдов FLEX / 10 / 25 / 40, хранения планов, сбора реальных наблюдений с `coa.ascensionlogs.gg` и explainable recommendations только из достаточно подтверждённых механик.
 
 ```text
 combat-log event = observation
 combat-log event != automatic proof of a general mechanic
 ```
 
-## 2. Продуктовые контуры
+## 2. Product contours
 
-### 2.1 Raid Planner
+### Raid Planner
 
-Пользователь должен иметь возможность:
+- составы до 40 персонажей;
+- класс, специализация и роль;
+- структурная валидация;
+- CRUD планов в DuckDB;
+- рекомендации с provenance.
 
-- собирать состав до 40 персонажей;
-- выбирать класс, специализацию и роль;
-- видеть структурные ошибки;
-- сохранять, открывать, изменять и удалять планы;
-- получать рекомендации с provenance и понятной причиной.
+### Raid Intelligence
 
-### 2.2 Raid Intelligence
+- immutable raw capture;
+- hashes и schema fingerprints;
+- reviewed mappings;
+- canonical parser records;
+- deterministic reconstruction;
+- immutable observations;
+- supporting/contradicting evidence;
+- раздельные global mechanic и guild/player execution;
+- planner use только для `corroborated` и `confirmed` mechanics.
 
-Система должна:
-
-- получать доступные source observations;
-- сохранять raw responses неизменяемо;
-- фиксировать hashes и schema fingerprints;
-- нормализовать только reviewed schemas;
-- восстанавливать временное состояние;
-- формировать hypotheses;
-- хранить supporting и contradicting evidence;
-- отделять global mechanic от guild/player execution;
-- использовать в planner только `corroborated` и `confirmed` mechanics.
-
-## 3. История этапов
+## 3. Этапы и ветки
 
 ```text
-E0  Excel baseline — закрыт без merge как основной runtime
-E1  localhost web — Browser -> FastAPI -> Python -> DuckDB
+E0  Excel baseline — закрыт как основной runtime
+E1  localhost web
 E2  evidence-first foundation — PR #3, Draft
 E3  real log capture and normalization — PR #7, Draft
 ```
-
-Active branch chain:
 
 ```text
 main
@@ -64,57 +50,29 @@ main
     └── e3/real-log-capture         PR #7 -> e2
 ```
 
-## 4. Архитектура
-
-### Product runtime
-
-```text
-Browser
--> localhost FastAPI
--> planner / catalog / persistence API
--> DuckDB
-```
-
-### Evidence pipeline
+## 4. Evidence architecture
 
 ```text
 source response
 -> immutable raw payload
 -> retrieval observation
 -> SHA-256 + schema fingerprint
--> structural review
--> field/scope review
--> versioned mapping
+-> structural/field review
+-> versioned mapping or dedicated extractor design
 -> exact raw validation
 -> manual promotion/publication
--> canonical normalization
+-> normalization/extraction
 -> deterministic reconstruction
--> immutable entity observations
+-> atomic immutable persistence
+-> read models
 -> hypotheses and evidence
 -> trust evaluation
 -> planner scoring
 ```
 
-### Layer boundary
-
-Система разделяет:
-
-1. raw source payload;
-2. safe transport/capture facts;
-3. upstream-derived fields;
-4. canonical parser records;
-5. deterministic local reconstruction;
-6. immutable observations;
-7. local hypotheses;
-8. supporting/contradicting evidence;
-9. corroborated/confirmed mechanics;
-10. planner output.
-
 Верхний слой не может переписать нижний.
 
 ## 5. Trust model
-
-Основные состояния:
 
 ```text
 legacy_unverified
@@ -126,14 +84,14 @@ contradicted
 rejected
 ```
 
-Canonical planner scoring разрешён только для:
+Planner scoring разрешён только для:
 
 ```text
 corroborated
 confirmed
 ```
 
-Provenance хранится раздельно:
+Provenance:
 
 ```text
 raw_log
@@ -146,120 +104,54 @@ manual_override
 Запрещено:
 
 - выводить общую механику из одного event;
-- считать одинаковые display names одной механикой;
-- считать source class/spec доказательством provider capability;
-- приравнивать parser correctness к mechanic confirmation;
-- автоматически повышать trust после mapping promotion;
+- считать display name или label достаточной identity binding;
+- считать parser correctness mechanic confirmation;
+- автоматически повышать trust после mapping/persistence;
 - скрывать contradicting evidence;
 - смешивать game versions без явной версии.
 
-## 6. Реализованный product foundation
+## 6. Реализованный фундамент
 
-- localhost FastAPI service;
+Product:
+
+- localhost FastAPI;
 - browser raid constructor;
 - FLEX / 10 / 25 / 40;
-- Python composition validation;
-- class/spec/role catalog;
-- DuckDB raid-plan persistence;
-- CRUD plans;
-- request IDs и diagnostic logs;
-- localhost-only bind.
+- Python validation;
+- DuckDB plans и CRUD;
+- diagnostics и localhost-only bind.
 
-Legacy static catalog остаётся forensic/regression layer и не входит в canonical scoring.
+Evidence:
 
-## 7. Реализованный evidence foundation
-
-- source registry;
-- safe probes;
-- immutable content-addressed archive;
-- payload body deduplication;
+- source registry и safe probes;
+- immutable raw archive;
 - separate retrieval observations;
-- JSON/HAR import;
-- deterministic safe HAR inventory;
-- gzip JSON inspection;
+- JSON/HAR tooling;
 - schema fingerprints;
-- versioned mappings;
 - verified mapping gate;
 - canonical report/encounter/actor/participant/aura records;
-- rejects;
-- Aura State Engine;
-- hypotheses и evidence links;
-- trust/weighting policy;
-- migrations `0001`–`0007`;
-- repository verifier;
-- Ubuntu/Windows CI.
+- rejects и Aura State Engine;
+- hypotheses, evidence links и weighting policies;
+- migrations `0001`–`0008`;
+- repository verifier и Ubuntu/Windows CI.
 
-## 8. Raw archive contract
+## 7. Mapping and capture contract
 
-Raw payload:
-
-- сохраняется до semantic interpretation;
-- immutable;
-- адресуется по SHA-256;
-- одинаковое содержимое хранится один раз;
-- повторное получение создаёт новую observation;
-- JSON получает schema fingerprint;
-- request URL и metadata сохраняются только в sanitized форме.
-
-Cookies допускаются только в process memory.
-
-## 9. Mapping and normalization contract
-
-Mapping создаётся только после просмотра exact payload.
-
-Обязательные свойства:
-
-- source code и endpoint/route;
-- exact schema fingerprint;
-- versioned mapping ID;
-- reviewed payload hash;
-- explicit collection and field selectors;
-- provenance type;
-- review metadata;
-- status `verified` для production parser use.
-
-Unknown payload hash или fingerprint:
+A mapping/extractor may enter production parser use only after:
 
 ```text
-reject -> review queue
+exact archived payload
++ exact payload SHA-256
++ exact schema fingerprint
++ reviewed selectors/types/nullability
++ manual reviewer metadata
++ successful deterministic dry run
++ explicit promotion
 ```
 
-Нельзя применять «похожий» mapping автоматически.
+Unknown hash/fingerprint means reject and review. A verified mapping proves parser compatibility, not gameplay semantics.
 
-## 10. Verified HTTP/capture profile
-
-Versioned profile:
-
-```text
-coa-fetch-context-v1
-```
-
-Проверен полный same-origin header set и persistent same-origin session с in-memory cookie jar.
-
-Не доказано:
-
-- минимальное подмножество headers;
-- отсутствие cookie dependency;
-- независимость от request order;
-- необходимость browser TLS impersonation.
-
-Endpoint isolation, bounded retries, incomplete-body handling и progressive safe outputs обязательны.
-
-## 11. Verified Armory and discovery gates
-
-Production-ready mappings:
-
-```text
-config/mappings/coa_armory_character_v1.json
-config/mappings/coa_armory_talent_grid_v1.json
-config/mappings/coa_public_report_discovery_v1.json
-```
-
-Они подтверждают extraction для exact reviewed schemas, но не gameplay semantics.
-
-Public report discovery ограничен одним явно запрошенным page и `limit <= 5`. Pagination/category semantics остаются unverified.
-
-## 12. Current report slice
+## 8. Current report slice
 
 Observed routes:
 
@@ -268,6 +160,8 @@ Observed routes:
 /api/reports/{template}/encounters/{template}
 /api/reports/{template}/encounters/{template}/combatants-info
 ```
+
+No separate `/roster` route was observed.
 
 Exact bindings:
 
@@ -285,176 +179,112 @@ payload:     45672e0f0ff9eb461c575bdd38385795daa6326378bc3f8ad51474276140dc14
 fingerprint: 41d6d15422c668f83d2ccae1ec0ff2969671861f9e43b21cb371578961c5f8ff
 ```
 
-No separate `/roster` route was observed.
-
-## 13. Completed report/encounter pipeline
-
-Published mappings:
+Report/encounter parser slice:
 
 ```text
-config/mappings/coa_report_detail_v1.json
-config/mappings/coa_encounter_detail_v1.json
+normalized: 2 reports, 15 encounters, 31 actors, 31 participants, 0 aura events
+reconstructed: 1 report, 14 encounters, 31 actors, 31 participants
+persisted through 0007: 77 canonical entity observations
 ```
 
-Verified parser contracts:
+The slice is not complete for aura evidence.
+
+## 9. Combatants observations
+
+Candidate extraction was manually promoted and persisted through migration `0008_combatants_observation_persistence`.
 
 ```text
-mapping count:  2
-field contracts:54
+persisted parser observations: 1343
+actor/build observations: 1339
+distinct linked actors: 11
+integrity checks: 14/14
+core actor mutations: 0
 ```
 
-Normalization:
+Read models:
 
 ```text
-2 reports
-15 encounters
-31 actors
-31 participants
-0 aura events
-0 rejects
+combatants_parser_observation_v1
+combatants_actor_build_observation_v1
 ```
 
-Deterministic reconstruction:
+This proves exact parser/persistence reproducibility. It does not prove companion-addon provenance, nested identifier semantics, gameplay meaning or planner suitability.
+
+## 10. Public-report manifest
+
+Pagination evidence promoted exact `limit=25` for terminal search and exhaustive manifest capture.
+
+Versioned receipt:
 
 ```text
-1 report
-14 encounters
-31 actors
-31 participants
-0 aura events
-0 rejects
-1 duplicate report merged
-1 duplicate encounter merged
-0 field conflicts
-9/9 linkage checks
+evidence/real-data/argentum-public-report-manifest.json
 ```
 
-Persistence through migration `0007_selected_parser_persistence`:
+Captured snapshot:
 
 ```text
-1 report
-14 encounters
-31 actors
-31 participants
-77 canonical entity observations
-2 normalization mappings
-2 normalization runs
-2 observation batches
-0 rejects
+route: /api/reports/public
+pages: 259
+reports: 6454
+unique report IDs: 6454
+duplicates: 0
+terminal page reports: 4
+integrity checks: 19/19
+sentinel stability: verified
 ```
 
-The report slice is not complete because aura events are absent.
-
-## 14. Combatants-info current state
-
-Deep review:
+Guild fields:
 
 ```text
-12 bounded scope candidates
-10 present scopes
-4/4 required scopes
-56 direct fields
-2 missing optional scopes
+reports with both guild fields: 1171
+distinct guild identity pairs: 88
+exact Argentum label reports: 17
+distinct non-null guild IDs for exact label: 1
 ```
 
-Manual selection:
+Decision boundary:
 
 ```text
-8 groups
-37 selected fields
-19 deferred fields
-1 exact actor linkage path
+manifest complete: true
+guild identity verified: false
+ready for guild identity review: true
+ready for guild filtering: false
+ready for full guild crawl: false
+planner scoring allowed: false
 ```
 
-Storage-aware design:
+The manifest proves completeness of one captured public snapshot, not the semantic identity of the target guild.
 
-```text
-6 dedicated extractor units
-all target immutable canonical_entity_observation
-core actor mutation disabled
-```
+## 11. Guild identity contract
 
-Candidate extraction for exact payload:
+A source guild identity may be promoted only after local review of the exact private manifest bound by SHA-256.
 
-```text
-1350 source matches
-1343 output observations
-7 exact instance-context duplicates removed
-11 stable actor links
-11 exact actor-name matches
-12/12 integrity checks
-0 core mutations
-```
+Required evidence:
 
-Design units:
+- all exact `Argentum` rows map to one non-null source guild ID;
+- no conflicting guild names are observed for that ID within the reviewed snapshot, or conflicts are explicitly explained;
+- available independent source evidence is inspected;
+- title, uploader and nickname are not used as primary identity proof;
+- the published receipt is scalar-free and does not expose the raw guild ID;
+- reviewer and decision are explicit.
 
-```text
-actor enrichment:       11 observations
-instance context:         4 observations
-talent container:        11 observations
-classless talent rank:  564 observations
-hero build entry:       564 observations
-gear slot:              189 observations
-```
+Until promotion, guild filtering and guild-wide crawl remain disabled.
 
-What this proves:
+## 12. Aura boundary
 
-- exact archive/manifest/route verification;
-- exact stable actor linkage;
-- selected parser field presence/types;
-- deterministic record hashes and counts;
-- safe extraction without core mutation.
+Separate real fixtures for report `2987`, spell `968746` verify technical normalizer/Aura State Engine behavior but not magnitude, stacking, scope, provider equivalence or criticality. The current report slice still has zero aura events.
 
-What it does not prove:
-
-- companion-addon provenance;
-- global uniqueness of nested IDs;
-- talent/gear gameplay meaning;
-- provider/effect relationships;
-- automatic persistence or promotion;
-- planner usability.
-
-## 15. Aura checkpoint
-
-Separate real fixtures for report `2987`, spell `968746` verify technical normalizer/Aura State Engine behavior:
-
-```text
-encounter 64795: 6 events -> 3 intervals
-encounter 64796: 3 events -> 2 intervals
-0 rejects
-0 anomalies
-```
-
-They do not confirm magnitude, stacking, overwrite, scope, provider equivalence or criticality.
-
-## 16. Storage model
-
-Core tables include report, encounter, actor, participant and aura records.
-
-Migration `0007` adds selected-parser persistence metadata and immutable canonical entity observations. Parser observations preserve:
-
-- source payload and mapping references;
-- batch/run identity;
-- entity type and stable identity;
-- observation JSON;
-- trust status;
-- deterministic provenance.
-
-Candidate combatants observations must remain immutable and must not mutate core actors until a separate reviewed projection policy exists.
-
-## 17. Data and Git policy
-
-The user authorizes full use of local private data for development while the repository is private. The default repository policy still minimizes sensitive and bulky data.
+## 13. Data and Git policy
 
 Versioned:
 
-- code and tests;
+- code/tests;
 - migrations;
 - mappings and review decisions;
 - documentation;
 - scalar-free receipts.
 
-Local-only by default:
+Local-only:
 
 ```text
 data/raw/
@@ -466,63 +296,37 @@ data/exchange/in/
 data/exchange/out/
 ```
 
-Never commit secrets, tokens, cookies, Authorization headers, browser profiles or unsanitized HAR.
+Never commit secrets, cookies, tokens, Authorization headers, browser profiles or unsanitized HAR.
 
-## 18. Verification contract
-
-Canonical command:
+## 14. Verification contract
 
 ```powershell
 uv sync --frozen --extra dev
 uv run python scripts/verify_repo.py
 ```
 
-Verifier covers Ruff, pytest, doctor, CLI/trust checks and clean temporary DuckDB migration initialization. Storage changes require repeatability tests. Collector changes require deterministic fake-response tests before bounded real capture.
+Storage changes require clean and repeated DuckDB initialization. Collector changes require deterministic fake-response tests before bounded real capture.
 
-## 19. Current blockers
+## 15. Current blockers
 
-- combatants extraction not manually promoted;
-- 1343 candidate observations not persisted;
-- no actor build observation read model;
-- companion-addon provenance unverified;
-- nested ID semantics unverified;
-- no aura events in current report slice;
+- guild identity behind the exact `Argentum` label is not reviewed/promoted;
+- guild filtering and full guild crawl are disabled;
+- multi-report character identity is not established;
+- companion-addon provenance and nested combatants semantics are unverified;
+- no aura events in the bounded report slice;
 - no new corroborated mechanic;
-- planner scoring correctly remains closed.
+- planner scoring remains closed.
 
-## 20. Next bounded plan
+## 16. Next bounded plan
 
-1. Validate the exact candidate extraction receipt as a manual gate.
-2. Define promotion and persistence contracts for six immutable observation types.
-3. Reuse migration `0007` where sufficient; add a migration only for a proven storage gap.
-4. Persist atomically and idempotently without core actor mutation.
-5. Add deterministic observation queries/read models.
-6. Capture/review aura-related report endpoints.
-7. Gather independent supporting and contradicting observations.
-8. Promote gameplay mechanics only after explicit evidence thresholds.
+1. Review the 17 exact `Argentum` private manifest rows.
+2. Verify their one non-null guild ID against independent available source evidence.
+3. Produce a scalar-free guild-identity review receipt.
+4. Promote identity only through an explicit manual decision.
+5. Then implement deterministic guild filtering and a guild report manifest.
+6. Continue per-report/aura capture and multi-report character identity review.
+7. Promote gameplay mechanics only after supporting and contradicting evidence thresholds.
 
-## 21. Completion criteria for E3
+## 17. Completion criteria for E3
 
-PR #7 remains Draft until:
-
-- real payloads and exact fingerprints are reproducible;
-- required mappings are reviewed and verified;
-- report/encounter/actors/participants are persisted;
-- combatants observations have reviewed persistence;
-- aura events and intervals exist for the bounded report slice;
-- independent supporting observations exist;
-- contradicting evidence is evaluated;
-- outputs carry versioned provenance;
-- Ubuntu and Windows verification remain green.
-
-## 22. Canonical documents
-
-```text
-AGENTS.md
-docs/PROJECT_MASTER_CONTEXT.md
-docs/PROJECT_STATE.md
-docs/CONTINUATION_PROMPT.md
-docs/REAL_LOG_CAPTURE.md
-docs/ADR_012_LOG_EVIDENCE_TRUTH_MODEL.md
-evidence/real-data/README.md
-```
+PR #7 remains Draft until reviewed guild identity/crawl boundaries, reviewed combatants observations, aura observations and intervals for the bounded slice, independent supporting observations, contradicting evidence review, reproducible provenance, and green Ubuntu/Windows verification are present.
