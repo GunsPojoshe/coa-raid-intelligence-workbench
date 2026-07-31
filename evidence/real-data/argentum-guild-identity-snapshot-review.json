@@ -1,0 +1,53 @@
+{
+  "decision_boundary": {
+    "guild_identity_verified": false,
+    "independent_source_identity_verified": false,
+    "planner_scoring_allowed": false,
+    "ready_for_bis25_scoring": false,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_guild_filtering": false,
+    "ready_for_independent_source_identity_review": true,
+    "ready_for_multi_report_character_graph": false,
+    "ready_for_performance_model": false,
+    "snapshot_internal_identity_consistent": true,
+    "status": "snapshot_internal_guild_identity_candidate"
+  },
+  "generated_at": "2026-07-31T06:00:57.685368Z",
+  "integrity_checks": {
+    "all_exact_label_rows_have_non_null_guild_id": true,
+    "candidate_id_has_no_conflicting_non_empty_guild_name": true,
+    "distinct_target_id_count_matches_public_receipt": true,
+    "exact_label_count_matches_public_receipt": true,
+    "exact_label_report_ids_unique": true,
+    "exact_label_rows_have_one_source_guild_id": true,
+    "private_manifest_contract_verified": true,
+    "private_manifest_sha256_verified": true,
+    "public_manifest_boundary_preserved": true,
+    "public_manifest_report_count_verified": true
+  },
+  "review_kind": "guild_identity_snapshot_review",
+  "review_version": "guild-identity-snapshot-review-v1",
+  "schema_version": 1,
+  "source_private_manifest_name": "argentum-public-report-manifest.private.json",
+  "source_private_manifest_sha256": "81ec9e5bccc30a2e3965e7011912a83356608912008634357b58a670029d732f",
+  "source_private_review_name": "argentum-guild-identity-review.private.json",
+  "source_private_review_sha256": "9448c3c83ef05ae194c7082e929142d038b7c18dbb88cab2615f3868c5a45e2f",
+  "source_public_manifest_receipt_name": "argentum-public-report-manifest.json",
+  "source_public_manifest_receipt_sha256": "aaad2a9301bdb6a8e2af62a04fc74083a3d1fcd255c293b72dba3d4953b49e57",
+  "summary": {
+    "all_integrity_checks_passed": true,
+    "candidate_guild_id_conflicting_non_empty_name_count": 0,
+    "candidate_guild_id_distinct_non_empty_name_count": 1,
+    "candidate_guild_id_empty_name_count": 0,
+    "candidate_guild_id_report_count": 17,
+    "contains_source_scalar_values": false,
+    "distinct_exact_label_guild_id_count": 1,
+    "exact_label_null_guild_id_count": 0,
+    "exact_label_report_count": 17,
+    "integrity_check_count": 10
+  },
+  "target": {
+    "guild_label": "Argentum",
+    "source_guild_id_published": false
+  }
+}
