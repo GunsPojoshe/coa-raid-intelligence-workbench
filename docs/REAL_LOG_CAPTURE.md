@@ -21,7 +21,7 @@ HTTP response
 -> scalar-free receipt
 ```
 
-Parser result never becomes a gameplay claim automatically.
+Parser result, identity decision and report filtering never become gameplay claims automatically.
 
 ## HTTP capture contract
 
@@ -79,118 +79,138 @@ Observed routes:
 
 No separate `/roster` route was observed.
 
-Exact report/encounter mappings are published and selected-parser results are persisted through migration `0007_selected_parser_persistence`:
-
 ```text
 normalized: 2 reports, 15 encounters, 31 actors, 31 participants, 0 aura events
 reconstructed: 1 report, 14 encounters, 31 actors, 31 participants
-persisted canonical observations: 77
+persisted canonical observations through 0007: 77
 rejects: 0
 ```
 
 ## Completed combatants persistence
 
-Exact combatants binding:
-
 ```text
 payload:     45672e0f0ff9eb461c575bdd38385795daa6326378bc3f8ad51474276140dc14
 fingerprint: 41d6d15422c668f83d2ccae1ec0ff2969671861f9e43b21cb371578961c5f8ff
-```
-
-Migration and receipt:
-
-```text
-migrations/0008_combatants_observation_persistence.sql
-evidence/real-data/observed-combatants-info-persistence.json
-```
-
-```text
+migration: migrations/0008_combatants_observation_persistence.sql
+receipt: evidence/real-data/observed-combatants-info-persistence.json
 persisted observations: 1343
 actor/build observations: 1339
 linked actors: 11
 integrity checks: 14/14
 core actor mutations: 0
-transaction committed: true
 ```
 
 The private database contains source scalars and remains local. Read models are parser observation views, not canonical gameplay/build projections.
 
-## Completed public-report pagination and manifest
-
-The production bounded discovery default remains conservative. An explicit reviewed promotion permits exact `limit=25` use for terminal search and manifest capture.
-
-Manifest request:
+## Completed public-report manifest
 
 ```text
-GET /api/reports/public
-page=1..259
-limit=25
-sortBy=created_at
-sortOrder=desc
-```
-
-Capture implementation uses bounded concurrency only for the promoted manifest path. Each worker has a separate HTTP session; raw archive writes are serialized; checkpoint state is flushed progressively. Start/end sentinels and aggregate integrity gates remain mandatory.
-
-Versioned receipt:
-
-```text
-evidence/real-data/argentum-public-report-manifest.json
-```
-
-Result:
-
-```text
-completed pages: 259
+receipt: evidence/real-data/argentum-public-report-manifest.json
+route: /api/reports/public
+page: 1..259
+limit: 25
+sortBy: created_at
+sortOrder: desc
 reports: 6454
 unique report IDs: 6454
 duplicates: 0
 terminal page reports: 4
 integrity checks: 19/19
 sentinel stability: verified
-receipt contains source scalar values: false
-private manifest contains source scalar values: true
-```
-
-Guild fields:
-
-```text
-reports with both guild fields: 1171
-distinct guild identity pairs: 88
 exact Argentum label reports: 17
 distinct non-null guild IDs for exact label: 1
 ```
 
-This proves captured snapshot completeness and consistency. It does not prove target guild identity.
+The public receipt is scalar-free. The exact report records remain in the private manifest.
 
-## Guild identity review protocol
-
-Input:
-
-- versioned scalar-free manifest receipt;
-- exact local private manifest whose SHA-256 matches the receipt;
-- optional independent source identity evidence.
-
-Required review:
-
-1. recompute the private manifest SHA-256;
-2. isolate exact normalized `guild_name == "Argentum"` rows;
-3. confirm the receipt counts (`17` rows, `1` distinct non-null guild ID);
-4. check whether that ID appears with another non-empty guild name in the same snapshot;
-5. inspect independent source evidence where available;
-6. do not infer identity from report title, uploader or nickname;
-7. record reviewer, evidence hashes, counts, conflict flags and decision;
-8. publish only a scalar-free receipt and keep the raw guild ID local.
-
-Possible decisions:
+## Completed guild identity decision
 
 ```text
-verified_target_identity
-insufficient_evidence
-conflicting_evidence
-rejected_identity
+receipt: evidence/real-data/argentum-guild-identity-decision.json
+integrity checks: 16/16
+explicit operator promotion: true
+cross-endpoint source-ID equality: true
+name casefold equality: true
+guild identity verified: true
+ready for guild filtering: true
 ```
 
-Only `verified_target_identity` may enable deterministic guild filtering. Identity verification does not enable performance or planner scoring.
+The source guild ID remains private. Identity verification does not verify guild API route semantics or full crawl.
+
+## Completed deterministic guild filtering
+
+Implementation:
+
+```text
+src/coa_workbench/collector/verified_guild_report_filter.py
+scripts/filter_verified_guild_reports.py
+tests/unit/test_verified_guild_report_filter.py
+```
+
+Versioned receipt:
+
+```text
+evidence/real-data/argentum-guild-report-manifest.json
+```
+
+Selection contract:
+
+```text
+filter field: /reports/*/guild_id
+operation: equals_verified_private_source_guild_id
+deduplication key: /reports/*/id
+selection order: source_manifest_order
+```
+
+Verified result:
+
+```text
+source reports: 6454
+selected reports: 17
+unique selected report IDs: 17
+duplicate selected occurrences: 0
+integrity checks: 14/14
+guild filtering completed: true
+guild report manifest deduplicated: true
+contains raw payload: false
+contains source scalar values: false
+report IDs published: false
+source guild ID published: false
+```
+
+The exact selected records remain in:
+
+```text
+data/extracted/report-discovery/argentum-guild-report-manifest.private.json
+```
+
+This private file is local-only.
+
+## Full-crawl collection gate
+
+Filtering is not full crawl. Before a guild API route may be used for exhaustive collection:
+
+1. verify exact route and query parameters;
+2. capture immutable raw payloads;
+3. review response schema and source scalars;
+4. verify pagination, termination and completeness semantics;
+5. bind every claim to exact hashes/fingerprints;
+6. compare guild-API-derived and public-manifest-derived report sets;
+7. retain missing, extra and conflicting reports;
+8. publish a scalar-free collection decision receipt;
+9. keep automatic full crawl disabled until explicit promotion.
+
+Current boundary:
+
+```text
+full crawl collection contract reviewed: false
+guild API route semantics verified: false
+ready for full guild crawl: false
+ready for multi-report character graph: false
+ready for performance model: false
+ready for BiS 25 scoring: false
+planner scoring allowed: false
+```
 
 ## Aura capture gap
 
@@ -229,8 +249,8 @@ data/exchange/in/
 data/exchange/out/
 ```
 
-Never commit credentials, cookies, tokens, browser profiles, `.env`, unsanitized HAR or source-scalar private batches.
+Never commit credentials, cookies, tokens, browser profiles, `.env`, unsanitized HAR, source guild IDs, report IDs or source-scalar private batches.
 
 ## E3 acceptance boundary
 
-E3 remains Draft until reviewed guild identity/crawl boundaries, reviewed combatants observations, aura observations and intervals for the bounded slice, independent supporting observations, contradicting evidence review, versioned provenance, and green Ubuntu/Windows CI are present.
+E3 remains Draft until reviewed identity/filtering/crawl boundaries, reviewed combatants observations, aura observations and intervals for the bounded slice, independent supporting observations, contradicting evidence review, versioned provenance, and green Ubuntu/Windows CI are present.
