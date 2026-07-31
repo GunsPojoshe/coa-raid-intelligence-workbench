@@ -13,21 +13,20 @@ main
     └── e3/real-log-capture         PR #7 -> e2, Draft
 ```
 
-Последний проверенный implementation baseline до identity publication:
+PR #7 остаётся open, Draft и mergeable. Фактический HEAD и новый CI перепроверять после каждого documentation/evidence commit.
+
+Последний полностью зелёный baseline до filtering implementation:
 
 ```text
 commit: 297895c5ce3b26ce2911befd9addf474ef3e1138
-workflow: Verify repository
-run: #464
+Verify repository run: #464
 public-release-audit: success
 Ubuntu: success
 Windows: success
 reported tests: 300 passed
 ```
 
-После публикации identity receipt и filtering implementation branch продвинулась. Новый CI обязан быть проверен отдельно; run #464 не подтверждает новые commits.
-
-PR #7 остаётся open и Draft. Base — `e2/log-evidence-refactor`.
+Run #476 на более новом HEAD подтвердил 303 passed, doctor и DuckDB checks, но Ubuntu завершился failure из-за одного `ruff format --diff` нарушения в `scripts/filter_verified_guild_reports.py`. Форматирование исправлено отдельным commit; новый HEAD требует нового CI.
 
 ## Trust boundary
 
@@ -38,7 +37,7 @@ combat-log event != automatic proof of a general mechanic
 
 Normalization разрешена только при exact immutable payload, exact SHA-256, exact schema fingerprint и reviewed mapping/extractor.
 
-Parser/schema verification не подтверждает игровую механику. Canonical planner scoring допускает только `corroborated` и `confirmed` mechanics.
+Parser/schema verification, guild identity verification и report filtering не подтверждают игровую механику. Canonical planner scoring допускает только `corroborated` и `confirmed` mechanics.
 
 ## Реализованный фундамент
 
@@ -94,30 +93,14 @@ duplicates: 0
 terminal page reports: 4
 integrity checks: 19/19
 sentinel stability: verified
-```
-
-Guild-field summary:
-
-```text
-reports with both guild fields: 1171
-distinct guild identity pairs: 88
 exact Argentum label reports: 17
 distinct non-null guild IDs for exact label: 1
 ```
 
 ## Explicit guild identity decision — completed
 
-Versioned scalar-free receipt:
-
 ```text
-evidence/real-data/argentum-guild-identity-decision.json
-```
-
-Verified decision facts:
-
-```text
-decision kind: guild_identity_decision
-decision version: guild-identity-decision-v1
+receipt: evidence/real-data/argentum-guild-identity-decision.json
 integrity checks: 16/16
 explicit operator promotion: true
 cross-endpoint source-ID equality: true
@@ -129,20 +112,9 @@ guild identity verified: true
 ready for guild filtering: true
 ```
 
-Required false boundaries remain false:
-
-```text
-guild API route semantics verified: false
-ready for full guild crawl: false
-ready for multi-report character graph: false
-ready for performance model: false
-ready for BiS 25 scoring: false
-planner scoring allowed: false
-```
-
 The source guild ID remains private and is not published in Git.
 
-## Deterministic verified-ID filtering — implemented, local execution pending
+## Deterministic verified-ID filtering — completed
 
 Implementation:
 
@@ -152,33 +124,58 @@ scripts/filter_verified_guild_reports.py
 tests/unit/test_verified_guild_report_filter.py
 ```
 
-The filter:
+Versioned scalar-free receipt:
 
-1. verifies the exhaustive public manifest and exact private manifest SHA-256;
-2. verifies the scalar-free public identity decision;
-3. verifies the exact private identity decision SHA-256;
-4. loads the verified source guild ID only from the private decision;
-5. filters the private manifest by exact typed source guild ID equality;
-6. rejects duplicate report IDs and conflicting selected guild names;
-7. requires selected membership and order to match the identity decision;
-8. writes a private source-scalar guild manifest locally;
-9. writes a scalar-free public receipt with counts and hashes only;
-10. keeps full crawl, character graph, performance and scoring disabled.
+```text
+evidence/real-data/argentum-guild-report-manifest.json
+```
 
-The actual guild report manifest has not yet been produced because the required private decision packet is local-only and was not uploaded.
+Verified result:
+
+```text
+manifest kind: verified_guild_report_manifest
+manifest version: verified-guild-report-manifest-v1
+source reports: 6454
+selected reports: 17
+unique selected report IDs: 17
+duplicate selected occurrences: 0
+integrity checks: 14/14
+guild filtering completed: true
+guild report manifest deduplicated: true
+contains raw payload: false
+contains source scalar values: false
+report IDs published: false
+source guild ID published: false
+```
+
+Selection contract:
+
+```text
+filter field: /reports/*/guild_id
+operation: equals_verified_private_source_guild_id
+deduplication key: /reports/*/id
+order: source_manifest_order
+```
+
+The exact selected report IDs and report records remain in the local private manifest.
 
 ## Current boundaries
 
 ```text
 guild identity verified: true
 ready for guild filtering: true
-guild filtering completed: false
+guild filtering completed: true
+guild report manifest deduplicated: true
+full crawl collection contract reviewed: false
+guild API route semantics verified: false
 ready for full guild crawl: false
 ready for multi-report character graph: false
 ready for performance model: false
 ready for BiS 25 scoring: false
 planner scoring allowed: false
 ```
+
+Filtering proves membership in the reviewed captured public snapshot. It does not prove guild API completeness or authorize full crawl.
 
 ## Data and Git policy
 
@@ -202,45 +199,29 @@ data/exchange/in/
 data/exchange/out/
 ```
 
-Never commit source guild IDs, report rows, private manifests, private decisions, DuckDB, credentials, cookies, tokens, Authorization headers, browser profiles, `.env` or unsanitized HAR.
+Never commit source guild IDs, report IDs, report rows, private manifests, private decisions, DuckDB, credentials, cookies, tokens, Authorization headers, browser profiles, `.env` or unsanitized HAR.
 
 ## Current blockers
 
-1. Deterministic filtering implementation must pass the new branch CI.
-2. The filter must be run locally against the exact private manifest and private identity decision.
-3. The resulting scalar-free guild report manifest receipt must be reviewed before versioning.
-4. Guild API route semantics and full-crawl collection contract remain unverified.
-5. Multi-report character identity has not been reviewed.
-6. The bounded report slice contains no aura events.
-7. No new gameplay mechanic has independent supporting and contradicting evidence.
-8. Planner scoring remains disabled.
+1. The latest HEAD requires green Ubuntu, Windows and public-release-audit CI.
+2. Full-crawl collection contract has not been reviewed against the verified 17-report manifest.
+3. Guild API route semantics, parameters, pagination and completeness remain unverified.
+4. Multi-report character identity has not been reviewed.
+5. The bounded report slice contains no aura events.
+6. No new gameplay mechanic has independent supporting and contradicting evidence.
+7. Planner scoring remains disabled.
 
 ## Next bounded task
 
-Run locally:
+Review and implement the next gate without opening full crawl automatically:
 
-```powershell
-uv run --no-sync python scripts/filter_verified_guild_reports.py
-```
-
-Upload only:
-
-```text
-data\exchange\out\argentum-guild-report-manifest.json
-```
-
-Do not upload or commit:
-
-```text
-data\extracted\report-discovery\argentum-guild-report-manifest.private.json
-data\extracted\report-discovery\argentum-guild-identity-decision.private.json
-```
-
-After receipt review:
-
-1. version the scalar-free guild report manifest receipt;
-2. review the full-crawl contract separately;
-3. keep route semantics, full crawl, graph, performance and scoring closed until their own gates pass.
+1. bind the collection contract to the verified identity decision and 17-report manifest;
+2. define the public-manifest-filtered report set as the current verified baseline;
+3. specify exact route-semantics evidence required before any guild API full crawl;
+4. require comparison of API-derived and public-manifest-derived report sets;
+5. preserve missing, extra and conflicting reports as evidence;
+6. allow only bounded per-report capture after the contract is reviewed;
+7. keep graph, performance and scoring gates false.
 
 ## Completion gate
 
