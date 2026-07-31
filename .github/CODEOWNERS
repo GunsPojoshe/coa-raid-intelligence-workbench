@@ -1,0 +1,12 @@
+# Default owner for all repository changes.
+* @GunsPojoshe
+
+# Security-sensitive automation and release boundaries.
+/.github/ @GunsPojoshe
+/.gitignore @GunsPojoshe
+
+# Canonical data contracts and forward-only storage changes.
+/config/ @GunsPojoshe
+/migrations/ @GunsPojoshe
+/evidence/ @GunsPojoshe
+/docs/ADR_*.md @GunsPojoshe
