@@ -1,0 +1,85 @@
+{
+  "decision_boundary": {
+    "guild_api_route_candidates_observed": true,
+    "guild_api_route_semantics_verified": false,
+    "guild_identity_verified": false,
+    "independent_source_identity_verified": false,
+    "planner_scoring_allowed": false,
+    "ready_for_bis25_scoring": false,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_guild_api_route_review": true,
+    "ready_for_guild_filtering": false,
+    "ready_for_multi_report_character_graph": false,
+    "ready_for_performance_model": false,
+    "snapshot_internal_identity_consistent": true,
+    "status": "guild_api_route_candidates_recovered"
+  },
+  "generated_at": "2026-07-31T09:19:56.806036Z",
+  "integrity_checks": {
+    "asset_url_https": true,
+    "asset_url_same_origin": true,
+    "credentials_not_supplied": true,
+    "diagnostic_asset_binding_verified": true,
+    "diagnostic_guild_id_binding_verified": true,
+    "download_size_bounded": true,
+    "private_route_discovery_sha256_verified": true,
+    "private_transport_diagnostic_sha256_verified": true,
+    "public_receipt_scalar_boundary_preserved": true,
+    "public_route_discovery_verified": true,
+    "public_route_shapes_redact_candidate_id": true,
+    "public_transport_diagnostic_verified": true,
+    "redirects_disabled": true,
+    "selected_transport_profile_verified": true,
+    "single_timeout_asset_selected": true
+  },
+  "recovery_kind": "guild_identity_asset_profiled_recovery",
+  "recovery_version": "guild-identity-asset-profiled-recovery-v1",
+  "route_inventory": {
+    "all_api_route_shape_count": 60,
+    "guild_api_route_shape_count": 3,
+    "guild_api_route_shapes": [
+      "/api/guilds/progression",
+      "/api/guilds/search?q=<value>",
+      "/api/guilds/search?q=<value>&limit=<value>"
+    ]
+  },
+  "schema_version": 1,
+  "source_private_diagnostic_name": "argentum-guild-asset-transport-diagnostic.private.json",
+  "source_private_diagnostic_sha256": "6edeb6b956734dbe5b5b18ec065426389c023c170d17ffb4d46716163dc180fd",
+  "source_private_recovery_name": "argentum-guild-asset-profiled-recovery.private.json",
+  "source_private_recovery_sha256": "96ec831521da9481c2e67ebd08ee23cbdcf33824bfec2911711ff50b91416acc",
+  "source_private_route_discovery_name": "argentum-guild-route-discovery.private.json",
+  "source_private_route_discovery_sha256": "587be5e160974df477d04b98b29bfb16e3f7bdb6ea9f4a8299ea9d80f7e35640",
+  "source_public_diagnostic_name": "argentum-guild-asset-transport-diagnostic.json",
+  "source_public_diagnostic_sha256": "230e5665064602a1ff9b926de0562b45e7b8755aa3ea2133d46438a520425b38",
+  "source_public_recovery_name": "argentum-guild-asset-recovery-tls-failure.json",
+  "source_public_recovery_sha256": "bf635a9e148a5002fc735536f5b115dbd152df732b9de18a01eb61d168fe140d",
+  "source_public_route_discovery_name": "argentum-guild-route-discovery-timeout.json",
+  "source_public_route_discovery_sha256": "bcac262eacc8e540b7ec4f4458c9b2e31bc6b1b93f341242dfefe13b34f0e03a",
+  "summary": {
+    "all_integrity_checks_passed": true,
+    "api_route_candidate_count": 79,
+    "asset_bytes": 3881146,
+    "asset_download_completed": true,
+    "contains_source_scalar_values": false,
+    "guild_api_route_candidate_count": 3,
+    "integrity_check_count": 15
+  },
+  "target": {
+    "asset_url_published": false,
+    "guild_label": "Argentum",
+    "source_guild_id_published": false
+  },
+  "transport": {
+    "contains_error_text": false,
+    "credentials_supplied": false,
+    "failure_class": null,
+    "http_status": 200,
+    "kind": "curl",
+    "max_bytes": 8388608,
+    "profile": "http1_1",
+    "redirects_allowed": false,
+    "return_code": 0,
+    "timeout_seconds": 300.0
+  }
+}
