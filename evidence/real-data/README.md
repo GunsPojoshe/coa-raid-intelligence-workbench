@@ -17,9 +17,10 @@ argentum-guild-asset-profiled-recovery.json
 argentum-guild-search-schema-inventory.json
 argentum-guild-search-mapping-review.json
 argentum-guild-identity-decision.json
+argentum-guild-report-manifest.json
 ```
 
-Additional receipts document failed or incomplete bounded attempts. They remain classified evidence, not successful identity or route-semantic decisions.
+Additional receipts document failed or incomplete bounded attempts. They remain classified evidence, not successful route-semantic or gameplay decisions.
 
 ## Combatants evidence chain
 
@@ -87,11 +88,7 @@ Identity decision receipt:
 argentum-guild-identity-decision.json
 ```
 
-Verified facts:
-
 ```text
-decision kind: guild_identity_decision
-decision version: guild-identity-decision-v1
 snapshot reports: 6454
 exact target-label reports: 17
 distinct target guild IDs: 1
@@ -111,11 +108,62 @@ ready for guild filtering: true
 
 The source guild ID and private decision packet remain local-only.
 
-## Preserved decision boundaries
-
-Identity verification does not verify guild API route semantics and does not authorize collection or scoring beyond deterministic filtering.
+## Verified guild report manifest evidence chain
 
 ```text
+verified public manifest
++ verified public identity decision
++ exact private manifest
++ exact private identity decision
+-> load verified source guild ID privately
+-> exact typed source-ID filtering
+-> report-ID deduplication
+-> source-order preservation
+-> private guild report manifest
+-> scalar-free public receipt
+```
+
+Receipt:
+
+```text
+argentum-guild-report-manifest.json
+```
+
+Verified facts:
+
+```text
+manifest kind: verified_guild_report_manifest
+manifest version: verified-guild-report-manifest-v1
+source reports: 6454
+selected reports: 17
+unique selected report IDs: 17
+duplicate selected occurrences: 0
+integrity checks: 14/14
+guild filtering completed: true
+guild report manifest deduplicated: true
+contains raw payload: false
+contains source scalar values: false
+report IDs published: false
+source guild ID published: false
+```
+
+Selection contract:
+
+```text
+filter field: /reports/*/guild_id
+filter operation: equals_verified_private_source_guild_id
+deduplication key: /reports/*/id
+selection order: source_manifest_order
+```
+
+The exact selected report IDs and records remain local-only.
+
+## Preserved decision boundaries
+
+Identity verification and filtering do not verify guild API route semantics and do not authorize full crawl, graph construction, performance modeling or scoring.
+
+```text
+full crawl collection contract reviewed: false
 guild API route semantics verified: false
 ready for full guild crawl: false
 ready for multi-report character graph: false
@@ -126,24 +174,25 @@ planner scoring allowed: false
 
 ## Next evidence artifact
 
-Deterministic verified-ID filtering is implemented in:
+The next artifact must review the full-crawl collection contract against all three receipts:
 
 ```text
-src/coa_workbench/collector/verified_guild_report_filter.py
-scripts/filter_verified_guild_reports.py
+argentum-public-report-manifest.json
+argentum-guild-identity-decision.json
+argentum-guild-report-manifest.json
 ```
 
-The next local execution should produce:
+It must define:
 
-```text
-private:
-  data/extracted/report-discovery/argentum-guild-report-manifest.private.json
-
-scalar-free receipt:
-  data/exchange/out/argentum-guild-report-manifest.json
-```
-
-Only the scalar-free receipt may be reviewed for versioning. Filtering must use the verified source guild ID from the private identity decision, not name matching.
+- the verified 17-report set as the current baseline;
+- exact guild API route-semantic evidence requirements;
+- pagination, termination and completeness requirements;
+- immutable raw capture and exact hash/fingerprint bindings;
+- deterministic API-versus-baseline set comparison;
+- missing/extra/conflicting report preservation;
+- partial-failure and resume behavior;
+- explicit promotion before automatic full crawl;
+- scalar-free publication boundaries.
 
 ## Local-only artifacts
 
@@ -159,4 +208,4 @@ data/exchange/out/
 
 They may contain report IDs, guild IDs/names, character names, talents, gear, GUIDs, normalized entities, private review packets or DuckDB state.
 
-Never commit credentials, cookies, tokens, Authorization headers, browser profiles, `.env`, unsanitized HAR or source-scalar private batches.
+Never commit credentials, cookies, tokens, Authorization headers, browser profiles, `.env`, unsanitized HAR, source guild IDs, report IDs or source-scalar private batches.
