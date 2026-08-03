@@ -39,6 +39,17 @@ def _sha256_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
 
+def _document_hashes(value: bytes) -> set[str]:
+    """Return raw, LF and CRLF hashes for one text document."""
+    normalized_lf = value.replace(b"\r\n", b"\n")
+    normalized_crlf = normalized_lf.replace(b"\n", b"\r\n")
+    return {
+        _sha256_bytes(value),
+        _sha256_bytes(normalized_lf),
+        _sha256_bytes(normalized_crlf),
+    }
+
+
 def _load_object(path: Path, label: str) -> tuple[dict[str, Any], bytes]:
     try:
         body = path.read_bytes()
@@ -93,12 +104,14 @@ def _validate_source_binding(
     expected_name: object,
     expected_sha256: object,
     label: str,
-) -> None:
+) -> bool:
     if expected_name != source_path.name:
         raise ValueError(f"{label} source file name mismatch")
     expected_hash = _required_sha256(expected_sha256, f"{label}.sha256")
-    if _sha256_bytes(source_body) != expected_hash:
+    hashes = _document_hashes(source_body)
+    if expected_hash not in hashes:
         raise ValueError(f"{label} source SHA-256 mismatch")
+    return expected_hash != _sha256_bytes(source_body)
 
 
 def _validate_contract(contract: Mapping[str, Any], expected_label: str) -> None:
@@ -118,27 +131,29 @@ def _validate_contract(contract: Mapping[str, Any], expected_label: str) -> None
         raise ValueError("full-crawl contract publishes report IDs")
 
     summary = _required_object(contract.get("summary"), "contract.summary")
-    if summary.get("all_integrity_checks_passed") is not True:
-        raise ValueError("full-crawl contract integrity checks failed")
-    if summary.get("full_crawl_collection_contract_reviewed") is not True:
-        raise ValueError("full-crawl contract is not reviewed")
-    if summary.get("ready_for_bounded_route_semantics_capture") is not True:
-        raise ValueError("full-crawl contract does not allow bounded route capture")
-    if summary.get("contains_source_scalar_values") is not False:
-        raise ValueError("full-crawl contract contains source scalar values")
+    expected_summary = {
+        "all_integrity_checks_passed": True,
+        "contains_source_scalar_values": False,
+        "full_crawl_collection_contract_reviewed": True,
+        "ready_for_bounded_route_semantics_capture": True,
+        "guild_api_route_semantics_verified": False,
+        "ready_for_full_guild_crawl": False,
+        "planner_scoring_allowed": False,
+    }
+    for field_name, expected in expected_summary.items():
+        if summary.get(field_name) is not expected:
+            raise ValueError(f"full-crawl contract summary mismatch: {field_name}")
 
-    boundary = _required_object(
-        contract.get("decision_boundary"),
-        "contract.decision_boundary",
-    )
-    if boundary.get("automatic_full_guild_crawl_allowed") is not False:
-        raise ValueError("full-crawl contract unexpectedly enables automatic crawl")
-    if boundary.get("guild_api_route_semantics_verified") is not False:
-        raise ValueError("full-crawl contract already claims route semantics")
-    if boundary.get("ready_for_full_guild_crawl") is not False:
-        raise ValueError("full-crawl contract already claims crawl readiness")
-    if boundary.get("planner_scoring_allowed") is not False:
-        raise ValueError("full-crawl contract already enables planner scoring")
+    boundary = _required_object(contract.get("decision_boundary"), "contract.boundary")
+    expected_boundary = {
+        "automatic_full_guild_crawl_allowed": False,
+        "guild_api_route_semantics_verified": False,
+        "ready_for_full_guild_crawl": False,
+        "planner_scoring_allowed": False,
+    }
+    for field_name, expected in expected_boundary.items():
+        if boundary.get(field_name) is not expected:
+            raise ValueError(f"full-crawl contract boundary mismatch: {field_name}")
 
 
 def _validate_access(access: Mapping[str, Any], expected_label: str) -> None:
@@ -166,16 +181,17 @@ def _validate_access(access: Mapping[str, Any], expected_label: str) -> None:
         raise ValueError("public access diagnostic contains source scalar values")
 
     boundary = _required_object(access.get("decision_boundary"), "access.boundary")
-    if boundary.get("ready_for_profiled_guild_search_probe") is not True:
-        raise ValueError("public access diagnostic is not ready for profiled probing")
+    expected_boundary = {
+        "ready_for_profiled_guild_search_probe": True,
+        "guild_api_route_semantics_verified": False,
+        "ready_for_full_guild_crawl": False,
+        "planner_scoring_allowed": False,
+    }
+    for field_name, expected in expected_boundary.items():
+        if boundary.get(field_name) is not expected:
+            raise ValueError(f"public access diagnostic boundary mismatch: {field_name}")
     if boundary.get("selected_access_profile") != _SELECTED_PROFILE:
         raise ValueError("public access diagnostic boundary profile mismatch")
-    if boundary.get("guild_api_route_semantics_verified") is not False:
-        raise ValueError("public access diagnostic already claims route semantics")
-    if boundary.get("ready_for_full_guild_crawl") is not False:
-        raise ValueError("public access diagnostic already claims crawl readiness")
-    if boundary.get("planner_scoring_allowed") is not False:
-        raise ValueError("public access diagnostic already enables planner scoring")
 
 
 def _attempts_by_case(capture: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
@@ -194,8 +210,6 @@ def _attempts_by_case(capture: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
         if case in result:
             raise ValueError("route-semantics capture contains a duplicate case")
         result[case] = attempt
-    if set(result) != set(_EXPECTED_CASES):
-        raise ValueError("route-semantics capture case set mismatch")
     return result
 
 
@@ -205,70 +219,57 @@ def _validate_attempt(
     expected_query_keys: list[str],
     expected_limit: int | None,
 ) -> dict[str, Any]:
-    if attempt.get("route_template") != _ROUTE_TEMPLATE:
-        raise ValueError("route-semantics attempt route template mismatch")
-    if attempt.get("query_keys") != expected_query_keys:
-        raise ValueError("route-semantics attempt query keys mismatch")
-    if attempt.get("limit") != expected_limit:
-        raise ValueError("route-semantics attempt limit mismatch")
-    if attempt.get("return_code") != 0:
-        raise ValueError("route-semantics attempt curl return code mismatch")
-    if attempt.get("http_status") != 200:
-        raise ValueError("route-semantics attempt HTTP status mismatch")
-    if attempt.get("failure_class") is not None:
-        raise ValueError("route-semantics attempt contains a failure class")
-    if attempt.get("body_captured") is not True:
-        raise ValueError("route-semantics attempt body was not captured")
-    if attempt.get("json_valid") is not True:
-        raise ValueError("route-semantics attempt body is not valid JSON")
-    if attempt.get("response_candidate") is not True:
-        raise ValueError("route-semantics attempt is not a response candidate")
-    if attempt.get("contains_error_text") is not False:
-        raise ValueError("route-semantics attempt publishes error text")
-    if attempt.get("contains_source_scalar_values") is not False:
-        raise ValueError("route-semantics attempt publishes source scalar values")
+    expected_values = {
+        "route_template": _ROUTE_TEMPLATE,
+        "query_keys": expected_query_keys,
+        "limit": expected_limit,
+        "return_code": 0,
+        "http_status": 200,
+        "failure_class": None,
+        "body_captured": True,
+        "json_valid": True,
+        "response_candidate": True,
+        "contains_error_text": False,
+        "contains_source_scalar_values": False,
+    }
+    for field_name, expected in expected_values.items():
+        if attempt.get(field_name) != expected:
+            raise ValueError(f"route-semantics attempt mismatch: {field_name}")
 
     body_bytes = attempt.get("body_bytes")
     if isinstance(body_bytes, bool) or not isinstance(body_bytes, int) or body_bytes < 1:
         raise ValueError("route-semantics attempt body byte count is invalid")
 
     capture = _required_object(attempt.get("capture"), "attempt.capture")
-    _required_sha256(capture.get("raw_id"), "attempt.capture.raw_id")
-    _required_sha256(capture.get("observation_id"), "attempt.capture.observation_id")
-    _required_sha256(capture.get("payload_hash"), "attempt.capture.payload_hash")
-    _required_sha256(
-        capture.get("schema_fingerprint"),
-        "attempt.capture.schema_fingerprint",
-    )
+    for field_name in ("raw_id", "observation_id", "payload_hash", "schema_fingerprint"):
+        _required_sha256(capture.get(field_name), f"attempt.capture.{field_name}")
     if capture.get("bytes_uncompressed") != body_bytes:
         raise ValueError("route-semantics attempt captured byte count mismatch")
 
     shape = _required_object(attempt.get("shape_summary"), "attempt.shape_summary")
-    if shape.get("top_level_kind") != "object":
-        raise ValueError("route-semantics response top-level kind mismatch")
-    if shape.get("top_level_keys") != _EXPECTED_TOP_LEVEL_KEYS:
-        raise ValueError("route-semantics response top-level keys mismatch")
-    if shape.get("guild_collection_observed") is not True:
-        raise ValueError("route-semantics response guild collection is missing")
-    if shape.get("guild_field_inventory") != _EXPECTED_GUILD_FIELDS:
-        raise ValueError("route-semantics guild field inventory mismatch")
-    if shape.get("guild_object_count") != 1:
-        raise ValueError("route-semantics response must contain one guild object")
-    if shape.get("guild_result_count") != 1:
-        raise ValueError("route-semantics response must contain one guild result")
-    if shape.get("distinct_non_null_id_count") != 1:
-        raise ValueError("route-semantics response guild ID count mismatch")
-    if shape.get("target_name_casefold_match_count") != 1:
-        raise ValueError("route-semantics response target name match count mismatch")
-    if shape.get("pagination_object_observed") is not False:
-        raise ValueError("route-semantics response unexpectedly claims pagination")
-    if shape.get("pagination_keys") != []:
-        raise ValueError("route-semantics response pagination keys are not empty")
-    if shape.get("pagination_field_types") != []:
-        raise ValueError("route-semantics response pagination types are not empty")
-    if shape.get("contains_source_scalar_values") is not False:
-        raise ValueError("route-semantics shape summary contains source scalar values")
-
+    expected_shape = {
+        "top_level_kind": "object",
+        "top_level_keys": _EXPECTED_TOP_LEVEL_KEYS,
+        "guild_collection_observed": True,
+        "guild_field_inventory": _EXPECTED_GUILD_FIELDS,
+        "guild_object_count": 1,
+        "guild_result_count": 1,
+        "distinct_non_null_id_count": 1,
+        "target_name_casefold_match_count": 1,
+        "pagination_object_observed": False,
+        "pagination_keys": [],
+        "pagination_field_types": [],
+        "contains_source_scalar_values": False,
+    }
+    for field_name, expected in expected_shape.items():
+        if shape.get(field_name) != expected:
+            raise ValueError(f"route-semantics response shape mismatch: {field_name}")
+    for field_name in (
+        "guild_field_inventory_sha256",
+        "ordered_guild_records_sha256",
+        "id_value_set_sha256",
+    ):
+        _required_sha256(shape.get(field_name), f"shape.{field_name}")
     return shape
 
 
@@ -280,12 +281,9 @@ def review_guild_route_semantics(
     receipt_output_path: Path,
     expected_guild_label: str = "Argentum",
 ) -> dict[str, Any]:
-    """Review bounded route and schema evidence without promoting full-crawl semantics."""
+    """Review bounded route and schema evidence without enabling full crawl."""
     capture, capture_body = _load_object(capture_path, "route-semantics capture")
-    contract, contract_body = _load_object(
-        full_crawl_contract_path,
-        "full-crawl contract",
-    )
+    contract, contract_body = _load_object(full_crawl_contract_path, "full-crawl contract")
     access, access_body = _load_object(
         public_access_diagnostic_path,
         "public access diagnostic",
@@ -301,14 +299,14 @@ def review_guild_route_semantics(
     if capture.get("capture_version") != _CAPTURE_VERSION:
         raise ValueError("route-semantics capture version mismatch")
 
-    _validate_source_binding(
+    contract_line_endings_normalized = _validate_source_binding(
         source_path=full_crawl_contract_path,
         source_body=contract_body,
         expected_name=capture.get("source_contract_name"),
         expected_sha256=capture.get("source_contract_sha256"),
         label="full-crawl contract",
     )
-    _validate_source_binding(
+    access_line_endings_normalized = _validate_source_binding(
         source_path=public_access_diagnostic_path,
         source_body=access_body,
         expected_name=capture.get("source_public_access_name"),
@@ -327,46 +325,52 @@ def review_guild_route_semantics(
         if target.get(field_name) is not False:
             raise ValueError(f"route-semantics capture privacy boundary mismatch: {field_name}")
 
+    capture_checks = _required_object(
+        capture.get("integrity_checks"),
+        "capture.integrity_checks",
+    )
+    if not capture_checks or any(value is not True for value in capture_checks.values()):
+        raise ValueError("route-semantics capture contains failed integrity checks")
+
     summary = _required_object(capture.get("summary"), "capture.summary")
-    if summary.get("all_integrity_checks_passed") is not True:
-        raise ValueError("route-semantics capture integrity checks failed")
-    if summary.get("all_responses_completed") is not True:
-        raise ValueError("route-semantics capture responses are incomplete")
-    if summary.get("attempt_count") != 3 or summary.get("completed_attempt_count") != 3:
-        raise ValueError("route-semantics capture attempt counts mismatch")
-    if summary.get("ready_for_route_semantics_review") is not True:
-        raise ValueError("route-semantics capture is not ready for review")
-    if summary.get("response_shape_consistent") is not True:
-        raise ValueError("route-semantics response shape is inconsistent")
-    if summary.get("contains_raw_payload") is not False:
-        raise ValueError("route-semantics capture contains raw payload")
-    if summary.get("contains_source_scalar_values") is not False:
-        raise ValueError("route-semantics capture contains source scalar values")
-    if summary.get("guild_api_route_semantics_verified") is not False:
-        raise ValueError("route-semantics capture already claims semantic verification")
-    if summary.get("ready_for_full_guild_crawl") is not False:
-        raise ValueError("route-semantics capture already claims full-crawl readiness")
-    if summary.get("planner_scoring_allowed") is not False:
-        raise ValueError("route-semantics capture already enables planner scoring")
+    expected_summary = {
+        "all_integrity_checks_passed": True,
+        "all_responses_completed": True,
+        "attempt_count": 3,
+        "completed_attempt_count": 3,
+        "contains_raw_payload": False,
+        "contains_source_scalar_values": False,
+        "guild_api_route_semantics_verified": False,
+        "planner_scoring_allowed": False,
+        "ready_for_full_guild_crawl": False,
+        "ready_for_route_semantics_review": True,
+        "response_shape_consistent": True,
+    }
+    for field_name, expected in expected_summary.items():
+        if summary.get(field_name) != expected:
+            raise ValueError(f"route-semantics capture summary mismatch: {field_name}")
+    if summary.get("integrity_check_count") != len(capture_checks):
+        raise ValueError("route-semantics capture integrity check count mismatch")
 
     request_contract = _required_object(
         capture.get("request_contract"),
         "capture.request_contract",
     )
-    if request_contract.get("case_count") != 3:
-        raise ValueError("route-semantics request case count mismatch")
-    if request_contract.get("route_template") != _ROUTE_TEMPLATE:
-        raise ValueError("route-semantics request route template mismatch")
-    if request_contract.get("selected_profile") != _SELECTED_PROFILE:
-        raise ValueError("route-semantics request profile mismatch")
-    if request_contract.get("observed_query_shapes") != [["q", "limit"], ["q"]]:
-        raise ValueError("route-semantics request query shapes mismatch")
-    if request_contract.get("credentials_supplied") is not False:
-        raise ValueError("route-semantics request supplied credentials")
-    if request_contract.get("redirects_allowed") is not False:
-        raise ValueError("route-semantics request allowed redirects")
+    expected_request = {
+        "case_count": 3,
+        "credentials_supplied": False,
+        "observed_query_shapes": [["q", "limit"], ["q"]],
+        "redirects_allowed": False,
+        "route_template": _ROUTE_TEMPLATE,
+        "selected_profile": _SELECTED_PROFILE,
+    }
+    for field_name, expected in expected_request.items():
+        if request_contract.get(field_name) != expected:
+            raise ValueError(f"route-semantics request contract mismatch: {field_name}")
 
     attempts = _attempts_by_case(capture)
+    if set(attempts) != set(_EXPECTED_CASES):
+        raise ValueError("route-semantics capture case set mismatch")
     shapes: dict[str, dict[str, Any]] = {}
     for case, (query_keys, limit) in _EXPECTED_CASES.items():
         shapes[case] = _validate_attempt(
@@ -384,82 +388,54 @@ def review_guild_route_semantics(
         for attempt in attempts.values()
     }
     field_inventory_hashes = {
-        _required_sha256(
-            shape.get("guild_field_inventory_sha256"),
-            "shape.guild_field_inventory_sha256",
-        )
-        for shape in shapes.values()
+        str(shape["guild_field_inventory_sha256"]) for shape in shapes.values()
     }
     ordered_record_hashes = {
-        _required_sha256(
-            shape.get("ordered_guild_records_sha256"),
-            "shape.ordered_guild_records_sha256",
-        )
-        for shape in shapes.values()
+        str(shape["ordered_guild_records_sha256"]) for shape in shapes.values()
     }
-    id_set_hashes = {
-        _required_sha256(
-            shape.get("id_value_set_sha256"),
-            "shape.id_value_set_sha256",
-        )
-        for shape in shapes.values()
-    }
+    id_set_hashes = {str(shape["id_value_set_sha256"]) for shape in shapes.values()}
     result_counts = {int(shape["guild_result_count"]) for shape in shapes.values()}
 
     cross_case = _required_object(
         capture.get("cross_case_review"),
         "capture.cross_case_review",
     )
-    required_true = (
-        "all_responses_completed",
-        "guild_collection_observed_on_all_cases",
-        "limit_parameter_accepted",
-        "response_shape_consistent",
-        "route_shapes_observed",
-        "source_id_set_stable_by_hash",
-        "target_name_casefold_match_stable",
-    )
-    for field_name in required_true:
-        if cross_case.get(field_name) is not True:
-            raise ValueError(f"route-semantics cross-case evidence mismatch: {field_name}")
-    for field_name in (
-        "contains_source_scalar_values",
-        "limit_truncation_semantics_verified",
-        "pagination_object_observed",
-        "pagination_semantics_verified",
-    ):
-        if cross_case.get(field_name) is not False:
-            raise ValueError(f"route-semantics cross-case boundary mismatch: {field_name}")
+    expected_cross_case = {
+        "all_responses_completed": True,
+        "contains_source_scalar_values": False,
+        "guild_collection_observed_on_all_cases": True,
+        "limit_parameter_accepted": True,
+        "limit_truncation_semantics_verified": False,
+        "pagination_object_observed": False,
+        "pagination_semantics_verified": False,
+        "response_shape_consistent": True,
+        "route_shapes_observed": True,
+        "source_id_set_stable_by_hash": True,
+        "target_name_casefold_match_stable": True,
+    }
+    for field_name, expected in expected_cross_case.items():
+        if cross_case.get(field_name) != expected:
+            raise ValueError(f"route-semantics cross-case mismatch: {field_name}")
 
     checks = {
         "full_crawl_contract_verified": True,
         "public_access_diagnostic_verified": True,
-        "capture_source_bindings_verified": True,
+        "source_bindings_verified_across_line_endings": True,
         "capture_integrity_checks_verified": True,
         "capture_privacy_boundary_verified": True,
-        "request_case_set_verified": set(attempts) == set(_EXPECTED_CASES),
-        "route_template_verified": all(
-            attempt.get("route_template") == _ROUTE_TEMPLATE
-            for attempt in attempts.values()
-        ),
+        "request_case_set_verified": True,
+        "route_template_verified": True,
         "query_shapes_verified": True,
         "all_three_responses_completed": True,
-        "response_envelope_verified": all(
-            shape.get("top_level_keys") == _EXPECTED_TOP_LEVEL_KEYS
-            for shape in shapes.values()
-        ),
-        "guild_record_schema_verified": all(
-            shape.get("guild_field_inventory") == _EXPECTED_GUILD_FIELDS
-            for shape in shapes.values()
-        ),
+        "response_envelope_verified": True,
+        "guild_record_schema_verified": True,
         "payload_hash_stable": len(payload_hashes) == 1,
         "schema_fingerprint_stable": len(schema_fingerprints) == 1,
         "field_inventory_stable": len(field_inventory_hashes) == 1,
         "ordered_record_set_stable": len(ordered_record_hashes) == 1,
         "source_id_set_stable_by_hash": len(id_set_hashes) == 1,
         "target_name_casefold_match_stable": all(
-            shape.get("target_name_casefold_match_count") == 1
-            for shape in shapes.values()
+            shape["target_name_casefold_match_count"] == 1 for shape in shapes.values()
         ),
         "single_result_observed_in_all_cases": result_counts == {1},
         "limit_truncation_not_overclaimed": True,
@@ -467,23 +443,7 @@ def review_guild_route_semantics(
         "full_crawl_remains_disabled": True,
         "planner_scoring_remains_disabled": True,
     }
-
-    route_shape_and_schema_reviewed = all(
-        checks[field_name]
-        for field_name in (
-            "route_template_verified",
-            "query_shapes_verified",
-            "all_three_responses_completed",
-            "response_envelope_verified",
-            "guild_record_schema_verified",
-            "payload_hash_stable",
-            "schema_fingerprint_stable",
-            "field_inventory_stable",
-            "ordered_record_set_stable",
-            "source_id_set_stable_by_hash",
-            "target_name_casefold_match_stable",
-        )
-    )
+    route_shape_and_schema_reviewed = all(checks.values())
 
     receipt = {
         "schema_version": 1,
@@ -496,6 +456,11 @@ def review_guild_route_semantics(
         "source_contract_sha256": _sha256_bytes(contract_body),
         "source_public_access_name": public_access_diagnostic_path.name,
         "source_public_access_sha256": _sha256_bytes(access_body),
+        "source_binding_review": {
+            "contract_line_endings_normalized": contract_line_endings_normalized,
+            "access_line_endings_normalized": access_line_endings_normalized,
+            "semantic_document_identity_preserved": True,
+        },
         "target": {
             "guild_label": expected_guild_label,
             "raw_payload_published": False,
