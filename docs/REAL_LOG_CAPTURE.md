@@ -21,7 +21,7 @@ HTTP response
 -> scalar-free receipt
 ```
 
-Parser result, identity decision, report filtering, collection contract review and route/schema review never become gameplay claims automatically.
+Parser result, identity decision, report filtering, collection contract review, route/schema review и successful capture никогда не становятся gameplay claims автоматически.
 
 ## Core capture contract
 
@@ -30,8 +30,10 @@ Parser result, identity decision, report filtering, collection contract review a
 - separate retrieval observations from payload identity;
 - preserve transport failures and contradicting evidence;
 - use bounded timeout/retry and endpoint-isolated execution;
-- never publish cookie/header values, source IDs or raw source rows;
-- unknown hash/fingerprint means reject and review.
+- never publish cookie/header values, source IDs, query values, URLs or raw source rows;
+- unknown hash/fingerprint means reject and review;
+- partial capture may not be marked complete;
+- capture readiness and semantic promotion are separate stages.
 
 Production parser use requires exact payload hash, schema fingerprint, reviewed selectors/types/nullability, deterministic dry run and explicit promotion.
 
@@ -124,16 +126,150 @@ guild record:
 
 All observed cases returned one identical record. Therefore this review does not prove limit truncation, pagination, termination or completeness.
 
-## Next capture protocol: bounded multi-result limit probe
+## Implemented bounded multi-result limit capture
 
-1. Use only the verified guild-search route template.
-2. Use a privacy-safe query expected to return multiple records.
-3. Compare at least two accepted limit values.
-4. Archive complete raw responses before interpretation.
-5. Preserve payload, schema, ordered-record-set and source-ID-set hashes.
-6. Publish only scalar-free counts, field inventories and decisions.
-7. Do not infer pagination, termination or completeness from limit behavior alone.
-8. Keep automatic full crawl disabled.
+Implementation:
+
+```text
+src/coa_workbench/collector/guild_limit_semantics_capture.py
+scripts/capture_guild_limit_semantics.py
+tests/unit/test_guild_limit_semantics_capture.py
+```
+
+### Request contract
+
+Exactly three requests:
+
+```text
+case 1: private query + low limit
+case 2: private query + high limit
+case 3: private query + identical high-limit repeat
+```
+
+Default limits:
+
+```text
+low limit: 1
+high limit: 25
+```
+
+### Transport contract
+
+- verified route template only: `/api/guilds/search`;
+- HTTPS same-origin only;
+- `spa_fetch_context`-compatible public headers;
+- no Authorization, cookies or credentials;
+- redirects disabled;
+- automatic retries disabled;
+- bounded connection/total timeout;
+- bounded maximum response bytes;
+- immutable archive before interpretation;
+- separate raw endpoint code per request case;
+- preserve transport/HTTP failures as observations.
+
+### Review-readiness contract
+
+Capture may set `ready_for_limit_semantics_review=true` only when:
+
+- all three responses complete and valid;
+- all three conform to the reviewed response schema;
+- low result count equals low limit;
+- high result count is greater than low and not greater than high;
+- high-limit repeat has identical payload/schema/ordered-record evidence;
+- high-limit repeat has identical source-ID-order hash;
+- low-limit source-ID hash sequence is an exact prefix of high-limit sequence.
+
+A successful capture must still keep:
+
+```text
+limit truncation semantics verified: false
+pagination semantics verified: false
+termination semantics verified: false
+completeness verified: false
+ready for full guild crawl: false
+planner scoring allowed: false
+```
+
+Semantic promotion requires a separate review receipt bound to the exact public capture hash.
+
+### Privacy contract
+
+Private/local-only:
+
+```text
+query value
+request URLs
+source IDs
+raw guild records
+raw payloads
+error text
+private capture receipt
+```
+
+Public receipt may contain only:
+
+```text
+attempt counts
+completion counts
+result counts
+limit values
+payload/schema/record-set hashes
+field inventories
+boolean integrity decisions
+preserved trust boundaries
+```
+
+### CLI
+
+```powershell
+uv run --no-sync python scripts/capture_guild_limit_semantics.py --query "<PRIVATE_MULTI_RESULT_QUERY>"
+```
+
+Defaults:
+
+```text
+route review:
+  evidence/real-data/argentum-guild-route-semantics-review.json
+
+private output:
+  data/extracted/report-discovery/argentum-guild-limit-semantics-capture.private.json
+
+public output:
+  data/exchange/out/argentum-guild-limit-semantics-capture.json
+
+raw archive:
+  data/raw
+
+database:
+  data/warehouse/coa.duckdb
+```
+
+Exit codes:
+
+```text
+0 = ready for separate limit-semantics review
+2 = bounded capture completed but evidence is insufficient
+other = input/execution failure
+```
+
+Only the public output may be uploaded/versioned.
+
+## Required review after capture
+
+The separate review must:
+
+1. validate exact capture kind/version;
+2. bind to exact route-review hash;
+3. bind to exact public capture SHA-256;
+4. verify all integrity checks independently;
+5. verify result-count relations;
+6. verify stable high-limit repeat;
+7. verify low-prefix relation by hashes;
+8. verify public privacy boundary;
+9. preserve pagination/termination/completeness false;
+10. explicitly promote or reject limit truncation semantics.
+
+Capture alone is never promotion.
 
 ## API-versus-baseline comparison
 
@@ -198,7 +334,7 @@ data/exchange/in/
 data/exchange/out/
 ```
 
-Never commit credentials, cookies, tokens, browser profiles, `.env`, unsanitized HAR, source guild IDs, report IDs or source-scalar private batches.
+Never commit credentials, cookies, tokens, browser profiles, `.env`, unsanitized HAR, source guild IDs, report IDs, private query values or source-scalar private batches.
 
 ## E3 acceptance boundary
 
