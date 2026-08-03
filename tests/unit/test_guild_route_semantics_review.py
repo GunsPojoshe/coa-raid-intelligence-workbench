@@ -19,6 +19,10 @@ def _sha256(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
 
+def _crlf(value: bytes) -> bytes:
+    return value.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n")
+
+
 def _contract() -> dict[str, object]:
     return {
         "schema_version": 1,
@@ -34,6 +38,9 @@ def _contract() -> dict[str, object]:
             "contains_source_scalar_values": False,
             "full_crawl_collection_contract_reviewed": True,
             "ready_for_bounded_route_semantics_capture": True,
+            "guild_api_route_semantics_verified": False,
+            "ready_for_full_guild_crawl": False,
+            "planner_scoring_allowed": False,
         },
         "decision_boundary": {
             "automatic_full_guild_crawl_allowed": False,
@@ -94,7 +101,12 @@ def _shape() -> dict[str, object]:
     }
 
 
-def _attempt(case: str, query_keys: list[str], limit: int | None, seed: str) -> dict[str, object]:
+def _attempt(
+    case: str,
+    query_keys: list[str],
+    limit: int | None,
+    seed: str,
+) -> dict[str, object]:
     return {
         "body_bytes": 93,
         "body_captured": True,
@@ -121,7 +133,13 @@ def _attempt(case: str, query_keys: list[str], limit: int | None, seed: str) -> 
     }
 
 
-def _capture(contract_path: Path, contract_body: bytes, access_path: Path, access_body: bytes) -> dict[str, object]:
+def _capture(
+    contract_path: Path,
+    contract_body: bytes,
+    access_path: Path,
+    access_body: bytes,
+) -> dict[str, object]:
+    integrity_checks = {f"check_{index}": True for index in range(13)}
     return {
         "schema_version": 1,
         "capture_kind": "guild_route_semantics_capture",
@@ -164,6 +182,7 @@ def _capture(contract_path: Path, contract_body: bytes, access_path: Path, acces
             "source_id_set_stable_by_hash": True,
             "target_name_casefold_match_stable": True,
         },
+        "integrity_checks": integrity_checks,
         "summary": {
             "all_integrity_checks_passed": True,
             "all_responses_completed": True,
@@ -172,6 +191,7 @@ def _capture(contract_path: Path, contract_body: bytes, access_path: Path, acces
             "contains_raw_payload": False,
             "contains_source_scalar_values": False,
             "guild_api_route_semantics_verified": False,
+            "integrity_check_count": len(integrity_checks),
             "planner_scoring_allowed": False,
             "ready_for_full_guild_crawl": False,
             "ready_for_route_semantics_review": True,
@@ -190,11 +210,18 @@ def _write_inputs(tmp_path: Path) -> tuple[Path, Path, Path]:
     access_path.write_bytes(access_body)
 
     capture_path = tmp_path / "capture.json"
-    capture_path.write_bytes(_body(_capture(contract_path, contract_body, access_path, access_body)))
+    capture_path.write_bytes(
+        _body(_capture(contract_path, contract_body, access_path, access_body))
+    )
     return capture_path, contract_path, access_path
 
 
-def _review(tmp_path: Path, capture_path: Path, contract_path: Path, access_path: Path) -> dict[str, object]:
+def _review(
+    tmp_path: Path,
+    capture_path: Path,
+    contract_path: Path,
+    access_path: Path,
+) -> dict[str, object]:
     return review_guild_route_semantics(
         capture_path=capture_path,
         full_crawl_contract_path=contract_path,
@@ -224,6 +251,21 @@ def test_review_promotes_only_route_shape_and_schema(tmp_path: Path) -> None:
     assert '"source_guild_id_published": false' in public_text
 
 
+def test_crlf_source_hashes_are_portably_verified(tmp_path: Path) -> None:
+    capture_path, contract_path, access_path = _write_inputs(tmp_path)
+    capture = json.loads(capture_path.read_text(encoding="utf-8"))
+    capture["source_contract_sha256"] = _sha256(_crlf(contract_path.read_bytes()))
+    capture["source_public_access_sha256"] = _sha256(_crlf(access_path.read_bytes()))
+    capture_path.write_bytes(_body(capture))
+
+    receipt = _review(tmp_path, capture_path, contract_path, access_path)
+
+    binding = receipt["source_binding_review"]
+    assert binding["contract_line_endings_normalized"] is True
+    assert binding["access_line_endings_normalized"] is True
+    assert receipt["summary"]["all_integrity_checks_passed"] is True
+
+
 def test_contract_hash_mismatch_blocks_review(tmp_path: Path) -> None:
     capture_path, contract_path, access_path = _write_inputs(tmp_path)
     contract_path.write_text("{}\n", encoding="utf-8")
@@ -240,7 +282,17 @@ def test_schema_drift_blocks_review(tmp_path: Path) -> None:
     ]
     capture_path.write_bytes(_body(capture))
 
-    with pytest.raises(ValueError, match="field inventory mismatch"):
+    with pytest.raises(ValueError, match="guild_field_inventory"):
+        _review(tmp_path, capture_path, contract_path, access_path)
+
+
+def test_failed_capture_integrity_check_blocks_review(tmp_path: Path) -> None:
+    capture_path, contract_path, access_path = _write_inputs(tmp_path)
+    capture = json.loads(capture_path.read_text(encoding="utf-8"))
+    capture["integrity_checks"]["check_7"] = False
+    capture_path.write_bytes(_body(capture))
+
+    with pytest.raises(ValueError, match="failed integrity checks"):
         _review(tmp_path, capture_path, contract_path, access_path)
 
 
@@ -250,5 +302,5 @@ def test_capture_cannot_pre_enable_full_crawl(tmp_path: Path) -> None:
     capture["summary"]["ready_for_full_guild_crawl"] = True
     capture_path.write_bytes(_body(capture))
 
-    with pytest.raises(ValueError, match="full-crawl readiness"):
+    with pytest.raises(ValueError, match="ready_for_full_guild_crawl"):
         _review(tmp_path, capture_path, contract_path, access_path)
