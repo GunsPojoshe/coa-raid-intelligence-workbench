@@ -2,7 +2,7 @@
 
 Дата актуализации: **2026-08-03**.
 
-Документ фиксирует operational state. Перед работой перепроверять GitHub, код, local private artifacts, versioned receipts и CI.
+Документ фиксирует operational state. Перед работой обязательно перепроверять GitHub, branch HEAD, PR, CI, code, local private artifacts и versioned receipts. HEAD не фиксируется внутри этого файла как постоянная истина, потому что само обновление документа создаёт новый commit.
 
 ## Репозиторий
 
@@ -13,9 +13,9 @@ main
     └── e3/real-log-capture         PR #7 -> e2, Draft
 ```
 
-PR #7 остаётся open, Draft и mergeable. Фактический HEAD и новый CI перепроверять после каждого commit.
+На момент последней сверки PR #7 был `open`, `Draft` и `mergeable`. Это состояние перепроверять live.
 
-Последний подтверждённый зелёный baseline перед versioning review receipt:
+## Последний полностью подтверждённый green baseline
 
 ```text
 commit: 93f4e801a7251382bedc60f4deda1b84ec7bbda0
@@ -29,7 +29,24 @@ Doctor: success
 clean/repeated DuckDB initialization: success
 ```
 
-Новые documentation/evidence commits требуют отдельной проверки CI.
+После этого baseline были добавлены versioned route/schema review receipt, documentation refresh и bounded multi-result limit probe. Их актуальный CI необходимо проверять по текущему HEAD; старый run нельзя переносить на новый commit.
+
+## Простыми словами: текущий этап
+
+Мы уже подтвердили:
+
+- откуда безопасно брать данные;
+- как хранить исходные ответы без изменения;
+- как проверять schema и hashes;
+- какая guild identity относится к Argentum;
+- какие 17 public reports относятся к ней;
+- какой route используется для поиска гильдий;
+- как выглядит response schema;
+- что сервер принимает параметр `limit`.
+
+Сейчас мы проверяем следующий узкий вопрос: работает ли `limit` как стабильное ограничение списка из нескольких результатов.
+
+Код проверки готов. Реальный multi-result capture ещё не versioned и не review-promoted. Full crawl всё ещё запрещён.
 
 ## Trust boundary
 
@@ -38,17 +55,21 @@ combat-log event = observation
 combat-log event != automatic proof of a general mechanic
 ```
 
-Parser/schema verification, guild identity verification, filtering, collection contract review и route/schema review не подтверждают игровую механику. Canonical planner scoring допускает только `corroborated` и `confirmed` mechanics.
+Parser/schema verification, guild identity verification, filtering, collection contract review, route/schema review и успешный capture не подтверждают игровую механику. Canonical planner scoring допускает только `corroborated` и `confirmed` mechanics.
 
 ## Реализованный фундамент
 
 - localhost FastAPI raid planner и DuckDB plans;
 - immutable content-addressed raw archive;
+- separate retrieval observations;
 - JSON/HAR privacy-safe tooling;
 - schema fingerprints и reviewed mappings;
-- report/encounter/actor/participant/aura records;
+- canonical report/encounter/actor/participant/aura records;
+- normalization/reconstruction/persistence pipeline;
 - migrations `0001`–`0008`;
-- repository verifier, Ubuntu/Windows CI и public-release audit.
+- repository verifier;
+- Ubuntu/Windows CI;
+- public-release audit.
 
 ## Report/encounter и combatants checkpoint
 
@@ -62,33 +83,58 @@ linked actors: 11
 combatants integrity checks: 14/14
 ```
 
-## Public manifest, identity and filtering
+## Public manifest checkpoint
 
 ```text
-public reports: 6454
-unique public report IDs: 6454
-public-manifest integrity checks: 19/19
-identity-decision integrity checks: 16/16
+receipt: evidence/real-data/argentum-public-report-manifest.json
+route: /api/reports/public
+limit: 25
+pages: 259
+reports: 6454
+unique report IDs: 6454
+duplicates: 0
+integrity checks: 19/19
+exact Argentum label reports: 17
+```
+
+## Guild identity checkpoint
+
+```text
+receipt: evidence/real-data/argentum-guild-identity-decision.json
+integrity checks: 16/16
+explicit operator promotion: true
 guild identity verified: true
+ready for guild filtering: true
+```
+
+Source guild ID остаётся private.
+
+## Deterministic filtering checkpoint
+
+```text
+receipt: evidence/real-data/argentum-guild-report-manifest.json
+source public reports: 6454
 selected guild reports: 17
 unique selected report IDs: 17
 filter integrity checks: 14/14
+guild filtering completed: true
+guild report manifest deduplicated: true
 ```
 
-The source guild ID and report IDs remain private.
+Report IDs и selected records остаются private.
 
-## Full-crawl collection contract — reviewed
+## Full-crawl collection contract checkpoint
 
 ```text
 receipt: evidence/real-data/argentum-guild-full-crawl-contract.json
 integrity checks: 12/12
 full crawl collection contract reviewed: true
-verified private baseline reports: 17
+verified private comparison baseline: 17 reports
 ```
 
-The contract requires exact route/query verification, immutable raw capture, payload SHA-256, schema fingerprint, pagination/termination/completeness proof and deterministic comparison with the private 17-report baseline.
+Contract не разрешает full crawl. Он определяет обязательные gates и будущий set-comparison contract.
 
-## Bounded route-semantics capture — completed
+## Bounded route-semantics capture checkpoint
 
 ```text
 receipt: evidence/real-data/argentum-guild-route-semantics-capture.json
@@ -111,7 +157,7 @@ Observed cases:
 /api/guilds/search?q=<target>
 ```
 
-## Route shape and response schema review — completed
+## Route shape and response schema review checkpoint
 
 ```text
 receipt: evidence/real-data/argentum-guild-route-semantics-review.json
@@ -134,9 +180,39 @@ realm: string
 report_count: string
 ```
 
-All three cases returned the same single record. Therefore truncation, pagination, termination and completeness remain unverified.
+Все три cases вернули одинаковую single-result выдачу. Limit truncation, pagination, termination и completeness не подтверждены.
 
-## Current boundaries
+## Bounded multi-result limit probe — implementation completed
+
+```text
+src/coa_workbench/collector/guild_limit_semantics_capture.py
+scripts/capture_guild_limit_semantics.py
+tests/unit/test_guild_limit_semantics_capture.py
+```
+
+Implementation properties:
+
+- exactly three requests;
+- low limit, high limit and repeated high limit;
+- same-origin HTTPS;
+- redirects disabled;
+- retries disabled;
+- no cookies, Authorization or credentials;
+- bounded timeout and response size;
+- archive complete raw bytes before interpretation;
+- private query and raw rows stay local-only;
+- public receipt contains only counts, hashes, schemas and boolean decisions;
+- successful capture does not promote limit semantics automatically.
+
+Deterministic tests cover:
+
+1. stable multi-result prefix evidence;
+2. single-result capture not ready for review;
+3. high-limit repeat drift blocks review;
+4. changed route-review boundary blocks network execution;
+5. public receipt privacy boundary.
+
+## Current decision boundary
 
 ```text
 guild identity verified: true
@@ -161,6 +237,96 @@ ready for BiS 25 scoring: false
 planner scoring allowed: false
 ```
 
+## Current blockers
+
+1. Актуальный HEAD должен пройти green `public-release-audit`, Ubuntu и Windows CI.
+2. Реальный bounded multi-result limit capture ещё не выполнен/не versioned.
+3. Отдельный limit-semantics review ещё не выпущен.
+4. Pagination semantics не подтверждены.
+5. Termination semantics не подтверждены.
+6. Completeness boundary не подтверждён.
+7. API-derived report membership не сравнивался с private 17-report baseline.
+8. Multi-report character identity graph не построен.
+9. Bounded report slice содержит `0` aura events.
+10. Нет новой gameplay mechanic с independent supporting and contradicting evidence.
+11. Planner scoring остаётся disabled.
+
+## Следующие шаги
+
+### Шаг 1. Проверить CI
+
+Получить green на current HEAD:
+
+```text
+public-release-audit
+Ubuntu repository verifier
+Windows pytest + Doctor + repeated DuckDB initialization
+```
+
+### Шаг 2. Выполнить local bounded multi-result capture
+
+Запускать только после green CI. Требуется privacy-safe private query, ожидаемо возвращающая несколько guild records.
+
+```powershell
+uv run --no-sync python scripts/capture_guild_limit_semantics.py --query "<PRIVATE_MULTI_RESULT_QUERY>"
+```
+
+Accepted exit codes:
+
+```text
+0 = capture ready for limit-semantics review
+2 = bounded capture completed, but evidence is insufficient for review
+```
+
+Local private output:
+
+```text
+data/extracted/report-discovery/argentum-guild-limit-semantics-capture.private.json
+```
+
+Public output:
+
+```text
+data/exchange/out/argentum-guild-limit-semantics-capture.json
+```
+
+Upload/version only the public output. Never upload the private query, private capture, raw archive or DuckDB.
+
+### Шаг 3. Review capture
+
+- validate exact receipt kind/version;
+- verify source route-review binding;
+- verify all integrity checks;
+- inspect result counts and repeat stability;
+- confirm prefix relation by hashes;
+- keep query and IDs private;
+- version scalar-free capture receipt only if safe;
+- implement separate limit-semantics review;
+- keep `limit_truncation_semantics_verified=false` until explicit review promotion.
+
+### Шаг 4. Следующие independent gates
+
+```text
+explicit limit-semantics review
+-> pagination review
+-> termination/completeness review
+-> API-versus-private-baseline set comparison
+-> explicit full-crawl promotion
+```
+
+### Шаг 5. После full-crawl promotion
+
+```text
+per-report report/encounter/combatants capture
+-> coverage and failure accounting
+-> stable multi-report character identity
+-> 30-40 candidate characters
+-> performance observations
+-> global benchmark corpus
+-> confidence-aware scoring
+-> constrained BiS 25 optimizer
+```
+
 ## Data and Git policy
 
 Versioned: source code/tests, migrations, reviewed mappings, canonical documentation and scalar-free evidence receipts.
@@ -177,31 +343,7 @@ data/exchange/in/
 data/exchange/out/
 ```
 
-Never commit source guild IDs, report IDs, report rows, private manifests, private decisions, DuckDB, credentials, cookies, tokens, Authorization headers, browser profiles, `.env` or unsanitized HAR.
-
-## Current blockers
-
-1. Current documentation/evidence HEAD requires fresh green Ubuntu, Windows and public-release-audit CI.
-2. Limit truncation semantics remain unverified because every observed query returned one record.
-3. Pagination, termination and completeness remain unverified.
-4. API-derived report membership has not been compared with the private 17-report baseline.
-5. Multi-report character identity has not been reviewed.
-6. The bounded report slice contains no aura events.
-7. No new gameplay mechanic has independent supporting and contradicting evidence.
-8. Planner scoring remains disabled.
-
-## Next bounded task
-
-Design and execute a separate bounded multi-result `limit` probe:
-
-1. use an observed guild-search route only;
-2. choose a privacy-safe query expected to return multiple records;
-3. compare at least two accepted limit values;
-4. archive complete raw responses before interpretation;
-5. preserve payload hashes, schema fingerprints and ordered record-set hashes;
-6. publish only scalar-free counts and decisions;
-7. verify truncation behavior without overclaiming pagination or completeness;
-8. keep full crawl, graph, performance and scoring false.
+Never commit source guild IDs, report IDs, report rows, private queries, private manifests, private decisions, DuckDB, credentials, cookies, tokens, Authorization headers, browser profiles, `.env` or unsanitized HAR.
 
 ## Completion gate
 
