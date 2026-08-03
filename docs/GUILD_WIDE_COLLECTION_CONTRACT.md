@@ -2,7 +2,7 @@
 
 ## Goal
 
-Prepare a reproducible guild-wide corpus for a future `BiS 25` roster calculation.
+Prepare a reproducible Argentum corpus for a future explainable `BiS 25` roster calculation.
 
 ```text
 guild label: Argentum
@@ -15,163 +15,117 @@ This document defines collection and trust boundaries, not a scoring policy.
 ## Verified foundation
 
 ```text
-1 persisted report
-14 persisted encounters
-31 report actors
-31 participants
-1343 persisted combatants parser observations
-1339 actor-linked build observations
-11 exact combatants actor links
-```
-
-## Completed phases
-
-### 1. Public pagination and exhaustive manifest
-
-```text
-receipt: evidence/real-data/argentum-public-report-manifest.json
-route: /api/reports/public
-limit: 25
-pages: 259
-reports: 6454
-unique report IDs: 6454
-duplicates: 0
-integrity checks: 19/19
-exact Argentum label reports: 17
-```
-
-### 2. Guild identity and deterministic filtering
-
-```text
-identity receipt: evidence/real-data/argentum-guild-identity-decision.json
-identity integrity checks: 16/16
+public reports: 6454
+verified private Argentum baseline: 17 reports
 guild identity verified: true
-
-filtered receipt: evidence/real-data/argentum-guild-report-manifest.json
-selected reports: 17
-unique selected report IDs: 17
-filter integrity checks: 14/14
+guild filtering completed: true
+full-crawl collection contract reviewed: true
 ```
 
 The source guild ID and report IDs remain private.
 
-### 3. Full-crawl collection contract
+## Completed search-route phases
+
+### Route and schema
 
 ```text
-receipt: evidence/real-data/argentum-guild-full-crawl-contract.json
-integrity checks: 12/12
-full crawl collection contract reviewed: true
-verified comparison baseline reports: 17
+route: /api/guilds/search
+response envelope: guilds, success
+guild fields: id, name, realm, report_count
+route review checks: 22/22
 ```
 
-The contract requires immutable raw capture, exact payload SHA-256, schema fingerprint, reviewed fields, limit/pagination/termination/completeness proof and explicit set comparison.
-
-### 4. Bounded guild-search capture
+### Multi-result limit semantics
 
 ```text
-receipt: evidence/real-data/argentum-guild-route-semantics-capture.json
-attempts: 3
-completed attempts: 3
-HTTP 200 responses: 3
-integrity checks: 13/13
-observed result counts: [1]
-payload/schema/source-ID-set hashes stable: true
-pagination object observed: false
+capture result counts: 1 / 7 / 7
+capture checks: 15/15
+review checks: 30/30
+limit truncation semantics verified: true
 ```
 
-Observed query shapes:
+These phases prove stable truncation of guild-search results only. They do not identify or verify the route used to retrieve one guild's report corpus.
+
+## Progression route candidate
+
+Recovered SPA asset evidence contains:
 
 ```text
-/api/guilds/search?q=<target>&limit=1
-/api/guilds/search?q=<target>&limit=25
-/api/guilds/search?q=<target>
+/api/guilds/progression
 ```
 
-### 5. Route shape and response schema review
+Current classification:
 
 ```text
-receipt: evidence/real-data/argentum-guild-route-semantics-review.json
-integrity checks: 22/22
-route template verified: true
-query shapes verified: true
-limit parameter accepted: true
-response envelope verified: true
-guild record schema verified: true
-ready for bounded limit-semantics capture: true
+lexical route candidate observed: true
+HTTP method verified: false
+request shape verified: false
+response schema verified: false
+relation to guild report membership verified: false
+pagination verified: false
+termination verified: false
+completeness verified: false
 ```
 
-Verified response schema:
+No network request may be designed from the route name alone.
+
+## Offline usage-context inventory contract
+
+The nearest bounded tool scans the exact archived SPA asset and performs no network requests.
 
 ```text
-top-level: object
-keys: guilds, success
-
-guild record:
-  id: integer
-  name: string
-  realm: string
-  report_count: string
+src/coa_workbench/collector/guild_progression_usage_inventory.py
+scripts/inventory_guild_progression_usage.py
+tests/unit/test_guild_progression_usage_inventory.py
 ```
 
-This review proves route shape and schema only. Because all cases returned one identical record, it does not prove limit truncation behavior.
+Required bindings:
 
-### 6. Bounded multi-result limit probe — implementation complete
-
-```text
-src/coa_workbench/collector/guild_limit_semantics_capture.py
-scripts/capture_guild_limit_semantics.py
-tests/unit/test_guild_limit_semantics_capture.py
-```
-
-Capture contract:
-
-```text
-private query + low limit
-private query + high limit
-private query + identical high-limit repeat
-```
-
-Review-ready evidence requires:
-
-- all three responses complete and valid;
-- stable response schema;
-- low result count equals the low limit;
-- high result count is greater than the low limit and does not exceed the high limit;
-- repeated high-limit response has identical ordered-record hash;
-- repeated high-limit response has identical source-ID-order hash;
-- low-limit source-ID hash sequence is an exact prefix of the high-limit sequence.
+- versioned public profiled-recovery kind/version;
+- 15/15 public recovery checks;
+- exact private profiled-recovery SHA-256;
+- exact recovered asset payload SHA-256;
+- unique content manifest below `data/raw`;
+- verified gzip payload and byte count;
+- exact `/api/guilds/progression` occurrence inventory.
 
 Privacy contract:
 
-- query value remains local-only;
-- request URLs remain local-only;
-- source IDs and raw records remain local-only;
-- raw response bytes are archived before interpretation;
-- public receipt contains only counts, hashes, schemas and decisions;
-- capture does not promote limit semantics automatically.
+- raw JavaScript contexts are private;
+- source guild ID and asset URL are private;
+- public receipt publishes only counts, hashes, method/call-style candidates and booleans;
+- no network request is performed;
+- no route or pagination semantic is promoted.
 
-Execution status:
+Expected outputs:
 
 ```text
-implementation complete: true
-deterministic tests added: true
-real multi-result capture versioned: false
-limit-semantics review versioned: false
+private:
+  data/extracted/report-discovery/argentum-guild-progression-usage-context.private.json
+
+public:
+  data/exchange/out/argentum-guild-progression-usage-context.json
 ```
 
-## Current nearest phase
+## Promotion sequence
 
-1. Verify green CI on current HEAD.
-2. Execute the bounded multi-result capture locally with a privacy-safe query expected to return multiple guild records.
-3. Upload/version only the scalar-free public receipt.
-4. Implement and run a separate explicit limit-semantics review.
-5. Keep pagination, termination, completeness and full crawl false.
+```text
+offline usage-context inventory
+-> separate explicit usage-context review
+-> bounded route probe only if method and request shape are unambiguous
+-> response envelope/schema review
+-> pagination field and successor behavior review
+-> termination/completeness review
+-> API-derived report set capture
+-> set comparison against private 17-report baseline
+-> explicit full-crawl promotion
+```
 
-A one-result response cannot verify limit truncation semantics.
+A usage inventory does not itself authorize a route probe.
 
 ## Set-comparison contract
 
-Any future guild-API-derived report set must be compared with the private verified 17-report baseline and partitioned into:
+Any future API-derived report set must be partitioned into:
 
 ```text
 matching_reports
@@ -182,28 +136,13 @@ conflicting_report_records
 
 Rules:
 
-- deduplicate by source report ID;
+- deduplicate by private source report ID;
 - preserve contradicting evidence;
-- keep report IDs private;
+- keep IDs private;
 - do not mark partial results complete;
 - preserve failed requests as observations;
 - require exact contract/checkpoint binding for resume;
 - keep retries bounded.
-
-## Remaining phases
-
-```text
-real bounded multi-result limit capture
--> explicit limit-semantics review
--> pagination semantics review
--> termination/completeness review
--> API-versus-baseline set comparison
--> explicit full-crawl promotion only if all gates pass
--> per-report capture
--> multi-report character graph
--> performance corpus
--> BiS 25 optimization
-```
 
 ## Current boundary
 
@@ -211,12 +150,11 @@ real bounded multi-result limit capture
 guild identity verified: true
 guild filtering completed: true
 full crawl collection contract reviewed: true
-guild route template verified: true
-guild query shapes verified: true
-guild response schema verified: true
-limit parameter accepted: true
-ready for bounded limit-semantics capture: true
-limit truncation semantics verified: false
+guild-search route/schema verified: true
+guild-search limit truncation verified: true
+progression route candidate observed: true
+progression usage context reviewed: false
+progression route semantics verified: false
 pagination semantics verified: false
 termination semantics verified: false
 completeness verified: false
@@ -229,4 +167,4 @@ ready for BiS 25 scoring: false
 planner scoring allowed: false
 ```
 
-Planner scoring remains disabled. Route/schema review authorizes only the bounded limit evidence probe. A successful capture authorizes only a separate limit-semantics review.
+Planner scoring remains disabled.
