@@ -1,6 +1,6 @@
 # CoA Raid Intelligence Workbench — канонический контекст проекта
 
-Дата полной сверки: **2026-07-31**.
+Дата полной сверки: **2026-08-03**.
 
 Этот документ определяет цель, архитектуру, truth model и границы доверия. Изменяемые counts, HEAD и CI фиксируются в `docs/PROJECT_STATE.md` и всегда перепроверяются.
 
@@ -32,7 +32,6 @@ combat-log event != automatic proof of a general mechanic
 - deterministic reconstruction;
 - immutable observations;
 - supporting/contradicting evidence;
-- раздельные global mechanic и guild/player execution;
 - planner use только для `corroborated` и `confirmed` mechanics.
 
 ## 3. Этапы и ветки
@@ -58,7 +57,7 @@ source response
 -> retrieval observation
 -> SHA-256 + schema fingerprint
 -> structural/field review
--> versioned mapping or dedicated extractor design
+-> versioned mapping or extractor design
 -> exact raw validation
 -> manual promotion/publication
 -> normalization/extraction
@@ -96,14 +95,7 @@ local_inference
 manual_override
 ```
 
-Запрещено:
-
-- выводить общую механику из одного event;
-- считать display name или label достаточной identity binding;
-- считать parser correctness mechanic confirmation;
-- автоматически повышать trust после mapping/persistence;
-- скрывать contradicting evidence;
-- смешивать game versions без явной версии.
+Parser correctness, identity verification, filtering, collection contract review and route/schema review do not confirm gameplay semantics.
 
 ## 6. Реализованный фундамент
 
@@ -113,122 +105,97 @@ manual_override
 - JSON/HAR privacy-safe tooling;
 - schema fingerprints and verified mapping gates;
 - report/encounter/actor/participant/aura records;
-- rejects and Aura State Engine;
-- hypotheses, evidence links and weighting policies;
 - migrations `0001`–`0008`;
 - repository verifier and Ubuntu/Windows CI.
 
-## 7. Mapping and capture contract
-
-Production parser use requires:
-
-```text
-exact archived payload
-+ exact payload hash
-+ exact schema fingerprint
-+ reviewed selectors/types/nullability
-+ reviewer metadata
-+ deterministic dry run
-+ explicit promotion
-```
-
-Unknown hash/fingerprint means reject and review. A verified mapping proves parser compatibility, not gameplay semantics.
-
-## 8. Report and combatants baseline
+## 7. Report and combatants baseline
 
 ```text
 normalized: 2 reports, 15 encounters, 31 actors, 31 participants, 0 aura events
 reconstructed: 1 report, 14 encounters, 31 actors, 31 participants
 persisted through 0007: 77 canonical entity observations
-combatants through 0008: 1343 parser observations, 1339 actor/build observations, 11 linked actors, 14/14 checks
+combatants through 0008: 1343 parser observations
+actor/build observations: 1339
+linked actors: 11
+combatants checks: 14/14
 ```
 
-Combatants parser reproducibility does not prove addon provenance, nested identifier semantics, gameplay meaning or planner suitability.
-
-## 9. Public-report manifest
+## 8. Public manifest, identity and filtering
 
 ```text
-receipt: evidence/real-data/argentum-public-report-manifest.json
-route: /api/reports/public
-limit: 25
-pages: 259
-reports: 6454
-unique report IDs: 6454
-duplicates: 0
-integrity checks: 19/19
-exact Argentum label reports: 17
-distinct non-null guild IDs for exact label: 1
-```
-
-This proves completeness of one captured public snapshot, not target identity or guild API completeness.
-
-## 10. Guild identity decision
-
-```text
-receipt: evidence/real-data/argentum-guild-identity-decision.json
-integrity checks: 16/16
-explicit operator promotion: true
-cross-endpoint source-ID equality: true
-name casefold equality: true
+public reports: 6454
+unique public report IDs: 6454
+public-manifest checks: 19/19
+identity-decision checks: 16/16
 guild identity verified: true
-ready for guild filtering: true
-```
-
-The source guild ID remains private. Identity verification does not verify guild API route semantics or full crawl.
-
-## 11. Verified guild report manifest
-
-```text
-receipt: evidence/real-data/argentum-guild-report-manifest.json
-source reports: 6454
-selected reports: 17
+selected guild reports: 17
 unique selected report IDs: 17
-duplicate selected occurrences: 0
-integrity checks: 14/14
-guild filtering completed: true
-guild report manifest deduplicated: true
-report IDs published: false
-source guild ID published: false
+filter checks: 14/14
 ```
 
-Filtering uses exact typed equality against the source guild ID loaded from the private identity decision. The private 17-report set is the verified baseline.
+The source guild ID and report IDs remain private. The private 17-report set is the verified comparison baseline.
 
-## 12. Full-crawl collection contract
+## 9. Full-crawl collection contract
 
 ```text
 receipt: evidence/real-data/argentum-guild-full-crawl-contract.json
-contract version: guild-full-crawl-contract-v1
-source public reports: 6454
-selected guild reports: 17
 integrity checks: 12/12
 full crawl collection contract reviewed: true
-ready for bounded route-semantics capture: true
-guild API route semantics verified: false
-automatic full guild crawl allowed: false
-ready for full guild crawl: false
 ```
 
-The contract requires:
+The contract requires exact route/query verification, immutable raw response capture, payload SHA-256, schema fingerprint, reviewed collection shape, pagination/termination/completeness proof and deterministic comparison with the private baseline.
 
-- exact route and query parameters;
-- immutable raw response capture;
-- payload SHA-256 and schema fingerprint;
-- reviewed collection shape, types and nullability;
-- pagination, termination and completeness proof;
-- deterministic comparison with the verified 17-report baseline;
-- preservation of missing, extra and conflicting reports;
-- explicit scalar-free route-semantic promotion.
+## 10. Guild route capture and review
 
-Contract review opens bounded evidence capture only.
+Capture:
 
-## 13. Current decision boundary
+```text
+receipt: evidence/real-data/argentum-guild-route-semantics-capture.json
+attempts: 3
+completed attempts: 3
+HTTP 200 responses: 3
+integrity checks: 13/13
+observed result counts: [1]
+```
+
+Review:
+
+```text
+receipt: evidence/real-data/argentum-guild-route-semantics-review.json
+integrity checks: 22/22
+route template verified: true
+query shapes verified: true
+response schema verified: true
+limit parameter accepted: true
+ready for bounded limit-semantics capture: true
+```
+
+Verified response fields:
+
+```text
+id: integer
+name: string
+realm: string
+report_count: string
+```
+
+All bounded cases returned one identical record. The review therefore does not verify limit truncation, pagination, termination or completeness.
+
+## 11. Current decision boundary
 
 ```text
 guild identity verified: true
 guild filtering completed: true
-guild report manifest deduplicated: true
 full crawl collection contract reviewed: true
-ready for bounded route-semantics capture: true
+guild route template verified: true
+guild query shapes verified: true
+guild response schema verified: true
+limit parameter accepted: true
+ready for bounded limit-semantics capture: true
+limit truncation semantics verified: false
+pagination semantics verified: false
+termination semantics verified: false
+completeness verified: false
 guild API route semantics verified: false
 automatic full guild crawl allowed: false
 ready for full guild crawl: false
@@ -238,19 +205,24 @@ ready for BiS 25 scoring: false
 planner scoring allowed: false
 ```
 
-## 14. Aura boundary
+## 12. Next bounded plan
 
-Separate real fixtures validate technical Aura State Engine behavior but not magnitude, stacking, scope, provider equivalence or criticality. The current report slice still has zero aura events.
+1. design a bounded multi-result guild-search probe;
+2. use a privacy-safe query expected to return multiple records;
+3. compare at least two accepted `limit` values;
+4. archive and fingerprint exact responses;
+5. publish only scalar-free counts, hashes and decisions;
+6. verify truncation behavior without overclaiming pagination or completeness;
+7. keep full crawl, graph, performance and scoring closed;
+8. proceed to pagination/termination/completeness and set comparison only through separate explicit reviews.
 
-## 15. Data and Git policy
+## 13. Aura boundary
 
-Versioned:
+Separate fixtures validate technical Aura State Engine behavior but not magnitude, stacking, scope, provider equivalence or criticality. The current report slice still has zero aura events.
 
-- code/tests;
-- migrations;
-- mappings and review decisions;
-- documentation;
-- scalar-free receipts.
+## 14. Data and Git policy
+
+Versioned: code/tests, migrations, mappings and review decisions, documentation and scalar-free receipts.
 
 Local-only:
 
@@ -266,7 +238,7 @@ data/exchange/out/
 
 Never commit secrets, cookies, tokens, Authorization headers, browser profiles, unsanitized HAR, source guild IDs, report IDs, private decisions or private manifests.
 
-## 16. Verification contract
+## 15. Verification contract
 
 ```powershell
 uv sync --frozen --extra dev
@@ -275,28 +247,6 @@ uv run python scripts/verify_repo.py
 
 Storage changes require clean and repeated DuckDB initialization. Collector changes require deterministic fake-response tests before bounded real capture.
 
-## 17. Current blockers and next plan
-
-Blockers:
-
-- latest HEAD requires green CI;
-- exact guild API route/query semantics are unverified;
-- response schema, pagination, termination and completeness are unverified;
-- API report membership has not been compared with the private 17-report baseline;
-- multi-report character identity is not established;
-- no new corroborated mechanic;
-- planner scoring remains closed.
-
-Next plan:
-
-1. perform bounded route-semantics capture under the reviewed contract;
-2. archive and fingerprint exact responses;
-3. review collection and pagination structure;
-4. verify termination and completeness before full-crawl promotion;
-5. compare future API membership with the private 17-report baseline;
-6. preserve all discrepancies;
-7. build character identity and performance layers only after their own gates.
-
-## 18. Completion criteria for E3
+## 16. Completion criteria for E3
 
 PR #7 remains Draft until reviewed identity/filtering/crawl boundaries, reviewed combatants observations, aura observations and intervals for the bounded slice, independent supporting observations, contradicting evidence review, reproducible provenance, and green Ubuntu/Windows verification are present.
