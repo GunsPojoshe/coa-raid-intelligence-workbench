@@ -64,7 +64,7 @@ full crawl collection contract reviewed: true
 verified comparison baseline reports: 17
 ```
 
-The contract requires immutable raw capture, exact payload SHA-256, schema fingerprint, reviewed fields, pagination/termination/completeness proof and explicit set comparison.
+The contract requires immutable raw capture, exact payload SHA-256, schema fingerprint, reviewed fields, limit/pagination/termination/completeness proof and explicit set comparison.
 
 ### 4. Bounded guild-search capture
 
@@ -115,17 +115,57 @@ guild record:
 
 This review proves route shape and schema only. Because all cases returned one identical record, it does not prove limit truncation behavior.
 
-## Next bounded phase: multi-result limit probe
+### 6. Bounded multi-result limit probe — implementation complete
 
-The next probe must:
+```text
+src/coa_workbench/collector/guild_limit_semantics_capture.py
+scripts/capture_guild_limit_semantics.py
+tests/unit/test_guild_limit_semantics_capture.py
+```
 
-1. use only the verified `/api/guilds/search` route template;
-2. use a privacy-safe query expected to return multiple guild records;
-3. compare at least two accepted `limit` values;
-4. archive complete raw responses before interpretation;
-5. preserve ordered record-set, source-ID-set, payload and schema hashes;
-6. publish only scalar-free counts and decisions;
-7. reject any attempt to infer pagination, termination or completeness from limit behavior alone.
+Capture contract:
+
+```text
+private query + low limit
+private query + high limit
+private query + identical high-limit repeat
+```
+
+Review-ready evidence requires:
+
+- all three responses complete and valid;
+- stable response schema;
+- low result count equals the low limit;
+- high result count is greater than the low limit and does not exceed the high limit;
+- repeated high-limit response has identical ordered-record hash;
+- repeated high-limit response has identical source-ID-order hash;
+- low-limit source-ID hash sequence is an exact prefix of the high-limit sequence.
+
+Privacy contract:
+
+- query value remains local-only;
+- request URLs remain local-only;
+- source IDs and raw records remain local-only;
+- raw response bytes are archived before interpretation;
+- public receipt contains only counts, hashes, schemas and decisions;
+- capture does not promote limit semantics automatically.
+
+Execution status:
+
+```text
+implementation complete: true
+deterministic tests added: true
+real multi-result capture versioned: false
+limit-semantics review versioned: false
+```
+
+## Current nearest phase
+
+1. Verify green CI on current HEAD.
+2. Execute the bounded multi-result capture locally with a privacy-safe query expected to return multiple guild records.
+3. Upload/version only the scalar-free public receipt.
+4. Implement and run a separate explicit limit-semantics review.
+5. Keep pagination, termination, completeness and full crawl false.
 
 A one-result response cannot verify limit truncation semantics.
 
@@ -153,11 +193,12 @@ Rules:
 ## Remaining phases
 
 ```text
-bounded multi-result limit probe
+real bounded multi-result limit capture
+-> explicit limit-semantics review
 -> pagination semantics review
 -> termination/completeness review
 -> API-versus-baseline set comparison
--> explicit full-crawl promotion, only if all gates pass
+-> explicit full-crawl promotion only if all gates pass
 -> per-report capture
 -> multi-report character graph
 -> performance corpus
@@ -188,4 +229,4 @@ ready for BiS 25 scoring: false
 planner scoring allowed: false
 ```
 
-Planner scoring remains disabled. Route/schema review authorizes only the next bounded evidence probe.
+Planner scoring remains disabled. Route/schema review authorizes only the bounded limit evidence probe. A successful capture authorizes only a separate limit-semantics review.
