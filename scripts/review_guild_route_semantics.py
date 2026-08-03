@@ -60,10 +60,7 @@ def main() -> int:
         "ready for bounded limit-semantics capture: "
         f"{summary['ready_for_bounded_limit_semantics_capture']}"
     )
-    print(
-        "guild API route semantics verified: "
-        f"{summary['guild_api_route_semantics_verified']}"
-    )
+    print(f"guild API route semantics verified: {summary['guild_api_route_semantics_verified']}")
     print(f"ready for full guild crawl: {boundary['ready_for_full_guild_crawl']}")
     print(f"planner scoring allowed: {boundary['planner_scoring_allowed']}")
     return 0 if summary["route_shape_and_response_schema_reviewed"] else 2
