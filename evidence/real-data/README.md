@@ -1,6 +1,6 @@
 # Real-data evidence checkpoint
 
-Дата актуализации: **2026-08-03**.
+Дата актуализации: **2026-08-04**.
 
 Этот каталог содержит versioned scalar-free receipts и trust boundaries для real CoA Logs pipeline. Private payload contents, source scalar rows, private queries, private reviews/decisions and DuckDB remain local-only.
 
@@ -17,6 +17,8 @@ argentum-guild-report-manifest.json
 argentum-guild-full-crawl-contract.json
 argentum-guild-route-semantics-capture.json
 argentum-guild-route-semantics-review.json
+argentum-guild-limit-semantics-capture.json
+argentum-guild-limit-semantics-review.json
 ```
 
 Additional receipts document failed or incomplete bounded attempts. They remain classified evidence, not successful route-semantic or gameplay decisions.
@@ -69,124 +71,79 @@ full crawl collection contract reviewed: true
 
 The private verified 17-report set is the comparison baseline. Missing, extra and conflicting reports must remain visible evidence.
 
-## Bounded guild route-semantics capture
+## Reviewed guild route and response schema
 
 ```text
-receipt: argentum-guild-route-semantics-capture.json
-capture version: guild-route-semantics-capture-v1
+capture: argentum-guild-route-semantics-capture.json
+review: argentum-guild-route-semantics-review.json
+route: /api/guilds/search
+route review integrity checks: 22/22
+response envelope: guilds, success
+guild fields: id, name, realm, report_count
+limit parameter accepted: true
+```
+
+The route/schema checkpoint verified the request shape and response schema. Its single-result evidence did not verify limit truncation, pagination, termination or completeness.
+
+## Bounded multi-result limit capture
+
+```text
+receipt: argentum-guild-limit-semantics-capture.json
+capture version: guild-limit-semantics-capture-v1
+capture SHA-256: 690d7d93d5e9c592877a4fa049d2638b0a5a523430f9205777ce4fa06e624e58
 attempts: 3
 completed attempts: 3
 HTTP 200 responses: 3
-integrity checks: 13/13
-observed result counts: [1]
-payload hash stable: true
-schema fingerprint stable: true
-source ID set stable by hash: true
-pagination object observed: false
+observed result counts: [1, 7]
+integrity checks: 15/15
+ready for limit-semantics review: true
 ```
 
-Observed query cases:
+Observed bounded cases:
 
 ```text
-/api/guilds/search?q=<target>&limit=1
-/api/guilds/search?q=<target>&limit=25
-/api/guilds/search?q=<target>
+private query + limit 1
+private query + limit 25
+same private query + repeated limit 25
 ```
 
-## Reviewed guild route shape and response schema
+Verified capture relations:
 
 ```text
-receipt: argentum-guild-route-semantics-review.json
-review version: guild-route-semantics-review-v1
-integrity checks: 22/22
-route template verified: true
-query shapes verified: true
-limit parameter accepted: true
-response envelope verified: true
-guild record schema verified: true
-ready for bounded limit-semantics capture: true
+low limit saturated: true
+multi-result response observed: true
+high limit respected: true
+high-limit repeat stable: true
+source-ID order stable by hash: true
+low result is exact high-result prefix by ID hash: true
+response schema consistent: true
 ```
 
-Verified response schema:
+The capture itself preserves `limit_truncation_semantics_verified=false` and only authorizes a separate review.
+
+## Explicit limit-semantics review
 
 ```text
-top-level: object
-keys: guilds, success
-
-guild record:
-  id: integer
-  name: string
-  realm: string
-  report_count: string
+receipt: argentum-guild-limit-semantics-review.json
+review version: guild-limit-semantics-review-v1
+integrity checks: 30/30
+source capture hash bound: true
+source route-review hash bound across LF/CRLF: true
+limit truncation semantics verified: true
+ready for bounded pagination-semantics capture: true
 ```
 
-All three bounded cases returned the same single record. Therefore the review does not prove truncation, pagination, termination or completeness.
+The public review contains no query value, request URL, source guild ID, raw record or raw payload.
 
-## Implemented next capture
-
-```text
-src/coa_workbench/collector/guild_limit_semantics_capture.py
-scripts/capture_guild_limit_semantics.py
-tests/unit/test_guild_limit_semantics_capture.py
-```
-
-Expected request cases:
-
-```text
-private query + low limit
-private query + high limit
-private query + identical high-limit repeat
-```
-
-Expected public output:
-
-```text
-data/exchange/out/argentum-guild-limit-semantics-capture.json
-```
-
-Expected future versioned receipt after validation:
-
-```text
-argentum-guild-limit-semantics-capture.json
-```
-
-The public receipt must not contain:
-
-```text
-query value
-request URLs
-source guild IDs
-raw guild records
-raw payloads
-error text
-private receipt contents
-```
-
-A capture can become `ready_for_limit_semantics_review=true`, but it must still keep `limit_truncation_semantics_verified=false` until a separate explicit review receipt is produced.
-
-## Capture acceptance conditions
-
-- exactly three bounded attempts;
-- all three responses complete and valid;
-- stable response schema;
-- low result count equals low limit;
-- high result count is greater than low and not greater than high;
-- repeated high-limit result has identical ordered-record hash;
-- repeated high-limit result has identical source-ID-order hash;
-- low-limit source-ID hash sequence is an exact prefix of high-limit sequence;
-- all integrity checks pass;
-- all privacy booleans remain safe;
-- full crawl and scoring remain false.
-
-## Preserved decision boundaries
+## Current decision boundary
 
 ```text
 guild route template verified: true
 guild query shapes verified: true
 guild response schema verified: true
 limit parameter accepted: true
-ready for bounded limit-semantics capture: true
-limit truncation semantics verified: false
+limit truncation semantics verified: true
+ready for bounded pagination-semantics capture: true
 pagination semantics verified: false
 termination semantics verified: false
 completeness verified: false
@@ -199,17 +156,14 @@ ready for BiS 25 scoring: false
 planner scoring allowed: false
 ```
 
-Route/schema review authorizes only a bounded multi-result capture. A successful capture authorizes only a separate limit-semantics review. It does not authorize full crawl or scoring.
-
 ## Next evidence sequence
 
 ```text
-public multi-result limit capture receipt
--> explicit scalar-free limit-semantics review receipt
--> pagination evidence/review
--> termination/completeness evidence/review
+bounded pagination-semantics capture
+-> explicit pagination review
+-> termination/completeness evidence and review
 -> API-versus-private-baseline set comparison
--> explicit full-crawl promotion only if all gates pass
+-> explicit full-crawl promotion only if every gate passes
 ```
 
 ## Local-only artifacts
