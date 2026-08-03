@@ -2,7 +2,7 @@
 
 Дата актуализации: **2026-08-04**.
 
-Документ фиксирует operational state. Перед работой обязательно перепроверять GitHub, branch HEAD, PR, CI, code, local private artifacts и versioned receipts. HEAD не фиксируется внутри этого файла как постоянная истина, потому что само обновление документа создаёт новый commit.
+Документ фиксирует operational state. Перед работой перепроверять GitHub, branch HEAD, PR, CI, code, local private artifacts и versioned receipts. HEAD не фиксируется здесь как постоянная истина.
 
 ## Репозиторий
 
@@ -13,15 +13,45 @@ main
     └── e3/real-log-capture         PR #7 -> e2, Draft
 ```
 
-PR #7 остаётся `open`, `Draft` и `mergeable`; это состояние всегда перепроверять live.
+На последней live-проверке PR #7 был `open`, `Draft` и `mergeable`.
+
+## Последний green checkpoint
+
+```text
+HEAD: 6a6a28aaf5a8cf6e4d9240e19b714073a0096282
+Verify repository run: #551
+public-release-audit: success
+Ubuntu repository verifier: success
+Windows: success
+pytest: 335 passed, 1 warning
+Doctor: success
+clean DuckDB initialization: success
+repeated DuckDB initialization: success
+migrations: 0001–0008
+```
+
+Node.js deprecation warnings относятся к pinned third-party Actions и не являются failure.
 
 ## Текущий этап простыми словами
 
-Подтверждены identity гильдии Argentum, private baseline из 17 отчётов, guild-search route, response schema и ограничение multi-result выдачи параметром `limit`.
+Подтверждены:
 
-Versioned scalar-free capture показал стабильную выдачу `1 / 7 / 7` для low limit, high limit и повторного high limit. Отдельный deterministic review повысил только `limit_truncation_semantics_verified=true`.
+- identity гильдии Argentum;
+- private comparison baseline из 17 отчётов;
+- `/api/guilds/search` route и response schema;
+- принятие параметра `limit`;
+- стабильное multi-result ограничение выдачи: `1 / 7 / 7`;
+- explicit limit-truncation review.
 
-Следующий узкий этап — bounded pagination-semantics capture и отдельный review. Full crawl, character graph, performance model, BiS 25 и planner scoring остаются запрещены.
+Но `/api/guilds/search` возвращает список гильдий, а не guild report corpus. Поэтому нельзя автоматически переходить к full-crawl pagination.
+
+Recovered SPA asset содержит единственный дополнительный guild route candidate:
+
+```text
+/api/guilds/progression
+```
+
+Для него пока не доказаны HTTP method, request shape, response schema, связь с report membership, pagination или termination.
 
 ## Trust boundary
 
@@ -31,20 +61,6 @@ combat-log event != automatic proof of a general mechanic
 ```
 
 Parser/schema verification, identity verification, filtering и route/limit reviews не подтверждают gameplay mechanics. Planner scoring допускает только `corroborated` и `confirmed` mechanics.
-
-## Реализованный фундамент
-
-- localhost FastAPI raid planner и DuckDB plans;
-- immutable content-addressed raw archive;
-- separate retrieval observations;
-- JSON/HAR privacy-safe tooling;
-- schema fingerprints и reviewed mappings;
-- canonical report/encounter/actor/participant/aura records;
-- normalization/reconstruction/persistence pipeline;
-- migrations `0001`–`0008`;
-- repository verifier;
-- Ubuntu/Windows CI;
-- public-release audit.
 
 ## Report/encounter и combatants checkpoint
 
@@ -83,45 +99,38 @@ full crawl collection contract reviewed: true
 verified private comparison baseline: 17 reports
 ```
 
-Contract определяет будущие gates и set-comparison contract, но не разрешает full crawl.
+Contract определяет обязательные gates и future set comparison, но не разрешает full crawl.
 
-## Route/schema checkpoint
+## Guild-search route/schema checkpoint
 
 ```text
 capture: evidence/real-data/argentum-guild-route-semantics-capture.json
 review: evidence/real-data/argentum-guild-route-semantics-review.json
+route: /api/guilds/search
 route review integrity checks: 22/22
-route template verified: true
-query shapes verified: true
-response envelope verified: true
-guild record schema verified: true
+response envelope: guilds, success
+guild fields: id, name, realm, report_count
 limit parameter accepted: true
 ```
 
-Verified record fields:
+## Multi-result limit checkpoint
 
 ```text
-id: integer
-name: string
-realm: string
-report_count: string
-```
-
-## Multi-result limit capture checkpoint
-
-```text
-receipt: evidence/real-data/argentum-guild-limit-semantics-capture.json
-capture version: guild-limit-semantics-capture-v1
+capture: evidence/real-data/argentum-guild-limit-semantics-capture.json
 capture SHA-256: 690d7d93d5e9c592877a4fa049d2638b0a5a523430f9205777ce4fa06e624e58
 attempts: 3
-completed attempts: 3
-HTTP 200 responses: 3
-observed result counts: 1 / 7 / 7
-integrity checks: 15/15
-ready for limit-semantics review: true
+completed: 3
+HTTP 200: 3
+result counts: 1 / 7 / 7
+capture integrity checks: 15/15
+
+review: evidence/real-data/argentum-guild-limit-semantics-review.json
+review version: guild-limit-semantics-review-v1
+review integrity checks: 30/30
+limit truncation semantics verified: true
 ```
 
-Capture evidence:
+Confirmed relations:
 
 ```text
 response schema consistent: true
@@ -133,30 +142,58 @@ source-ID order stable by hash: true
 low result is exact high-result prefix by ID hash: true
 ```
 
-Capture сохранил `limit_truncation_semantics_verified=false` и не повысил другие gates.
+## SPA asset route candidate evidence
 
-## Explicit limit-semantics review checkpoint
-
-```text
-receipt: evidence/real-data/argentum-guild-limit-semantics-review.json
-review version: guild-limit-semantics-review-v1
-integrity checks: 30/30
-source capture SHA-256 verified: true
-source route-review binding verified across LF/CRLF: true
-limit truncation semantics verified: true
-ready for bounded pagination-semantics capture: true
-```
-
-Review implementation:
+Versioned profiled recovery:
 
 ```text
-src/coa_workbench/collector/guild_limit_semantics_review.py
-scripts/review_guild_limit_semantics.py
-tests/unit/test_guild_limit_semantics_review.py
-tests/unit/test_versioned_guild_limit_semantics_review.py
+evidence/real-data/argentum-guild-asset-profiled-recovery.json
+asset download completed: true
+HTTP 200: true
+asset bytes: 3881146
+integrity checks: 15/15
+all API route candidates: 79
+guild route candidates: 3
 ```
 
-Public capture/review не содержат private query, request URLs, source guild IDs, raw records или raw payloads.
+Observed scalar-free guild route shapes:
+
+```text
+/api/guilds/progression
+/api/guilds/search?q=<value>
+/api/guilds/search?q=<value>&limit=<value>
+```
+
+Search routes уже reviewed. `/api/guilds/progression` остаётся lexical candidate без verified usage semantics.
+
+## Implemented nearest bounded tool
+
+```text
+src/coa_workbench/collector/guild_progression_usage_inventory.py
+scripts/inventory_guild_progression_usage.py
+tests/unit/test_guild_progression_usage_inventory.py
+```
+
+Tool properties:
+
+- offline-only: no network requests;
+- validates public/private profiled recovery binding;
+- resolves exact archived asset through payload SHA-256;
+- verifies content manifest, gzip payload hash and byte count;
+- inventories every bounded occurrence of `/api/guilds/progression`;
+- keeps raw JavaScript context in private local output;
+- public receipt contains only context hashes, call-style/method candidates and booleans;
+- never promotes route, pagination, termination, completeness or full crawl.
+
+Expected local outputs:
+
+```text
+private:
+  data/extracted/report-discovery/argentum-guild-progression-usage-context.private.json
+
+public:
+  data/exchange/out/argentum-guild-progression-usage-context.json
+```
 
 ## Current decision boundary
 
@@ -165,12 +202,12 @@ guild identity verified: true
 guild filtering completed: true
 guild report manifest deduplicated: true
 full crawl collection contract reviewed: true
-guild route template verified: true
-guild query shapes verified: true
-guild response schema verified: true
-limit parameter accepted: true
-limit truncation semantics verified: true
-ready for bounded pagination-semantics capture: true
+guild-search route template verified: true
+guild-search response schema verified: true
+guild-search limit truncation semantics verified: true
+progression route candidate observed: true
+progression usage context reviewed: false
+progression route semantics verified: false
 pagination semantics verified: false
 termination semantics verified: false
 completeness verified: false
@@ -185,27 +222,26 @@ planner scoring allowed: false
 
 ## Current blockers
 
-1. Current HEAD должен пройти green `public-release-audit`, Ubuntu и Windows CI.
-2. Pagination semantics не подтверждены.
-3. Termination semantics не подтверждены.
-4. Completeness boundary не подтверждён.
+1. Local progression usage-context inventory ещё не выполнен/versioned.
+2. HTTP method и request shape `/api/guilds/progression` не reviewed.
+3. Progression response schema и relation to guild report membership не verified.
+4. Pagination, termination и completeness не подтверждены.
 5. API-derived report membership не сравнивался с private 17-report baseline.
 6. Multi-report character identity graph не построен.
 7. Bounded report slice содержит `0` aura events.
-8. Нет gameplay mechanic с independent supporting and contradicting evidence.
-9. Planner scoring остаётся disabled.
+8. Planner scoring остаётся disabled.
 
-## Следующий bounded этап
+## Следующая evidence sequence
 
 ```text
-bounded pagination-semantics capture
--> explicit pagination review
--> termination/completeness evidence and review
+offline SPA usage-context inventory
+-> explicit usage-context review
+-> bounded progression route probe only if method/request shape are unambiguous
+-> response schema review
+-> pagination/termination/completeness evidence
 -> API-versus-private-baseline set comparison
 -> explicit full-crawl promotion only if every gate passes
 ```
-
-До green CI текущего HEAD следующий network capture не выполнять.
 
 ## Data and Git policy
 
@@ -223,8 +259,4 @@ data/exchange/in/
 data/exchange/out/
 ```
 
-Never commit source guild IDs, report IDs, source rows, private queries, private captures, DuckDB, credentials, cookies, tokens, Authorization headers, browser profiles, `.env` or unsanitized HAR.
-
-## Completion gate
-
-PR #7 остаётся Draft до появления reviewed identity/filtering/crawl boundaries, reviewed combatants observations, aura observations and intervals for the bounded slice, independent supporting observations, contradicting evidence review, reproducible provenance и green Ubuntu/Windows verification.
+Never commit source guild IDs, report IDs, source rows, private queries, private captures, raw JavaScript contexts, DuckDB, credentials, cookies, tokens, Authorization headers, browser profiles, `.env` or unsanitized HAR.
