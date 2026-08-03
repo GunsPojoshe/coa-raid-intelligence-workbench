@@ -1,6 +1,6 @@
 # Real CoA Logs capture and persistence protocol
 
-Дата актуализации: **2026-07-31**.
+Дата актуализации: **2026-08-03**.
 
 ## Purpose
 
@@ -21,51 +21,19 @@ HTTP response
 -> scalar-free receipt
 ```
 
-Parser result, identity decision, report filtering and collection contract review never become gameplay claims automatically.
+Parser result, identity decision, report filtering, collection contract review and route/schema review never become gameplay claims automatically.
 
-## HTTP capture contract
+## Core capture contract
 
-Use versioned profile:
-
-```text
-coa-fetch-context-v1
-```
-
-Requirements:
-
-- persistent same-origin session;
-- in-memory cookie jar only;
-- bounded timeout and retry;
-- endpoint-isolated execution;
-- progressive checkpointing;
 - archive complete body before interpretation;
-- distinguish HTTP status from complete body read;
-- preserve transport errors;
-- never store cookie/header values.
+- keep raw payload immutable and content-addressed;
+- separate retrieval observations from payload identity;
+- preserve transport failures and contradicting evidence;
+- use bounded timeout/retry and endpoint-isolated execution;
+- never publish cookie/header values, source IDs or raw source rows;
+- unknown hash/fingerprint means reject and review.
 
-HAR fallback remains sensitive and local-only.
-
-## Raw archive contract
-
-Raw payload is immutable, content-addressed by SHA-256, gzip-compressed when JSON, deduplicated by body hash, and linked to separate retrieval observations and sanitized request metadata.
-
-Do not alter archived bytes to satisfy tests.
-
-## Mapping/extractor contract
-
-Production parser use requires:
-
-```text
-exact archived payload
-+ exact payload hash
-+ exact schema fingerprint
-+ explicit reviewed selectors/types/nullability
-+ reviewer metadata
-+ deterministic dry run
-+ explicit manual promotion
-```
-
-Unknown hash/fingerprint means reject and review. Verified parser compatibility does not confirm mechanic semantics.
+Production parser use requires exact payload hash, schema fingerprint, reviewed selectors/types/nullability, deterministic dry run and explicit promotion.
 
 ## Completed report and combatants pipeline
 
@@ -79,108 +47,97 @@ linked actors: 11
 combatants integrity checks: 14/14
 ```
 
-## Completed public-report manifest
+## Completed public manifest, identity and filtering
 
 ```text
-receipt: evidence/real-data/argentum-public-report-manifest.json
-route: /api/reports/public
-page: 1..259
-limit: 25
-reports: 6454
+public reports: 6454
 unique report IDs: 6454
-duplicates: 0
-integrity checks: 19/19
-exact Argentum label reports: 17
-distinct non-null guild IDs: 1
-```
-
-## Completed guild identity decision
-
-```text
-receipt: evidence/real-data/argentum-guild-identity-decision.json
-integrity checks: 16/16
-explicit operator promotion: true
-cross-endpoint source-ID equality: true
-name casefold equality: true
+public-manifest integrity checks: 19/19
+identity-decision integrity checks: 16/16
 guild identity verified: true
-ready for guild filtering: true
-```
-
-The source guild ID remains private.
-
-## Completed deterministic guild filtering
-
-```text
-receipt: evidence/real-data/argentum-guild-report-manifest.json
-source reports: 6454
-selected reports: 17
-unique selected report IDs: 17
-duplicate selected occurrences: 0
-integrity checks: 14/14
-guild filtering completed: true
-guild report manifest deduplicated: true
-report IDs published: false
-source guild ID published: false
-```
-
-The exact selected records remain local-only.
-
-## Reviewed full-crawl collection contract
-
-Implementation:
-
-```text
-src/coa_workbench/collector/guild_full_crawl_contract.py
-scripts/build_guild_full_crawl_contract.py
-tests/unit/test_guild_full_crawl_contract.py
-```
-
-Receipt:
-
-```text
-evidence/real-data/argentum-guild-full-crawl-contract.json
-```
-
-```text
-contract version: guild-full-crawl-contract-v1
-source public reports: 6454
 selected guild reports: 17
+unique selected report IDs: 17
+filter integrity checks: 14/14
+```
+
+The source guild ID and report IDs remain private.
+
+## Reviewed full-crawl contract
+
+```text
+receipt: evidence/real-data/argentum-guild-full-crawl-contract.json
 integrity checks: 12/12
 full crawl collection contract reviewed: true
-ready for bounded route-semantics capture: true
-guild API route semantics verified: false
-automatic full guild crawl allowed: false
-ready for full guild crawl: false
-planner scoring allowed: false
+verified private baseline reports: 17
 ```
 
-The 17-report private set is the comparison baseline. Contract review does not authorize full crawl.
+Contract review does not authorize full crawl.
 
-## Route-semantics capture protocol
-
-A bounded route-semantics capture must:
-
-1. use only an observed route candidate;
-2. record exact route template and query parameters;
-3. archive the complete raw response before interpretation;
-4. compute payload SHA-256 and schema fingerprint;
-5. inventory collection shape, fields, types and nullability;
-6. inventory pagination fields without assigning unobserved semantics;
-7. verify deterministic termination and completeness;
-8. publish a scalar-free route-semantics decision;
-9. keep automatic full crawl disabled until explicit promotion.
-
-Observed route shapes remain candidates:
+## Completed bounded guild route capture
 
 ```text
-/api/guilds/progression
-/api/guilds/search?q=<value>
-/api/guilds/search?q=<value>&limit=<value>
+receipt: evidence/real-data/argentum-guild-route-semantics-capture.json
+attempts: 3
+completed attempts: 3
+HTTP 200 responses: 3
+integrity checks: 13/13
+observed result counts: [1]
+payload hash stable: true
+schema fingerprint stable: true
+source ID set stable by hash: true
+pagination object observed: false
 ```
+
+Observed query shapes:
+
+```text
+/api/guilds/search?q=<target>&limit=1
+/api/guilds/search?q=<target>&limit=25
+/api/guilds/search?q=<target>
+```
+
+## Completed route shape and schema review
+
+```text
+receipt: evidence/real-data/argentum-guild-route-semantics-review.json
+review version: guild-route-semantics-review-v1
+integrity checks: 22/22
+route template verified: true
+query shapes verified: true
+limit parameter accepted: true
+response envelope verified: true
+guild record schema verified: true
+ready for bounded limit-semantics capture: true
+```
+
+Verified schema:
+
+```text
+top-level object: guilds, success
+
+guild record:
+  id: integer
+  name: string
+  realm: string
+  report_count: string
+```
+
+All observed cases returned one identical record. Therefore this review does not prove limit truncation, pagination, termination or completeness.
+
+## Next capture protocol: bounded multi-result limit probe
+
+1. Use only the verified guild-search route template.
+2. Use a privacy-safe query expected to return multiple records.
+3. Compare at least two accepted limit values.
+4. Archive complete raw responses before interpretation.
+5. Preserve payload, schema, ordered-record-set and source-ID-set hashes.
+6. Publish only scalar-free counts, field inventories and decisions.
+7. Do not infer pagination, termination or completeness from limit behavior alone.
+8. Keep automatic full crawl disabled.
 
 ## API-versus-baseline comparison
 
-Any future guild API report set must be compared with the private verified 17-report baseline and partitioned into:
+A future guild API report set must be compared with the private verified 17-report baseline and partitioned into:
 
 ```text
 matching_reports
@@ -189,21 +146,20 @@ extra_in_guild_api
 conflicting_report_records
 ```
 
-Rules:
-
-- deduplicate by source report ID;
-- preserve contradicting evidence;
-- keep report IDs private;
-- do not mark partial results complete;
-- preserve failed requests as observations;
-- require exact contract/checkpoint binding for resume;
-- keep retries bounded.
+This comparison remains blocked until route, limit, pagination, termination and completeness gates are independently reviewed.
 
 ## Current boundary
 
 ```text
-full crawl collection contract reviewed: true
-ready for bounded route-semantics capture: true
+guild route template verified: true
+guild query shapes verified: true
+guild response schema verified: true
+limit parameter accepted: true
+ready for bounded limit-semantics capture: true
+limit truncation semantics verified: false
+pagination semantics verified: false
+termination semantics verified: false
+completeness verified: false
 guild API route semantics verified: false
 automatic full guild crawl allowed: false
 ready for full guild crawl: false
@@ -224,17 +180,11 @@ uv sync --frozen --extra dev
 uv run python scripts/verify_repo.py
 ```
 
-Run focused deterministic tests for collector/storage changes. Never use live-network behavior as a unit test.
+Live-network behavior is not a unit test. Use deterministic fake responses for collector tests.
 
 ## Data policy
 
-Versioned:
-
-- mappings;
-- code/tests;
-- migrations;
-- documentation;
-- scalar-free receipts.
+Versioned: mappings, code/tests, migrations, documentation and scalar-free receipts.
 
 Local-only:
 
