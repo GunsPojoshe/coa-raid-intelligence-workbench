@@ -2,11 +2,22 @@
 
 Дата полной сверки: **2026-08-03**.
 
-Этот документ определяет цель, архитектуру, truth model и границы доверия. Изменяемые counts, HEAD и CI фиксируются в `docs/PROJECT_STATE.md` и всегда перепроверяются.
+Этот документ определяет долгосрочную цель, архитектуру, truth model, завершённые major checkpoints и обязательную последовательность развития. Изменяемые HEAD, CI, counts и оперативные blockers фиксируются в `docs/PROJECT_STATE.md` и всегда перепроверяются.
 
 ## 1. Миссия
 
-Создать localhost-first браузерное приложение для подготовки рейдов FLEX / 10 / 25 / 40, хранения планов, сбора реальных наблюдений с `coa.ascensionlogs.gg` и explainable recommendations только из достаточно подтверждённых механик.
+Создать localhost-first браузерное приложение для подготовки рейдов FLEX / 10 / 25 / 40 и evidence-first raid intelligence для Classless / Ascension WoW.
+
+Система должна:
+
+- хранить и проверять рейдовые планы;
+- собирать реальные наблюдения с `coa.ascensionlogs.gg`;
+- сохранять исходные ответы без изменений;
+- объяснимо связывать выводы с exact evidence;
+- различать parser correctness, source identity, gameplay semantics и player performance;
+- не использовать непроверенные наблюдения в planner scoring.
+
+Канонический принцип:
 
 ```text
 combat-log event = observation
@@ -18,29 +29,46 @@ combat-log event != automatic proof of a general mechanic
 ### Raid Planner
 
 - составы до 40 персонажей;
-- класс, специализация и роль;
+- class/spec/role catalog;
 - структурная валидация;
 - CRUD планов в DuckDB;
-- рекомендации с provenance.
+- explainable recommendations с provenance;
+- constrained future BiS 25 optimizer.
 
 ### Raid Intelligence
 
 - immutable raw capture;
+- separate retrieval observations;
 - hashes и schema fingerprints;
-- reviewed mappings;
+- reviewed mappings/extractors;
 - canonical parser records;
-- deterministic reconstruction;
+- deterministic normalization/reconstruction;
 - immutable observations;
 - supporting/contradicting evidence;
-- planner use только для `corroborated` и `confirmed` mechanics.
+- trust evaluation;
+- scoring только для достаточно подтверждённых mechanics.
 
-## 3. Этапы и ветки
+## 3. Долгосрочная цель
+
+```text
+verified Argentum report corpus
+-> stable multi-report identity for 30-40 candidate characters
+-> comparable performance observations
+-> global benchmark corpus
+-> confidence-aware player evaluation
+-> role/utility/availability constraints
+-> explainable optimal BiS 25 roster
+```
+
+Эта цель не разрешает перепрыгивать evidence gates. Каждый переход требует отдельного воспроизводимого receipt/review.
+
+## 4. Этапы и ветки
 
 ```text
 E0  Excel baseline — закрыт как основной runtime
-E1  localhost web
+E1  localhost web and planner foundation
 E2  evidence-first foundation — PR #3, Draft
-E3  real log capture and normalization — PR #7, Draft
+E3  real log capture, review and persistence — PR #7, Draft
 ```
 
 ```text
@@ -49,7 +77,7 @@ main
     └── e3/real-log-capture         PR #7 -> e2
 ```
 
-## 4. Evidence architecture
+## 5. Evidence architecture
 
 ```text
 source response
@@ -57,9 +85,9 @@ source response
 -> retrieval observation
 -> SHA-256 + schema fingerprint
 -> structural/field review
--> versioned mapping or extractor design
+-> versioned mapping or dedicated extractor
 -> exact raw validation
--> manual promotion/publication
+-> explicit promotion/publication
 -> normalization/extraction
 -> deterministic reconstruction
 -> atomic immutable persistence
@@ -69,9 +97,9 @@ source response
 -> planner scoring
 ```
 
-Верхний слой не может переписать нижний.
+Верхний слой не может переписать нижний. Любой derived вывод обязан сохранять exact provenance.
 
-## 5. Trust model
+## 6. Trust model
 
 ```text
 legacy_unverified
@@ -95,20 +123,35 @@ local_inference
 manual_override
 ```
 
-Parser correctness, identity verification, filtering, collection contract review and route/schema review do not confirm gameplay semantics.
+Запрещено автоматически считать gameplay knowledge:
 
-## 6. Реализованный фундамент
+- parser correctness;
+- schema verification;
+- guild identity verification;
+- deterministic filtering;
+- collection contract review;
+- route/schema review;
+- successful persistence;
+- один combat-log event;
+- display name или nickname.
+
+## 7. Реализованный фундамент
 
 - localhost FastAPI raid planner;
 - DuckDB plans and CRUD;
-- immutable raw archive and retrieval observations;
+- immutable content-addressed raw archive;
+- separate retrieval observations;
 - JSON/HAR privacy-safe tooling;
 - schema fingerprints and verified mapping gates;
-- report/encounter/actor/participant/aura records;
+- canonical report/encounter/actor/participant/aura records;
+- normalization rejects и Aura State Engine;
+- hypotheses, evidence links and weighting policies;
 - migrations `0001`–`0008`;
-- repository verifier and Ubuntu/Windows CI.
+- repository verifier;
+- Ubuntu/Windows CI;
+- public-release audit.
 
-## 7. Report and combatants baseline
+## 8. Report/encounter и combatants baseline
 
 ```text
 normalized: 2 reports, 15 encounters, 31 actors, 31 participants, 0 aura events
@@ -120,32 +163,64 @@ linked actors: 11
 combatants checks: 14/14
 ```
 
-## 8. Public manifest, identity and filtering
+Это подтверждает reproducibility parser/persistence pipeline. Это не подтверждает companion-addon provenance, nested identifier semantics, gameplay mechanics или planner suitability.
+
+## 9. Public-report baseline
 
 ```text
-public reports: 6454
-unique public report IDs: 6454
-public-manifest checks: 19/19
-identity-decision checks: 16/16
-guild identity verified: true
-selected guild reports: 17
-unique selected report IDs: 17
-filter checks: 14/14
+receipt: evidence/real-data/argentum-public-report-manifest.json
+route: /api/reports/public
+limit: 25
+pages: 259
+reports: 6454
+unique report IDs: 6454
+duplicates: 0
+integrity checks: 19/19
+exact Argentum label reports: 17
 ```
 
-The source guild ID and report IDs remain private. The private 17-report set is the verified comparison baseline.
+Receipt подтверждает completeness конкретного captured public snapshot, но не общую completeness provider и не identity гильдии сам по себе.
 
-## 9. Full-crawl collection contract
+## 10. Guild identity и filtering
+
+```text
+identity receipt: evidence/real-data/argentum-guild-identity-decision.json
+identity checks: 16/16
+guild identity verified: true
+
+filtered receipt: evidence/real-data/argentum-guild-report-manifest.json
+selected reports: 17
+unique selected report IDs: 17
+filter checks: 14/14
+guild filtering completed: true
+```
+
+Source guild ID и report IDs остаются private. Private 17-report set является verified comparison baseline для будущего API-derived report set.
+
+## 11. Full-crawl collection contract
 
 ```text
 receipt: evidence/real-data/argentum-guild-full-crawl-contract.json
 integrity checks: 12/12
 full crawl collection contract reviewed: true
+verified private comparison baseline: 17 reports
 ```
 
-The contract requires exact route/query verification, immutable raw response capture, payload SHA-256, schema fingerprint, reviewed collection shape, pagination/termination/completeness proof and deterministic comparison with the private baseline.
+Contract требует до разрешения full crawl независимо доказать:
 
-## 10. Guild route capture and review
+1. exact route/query contract;
+2. immutable raw capture;
+3. payload SHA-256 и schema fingerprint;
+4. reviewed collection shape and types;
+5. limit behavior;
+6. pagination semantics;
+7. termination semantics;
+8. completeness boundary;
+9. deterministic API-versus-baseline comparison;
+10. preservation of missing, extra and conflicting records;
+11. explicit scalar-free promotion decision.
+
+## 12. Guild route capture и route/schema review
 
 Capture:
 
@@ -156,32 +231,94 @@ completed attempts: 3
 HTTP 200 responses: 3
 integrity checks: 13/13
 observed result counts: [1]
+payload hash stable: true
+schema fingerprint stable: true
+source ID set stable by hash: true
+pagination object observed: false
+```
+
+Observed request shapes:
+
+```text
+/api/guilds/search?q=<target>&limit=1
+/api/guilds/search?q=<target>&limit=25
+/api/guilds/search?q=<target>
 ```
 
 Review:
 
 ```text
 receipt: evidence/real-data/argentum-guild-route-semantics-review.json
+review version: guild-route-semantics-review-v1
 integrity checks: 22/22
 route template verified: true
 query shapes verified: true
-response schema verified: true
+response envelope verified: true
+guild record schema verified: true
 limit parameter accepted: true
 ready for bounded limit-semantics capture: true
 ```
 
-Verified response fields:
+Verified response schema:
 
 ```text
-id: integer
-name: string
-realm: string
-report_count: string
+top-level kind: object
+top-level keys: guilds, success
+
+guild record:
+  id: integer
+  name: string
+  realm: string
+  report_count: string
 ```
 
-All bounded cases returned one identical record. The review therefore does not verify limit truncation, pagination, termination or completeness.
+Все три bounded cases вернули одну и ту же запись. Поэтому limit truncation, pagination, termination и completeness не подтверждены.
 
-## 11. Current decision boundary
+## 13. Реализованный bounded multi-result limit probe
+
+Implementation:
+
+```text
+src/coa_workbench/collector/guild_limit_semantics_capture.py
+scripts/capture_guild_limit_semantics.py
+tests/unit/test_guild_limit_semantics_capture.py
+```
+
+Probe выполняет ровно три запроса:
+
+```text
+private query + low limit
+private query + high limit
+private query + identical high-limit repeat
+```
+
+Capture-ready conditions:
+
+- all three responses complete and valid;
+- stable response schema;
+- low result count equals low limit;
+- high result count is greater than low and does not exceed high;
+- high-limit repeat has identical ordered-record hash;
+- high-limit repeat has identical source-ID-order hash;
+- low-limit source-ID hash sequence is an exact prefix of high-limit sequence.
+
+Public receipt не должен содержать query, request URL, source IDs, raw records или error text. Даже успешный capture устанавливает только `ready_for_limit_semantics_review=true`. Promotion `limit_truncation_semantics_verified=true` требует отдельного review receipt.
+
+## 14. Текущий этап простыми словами
+
+Мы завершили проверку адреса API и структуры ответа. Следующий вопрос — действительно ли `limit=1` возвращает первый элемент той же выдачи, а больший limit возвращает стабильное расширение этой выдачи.
+
+Код такой проверки готов и покрыт deterministic tests. Осталось:
+
+1. получить green CI на актуальном HEAD;
+2. локально выбрать приватную query, возвращающую несколько гильдий;
+3. выполнить bounded capture;
+4. проверить и version scalar-free receipt;
+5. выпустить отдельное limit-semantics review.
+
+Full crawl пока не разрешён.
+
+## 15. Current decision boundary
 
 ```text
 guild identity verified: true
@@ -205,24 +342,60 @@ ready for BiS 25 scoring: false
 planner scoring allowed: false
 ```
 
-## 12. Next bounded plan
+## 16. Обязательная дальнейшая последовательность
 
-1. design a bounded multi-result guild-search probe;
-2. use a privacy-safe query expected to return multiple records;
-3. compare at least two accepted `limit` values;
-4. archive and fingerprint exact responses;
-5. publish only scalar-free counts, hashes and decisions;
-6. verify truncation behavior without overclaiming pagination or completeness;
-7. keep full crawl, graph, performance and scoring closed;
-8. proceed to pagination/termination/completeness and set comparison only through separate explicit reviews.
+```text
+green CI on current HEAD
+-> bounded multi-result limit capture
+-> explicit limit-semantics review
+-> separate pagination review
+-> separate termination/completeness review
+-> deterministic API-versus-private-17-report-baseline comparison
+-> explicit full-crawl promotion only if every gate passes
+-> per-report report/encounter/combatants capture
+-> multi-report character identity graph
+-> 30-40 unique candidate characters
+-> performance observations
+-> global benchmark corpus
+-> confidence-aware scoring
+-> constrained BiS 25 optimizer
+```
 
-## 13. Aura boundary
+## 17. API-versus-baseline comparison contract
 
-Separate fixtures validate technical Aura State Engine behavior but not magnitude, stacking, scope, provider equivalence or criticality. The current report slice still has zero aura events.
+Будущий API-derived report set сравнивается с private verified 17-report baseline и делится на:
 
-## 14. Data and Git policy
+```text
+matching_reports
+missing_from_guild_api
+extra_in_guild_api
+conflicting_report_records
+```
 
-Versioned: code/tests, migrations, mappings and review decisions, documentation and scalar-free receipts.
+Rules:
+
+- exact typed report-ID comparison;
+- deduplicate before comparison;
+- preserve source order where applicable;
+- preserve contradicting evidence;
+- keep report IDs private;
+- never mark partial capture complete;
+- preserve failures as observations;
+- bind resume/checkpoints to exact contract/hash.
+
+## 18. Aura boundary
+
+Текущий bounded report slice содержит `0` aura events. Separate fixtures подтверждают technical Aura State Engine behavior, но не magnitude, stacking, scope, provider equivalence или criticality.
+
+## 19. Data and Git policy
+
+Versioned:
+
+- code/tests;
+- migrations;
+- mappings and review decisions;
+- documentation;
+- scalar-free receipts.
 
 Local-only:
 
@@ -236,17 +409,17 @@ data/exchange/in/
 data/exchange/out/
 ```
 
-Never commit secrets, cookies, tokens, Authorization headers, browser profiles, unsanitized HAR, source guild IDs, report IDs, private decisions or private manifests.
+Never commit secrets, cookies, tokens, Authorization headers, browser profiles, unsanitized HAR, source guild IDs, report IDs, private queries, private decisions or private manifests.
 
-## 15. Verification contract
+## 20. Verification contract
 
 ```powershell
 uv sync --frozen --extra dev
 uv run python scripts/verify_repo.py
 ```
 
-Storage changes require clean and repeated DuckDB initialization. Collector changes require deterministic fake-response tests before bounded real capture.
+Storage changes require clean and repeated DuckDB initialization. Collector changes require deterministic fake-response tests before bounded real capture. Never claim green CI from an older HEAD.
 
-## 16. Completion criteria for E3
+## 21. Completion criteria for E3
 
 PR #7 remains Draft until reviewed identity/filtering/crawl boundaries, reviewed combatants observations, aura observations and intervals for the bounded slice, independent supporting observations, contradicting evidence review, reproducible provenance, and green Ubuntu/Windows verification are present.
