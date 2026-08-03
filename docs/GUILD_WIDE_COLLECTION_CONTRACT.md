@@ -26,11 +26,7 @@ This document defines collection and trust boundaries, not a scoring policy.
 
 ## Completed phases
 
-### 1. Pagination evidence
-
-Verified page/limit/offset relations, `hasPrevious`, `hasMore`, exact `limit=25`, terminal transition, successor behavior, sentinels and cross-page report-ID uniqueness.
-
-### 2. Exhaustive public report manifest
+### 1. Public pagination and exhaustive manifest
 
 ```text
 receipt: evidence/real-data/argentum-public-report-manifest.json
@@ -42,110 +38,100 @@ unique report IDs: 6454
 duplicates: 0
 integrity checks: 19/19
 exact Argentum label reports: 17
-distinct non-null guild IDs for exact label: 1
 ```
 
-### 3. Guild identity verification
+### 2. Guild identity and deterministic filtering
 
 ```text
-receipt: evidence/real-data/argentum-guild-identity-decision.json
-explicit operator promotion: true
-integrity checks: 16/16
-independent source identity verified: true
+identity receipt: evidence/real-data/argentum-guild-identity-decision.json
+identity integrity checks: 16/16
 guild identity verified: true
-ready for guild filtering: true
-```
 
-### 4. Deterministic guild report filtering
-
-```text
-receipt: evidence/real-data/argentum-guild-report-manifest.json
-source reports: 6454
+filtered receipt: evidence/real-data/argentum-guild-report-manifest.json
 selected reports: 17
 unique selected report IDs: 17
-duplicate selected occurrences: 0
-integrity checks: 14/14
-guild filtering completed: true
-guild report manifest deduplicated: true
-report IDs published: false
-source guild ID published: false
+filter integrity checks: 14/14
 ```
 
-Selection contract:
+The source guild ID and report IDs remain private.
+
+### 3. Full-crawl collection contract
 
 ```text
-filter field: /reports/*/guild_id
-filter operation: equals_verified_private_source_guild_id
-deduplication key: /reports/*/id
-selection order: source_manifest_order
-```
-
-### 5. Full-crawl collection contract review
-
-Implementation:
-
-```text
-src/coa_workbench/collector/guild_full_crawl_contract.py
-scripts/build_guild_full_crawl_contract.py
-tests/unit/test_guild_full_crawl_contract.py
-```
-
-Versioned receipt:
-
-```text
-evidence/real-data/argentum-guild-full-crawl-contract.json
-```
-
-The contract is bound to:
-
-```text
-argentum-public-report-manifest.json
-argentum-guild-identity-decision.json
-argentum-guild-report-manifest.json
-```
-
-Verified contract boundary:
-
-```text
-source public reports: 6454
-selected guild reports: 17
+receipt: evidence/real-data/argentum-guild-full-crawl-contract.json
 integrity checks: 12/12
 full crawl collection contract reviewed: true
-ready for bounded route-semantics capture: true
-guild API route semantics verified: false
-automatic full guild crawl allowed: false
-ready for full guild crawl: false
-planner scoring allowed: false
+verified comparison baseline reports: 17
 ```
 
-The verified 17-report public-manifest-filtered set is the comparison baseline.
+The contract requires immutable raw capture, exact payload SHA-256, schema fingerprint, reviewed fields, pagination/termination/completeness proof and explicit set comparison.
 
-## Route-semantics evidence requirements
-
-Before any guild API full crawl:
-
-1. verify exact route template and query parameters;
-2. archive complete raw response before interpretation;
-3. bind the response to exact payload SHA-256 and schema fingerprint;
-4. review collection shape, field types and nullability;
-5. verify pagination, offset, page and limit relations if present;
-6. verify deterministic termination and successor behavior;
-7. verify completeness and capture-time boundaries;
-8. publish an explicit scalar-free route-semantics decision.
-
-Observed route shapes remain candidates only:
+### 4. Bounded guild-search capture
 
 ```text
-/api/guilds/progression
-/api/guilds/search?q=<value>
-/api/guilds/search?q=<value>&limit=<value>
+receipt: evidence/real-data/argentum-guild-route-semantics-capture.json
+attempts: 3
+completed attempts: 3
+HTTP 200 responses: 3
+integrity checks: 13/13
+observed result counts: [1]
+payload/schema/source-ID-set hashes stable: true
+pagination object observed: false
 ```
 
-No unverified route may be treated as complete or production-ready.
+Observed query shapes:
+
+```text
+/api/guilds/search?q=<target>&limit=1
+/api/guilds/search?q=<target>&limit=25
+/api/guilds/search?q=<target>
+```
+
+### 5. Route shape and response schema review
+
+```text
+receipt: evidence/real-data/argentum-guild-route-semantics-review.json
+integrity checks: 22/22
+route template verified: true
+query shapes verified: true
+limit parameter accepted: true
+response envelope verified: true
+guild record schema verified: true
+ready for bounded limit-semantics capture: true
+```
+
+Verified response schema:
+
+```text
+top-level: object
+keys: guilds, success
+
+guild record:
+  id: integer
+  name: string
+  realm: string
+  report_count: string
+```
+
+This review proves route shape and schema only. Because all cases returned one identical record, it does not prove limit truncation behavior.
+
+## Next bounded phase: multi-result limit probe
+
+The next probe must:
+
+1. use only the verified `/api/guilds/search` route template;
+2. use a privacy-safe query expected to return multiple guild records;
+3. compare at least two accepted `limit` values;
+4. archive complete raw responses before interpretation;
+5. preserve ordered record-set, source-ID-set, payload and schema hashes;
+6. publish only scalar-free counts and decisions;
+7. reject any attempt to infer pagination, termination or completeness from limit behavior alone.
+
+A one-result response cannot verify limit truncation semantics.
 
 ## Set-comparison contract
 
-Any future guild-API-derived report set must be compared with the verified private 17-report baseline and partitioned into:
+Any future guild-API-derived report set must be compared with the private verified 17-report baseline and partitioned into:
 
 ```text
 matching_reports
@@ -166,38 +152,33 @@ Rules:
 
 ## Remaining phases
 
-### Guild API route semantics — open for bounded capture
-
-The reviewed contract permits bounded evidence capture only. It does not permit automatic full crawl.
-
-### Full guild crawl — blocked
-
-Blocked until exact route semantics, pagination, termination, completeness and set comparison are explicitly promoted.
-
-### Per-report evidence capture — blocked
-
-After route/full-crawl promotion, capture report, encounter and combatants payloads under reviewed mappings, preserve failures and track coverage against the 17-report baseline.
-
-### Multi-report character graph — blocked
-
-Verify stable identifiers across reports, preserve aliases, detect collisions and never use nickname alone as primary identity.
-
-### Performance and benchmark corpus — blocked
-
-Build comparable versioned distributions before player scores. Separate strength, consistency, confidence and composition utility.
-
-### BiS 25 optimization — blocked
-
-Select 25 from a verified 30-40 character pool under role, encounter, utility, defensive and availability constraints.
+```text
+bounded multi-result limit probe
+-> pagination semantics review
+-> termination/completeness review
+-> API-versus-baseline set comparison
+-> explicit full-crawl promotion, only if all gates pass
+-> per-report capture
+-> multi-report character graph
+-> performance corpus
+-> BiS 25 optimization
+```
 
 ## Current boundary
 
 ```text
 guild identity verified: true
 guild filtering completed: true
-guild report manifest deduplicated: true
 full crawl collection contract reviewed: true
-ready for bounded route-semantics capture: true
+guild route template verified: true
+guild query shapes verified: true
+guild response schema verified: true
+limit parameter accepted: true
+ready for bounded limit-semantics capture: true
+limit truncation semantics verified: false
+pagination semantics verified: false
+termination semantics verified: false
+completeness verified: false
 guild API route semantics verified: false
 automatic full guild crawl allowed: false
 ready for full guild crawl: false
@@ -207,4 +188,4 @@ ready for BiS 25 scoring: false
 planner scoring allowed: false
 ```
 
-Planner scoring remains disabled. Contract review authorizes evidence collection only, not full crawl or scoring.
+Planner scoring remains disabled. Route/schema review authorizes only the next bounded evidence probe.
