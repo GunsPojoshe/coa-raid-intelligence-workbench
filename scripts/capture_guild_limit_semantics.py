@@ -85,10 +85,7 @@ def main() -> int:
     )
     print(f"private output: {args.private_output}")
     print(f"receipt output: {args.output}")
-    print(
-        "limit truncation semantics verified: "
-        f"{boundary['limit_truncation_semantics_verified']}"
-    )
+    print(f"limit truncation semantics verified: {boundary['limit_truncation_semantics_verified']}")
     print(f"ready for full guild crawl: {boundary['ready_for_full_guild_crawl']}")
     print(f"planner scoring allowed: {boundary['planner_scoring_allowed']}")
     return 0 if boundary["ready_for_limit_semantics_review"] else 2
