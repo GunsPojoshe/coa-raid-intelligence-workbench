@@ -2,7 +2,7 @@
 
 Дата актуализации: **2026-08-03**.
 
-Этот каталог содержит versioned scalar-free receipts и trust boundaries для real CoA Logs pipeline. Private payload contents, source scalar rows, private reviews/decisions and DuckDB remain local-only.
+Этот каталог содержит versioned scalar-free receipts и trust boundaries для real CoA Logs pipeline. Private payload contents, source scalar rows, private queries, private reviews/decisions and DuckDB remain local-only.
 
 ## Major versioned artifacts
 
@@ -73,6 +73,7 @@ The private verified 17-report set is the comparison baseline. Missing, extra an
 
 ```text
 receipt: argentum-guild-route-semantics-capture.json
+capture version: guild-route-semantics-capture-v1
 attempts: 3
 completed attempts: 3
 HTTP 200 responses: 3
@@ -121,6 +122,62 @@ guild record:
 
 All three bounded cases returned the same single record. Therefore the review does not prove truncation, pagination, termination or completeness.
 
+## Implemented next capture
+
+```text
+src/coa_workbench/collector/guild_limit_semantics_capture.py
+scripts/capture_guild_limit_semantics.py
+tests/unit/test_guild_limit_semantics_capture.py
+```
+
+Expected request cases:
+
+```text
+private query + low limit
+private query + high limit
+private query + identical high-limit repeat
+```
+
+Expected public output:
+
+```text
+data/exchange/out/argentum-guild-limit-semantics-capture.json
+```
+
+Expected future versioned receipt after validation:
+
+```text
+argentum-guild-limit-semantics-capture.json
+```
+
+The public receipt must not contain:
+
+```text
+query value
+request URLs
+source guild IDs
+raw guild records
+raw payloads
+error text
+private receipt contents
+```
+
+A capture can become `ready_for_limit_semantics_review=true`, but it must still keep `limit_truncation_semantics_verified=false` until a separate explicit review receipt is produced.
+
+## Capture acceptance conditions
+
+- exactly three bounded attempts;
+- all three responses complete and valid;
+- stable response schema;
+- low result count equals low limit;
+- high result count is greater than low and not greater than high;
+- repeated high-limit result has identical ordered-record hash;
+- repeated high-limit result has identical source-ID-order hash;
+- low-limit source-ID hash sequence is an exact prefix of high-limit sequence;
+- all integrity checks pass;
+- all privacy booleans remain safe;
+- full crawl and scoring remain false.
+
 ## Preserved decision boundaries
 
 ```text
@@ -128,6 +185,7 @@ guild route template verified: true
 guild query shapes verified: true
 guild response schema verified: true
 limit parameter accepted: true
+ready for bounded limit-semantics capture: true
 limit truncation semantics verified: false
 pagination semantics verified: false
 termination semantics verified: false
@@ -141,11 +199,18 @@ ready for BiS 25 scoring: false
 planner scoring allowed: false
 ```
 
-Route/schema review authorizes only a separate bounded multi-result probe for `limit` behavior. It does not authorize full crawl or scoring.
+Route/schema review authorizes only a bounded multi-result capture. A successful capture authorizes only a separate limit-semantics review. It does not authorize full crawl or scoring.
 
-## Next evidence artifact
+## Next evidence sequence
 
-The next artifact must use a bounded query expected to return multiple guild records and compare at least two accepted limit values. It must preserve raw responses privately and publish only scalar-free counts, hashes, schemas and an explicit decision. A one-result response cannot verify limit truncation semantics.
+```text
+public multi-result limit capture receipt
+-> explicit scalar-free limit-semantics review receipt
+-> pagination evidence/review
+-> termination/completeness evidence/review
+-> API-versus-private-baseline set comparison
+-> explicit full-crawl promotion only if all gates pass
+```
 
 ## Local-only artifacts
 
@@ -159,4 +224,4 @@ data/exchange/in/
 data/exchange/out/
 ```
 
-Never commit credentials, cookies, tokens, Authorization headers, browser profiles, `.env`, unsanitized HAR, source guild IDs, report IDs or source-scalar private batches.
+Never commit credentials, cookies, tokens, Authorization headers, browser profiles, `.env`, unsanitized HAR, source guild IDs, report IDs, private query values or source-scalar private batches.
