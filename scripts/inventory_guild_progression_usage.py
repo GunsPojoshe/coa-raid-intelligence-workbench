@@ -24,8 +24,7 @@ def main() -> int:
         "--private-recovery",
         type=Path,
         default=Path(
-            "data/extracted/report-discovery/"
-            "argentum-guild-asset-profiled-recovery.private.json"
+            "data/extracted/report-discovery/argentum-guild-asset-profiled-recovery.private.json"
         ),
     )
     parser.add_argument("--raw-root", type=Path, default=Path("data/raw"))
@@ -33,16 +32,13 @@ def main() -> int:
         "--private-output",
         type=Path,
         default=Path(
-            "data/extracted/report-discovery/"
-            "argentum-guild-progression-usage-context.private.json"
+            "data/extracted/report-discovery/argentum-guild-progression-usage-context.private.json"
         ),
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path(
-            "data/exchange/out/argentum-guild-progression-usage-context.json"
-        ),
+        default=Path("data/exchange/out/argentum-guild-progression-usage-context.json"),
     )
     parser.add_argument("--context-chars", type=int, default=384)
     parser.add_argument("--max-occurrences", type=int, default=20)
@@ -67,14 +63,8 @@ def main() -> int:
     )
     print(f"private output: {args.private_output}")
     print(f"receipt output: {args.output}")
-    print(
-        "ready for usage review: "
-        f"{boundary['ready_for_guild_progression_usage_review']}"
-    )
-    print(
-        "ready for bounded route probe: "
-        f"{boundary['ready_for_bounded_progression_route_probe']}"
-    )
+    print(f"ready for usage review: {boundary['ready_for_guild_progression_usage_review']}")
+    print(f"ready for bounded route probe: {boundary['ready_for_bounded_progression_route_probe']}")
     print(f"guild API route semantics verified: {boundary['guild_api_route_semantics_verified']}")
     print(f"ready for full guild crawl: {boundary['ready_for_full_guild_crawl']}")
     print(f"planner scoring allowed: {boundary['planner_scoring_allowed']}")
