@@ -14,54 +14,25 @@ Draft PR #7: e3/real-log-capture -> e2/log-evidence-refactor
 2. Проверь PR #7: state, Draft, mergeable, base, head SHA, commits и changed files.
 3. Проверь PR #3 и положение `e3/real-log-capture` относительно `e2/log-evidence-refactor`.
 4. Проверь последний GitHub Actions run и все jobs.
-5. Прочитай полностью и в порядке:
-   - `AGENTS.md`;
-   - `docs/PROJECT_MASTER_CONTEXT.md`;
-   - `docs/PROJECT_STATE.md`;
-   - `docs/CONTINUATION_PROMPT.md`;
-   - `docs/REAL_LOG_CAPTURE.md`;
-   - `docs/GUILD_WIDE_COLLECTION_CONTRACT.md`;
-   - `docs/ADR_012_LOG_EVIDENCE_TRUTH_MODEL.md`;
-   - `evidence/real-data/README.md`.
+5. Прочитай полностью `AGENTS.md`, canonical docs и `evidence/real-data/README.md`.
 6. Сверь документацию с кодом, migrations, versioned receipts и CI.
 7. Не доверяй старым HEAD, CI run, test count, hashes, routes или source counts без проверки.
-8. До изменения аналитической семантики перечисли существенные расхождения.
 
-## Главная цель
+## Главная цель и trust boundary
 
 ```text
 source response
 -> immutable raw archive
 -> SHA-256 and schema fingerprint
--> reviewed verified mapping/extractor
--> canonical normalization or dedicated extraction
--> deterministic reconstruction
+-> reviewed mapping/extractor
+-> deterministic normalization/extraction
 -> immutable observations
 -> supporting and contradicting evidence
 -> corroborated or confirmed mechanic
 -> explainable planner scoring
 ```
 
-Долгосрочная цель:
-
-```text
-verified Argentum reports
--> stable identity for 30-40 characters
--> multi-report performance corpus
--> comparable global benchmark
--> role/utility/availability constraints
--> explainable optimal BiS 25 roster
-```
-
-## Trust boundaries
-
-- Combat-log event является observation, а не доказательством общей mechanic.
-- Parser correctness не подтверждает gameplay semantics.
-- Label, nickname или display name не являются достаточным identity key.
-- Planner scoring разрешён только для `corroborated` и `confirmed`.
-- Contradicting evidence сохраняется.
-- Explicit operator promotion нельзя заменять автоматическим выводом.
-- Identity verification, filtering и contract review не подтверждают route semantics, crawl completeness, character identity, performance или scoring.
+Combat-log event является observation, а не доказательством общей mechanic. Parser correctness, identity verification, filtering, collection contract review and route/schema review do not confirm gameplay semantics. Planner scoring разрешён только для `corroborated` и `confirmed`.
 
 ## Завершённые checkpoints
 
@@ -82,20 +53,30 @@ public manifest:
   unique report IDs: 6454
   integrity checks: 19/19
 
-identity decision:
-  integrity checks: 16/16
+identity/filtering:
+  identity checks: 16/16
   guild identity verified: true
-
-verified guild report manifest:
   selected reports: 17
   unique selected IDs: 17
-  integrity checks: 14/14
+  filter checks: 14/14
 
 full-crawl contract:
   integrity checks: 12/12
   contract reviewed: true
-  bounded route-semantics capture allowed: true
-  full crawl allowed: false
+
+route capture:
+  attempts: 3
+  HTTP 200: 3
+  capture checks: 13/13
+  observed result counts: [1]
+
+route/schema review:
+  integrity checks: 22/22
+  route template verified: true
+  query shapes verified: true
+  response schema verified: true
+  limit parameter accepted: true
+  ready for bounded limit-semantics capture: true
 ```
 
 Versioned receipts:
@@ -105,16 +86,22 @@ evidence/real-data/argentum-public-report-manifest.json
 evidence/real-data/argentum-guild-identity-decision.json
 evidence/real-data/argentum-guild-report-manifest.json
 evidence/real-data/argentum-guild-full-crawl-contract.json
+evidence/real-data/argentum-guild-route-semantics-capture.json
+evidence/real-data/argentum-guild-route-semantics-review.json
 ```
 
 ## Current boundary
 
 ```text
-guild identity verified: true
-guild filtering completed: true
-guild report manifest deduplicated: true
-full crawl collection contract reviewed: true
-ready for bounded route-semantics capture: true
+guild route template verified: true
+guild query shapes verified: true
+guild response schema verified: true
+limit parameter accepted: true
+ready for bounded limit-semantics capture: true
+limit truncation semantics verified: false
+pagination semantics verified: false
+termination semantics verified: false
+completeness verified: false
 guild API route semantics verified: false
 automatic full guild crawl allowed: false
 ready for full guild crawl: false
@@ -126,62 +113,49 @@ planner scoring allowed: false
 
 ## Current nearest task
 
-Perform **bounded guild API route-semantics capture** under the reviewed contract.
+Design and execute a **bounded multi-result guild-search limit-semantics capture**.
 
 Required work:
 
-1. Use only observed route candidates.
-2. Record exact route template and query parameters.
-3. Archive complete raw responses before interpretation.
-4. Compute payload SHA-256 and schema fingerprint.
-5. Inventory response collection shape, fields, types and nullability.
-6. Inventory pagination fields without assigning unobserved meaning.
-7. Verify deterministic termination and completeness before full-crawl promotion.
-8. Compare any future API report set with the private verified 17-report baseline.
-9. Partition differences into matching, missing, extra and conflicting reports.
-10. Preserve failed requests and contradicting evidence.
-11. Keep full crawl, graph, performance and scoring false.
+1. Use only the verified `/api/guilds/search` route template.
+2. Choose a privacy-safe query expected to return multiple records.
+3. Compare at least two accepted `limit` values.
+4. Archive complete raw responses before interpretation.
+5. Compute payload SHA-256 and schema fingerprint.
+6. Preserve ordered-record-set and source-ID-set hashes.
+7. Publish only scalar-free counts, hashes and field inventories.
+8. Verify truncation behavior without assigning pagination, termination or completeness semantics.
+9. Preserve failed requests and contradicting evidence.
+10. Keep full crawl, graph, performance and scoring false.
 
-Observed route shapes remain candidates:
-
-```text
-/api/guilds/progression
-/api/guilds/search?q=<value>
-/api/guilds/search?q=<value>&limit=<value>
-```
-
-Do not repeat pagination, public manifest, identity decision, filtering or contract review unless a bound hash changes.
+A one-result response cannot verify limit truncation semantics.
 
 ## Following sequence
 
 ```text
-bounded route-semantics capture
--> explicit route-semantics decision
--> deterministic API-versus-baseline report-set comparison
--> full-crawl promotion only if evidence passes
--> per-report report/encounter/combatants capture
--> multi-report character identity graph
--> 30-40 unique candidate characters
--> performance observations
--> global benchmark corpus
--> confidence-aware player scoring
+bounded multi-result limit probe
+-> explicit limit-semantics review
+-> pagination semantics review
+-> termination/completeness review
+-> deterministic API-versus-private-17-report-baseline comparison
+-> explicit full-crawl promotion only if all gates pass
+-> per-report capture
+-> multi-report character graph
+-> performance corpus
 -> constrained BiS 25 optimizer
 ```
 
-## CI note
-
-Run #476 reported 303 passed but failed Ubuntu only on a formatting defect that was corrected. All later HEADs require fresh verification. Never claim green status from old runs.
+Do not repeat pagination, public manifest, identity decision, filtering, contract review or route/schema review unless a bound hash changes.
 
 ## Жёсткие ограничения
 
 - Не придумывать routes, parameters, fields, IDs или pagination rules.
-- Не считать route candidate подтверждённой semantics.
+- Не считать accepted parameter доказательством его truncation semantics.
 - Не считать nickname/name достаточным identity key.
 - Не использовать observed/candidate data в planner scoring.
 - Не изменять опубликованные migrations.
 - Не коммитить raw payloads, source guild IDs, report IDs, private manifests, private decisions, checkpoints, DuckDB, cookies, tokens или browser profiles.
 - Не заявлять тесты или CI без фактической проверки.
-- Не путать parser verification, identity verification, filtering или contract review с gameplay semantics.
 - Не игнорировать contradicting evidence.
 - GitHub-действия выполнять через connector.
 - Пользователю давать один PowerShell-блок только для действий, невозможных через GitHub.
