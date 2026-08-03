@@ -10,8 +10,10 @@ Read in this order:
 2. `docs/PROJECT_MASTER_CONTEXT.md`;
 3. `docs/PROJECT_STATE.md`;
 4. `docs/CONTINUATION_PROMPT.md`;
-5. relevant ADR/capture/review documents;
-6. `evidence/real-data/README.md`.
+5. `docs/REAL_LOG_CAPTURE.md`;
+6. `docs/GUILD_WIDE_COLLECTION_CONTRACT.md`;
+7. relevant ADR/capture/review documents;
+8. `evidence/real-data/README.md`.
 
 Documentation never replaces checking GitHub, code, local private artifacts and CI.
 
@@ -30,14 +32,14 @@ Only `corroborated` and `confirmed` mechanics may enter canonical planner scorin
 
 1. Inspect repository, branch, remote HEAD and working tree.
 2. Inspect PR #7, its base and PR #3.
-3. Inspect the latest CI run and all jobs.
-4. Read the canonical context documents.
-5. Compare documentation claims with code and versioned receipts.
-6. Inspect local private artifacts before local-only decisions or captures.
-7. Run relevant verification.
+3. Inspect the latest GitHub Actions run and every job.
+4. Read the canonical context documents in the order above.
+5. Compare documentation claims with code, migrations and versioned receipts.
+6. Inspect required local private artifacts before any local-only decision or network capture.
+7. Run focused deterministic tests before bounded real capture.
 8. Report material discrepancies before changing analytical semantics.
 
-Do not trust old commit, test, count, route or CI claims without checking.
+Do not trust old commit, CI run, test count, hash, route, source count or readiness claim without checking.
 
 ## Current milestone
 
@@ -58,32 +60,43 @@ main
 - scalar-free 17-report guild manifest;
 - reviewed full-crawl collection contract;
 - bounded guild-search route capture;
-- explicit scalar-free route/schema review.
+- explicit scalar-free route/schema review;
+- bounded multi-result limit capture implementation and deterministic tests.
 
 Do not repeat completed pagination, public manifest, identity decision, filtering, contract review or route/schema review unless a bound hash/fingerprint changes.
 
-## Current exact evidence facts
+## Exact completed evidence facts
 
 ```text
+report/encounter:
+  normalized: 2 reports, 15 encounters, 31 actors, 31 participants, 0 aura events
+  reconstructed: 1 report, 14 encounters, 31 actors, 31 participants
+  persisted through 0007: 77 observations
+
+combatants:
+  persisted through 0008: 1343 observations
+  actor/build observations: 1339
+  linked actors: 11
+  integrity checks: 14/14
+
 public manifest:
   reports: 6454
   unique report IDs: 6454
   integrity checks: 19/19
 
-identity decision:
-  integrity checks: 16/16
+identity/filtering:
+  identity checks: 16/16
   guild identity verified: true
-
-verified guild report manifest:
   selected reports: 17
   unique selected report IDs: 17
-  integrity checks: 14/14
+  filter checks: 14/14
 
 full-crawl contract:
   integrity checks: 12/12
-  full crawl collection contract reviewed: true
+  contract reviewed: true
+  private comparison baseline: 17 reports
 
-route-semantics capture:
+route capture:
   attempts: 3
   completed attempts: 3
   HTTP 200: 3
@@ -110,18 +123,48 @@ evidence/real-data/argentum-guild-route-semantics-capture.json
 evidence/real-data/argentum-guild-route-semantics-review.json
 ```
 
+## Implemented current probe
+
+```text
+src/coa_workbench/collector/guild_limit_semantics_capture.py
+scripts/capture_guild_limit_semantics.py
+tests/unit/test_guild_limit_semantics_capture.py
+```
+
+The probe performs exactly three bounded requests:
+
+```text
+private query + low limit
+private query + high limit
+private query + identical high-limit repeat
+```
+
+A capture is ready for separate limit review only when:
+
+- all three responses are complete and valid;
+- response schema is stable;
+- low-limit result count equals the low limit;
+- high-limit result count is greater than low and does not exceed high;
+- the high-limit repeat has the same ordered-record and source-ID-order hashes;
+- the low-limit source-ID hash sequence is an exact prefix of the high-limit sequence.
+
+The capture implementation must never publish the query, request URLs, source IDs, raw records or error text. A successful capture sets only `ready_for_limit_semantics_review=true`; it must leave `limit_truncation_semantics_verified=false` until a separate review receipt exists.
+
 ## Current bounded sequence
 
-1. design a bounded multi-result guild-search probe;
-2. use a query expected to return more than one record;
-3. compare at least two accepted `limit` values;
-4. archive complete raw responses before interpretation;
-5. publish only scalar-free counts, hashes, field inventories and schema fingerprints;
-6. verify truncation behavior without inferring pagination or completeness;
-7. keep full crawl, graph, performance and scoring closed;
-8. only after separate pagination/termination/completeness proof compare an API-derived report set with the private 17-report baseline.
+1. Confirm green CI on the current HEAD.
+2. Select a privacy-safe private query expected to return multiple guild records.
+3. Run the bounded multi-result limit capture locally.
+4. Upload only the scalar-free public capture receipt.
+5. Validate the receipt and version it if privacy/integrity checks pass.
+6. Implement and run a separate deterministic limit-semantics review.
+7. Version the scalar-free limit review only after explicit promotion.
+8. Separately prove pagination, termination and completeness.
+9. Compare any future API-derived report set with the private 17-report baseline.
+10. Preserve matching, missing, extra and conflicting partitions.
+11. Keep full crawl, character graph, performance model and scoring closed until their own gates pass.
 
-Current boundary:
+## Current boundary
 
 ```text
 guild identity verified: true
@@ -149,14 +192,17 @@ planner scoring allowed: false
 
 - Never invent routes, parameters, fields, IDs, pagination or provider semantics.
 - Probe and fingerprint real payloads before mappings.
+- Archive complete response bytes before interpretation.
 - Bind parsers and reviews to exact hashes/fingerprints.
 - Unknown fingerprint means reject and review.
 - Preserve contradicting evidence and failed requests.
+- Accepted parameter does not prove its semantics.
 - Route/schema verification does not prove limit truncation, pagination, termination or completeness.
 - A one-result response cannot verify limit truncation behavior.
-- Public receipts must not expose source guild ID, report IDs, query values, request URLs or raw rows.
+- Public receipts must not expose source guild IDs, report IDs, query values, request URLs, raw rows or error text.
 - Partial results may not be marked complete.
-- Full crawl requires explicit route/query, schema, pagination, termination, completeness and set-comparison evidence.
+- Full crawl requires explicit route/query, schema, limit, pagination, termination, completeness and set-comparison evidence.
+- Parser correctness, identity verification, filtering and collection review do not confirm gameplay mechanics.
 
 ## Raw data and privacy
 
@@ -174,7 +220,7 @@ data/exchange/in/
 data/exchange/out/
 ```
 
-Never commit cookies, tokens, Authorization headers, browser profiles, `.env` secrets, unsanitized HAR, credentials, source guild IDs, report IDs or private packets.
+Never commit cookies, tokens, Authorization headers, browser profiles, `.env` secrets, unsanitized HAR, credentials, source guild IDs, report IDs, private queries or private packets.
 
 ## Database and collector rules
 
@@ -186,6 +232,8 @@ Never commit cookies, tokens, Authorization headers, browser profiles, `.env` se
 - Archive before interpretation.
 - Write scalar-free receipts atomically.
 - Preserve checkpoints on ordinary transport failure.
+- Keep retries and response sizes bounded.
+- Use same-origin HTTPS and no credentials for public-source probes.
 
 ## Required verification
 
@@ -194,7 +242,7 @@ uv sync --frozen --extra dev
 uv run python scripts/verify_repo.py
 ```
 
-Run focused tests and inspect exact Actions results. Never claim a check passed unless it ran.
+Run focused tests and inspect exact Actions results. Never claim a check passed unless it ran on the claimed HEAD.
 
 ## Completion report
 
