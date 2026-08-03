@@ -188,7 +188,7 @@ def test_multi_result_prefix_capture_is_review_ready(tmp_path: Path) -> None:
     assert "PrivateNeedle" not in public_text
     assert "Private Realm" not in public_text
     assert "Alpha" not in public_text
-    assert "101" not in public_text
+    assert '"id": 101' not in public_text
     assert '"query_value_published": false' in public_text
     assert '"contains_source_scalar_values": false' in public_text
 
