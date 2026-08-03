@@ -1,6 +1,6 @@
 # Real-data evidence checkpoint
 
-Дата актуализации: **2026-07-31**.
+Дата актуализации: **2026-08-03**.
 
 Этот каталог содержит versioned scalar-free receipts и trust boundaries для real CoA Logs pipeline. Private payload contents, source scalar rows, private reviews/decisions and DuckDB remain local-only.
 
@@ -12,13 +12,11 @@ observed-combatants-info-candidate-promotion.json
 observed-combatants-info-persistence.json
 argentum-report-pagination-limit-promotion.json
 argentum-public-report-manifest.json
-argentum-guild-identity-snapshot-review.json
-argentum-guild-asset-profiled-recovery.json
-argentum-guild-search-schema-inventory.json
-argentum-guild-search-mapping-review.json
 argentum-guild-identity-decision.json
 argentum-guild-report-manifest.json
 argentum-guild-full-crawl-contract.json
+argentum-guild-route-semantics-capture.json
+argentum-guild-route-semantics-review.json
 ```
 
 Additional receipts document failed or incomplete bounded attempts. They remain classified evidence, not successful route-semantic or gameplay decisions.
@@ -42,71 +40,21 @@ core actor mutations: 0
 
 This proves parser extraction and persistence reproducibility. It does not verify companion-addon provenance, gameplay meaning, canonical build projection or planner scoring.
 
-## Public-report manifest
+## Public-report, identity and filtering baseline
 
 ```text
-receipt: argentum-public-report-manifest.json
-route: /api/reports/public
-limit: 25
-pages: 259
-reports: 6454
-unique report IDs: 6454
-duplicates: 0
-terminal page reports: 4
-integrity checks: 19/19
-sentinel stability: verified
+public reports: 6454
+unique public report IDs: 6454
+public-manifest integrity checks: 19/19
 exact Argentum label reports: 17
-distinct non-null guild IDs for exact label: 1
-```
-
-The receipt contains counts and hashes, not report rows or the raw guild ID.
-
-## Guild identity decision
-
-```text
-receipt: argentum-guild-identity-decision.json
-snapshot reports: 6454
-exact target-label reports: 17
-distinct target guild IDs: 1
-conflicting names: 0
-guild-search results: 1
-mapped fields: 4
-cross-endpoint source-ID equality: true
-name casefold equality: true
-explicit operator promotion: true
-integrity checks: 16/16
+identity-decision integrity checks: 16/16
 guild identity verified: true
-ready for guild filtering: true
+filtered reports: 17
+unique filtered report IDs: 17
+filter integrity checks: 14/14
 ```
 
-The source guild ID and private decision packet remain local-only.
-
-## Verified guild report manifest
-
-```text
-receipt: argentum-guild-report-manifest.json
-manifest version: verified-guild-report-manifest-v1
-source reports: 6454
-selected reports: 17
-unique selected report IDs: 17
-duplicate selected occurrences: 0
-integrity checks: 14/14
-guild filtering completed: true
-guild report manifest deduplicated: true
-report IDs published: false
-source guild ID published: false
-```
-
-Selection contract:
-
-```text
-filter field: /reports/*/guild_id
-filter operation: equals_verified_private_source_guild_id
-deduplication key: /reports/*/id
-selection order: source_manifest_order
-```
-
-The exact selected report IDs and records remain local-only.
+The source guild ID, report IDs and source rows remain private.
 
 ## Full-crawl collection contract
 
@@ -117,31 +65,73 @@ source public reports: 6454
 selected guild reports: 17
 integrity checks: 12/12
 full crawl collection contract reviewed: true
-ready for bounded route-semantics capture: true
-guild API route semantics verified: false
-automatic full guild crawl allowed: false
-ready for full guild crawl: false
-planner scoring allowed: false
 ```
 
-The contract is bound to the public manifest, identity decision and verified guild report manifest. It defines the 17-report set as the baseline for future API comparison.
+The private verified 17-report set is the comparison baseline. Missing, extra and conflicting reports must remain visible evidence.
 
-Required future comparison partitions:
+## Bounded guild route-semantics capture
 
 ```text
-matching_reports
-missing_from_guild_api
-extra_in_guild_api
-conflicting_report_records
+receipt: argentum-guild-route-semantics-capture.json
+attempts: 3
+completed attempts: 3
+HTTP 200 responses: 3
+integrity checks: 13/13
+observed result counts: [1]
+payload hash stable: true
+schema fingerprint stable: true
+source ID set stable by hash: true
+pagination object observed: false
 ```
 
-The contract requires immutable raw capture, exact payload SHA-256, schema fingerprint, reviewed field contracts, pagination/termination/completeness proof, discrepancy preservation and explicit route-semantic promotion.
+Observed query cases:
+
+```text
+/api/guilds/search?q=<target>&limit=1
+/api/guilds/search?q=<target>&limit=25
+/api/guilds/search?q=<target>
+```
+
+## Reviewed guild route shape and response schema
+
+```text
+receipt: argentum-guild-route-semantics-review.json
+review version: guild-route-semantics-review-v1
+integrity checks: 22/22
+route template verified: true
+query shapes verified: true
+limit parameter accepted: true
+response envelope verified: true
+guild record schema verified: true
+ready for bounded limit-semantics capture: true
+```
+
+Verified response schema:
+
+```text
+top-level: object
+keys: guilds, success
+
+guild record:
+  id: integer
+  name: string
+  realm: string
+  report_count: string
+```
+
+All three bounded cases returned the same single record. Therefore the review does not prove truncation, pagination, termination or completeness.
 
 ## Preserved decision boundaries
 
 ```text
-full crawl collection contract reviewed: true
-ready for bounded route-semantics capture: true
+guild route template verified: true
+guild query shapes verified: true
+guild response schema verified: true
+limit parameter accepted: true
+limit truncation semantics verified: false
+pagination semantics verified: false
+termination semantics verified: false
+completeness verified: false
 guild API route semantics verified: false
 automatic full guild crawl allowed: false
 ready for full guild crawl: false
@@ -151,11 +141,11 @@ ready for BiS 25 scoring: false
 planner scoring allowed: false
 ```
 
-Identity verification, filtering and contract review do not verify gameplay semantics or authorize full crawl/scoring.
+Route/schema review authorizes only a separate bounded multi-result probe for `limit` behavior. It does not authorize full crawl or scoring.
 
 ## Next evidence artifact
 
-The next artifact must capture and review exact guild API route semantics under the contract. It must record exact route/query parameters, raw payload hash, schema fingerprint, collection shape, pagination fields, termination/completeness evidence and a scalar-free decision. No full crawl may begin before that decision.
+The next artifact must use a bounded query expected to return multiple guild records and compare at least two accepted limit values. It must preserve raw responses privately and publish only scalar-free counts, hashes, schemas and an explicit decision. A one-result response cannot verify limit truncation semantics.
 
 ## Local-only artifacts
 
