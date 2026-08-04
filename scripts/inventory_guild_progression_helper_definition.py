@@ -18,9 +18,7 @@ def main() -> int:
     parser.add_argument(
         "--callsite-review",
         type=Path,
-        default=Path(
-            "evidence/real-data/argentum-guild-progression-callsite-review.json"
-        ),
+        default=Path("evidence/real-data/argentum-guild-progression-callsite-review.json"),
     )
     parser.add_argument(
         "--public-callsite",
@@ -31,8 +29,7 @@ def main() -> int:
         "--private-callsite",
         type=Path,
         default=Path(
-            "data/extracted/report-discovery/"
-            "argentum-guild-progression-callsite.private.json"
+            "data/extracted/report-discovery/argentum-guild-progression-callsite.private.json"
         ),
     )
     parser.add_argument(
@@ -44,8 +41,7 @@ def main() -> int:
         "--private-recovery",
         type=Path,
         default=Path(
-            "data/extracted/report-discovery/"
-            "argentum-guild-asset-profiled-recovery.private.json"
+            "data/extracted/report-discovery/argentum-guild-asset-profiled-recovery.private.json"
         ),
     )
     parser.add_argument("--raw-root", type=Path, default=Path("data/raw"))
@@ -60,9 +56,7 @@ def main() -> int:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path(
-            "data/exchange/out/argentum-guild-progression-helper-definition.json"
-        ),
+        default=Path("data/exchange/out/argentum-guild-progression-helper-definition.json"),
     )
     parser.add_argument("--max-symbol-occurrences", type=int, default=500)
     parser.add_argument("--max-definition-candidates", type=int, default=50)
@@ -95,10 +89,7 @@ def main() -> int:
     print(f"definition kinds: {summary['definition_kinds']}")
     print(f"binding scopes: {summary['binding_scopes']}")
     print(f"marker classes: {summary['marker_classes']}")
-    print(
-        "definition scan truncated: "
-        f"{summary['definition_candidate_scan_truncated']}"
-    )
+    print(f"definition scan truncated: {summary['definition_candidate_scan_truncated']}")
     print(f"private output: {args.private_output}")
     print(f"receipt output: {args.output}")
     print(
