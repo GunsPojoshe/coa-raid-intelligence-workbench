@@ -1,8 +1,8 @@
 # CoA Raid Intelligence Workbench — канонический контекст проекта
 
-Дата полной сверки: **2026-08-03**.
+Дата полной сверки: **2026-08-04**.
 
-Этот документ определяет долгосрочную цель, архитектуру, truth model, завершённые major checkpoints и обязательную последовательность развития. Изменяемые HEAD, CI, counts и оперативные blockers фиксируются в `docs/PROJECT_STATE.md` и всегда перепроверяются.
+Этот документ определяет долгосрочную цель, архитектуру, truth model и обязательную последовательность развития. Изменяемые HEAD, CI и оперативные blockers фиксируются в `docs/PROJECT_STATE.md` и всегда перепроверяются live.
 
 ## 1. Миссия
 
@@ -13,7 +13,7 @@
 - хранить и проверять рейдовые планы;
 - собирать реальные наблюдения с `coa.ascensionlogs.gg`;
 - сохранять исходные ответы без изменений;
-- объяснимо связывать выводы с exact evidence;
+- связывать выводы с exact evidence;
 - различать parser correctness, source identity, gameplay semantics и player performance;
 - не использовать непроверенные наблюдения в planner scoring.
 
@@ -23,6 +23,8 @@
 combat-log event = observation
 combat-log event != automatic proof of a general mechanic
 ```
+
+Planner scoring допускает только `corroborated` и `confirmed` mechanics.
 
 ## 2. Product contours
 
@@ -45,7 +47,7 @@ combat-log event != automatic proof of a general mechanic
 - deterministic normalization/reconstruction;
 - immutable observations;
 - supporting/contradicting evidence;
-- trust evaluation;
+- explicit trust evaluation;
 - scoring только для достаточно подтверждённых mechanics.
 
 ## 3. Долгосрочная цель
@@ -60,7 +62,7 @@ verified Argentum report corpus
 -> explainable optimal BiS 25 roster
 ```
 
-Эта цель не разрешает перепрыгивать evidence gates. Каждый переход требует отдельного воспроизводимого receipt/review.
+Каждый переход требует отдельного воспроизводимого receipt/review. Долгосрочная цель не разрешает перепрыгивать evidence gates.
 
 ## 4. Этапы и ветки
 
@@ -111,8 +113,6 @@ contradicted
 rejected
 ```
 
-Planner scoring разрешён только для `corroborated` и `confirmed`.
-
 Provenance:
 
 ```text
@@ -123,7 +123,7 @@ local_inference
 manual_override
 ```
 
-Запрещено автоматически считать gameplay knowledge:
+Не являются автоматическим gameplay knowledge:
 
 - parser correctness;
 - schema verification;
@@ -151,185 +151,104 @@ manual_override
 - Ubuntu/Windows CI;
 - public-release audit.
 
-## 8. Report/encounter и combatants baseline
+## 8. Verified report and guild baseline
 
 ```text
-normalized: 2 reports, 15 encounters, 31 actors, 31 participants, 0 aura events
-reconstructed: 1 report, 14 encounters, 31 actors, 31 participants
-persisted through 0007: 77 canonical entity observations
-combatants through 0008: 1343 parser observations
-actor/build observations: 1339
-linked actors: 11
-combatants checks: 14/14
-```
-
-Это подтверждает reproducibility parser/persistence pipeline. Это не подтверждает companion-addon provenance, nested identifier semantics, gameplay mechanics или planner suitability.
-
-## 9. Public-report baseline
-
-```text
-receipt: evidence/real-data/argentum-public-report-manifest.json
-route: /api/reports/public
-limit: 25
-pages: 259
-reports: 6454
-unique report IDs: 6454
-duplicates: 0
-integrity checks: 19/19
+public reports: 6454
+unique public report IDs: 6454
 exact Argentum label reports: 17
-```
-
-Receipt подтверждает completeness конкретного captured public snapshot, но не общую completeness provider и не identity гильдии сам по себе.
-
-## 10. Guild identity и filtering
-
-```text
-identity receipt: evidence/real-data/argentum-guild-identity-decision.json
-identity checks: 16/16
 guild identity verified: true
-
-filtered receipt: evidence/real-data/argentum-guild-report-manifest.json
-selected reports: 17
-unique selected report IDs: 17
-filter checks: 14/14
-guild filtering completed: true
+private selected baseline: 17 unique reports
+full-crawl collection contract reviewed: true
 ```
 
-Source guild ID и report IDs остаются private. Private 17-report set является verified comparison baseline для будущего API-derived report set.
+Source guild ID, report IDs and private rows remain local-only.
 
-## 11. Full-crawl collection contract
+## 9. Guild-search semantics checkpoint
+
+Verified:
 
 ```text
-receipt: evidence/real-data/argentum-guild-full-crawl-contract.json
-integrity checks: 12/12
-full crawl collection contract reviewed: true
-verified private comparison baseline: 17 reports
+route: /api/guilds/search
+response keys: guilds, success
+guild fields: id, name, realm, report_count
+limit result counts: 1 / 7 / 7
+limit truncation semantics verified: true
 ```
 
-Contract требует до разрешения full crawl независимо доказать:
+This proves bounded search-list truncation only. It does not prove guild-report pagination, termination or completeness.
 
-1. exact route/query contract;
-2. immutable raw capture;
-3. payload SHA-256 и schema fingerprint;
-4. reviewed collection shape and types;
-5. limit behavior;
-6. pagination semantics;
-7. termination semantics;
-8. completeness boundary;
-9. deterministic API-versus-baseline comparison;
-10. preservation of missing, extra and conflicting records;
-11. explicit scalar-free promotion decision.
+## 10. Progression route discovery checkpoint
 
-## 12. Guild route capture и route/schema review
+The archived SPA asset contains one `/api/guilds/progression` route candidate.
 
-Capture:
+Usage-context review proved only a literal route reference and did not authorize a network probe.
+
+A later helper/call-site inventory and review established:
 
 ```text
-receipt: evidence/real-data/argentum-guild-route-semantics-capture.json
-attempts: 3
-completed attempts: 3
-HTTP 200 responses: 3
-integrity checks: 13/13
-observed result counts: [1]
-payload hash stable: true
-schema fingerprint stable: true
-source ID set stable by hash: true
-pagination object observed: false
+call class: generic_helper_call
+HTTP method candidate: POST
+method evidence: method_property_literal
+method candidate unambiguous: true
+helper identity resolved: false
+request payload mapping resolved: false
+request shape sufficient for bounded probe: false
+ready for bounded route probe: false
 ```
 
-Observed request shapes:
+The structural envelope around the call is overbroad and generic-helper identity remains unresolved. Therefore `POST` is not yet a complete request contract.
+
+## 11. Helper-definition inventory stage
+
+Implemented:
 
 ```text
-/api/guilds/search?q=<target>&limit=1
-/api/guilds/search?q=<target>&limit=25
-/api/guilds/search?q=<target>
+src/coa_workbench/collector/guild_progression_helper_definition_command.py
+src/coa_workbench/collector/guild_progression_helper_definition_index.py
+src/coa_workbench/collector/guild_progression_helper_definition_inventory.py
+scripts/inventory_guild_progression_helper_definition.py
+tests/unit/test_guild_progression_helper_definition_command.py
+tests/unit/test_guild_progression_helper_definition_index.py
+tests/unit/test_guild_progression_helper_definition_inventory.py
 ```
 
-Review:
+Contract:
 
-```text
-receipt: evidence/real-data/argentum-guild-route-semantics-review.json
-review version: guild-route-semantics-review-v1
-integrity checks: 22/22
-route template verified: true
-query shapes verified: true
-response envelope verified: true
-guild record schema verified: true
-limit parameter accepted: true
-ready for bounded limit-semantics capture: true
-```
+- offline-only;
+- exact archived SPA asset;
+- exact bound call-site/recovery artifacts;
+- bounded helper-definition and alias search;
+- private raw definitions, aliases, callees and JavaScript contexts;
+- scalar-free public receipt;
+- `36` integrity checks;
+- no automatic promotion of route, pagination, completeness, crawl or scoring gates.
 
-Verified response schema:
+The implementation is CI-green at implementation HEAD `82265903a26bbf8e0032e6dc2512e623055da972`, run #578. The inventory has not yet been executed on the current local private artifacts and no helper-definition receipt/review is versioned.
 
-```text
-top-level kind: object
-top-level keys: guilds, success
-
-guild record:
-  id: integer
-  name: string
-  realm: string
-  report_count: string
-```
-
-Все три bounded cases вернули одну и ту же запись. Поэтому limit truncation, pagination, termination и completeness не подтверждены.
-
-## 13. Реализованный bounded multi-result limit probe
-
-Implementation:
-
-```text
-src/coa_workbench/collector/guild_limit_semantics_capture.py
-scripts/capture_guild_limit_semantics.py
-tests/unit/test_guild_limit_semantics_capture.py
-```
-
-Probe выполняет ровно три запроса:
-
-```text
-private query + low limit
-private query + high limit
-private query + identical high-limit repeat
-```
-
-Capture-ready conditions:
-
-- all three responses complete and valid;
-- stable response schema;
-- low result count equals low limit;
-- high result count is greater than low and does not exceed high;
-- high-limit repeat has identical ordered-record hash;
-- high-limit repeat has identical source-ID-order hash;
-- low-limit source-ID hash sequence is an exact prefix of high-limit sequence.
-
-Public receipt не должен содержать query, request URL, source IDs, raw records или error text. Даже успешный capture устанавливает только `ready_for_limit_semantics_review=true`. Promotion `limit_truncation_semantics_verified=true` требует отдельного review receipt.
-
-## 14. Текущий этап простыми словами
-
-Мы завершили проверку адреса API и структуры ответа. Следующий вопрос — действительно ли `limit=1` возвращает первый элемент той же выдачи, а больший limit возвращает стабильное расширение этой выдачи.
-
-Код такой проверки готов и покрыт deterministic tests. Осталось:
-
-1. получить green CI на актуальном HEAD;
-2. локально выбрать приватную query, возвращающую несколько гильдий;
-3. выполнить bounded capture;
-4. проверить и version scalar-free receipt;
-5. выпустить отдельное limit-semantics review.
-
-Full crawl пока не разрешён.
-
-## 15. Current decision boundary
+## 12. Current decision boundary
 
 ```text
 guild identity verified: true
 guild filtering completed: true
 full crawl collection contract reviewed: true
-guild route template verified: true
-guild query shapes verified: true
-guild response schema verified: true
-limit parameter accepted: true
-ready for bounded limit-semantics capture: true
-limit truncation semantics verified: false
+guild-search route/schema verified: true
+guild-search limit truncation verified: true
+progression route candidate observed: true
+progression usage context reviewed: true
+progression helper/call-site reviewed: true
+progression HTTP method candidate: POST
+progression method candidate unambiguous: true
+helper-definition inventory implementation complete: true
+helper-definition inventory executed on private artifacts: false
+helper-definition public receipt validated: false
+helper-definition receipt versioned: false
+helper-definition review complete: false
+progression helper identity resolved: false
+progression request payload mapping resolved: false
+progression request shape verified: false
+ready for bounded progression route probe: false
+progression route semantics verified: false
 pagination semantics verified: false
 termination semantics verified: false
 completeness verified: false
@@ -342,28 +261,30 @@ ready for BiS 25 scoring: false
 planner scoring allowed: false
 ```
 
-## 16. Обязательная дальнейшая последовательность
+## 13. Обязательная дальнейшая последовательность
 
 ```text
-green CI on current HEAD
--> bounded multi-result limit capture
--> explicit limit-semantics review
--> separate pagination review
--> separate termination/completeness review
+verify current documentation HEAD and CI
+-> sync local branch by fast-forward
+-> run offline helper-definition inventory against exact private artifacts
+-> inspect private definitions/aliases/call-chain candidates
+-> validate all integrity checks and privacy boundaries
+-> version only the scalar-free public receipt
+-> implement explicit deterministic helper-definition review
+-> bounded progression route probe only if helper identity and payload mapping are verified
+-> response schema review
+-> pagination/termination/completeness evidence
 -> deterministic API-versus-private-17-report-baseline comparison
 -> explicit full-crawl promotion only if every gate passes
--> per-report report/encounter/combatants capture
 -> multi-report character identity graph
--> 30-40 unique candidate characters
--> performance observations
--> global benchmark corpus
+-> performance corpus
 -> confidence-aware scoring
 -> constrained BiS 25 optimizer
 ```
 
-## 17. API-versus-baseline comparison contract
+## 14. API-versus-baseline comparison contract
 
-Будущий API-derived report set сравнивается с private verified 17-report baseline и делится на:
+Future API-derived report set must be compared with the private verified 17-report baseline as:
 
 ```text
 matching_reports
@@ -383,11 +304,11 @@ Rules:
 - preserve failures as observations;
 - bind resume/checkpoints to exact contract/hash.
 
-## 18. Aura boundary
+## 15. Aura boundary
 
-Текущий bounded report slice содержит `0` aura events. Separate fixtures подтверждают technical Aura State Engine behavior, но не magnitude, stacking, scope, provider equivalence или criticality.
+The current bounded report slice contains `0` aura events. Fixtures prove technical Aura State Engine behavior, not magnitude, stacking, scope, provider equivalence or gameplay criticality.
 
-## 19. Data and Git policy
+## 16. Data and Git policy
 
 Versioned:
 
@@ -409,17 +330,34 @@ data/exchange/in/
 data/exchange/out/
 ```
 
-Never commit secrets, cookies, tokens, Authorization headers, browser profiles, unsanitized HAR, source guild IDs, report IDs, private queries, private decisions or private manifests.
+Never commit secrets, cookies, tokens, Authorization headers, browser profiles, unsanitized HAR, source guild IDs, report IDs, private queries, private receipts, raw JavaScript or raw archive content.
 
-## 20. Verification contract
+## 17. Local Windows operating conventions
 
-```powershell
-uv sync --frozen --extra dev
-uv run python scripts/verify_repo.py
+```text
+repo: C:\Users\Simpa\source\repos\coa-raid-intelligence-workbench
 ```
 
-Storage changes require clean and repeated DuckDB initialization. Collector changes require deterministic fake-response tests before bounded real capture. Never claim green CI from an older HEAD.
+- provide one complete PowerShell block;
+- validate branch, expected HEAD and clean working tree;
+- preserve evidence paths and tracked `.gitkeep` files;
+- use `git --no-pager diff`;
+- do not assume active `.venv` is required for standalone tools;
+- do not install Visual Studio Build Tools solely for Ruff formatting;
+- report any deviation from canonical `uv sync --frozen --extra dev` verification.
 
-## 21. Completion criteria for E3
+## 18. Workflow notification convention
 
-PR #7 remains Draft until reviewed identity/filtering/crawl boundaries, reviewed combatants observations, aura observations and intervals for the bounded slice, independent supporting observations, contradicting evidence review, reproducible provenance, and green Ubuntu/Windows verification are present.
+After each push or connector write that launches GitHub Actions:
+
+1. check the exact new run immediately;
+2. report job states;
+3. offer one opt-in completion notification for that run;
+4. create it only after user acceptance;
+5. disable it after completion or supersession.
+
+The user prefers 15-minute polling. The current automation platform supports no more than hourly checking, so the limitation must be stated honestly.
+
+## 19. Completion criteria for E3
+
+PR #7 remains Draft until reviewed identity/filtering/crawl boundaries, reviewed combatants observations, sufficient aura observations and intervals, independent supporting observations, contradicting evidence review, reproducible provenance, and green Ubuntu/Windows verification are present.
