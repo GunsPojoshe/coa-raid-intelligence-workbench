@@ -10,66 +10,57 @@ Draft PR #7: e3/real-log-capture -> e2/log-evidence-refactor
 parent Draft PR #3: e2/log-evidence-refactor -> main
 ```
 
-Work evidence-first. Never trust stale HEAD, CI, hashes, counts, routes or readiness. Verify live before changes.
+Work evidence-first. Never trust stale HEAD, CI, hashes, counts, routes or readiness.
 
 ## Mandatory start
 
-1. Inspect PR #7 state, draft status, mergeability, base/head and current SHA.
-2. Inspect PR #3 and branch relation.
-3. Inspect the latest `Verify repository` run and every job for the exact current HEAD.
-4. Read in order:
+1. Inspect PR #7 and PR #3 live.
+2. Inspect the latest `Verify repository` run for the exact current HEAD.
+3. Read in order:
    - `AGENTS.md`;
+   - `docs/COA_DOMAIN_BOUNDARY.md`;
+   - `docs/COA_TARGET_PRODUCT_DEFINITION.md`;
    - `docs/PROJECT_MASTER_CONTEXT.md`;
    - `docs/PROJECT_STATE.md`;
    - `docs/CONTINUATION_PROMPT.md`;
    - `docs/REAL_LOG_CAPTURE.md`;
    - `docs/GUILD_WIDE_COLLECTION_CONTRACT.md`;
    - relevant ADR/capture/review documents;
+   - `docs/COA_RAID_UTILITY_BASELINE_2026-08-02.md` when capability research is relevant;
    - `evidence/real-data/README.md`.
-5. Compare documentation with code, migrations and versioned receipts.
-6. Inspect local Git state before requesting local execution:
+4. Compare documentation with code, migrations and receipts.
+5. Inspect local Git state before local execution.
 
-```powershell
-git branch --show-current
-git rev-parse HEAD
-git status --porcelain=v1 --untracked-files=all
-git fetch --all --prune
-git rev-parse origin/e3/real-log-capture
-```
+## Canonical product and realm scope
 
-7. If the remote branch is ahead and the working tree is clean, provide one complete `git pull --ff-only` PowerShell block.
-8. Preserve all ignored/private evidence paths and tracked `.gitkeep` files.
+The project is only for **Conquest of Azeroth**.
 
-## Collaboration convention
+Do not use Bronzebeard, Classless Ascension, Mystic Enchants, Hero Architect or other-realm mechanics as CoA facts without independent exact CoA evidence.
 
-After every push or connector write that launches GitHub Actions:
+The target product is not one permanent BiS 25 roster. It is an encounter-aware raid intelligence system that combines actual attendance, player/build/performance evidence and encounter requirements to explain roster additions and replacements.
 
-1. identify the exact new HEAD and workflow run;
-2. check and report `public-release-audit`, Ubuntu and Windows immediately;
-3. offer one opt-in completion notification tied to that exact run;
-4. create the condition-watch task only after the user presses/accepts it;
-5. disable the task after completion or if superseded.
+Core question:
 
-The user prefers a 15-minute check interval. Current automation supports no more than hourly checking. Use the fastest supported cadence and state the limitation honestly. Do not claim 15-minute polling is active.
-
-Do not passively wait inside the response. Check the current state now; use the task only for later completion.
+> Why is this specific player needed by this current roster?
 
 ## Core truth model
 
 ```text
 source response
 -> immutable raw archive
--> exact payload hash and schema fingerprint
+-> exact hash and schema fingerprint
 -> reviewed mapping/extractor
 -> deterministic normalization/reconstruction
--> immutable persistence/read models
+-> immutable observations
 -> supporting and contradicting evidence
--> explicit trust decision
--> planner scoring only for corroborated/confirmed mechanics
+-> trust decision
+-> explainable raid-leader recommendation
 ```
 
 ```text
-combat-log observation != automatic gameplay mechanic proof
+combat-log observation != mechanic proof
+class/spec presence != capability coverage
+shared Ascension text != CoA mechanic proof
 ```
 
 ## Verified project baseline
@@ -86,60 +77,50 @@ migrations: 0001–0008
 
 Private source guild ID, report IDs, raw JavaScript and source rows are not versioned.
 
-## Last fully verified implementation checkpoint
+## Latest fully completed CI before CoA documentation refresh
 
 ```text
-HEAD: 82265903a26bbf8e0032e6dc2512e623055da972
-commit: Format guild progression helper definition CLI
-Verify repository run: #578
+HEAD: 49bf9cdae01817cc0a7c6eb073d23d588ba6045e
+Verify repository run: #583
 conclusion: success
 public-release-audit: success
 Ubuntu: success
 Windows: success
-working tree after push: clean
 ```
 
-Documentation-only commits were created after this checkpoint. Recheck the live current HEAD and its CI before new implementation work.
+Documentation-only commits were created after this checkpoint. Recheck live current HEAD and CI.
+
+## Provisional CoA raid utility baseline
+
+```text
+source SHA-256: adbb2f7f06d750ddad4d981cca3f22b3141f471e8f9819e87f528f357fabdddd
+class cards: 28
+class/spec associations: 87
+unique specialization labels: 67
+utility rows: 187
+observed rows in latest 30-log sample: 132
+zero-observation rows: 55
+```
+
+This is a provisional research reference. It is not a verified full catalog of 69 specializations and may not enter planner scoring.
+
+Every capability must be verified through exact CoA source and combat-log evidence, including provider, target, uptime, scope, stacking, overwrite and contradictory observations.
 
 ## Progression helper/call-site checkpoint
 
 ```text
-inventory: evidence/real-data/argentum-guild-progression-callsite.json
-inventory version: guild-progression-helper-callsite-inventory-v1
-canonical LF SHA-256: ad8a5addf9ac9dd566284e0bc395ac40100986d0f14f0a49e9519a6aef28d351
-integrity checks: 32/32
-network requests: 0
-route occurrences: 1
-call candidates: 1
-direct invocation candidates: 1
+inventory checks: 32/32
+review checks: 36/36
 call class: generic_helper_call
 HTTP method candidate: POST
-method evidence: method_property_literal
 method candidate unambiguous: true
-```
-
-```text
-review: evidence/real-data/argentum-guild-progression-callsite-review.json
-review version: guild-progression-helper-callsite-review-v1
-SHA-256: d79302d755eab918ce3f85a9ad39e78231720391c8f0692925fe2e79b6adc60f
-integrity checks: 36/36
-helper/call-site reviewed: true
 helper identity resolved: false
 request payload mapping resolved: false
 request shape sufficient for bounded probe: false
-ready for helper-definition inventory: true
 ready for bounded route probe: false
 ```
 
-Blockers:
-
-```text
-generic_helper_identity_unresolved
-structural_envelope_overbroad
-request_payload_mapping_unresolved
-```
-
-`POST` is evidence-backed but not a verified request contract. Do not perform a guessed network request.
+`POST` is evidence-backed but is not a verified request contract. Do not perform a guessed network request.
 
 ## Implemented helper-definition inventory
 
@@ -153,60 +134,19 @@ tests/unit/test_guild_progression_helper_definition_index.py
 tests/unit/test_guild_progression_helper_definition_inventory.py
 ```
 
-The implementation:
+The tool:
 
 - performs no network requests;
-- reads the exact archived SPA asset and bound call-site/recovery artifacts;
-- searches bounded helper-definition and alias candidates;
-- keeps raw helper definitions, aliases, callees and JavaScript contexts private;
+- reads exact archived SPA and bound artifacts;
+- searches bounded definition and alias candidates;
+- keeps raw definitions, aliases and contexts private;
 - emits a scalar-free public receipt;
-- applies `36` integrity checks;
+- applies 36 integrity checks;
 - keeps route, pagination, completeness, crawl and scoring gates false.
-
-The implementation and formatting are CI-green. It has not yet been executed against the current local private artifacts, and no helper-definition receipt or review is versioned.
-
-## Local Windows tooling facts
-
-```text
-repo: C:\Users\Simpa\source\repos\coa-raid-intelligence-workbench
-last local implementation HEAD before documentation commits: 82265903a26bbf8e0032e6dc2512e623055da972
-working tree after push: clean
-private evidence paths: preserved
-virtual environment at that time: not activated
-```
-
-Known issue:
-
-```text
-uv sync --frozen --extra dev
--> attempted source build of ruff==0.12.12
--> failed because MSVC link.exe was unavailable
-```
-
-Do not install Visual Studio Build Tools solely to format one file. The previous formatting fix used the official standalone Ruff `0.12.12` Windows binary and passed:
-
-```text
-ruff check: success
-ruff format --check: success
-git diff --check: success
-```
-
-Use `git --no-pager diff` in PowerShell instructions to avoid entering the `(END)` pager.
 
 ## Current exact boundary
 
 ```text
-guild identity verified: true
-guild filtering completed: true
-full crawl collection contract reviewed: true
-guild-search route/schema verified: true
-guild-search limit truncation verified: true
-progression route candidate observed: true
-progression usage context reviewed: true
-progression helper/call-site inventory observed: true
-progression helper/call-site reviewed: true
-progression HTTP method candidate: POST
-progression method candidate unambiguous: true
 helper-definition inventory implementation complete: true
 helper-definition inventory executed on private artifacts: false
 helper-definition public receipt validated: false
@@ -216,43 +156,40 @@ progression helper identity resolved: false
 progression request payload mapping resolved: false
 progression request shape verified: false
 ready for bounded progression route probe: false
-progression route semantics verified: false
 pagination semantics verified: false
 termination semantics verified: false
 completeness verified: false
-guild API route semantics verified: false
 automatic full guild crawl allowed: false
 ready for full guild crawl: false
 ready for multi-report character graph: false
 ready for performance model: false
-ready for BiS 25 scoring: false
+ready for encounter-aware roster completion: false
 planner scoring allowed: false
 ```
 
 ## Required next sequence
 
 ```text
-verify current documentation HEAD and CI
+verify exact current documentation HEAD and CI
 -> fast-forward local e3/real-log-capture
--> confirm clean working tree and preserved private evidence
--> inspect the helper-definition CLI contract and required paths
--> run offline helper-definition inventory against exact local private artifacts
--> preserve private output under data/extracted
--> inspect all 36 integrity checks and candidate classifications
+-> confirm clean working tree and preserved evidence
+-> run offline helper-definition inventory
+-> inspect all 36 integrity checks and private candidates
 -> verify public receipt contains no private scalars or raw JavaScript
--> version only the scalar-free public receipt if valid
+-> version only the scalar-free receipt
 -> implement explicit deterministic helper-definition review
--> bounded progression route probe only if helper identity and exact payload contract become verified
+-> consider bounded progression probe only after exact helper and payload verification
 ```
 
 ## Local execution guardrails
 
-- Provide one complete PowerShell block, not fragmented commands.
-- Validate branch, expected HEAD and clean working tree before changes.
-- Do not delete `data/raw`, `data/extracted`, `data/warehouse`, `data/exchange/in` or `data/exchange/out`.
-- Do not delete tracked `.gitkeep` files.
-- Do not commit private recovery, private inventory, raw archive, source IDs, report IDs, private queries, HAR, cookies, tokens or browser profiles.
-- Show the exact public file that would be committed.
-- Stop on any integrity, privacy, binding or unexpected-diff failure.
+- Provide one complete PowerShell block.
+- Validate branch, expected HEAD and clean working tree.
+- Preserve `data/raw`, `data/extracted`, `data/warehouse`, `data/exchange/in`, `data/exchange/out` and tracked `.gitkeep` files.
+- Do not commit private recovery, private inventory, raw archive, IDs, private queries, unsanitized HAR, cookies, tokens or browser profiles.
+- Show exact public diff before commit.
+- Stop on integrity, privacy, binding or unexpected-diff failure.
+- Use `git --no-pager diff`.
+- Do not install Visual Studio Build Tools solely for Ruff formatting.
 
 No false gate may be raised by inference.
