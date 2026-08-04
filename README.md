@@ -1,55 +1,109 @@
 # CoA Raid Intelligence Workbench
 
-Локальное браузерное приложение для подготовки рейдовых составов и evidence-first анализа Classless / Ascension WoW.
+Локальная evidence-first платформа рейдовой аналитики исключительно для **Conquest of Azeroth**.
 
 ## Что строим
 
-Проект объединяет два контура:
+Проект объединяет:
 
-1. **Raid Planner** — конструктор рейдов FLEX / 10 / 25 / 40, структурная проверка состава и хранение планов в DuckDB.
-2. **Raid Intelligence** — воспроизводимый сбор наблюдений с `coa.ascensionlogs.gg`, проверка происхождения данных и использование их в рекомендациях только после достаточного подтверждения.
+1. **Raid Planner** — работа с фактической явкой, составами FLEX / 10 / 25 / 40 и ручными решениями РЛ.
+2. **Raid Intelligence** — воспроизводимый сбор и анализ CoA Ascension Logs, Armory, talent-grid, characters, rankings, statistics и guild data.
+3. **Encounter-aware roster completion** — объяснимый добор и замены под текущий состав и конкретных боссов.
 
-Канонический принцип:
+Главный вопрос системы:
+
+> Почему конкретный человек нужен именно текущему составу?
+
+## Каноническая граница
+
+Проект не является системой для Bronzebeard или Classless Ascension.
+
+Не входят в текущую CoA-модель:
+
+- Mystic Enchants;
+- Hero Architect;
+- freeform classless ability selection;
+- Bronzebeard-specific role и mechanic rules;
+- shared Ascension FAQ claims без exact CoA evidence.
+
+Полная граница: `docs/COA_DOMAIN_BOUNDARY.md`.
+
+Целевой продукт: `docs/COA_TARGET_PRODUCT_DEFINITION.md`.
+
+## Evidence-first правило
 
 ```text
 combat-log event = observation
-combat-log event != proof of a general game mechanic
+combat-log event != proof of a mechanic
+class/spec presence != verified capability coverage
+shared Ascension text != CoA mechanic proof
 ```
 
 В planner scoring допускаются только mechanics со статусом `corroborated` или `confirmed`.
 
-## Простыми словами: где мы сейчас
+## Продуктовый контекст
 
-Уже реализованы безопасный raw capture, hashes/schema fingerprints, reviewed mappings, scalar-free public receipts, deterministic persistence и privacy gates.
+У гильдии есть ядро примерно из 15–20 постоянных игроков, но явка меняется. На рейд может прийти 15, 18, 20 или другое количество людей.
 
-Для Argentum подтверждены:
+Система должна учитывать:
 
-- публичный manifest: `6454` уникальных отчёта;
-- identity гильдии;
-- private comparison baseline: `17` отчётов;
-- full-crawl collection contract;
-- `/api/guilds/search` route/schema;
-- стабильная bounded limit truncation semantics `1 / 7 / 7`;
-- `/api/guilds/progression` route candidate;
-- offline usage-context и helper/call-site review;
-- evidence-backed unambiguous HTTP method candidate `POST`.
+- кто реально пришёл;
+- как эти люди играли раньше;
+- какие роли и билды они реально использовали;
+- что требует конкретный энкаунтер;
+- что закрыто надёжно, слабо или не закрыто;
+- кого добавить или заменить;
+- альтернативные варианты состава и последствия.
 
-Но generic-helper identity и точное отображение request payload пока не подтверждены. Поэтому guessed network probe, pagination, completeness, full crawl, character graph, performance model и BiS 25 scoring остаются выключены.
+Конечная цель — не один постоянный `optimal BiS 25 roster`, а динамическое управление составом под фактическую явку.
 
-Следующий инструмент уже реализован и CI-green: offline helper-definition inventory. Он должен найти bounded definition/alias/call-chain candidates в exact archived SPA asset, сохранить raw JavaScript только private и выпустить scalar-free public receipt с `36` integrity checks.
-
-## Текущий проверенный implementation checkpoint
+## Текущий verified baseline
 
 ```text
-HEAD: 82265903a26bbf8e0032e6dc2512e623055da972
-Verify repository run: #578
-conclusion: success
-public-release-audit: success
-Ubuntu: success
-Windows: success
+public reports: 6454
+unique public report IDs: 6454
+exact Argentum label reports: 17
+guild identity verified: true
+private selected baseline: 17 unique reports
+full-crawl collection contract reviewed: true
+migrations: 0001–0008
 ```
 
-После него были добавлены documentation-only commits. Фактический текущий HEAD и CI всегда перепроверяются перед продолжением.
+Guild-search:
+
+```text
+route/schema verified: true
+limit result counts: 1 / 7 / 7
+limit truncation semantics verified: true
+```
+
+Progression:
+
+```text
+route candidate: /api/guilds/progression
+call class: generic_helper_call
+HTTP method candidate: POST
+method candidate unambiguous: true
+helper identity resolved: false
+request payload mapping resolved: false
+ready for bounded route probe: false
+```
+
+## Provisional raid utility baseline
+
+`docs/COA_RAID_UTILITY_BASELINE_2026-08-02.md` фиксирует supplied working reference:
+
+```text
+source SHA-256: adbb2f7f06d750ddad4d981cca3f22b3141f471e8f9819e87f528f357fabdddd
+class cards: 28
+class/spec associations: 87
+unique specialization labels: 67
+utility rows: 187
+observed in latest 30-log sample: 132
+zero observations in sample: 55
+```
+
+Это не полный проверенный каталог 69 специализаций и не input для planner scoring. Каждая возможность требует отдельной проверки CoA логами.
 
 ## Архитектура
 
@@ -71,52 +125,29 @@ source response
 -> deterministic normalization/extraction
 -> immutable observations
 -> supporting / contradicting evidence
--> corroborated / confirmed mechanic
--> explainable planner scoring
+-> trust decision
+-> explainable raid-leader recommendation
 ```
-
-## Ветки
-
-```text
-main
-└── e2/log-evidence-refactor        PR #3 -> main, Draft
-    └── e3/real-log-capture         PR #7 -> e2, Draft
-```
-
-PR #7 остаётся Draft до закрытия evidence gates.
 
 ## Реализованный фундамент
 
-- localhost FastAPI runtime и raid constructor;
-- class/spec/role catalog и validation;
-- DuckDB persistence и CRUD raid plans;
+- localhost FastAPI runtime;
+- raid plans and CRUD in DuckDB;
 - immutable content-addressed raw archive;
 - retrieval observations;
 - JSON/HAR privacy-safe tooling;
-- schema fingerprints и reviewed mapping gates;
-- canonical report/encounter/actor/participant/aura records;
+- schema fingerprints and reviewed mapping gates;
+- report/encounter/actor/participant/aura records;
 - Aura State Engine;
-- hypotheses, supporting/contradicting evidence и trust policies;
+- hypotheses and evidence links;
+- selected verified Armory and talent-grid mappings;
 - migrations `0001`–`0008`;
-- Ubuntu/Windows repository verification;
+- Ubuntu/Windows verification;
 - public-release audit.
 
-## Progression checkpoint
+## Current helper-definition stage
 
-```text
-route candidate: /api/guilds/progression
-usage context reviewed: true
-helper/call-site reviewed: true
-call class: generic_helper_call
-HTTP method candidate: POST
-method candidate unambiguous: true
-helper identity resolved: false
-request payload mapping resolved: false
-request shape verified: false
-ready for bounded route probe: false
-```
-
-Implemented helper-definition inventory:
+Implemented:
 
 ```text
 src/coa_workbench/collector/guild_progression_helper_definition_command.py
@@ -128,12 +159,15 @@ tests/unit/test_guild_progression_helper_definition_index.py
 tests/unit/test_guild_progression_helper_definition_inventory.py
 ```
 
-## Текущая граница
+The next bounded step is local offline execution against exact private artifacts, validation of all 36 checks and versioning of only the scalar-free public receipt.
+
+No guessed request to `/api/guilds/progression` is allowed.
+
+## Current decision boundary
 
 ```text
 helper-definition inventory implementation complete: true
 helper-definition inventory executed on private artifacts: false
-helper-definition public receipt validated: false
 helper-definition receipt versioned: false
 helper-definition review complete: false
 progression helper identity resolved: false
@@ -142,25 +176,12 @@ ready for bounded progression route probe: false
 pagination semantics verified: false
 termination semantics verified: false
 completeness verified: false
-automatic full guild crawl allowed: false
 ready for full guild crawl: false
 ready for multi-report character graph: false
 ready for performance model: false
-ready for BiS 25 scoring: false
+ready for encounter-aware roster completion: false
 planner scoring allowed: false
 ```
-
-## Следующий этап
-
-1. Проверить текущий documentation HEAD и CI.
-2. Fast-forward локальную ветку `e3/real-log-capture`.
-3. Убедиться, что working tree чист и private evidence сохранён.
-4. Запустить offline helper-definition inventory на exact local private artifacts.
-5. Проверить private output, все `36` integrity checks и privacy boundaries.
-6. Валидировать scalar-free public receipt.
-7. Версионировать только public receipt.
-8. Реализовать отдельный deterministic helper-definition review.
-9. Рассматривать bounded progression route probe только после подтверждения helper identity и exact payload contract.
 
 ## Установка и проверка
 
@@ -169,16 +190,12 @@ Python >= 3.12
 uv
 ```
 
-Canonical CI verification:
-
 ```powershell
 uv sync --frozen --extra dev
 uv run python scripts/verify_repo.py
 ```
 
-На текущей Windows-машине локальный `uv sync --frozen --extra dev` ранее попытался собрать Ruff `0.12.12` из исходников и остановился из-за отсутствия MSVC `link.exe`. Для разового форматирования использовался официальный standalone Ruff `0.12.12`; Visual Studio Build Tools специально для этого не устанавливались.
-
-Запуск приложения:
+Запуск:
 
 ```powershell
 uv run coa-workbench serve
@@ -189,9 +206,24 @@ http://127.0.0.1:8000
 http://127.0.0.1:8000/docs
 ```
 
+## Branches
+
+```text
+main
+└── e2/log-evidence-refactor        PR #3 -> main, Draft
+    └── e3/real-log-capture         PR #7 -> e2, Draft
+```
+
 ## Data policy
 
-Versioned: code, tests, migrations, reviewed mappings/reviews, documentation and scalar-free receipts.
+Versioned:
+
+- code and tests;
+- migrations;
+- reviewed mappings/reviews;
+- canonical documentation;
+- approved provisional references;
+- scalar-free receipts.
 
 Local-only:
 
@@ -205,25 +237,16 @@ data/exchange/in/
 data/exchange/out/
 ```
 
-Не коммитить raw payloads, unsanitized HAR, DuckDB/WAL, private receipts, source guild IDs, report IDs, raw JavaScript, cookies, Authorization headers, tokens, browser profiles, `.env` или private queries.
-
-## Workflow notification convention
-
-После каждого push или connector write, запускающего GitHub Actions:
-
-1. сразу проверить новый workflow run;
-2. показать текущие статусы `public-release-audit`, Ubuntu и Windows;
-3. предложить одноразовое уведомление для exact run;
-4. создать задачу только после подтверждения пользователя;
-5. отключить её после завершения или supersession.
-
-Пользователь предпочитает проверку раз в 15 минут. Текущая automation platform поддерживает не чаще одного раза в час, поэтому нельзя утверждать, что настроено 15-минутное polling.
+Do not commit raw payloads, private receipts, source guild/report IDs, private queries, raw JavaScript, credentials, cookies, tokens, browser profiles, `.env` or unsanitized HAR.
 
 ## Документация
 
-- `docs/PROJECT_MASTER_CONTEXT.md` — каноническая цель, архитектура и trust model;
+- `docs/COA_DOMAIN_BOUNDARY.md` — каноническая CoA-only граница;
+- `docs/COA_TARGET_PRODUCT_DEFINITION.md` — целевая формулировка продукта;
+- `docs/COA_RAID_UTILITY_BASELINE_2026-08-02.md` — provisional utility baseline;
+- `docs/PROJECT_MASTER_CONTEXT.md` — архитектура и долгосрочный контекст;
 - `docs/PROJECT_STATE.md` — текущее operational state;
-- `docs/CONTINUATION_PROMPT.md` — полный prompt для продолжения разработки;
+- `docs/CONTINUATION_PROMPT.md` — prompt для продолжения разработки;
 - `docs/REAL_LOG_CAPTURE.md` — capture/review/persistence protocol;
 - `docs/GUILD_WIDE_COLLECTION_CONTRACT.md` — guild-wide collection gates;
 - `evidence/real-data/README.md` — versioned evidence checkpoint;
