@@ -15,7 +15,7 @@ Work evidence-first. Never trust stale HEAD, CI, hashes, counts, routes or readi
 
 1. Verify PR #7 state, draft status, mergeability, base/head and current SHA.
 2. Verify PR #3 and target branch relation.
-3. Inspect current `Verify repository` run and all jobs.
+3. Inspect the latest `Verify repository` run and all jobs for the exact current HEAD.
 4. Read:
    - `AGENTS.md`;
    - `docs/PROJECT_MASTER_CONTEXT.md`;
@@ -26,7 +26,7 @@ Work evidence-first. Never trust stale HEAD, CI, hashes, counts, routes or readi
    - `docs/ADR_012_LOG_EVIDENCE_TRUTH_MODEL.md`;
    - `evidence/real-data/README.md`.
 5. Compare documentation with code, migrations and versioned receipts.
-6. Use GitHub connector for repository operations.
+6. Use the GitHub connector for repository operations.
 7. For local Windows-only evidence actions, provide one complete PowerShell block.
 
 ## Core truth model
@@ -61,137 +61,86 @@ migrations: 0001–0008
 
 Private source guild ID, report IDs and source rows are not versioned.
 
-## Guild-search route checkpoint
+## Guild-search checkpoint
 
 ```text
 route: /api/guilds/search
 response keys: guilds, success
 guild fields: id, name, realm, report_count
 route review checks: 22/22
-```
-
-Multi-result limit evidence:
-
-```text
-capture: evidence/real-data/argentum-guild-limit-semantics-capture.json
-capture SHA-256: 690d7d93d5e9c592877a4fa049d2638b0a5a523430f9205777ce4fa06e624e58
-result counts: 1 / 7 / 7
-capture checks: 15/15
-review checks: 30/30
+limit result counts: 1 / 7 / 7
+limit capture checks: 15/15
+limit review checks: 30/30
 limit truncation semantics verified: true
 ```
 
 This verifies search-list truncation only. It does not verify guild-report pagination.
 
-## Last confirmed green checkpoint
+## Progression usage-context checkpoint
 
-At the time this prompt was updated:
-
-```text
-HEAD: 6a6a28aaf5a8cf6e4d9240e19b714073a0096282
-Verify repository run: #551
-public-release-audit: success
-Ubuntu: success
-Windows: success
-pytest: 335 passed, 1 warning
-Doctor: success
-DuckDB clean/repeated initialization: success
-```
-
-Recheck live. Do not transfer this result to a later HEAD.
-
-## Recovered SPA asset evidence
-
-Versioned receipt:
+Versioned inventory:
 
 ```text
-evidence/real-data/argentum-guild-asset-profiled-recovery.json
+evidence/real-data/argentum-guild-progression-usage-context.json
+SHA-256: e19cc1a72175bd838b151b8438861af1aece14ba2a30f94da8f6989ce7be3d59
+inventory checks: 23/23
+network requests: 0
+route occurrences: 1
+call styles: literal_reference
+HTTP method candidates: []
+method unambiguous: false
 ```
 
-Facts:
+Versioned review:
 
 ```text
-asset download completed: true
-HTTP 200: true
-asset bytes: 3881146
-integrity checks: 15/15
-all API route candidates: 79
-guild route candidates: 3
+evidence/real-data/argentum-guild-progression-usage-review.json
+SHA-256: 063abc51579e3942c4b33766fa9d1f9ba336a921a78bc15a5849971025a77198
+review checks: 30/30
+usage context reviewed: true
+actual invocation observed: false
+ready for bounded route probe: false
 ```
 
-Guild route shapes:
+Blockers:
 
 ```text
-/api/guilds/progression
-/api/guilds/search?q=<value>
-/api/guilds/search?q=<value>&limit=<value>
+http_method_unresolved
+literal_reference_without_call_site
+invocation_shape_unresolved
 ```
 
-Search routes are reviewed. `/api/guilds/progression` is only a lexical candidate. Method, request shape, response schema and connection to report membership are not verified.
+The literal route string does not prove the HTTP method, caller/helper or request shape. Do not perform a guessed network request.
 
-## Current implemented nearest tool
+Implementation:
 
 ```text
 src/coa_workbench/collector/guild_progression_usage_inventory.py
 scripts/inventory_guild_progression_usage.py
+src/coa_workbench/collector/guild_progression_usage_review.py
+scripts/review_guild_progression_usage.py
 tests/unit/test_guild_progression_usage_inventory.py
+tests/unit/test_guild_progression_usage_review.py
+tests/unit/test_versioned_guild_progression_usage_review.py
 ```
 
-Purpose:
+## Last confirmed code checkpoint
 
-- work only from local private profiled recovery and `data/raw`;
-- verify exact private receipt and archived asset payload hashes;
-- find every bounded usage of `/api/guilds/progression`;
-- keep raw JavaScript context private;
-- publish scalar-free context hashes, call-style/method candidates and query-construction markers;
-- perform no network requests;
-- promote no route/pagination/full-crawl semantics.
-
-Default local inputs:
+At the time this prompt was updated, the implementation HEAD before documentation updates was:
 
 ```text
-public recovery:
-  evidence/real-data/argentum-guild-asset-profiled-recovery.json
-
-private recovery:
-  data/extracted/report-discovery/argentum-guild-asset-profiled-recovery.private.json
-
-raw archive:
-  data/raw
+HEAD: 683f76d83caa62724abedeb521d3cd95d9433989
+Verify repository run: #562
+public-release-audit: success
+Ubuntu: success
+Windows: success
+pytest: 341 passed, 1 warning
+Doctor: success
+DuckDB clean/repeated initialization: success
+migrations: 0001–0008
 ```
 
-Default outputs:
-
-```text
-private:
-  data/extracted/report-discovery/argentum-guild-progression-usage-context.private.json
-
-public:
-  data/exchange/out/argentum-guild-progression-usage-context.json
-```
-
-Only the public output may be uploaded/versioned. Never upload private recovery, private inventory, raw archive, asset URL, source IDs or raw JavaScript context.
-
-## Acceptance of future public usage receipt
-
-Validate:
-
-- schema/kind/version;
-- exact public/private recovery bindings;
-- unique raw content manifest;
-- asset payload hash and byte count;
-- bounded occurrence count;
-- context hashes present;
-- method/call-style/query markers are scalar-free;
-- no raw context, asset URL, guild ID or source values;
-- all integrity checks true;
-- all network/route/pagination/full-crawl gates false.
-
-A successful inventory may set only:
-
-```text
-ready_for_guild_progression_usage_review: true
-```
+Recheck live. Do not transfer this result to a later documentation HEAD.
 
 ## Current exact boundary
 
@@ -202,7 +151,11 @@ full crawl collection contract reviewed: true
 guild-search route/schema verified: true
 guild-search limit truncation verified: true
 progression route candidate observed: true
-progression usage context reviewed: false
+progression usage context observed: true
+progression usage context reviewed: true
+progression HTTP method resolved: false
+progression request shape verified: false
+ready for bounded progression route probe: false
 progression route semantics verified: false
 pagination semantics verified: false
 termination semantics verified: false
@@ -219,14 +172,14 @@ planner scoring allowed: false
 ## Required next sequence
 
 ```text
-local offline usage-context inventory
--> validate/version scalar-free public receipt
--> implement separate deterministic usage-context review
--> bounded route probe only if method/request shape become unambiguous
+offline helper/call-site recovery from the exact archived SPA asset
+-> scalar-free helper/call-site inventory
+-> explicit helper/call-site review
+-> bounded progression route probe only if exact method and request shape become unambiguous
 -> response schema review
 -> pagination/termination/completeness review
 -> API-versus-private-baseline set comparison
 -> explicit full-crawl promotion
 ```
 
-No false gate may be raised by inference.
+No false gate may be raised by inference. Never version private recovery, private usage inventory, raw JavaScript contexts, source IDs, credentials or raw archive contents.
