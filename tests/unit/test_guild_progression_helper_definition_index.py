@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+
 from coa_workbench.collector.guild_progression_helper_definition_index import definition_candidates
 
 
@@ -48,7 +49,10 @@ def test_object_method_definition() -> None:
         ),
         "api.request",
     )
-    assert any(row["kind"] == "method_definition" for row in rows)
+    method = next(row for row in rows if row["kind"] == "method_definition")
+    assert method["span"].startswith("request(url,params){")
+    assert method["span"].endswith("}")
+    assert "fetch" in method["marker_classes"]
     assert "params" in evidence["marker_classes"]
 
 

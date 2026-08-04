@@ -168,11 +168,18 @@ def _candidate(
     binding_scope: str,
     alias_target: str | None = None,
 ) -> dict[str, Any]:
-    body = (
-        None
-        if kind == "alias_assignment"
-        else _first_body(text, index, prefix_end, max_span_chars)
-    )
+    if kind == "alias_assignment":
+        body = None
+    elif kind == "method_definition":
+        opening = prefix_end - 1
+        closing = index.pairs.get(opening)
+        body = (
+            (start, closing + 1)
+            if closing is not None and closing + 1 - start <= max_span_chars
+            else None
+        )
+    else:
+        body = _first_body(text, index, prefix_end, max_span_chars)
     end = body[1] if body else _expression_end(text, start, max_span_chars)
     value = text[start:end]
     prefix = text[start:min(end, prefix_end + 256)]
