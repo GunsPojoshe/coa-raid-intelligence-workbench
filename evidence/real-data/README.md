@@ -2,7 +2,7 @@
 
 Дата актуализации: **2026-08-04**.
 
-Каталог содержит versioned scalar-free receipts и trust boundaries. Private payloads, source rows, queries, raw JavaScript contexts, private receipts and DuckDB remain local-only.
+Каталог содержит versioned scalar-free receipts и explicit trust boundaries. Private payloads, source rows, queries, raw JavaScript contexts, private receipts and DuckDB remain local-only.
 
 ## Major versioned artifacts
 
@@ -20,11 +20,13 @@ argentum-guild-route-semantics-capture.json
 argentum-guild-route-semantics-review.json
 argentum-guild-limit-semantics-capture.json
 argentum-guild-limit-semantics-review.json
+argentum-guild-progression-usage-context.json
+argentum-guild-progression-usage-review.json
 ```
 
-Incomplete/failed receipts remain classified evidence, not successful semantic decisions.
+Incomplete or failed receipts remain evidence of an attempt, not a successful semantic promotion.
 
-## Public-report, identity and filtering baseline
+## Identity and filtering baseline
 
 ```text
 public reports: 6454
@@ -37,7 +39,7 @@ filtered reports: 17
 filter checks: 14/14
 ```
 
-Private 17-report set is the comparison baseline. Source guild ID and report IDs are not published.
+Private 17-report set is the future completeness comparison baseline. Source guild ID and report IDs are not published.
 
 ## Guild-search route and limit evidence
 
@@ -46,91 +48,77 @@ route: /api/guilds/search
 response envelope: guilds, success
 guild fields: id, name, realm, report_count
 route review checks: 22/22
-
-limit capture SHA-256:
-690d7d93d5e9c592877a4fa049d2638b0a5a523430f9205777ce4fa06e624e58
-attempts: 3
-completed: 3
-result counts: 1 / 7 / 7
-capture checks: 15/15
-review checks: 30/30
+limit result counts: 1 / 7 / 7
+limit capture checks: 15/15
+limit review checks: 30/30
 limit truncation semantics verified: true
 ```
 
 This verifies stable truncation of guild-search results. It does not verify guild-report pagination or full-crawl completeness.
 
-## Recovered SPA asset route candidates
+## Progression usage-context inventory
 
 ```text
-receipt: argentum-guild-asset-profiled-recovery.json
-asset download completed: true
-HTTP 200: true
-asset bytes: 3881146
-integrity checks: 15/15
-all API candidates: 79
-guild candidates: 3
+receipt: argentum-guild-progression-usage-context.json
+SHA-256: e19cc1a72175bd838b151b8438861af1aece14ba2a30f94da8f6989ce7be3d59
+inventory version: guild-progression-usage-context-inventory-v1
+integrity checks: 23/23
+network requests performed: false
+raw archive only: true
+occurrences: 1
+call styles: literal_reference
+method candidates: []
+method unambiguous: false
 ```
 
+The public inventory contains hashes and classification only. Raw JavaScript context remains local in the private inventory.
+
+## Explicit progression usage review
+
 ```text
-/api/guilds/progression
-/api/guilds/search?q=<value>
-/api/guilds/search?q=<value>&limit=<value>
+receipt: argentum-guild-progression-usage-review.json
+SHA-256: 063abc51579e3942c4b33766fa9d1f9ba336a921a78bc15a5849971025a77198
+review version: guild-progression-usage-context-review-v1
+integrity checks: 30/30
+usage context reviewed: true
+actual invocation observed: false
+method resolved: false
+ready for bounded route probe: false
 ```
 
-The search routes are reviewed. `/api/guilds/progression` is only a lexical candidate; its method, request shape, response schema and relation to report membership are unresolved.
-
-## Offline progression usage inventory
-
-Implemented files:
+Blocked because the SPA evidence contains only a literal route reference:
 
 ```text
-src/coa_workbench/collector/guild_progression_usage_inventory.py
-scripts/inventory_guild_progression_usage.py
-tests/unit/test_guild_progression_usage_inventory.py
+http_method_unresolved
+literal_reference_without_call_site
+invocation_shape_unresolved
 ```
 
-It validates the versioned public recovery, exact private recovery hash and archived asset payload hash. Raw usage snippets remain private. Public output contains only:
+No HTTP method, request shape, response schema, pagination, termination or completeness semantics were promoted.
+
+## Current decision boundary
 
 ```text
-occurrence count
-context hashes
-call-style candidates
-HTTP method candidates
-query-construction markers
-boolean readiness/boundary flags
-```
-
-Expected public output after local execution:
-
-```text
-data/exchange/out/argentum-guild-progression-usage-context.json
-```
-
-A successful inventory may set only:
-
-```text
-ready_for_guild_progression_usage_review: true
-```
-
-It must keep these false:
-
-```text
-ready_for_bounded_progression_route_probe
-progression route semantics verified
-pagination semantics verified
-termination semantics verified
-completeness verified
-automatic full guild crawl allowed
-ready for full guild crawl
-planner scoring allowed
+progression route candidate observed: true
+progression usage context reviewed: true
+progression method resolved: false
+ready for bounded progression route probe: false
+guild API route semantics verified: false
+pagination semantics verified: false
+termination semantics verified: false
+completeness verified: false
+automatic full guild crawl allowed: false
+ready for full guild crawl: false
+planner scoring allowed: false
 ```
 
 ## Next evidence sequence
 
 ```text
-offline SPA usage-context inventory
--> explicit usage-context review
--> bounded progression route probe only after exact method/request review
+offline helper/call-site recovery from archived SPA asset
+-> scalar-free helper inventory
+-> explicit helper/call-site review
+-> bounded network probe only after exact method/request resolution
 -> response schema review
 -> pagination/termination/completeness evidence
 -> API-versus-private-baseline set comparison
