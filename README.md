@@ -7,7 +7,7 @@
 Проект объединяет два контура:
 
 1. **Raid Planner** — конструктор рейдов FLEX / 10 / 25 / 40, структурная проверка состава и хранение планов в DuckDB.
-2. **Raid Intelligence** — воспроизводимый сбор наблюдений с `coa.ascensionlogs.gg`, проверка их происхождения и использование в рекомендациях только после достаточного подтверждения.
+2. **Raid Intelligence** — воспроизводимый сбор наблюдений с `coa.ascensionlogs.gg`, проверка происхождения данных и использование их в рекомендациях только после достаточного подтверждения.
 
 Канонический принцип:
 
@@ -16,25 +16,40 @@ combat-log event = observation
 combat-log event != proof of a general game mechanic
 ```
 
-В planner scoring допускаются только механики со статусом `corroborated` или `confirmed`.
+В planner scoring допускаются только mechanics со статусом `corroborated` или `confirmed`.
 
 ## Простыми словами: где мы сейчас
 
-Мы уже умеем безопасно получать данные, сохранять исходные ответы без изменений, считать их hashes/schema fingerprints, проверять структуру и выпускать публичные scalar-free receipts без приватных ID и строк.
+Уже реализованы безопасный raw capture, hashes/schema fingerprints, reviewed mappings, scalar-free public receipts, deterministic persistence и privacy gates.
 
-Для гильдии Argentum уже:
+Для Argentum подтверждены:
 
-- полностью собран публичный список отчётов;
-- подтверждена identity гильдии;
-- выделены 17 отчётов гильдии;
-- зафиксирован contract будущего полного сбора;
-- проверен маршрут поиска гильдий `/api/guilds/search`;
-- проверена структура ответа и типы полей;
-- подтверждено, что параметр `limit` сервер принимает.
+- публичный manifest: `6454` уникальных отчёта;
+- identity гильдии;
+- private comparison baseline: `17` отчётов;
+- full-crawl collection contract;
+- `/api/guilds/search` route/schema;
+- стабильная bounded limit truncation semantics `1 / 7 / 7`;
+- `/api/guilds/progression` route candidate;
+- offline usage-context и helper/call-site review;
+- evidence-backed unambiguous HTTP method candidate `POST`.
 
-Но пока не доказано, как именно `limit` ограничивает несколько результатов. Также не доказаны pagination, termination и completeness. Поэтому полный автоматический crawl, character graph, performance model и BiS 25 scoring остаются выключены.
+Но generic-helper identity и точное отображение request payload пока не подтверждены. Поэтому guessed network probe, pagination, completeness, full crawl, character graph, performance model и BiS 25 scoring остаются выключены.
 
-Следующий этап уже реализован в коде: bounded multi-result probe. Он должен выполнить три ограниченных запроса с приватной поисковой строкой, которая возвращает несколько гильдий, и проверить стабильность результата при `limit=1`, `limit=25` и повторном `limit=25`.
+Следующий инструмент уже реализован и CI-green: offline helper-definition inventory. Он должен найти bounded definition/alias/call-chain candidates в exact archived SPA asset, сохранить raw JavaScript только private и выпустить scalar-free public receipt с `36` integrity checks.
+
+## Текущий проверенный implementation checkpoint
+
+```text
+HEAD: 82265903a26bbf8e0032e6dc2512e623055da972
+Verify repository run: #578
+conclusion: success
+public-release-audit: success
+Ubuntu: success
+Windows: success
+```
+
+После него были добавлены documentation-only commits. Фактический текущий HEAD и CI всегда перепроверяются перед продолжением.
 
 ## Архитектура
 
@@ -60,7 +75,7 @@ source response
 -> explainable planner scoring
 ```
 
-## Ветки и milestone
+## Ветки
 
 ```text
 main
@@ -68,15 +83,15 @@ main
     └── e3/real-log-capture         PR #7 -> e2, Draft
 ```
 
-E3 остаётся Draft. Перед любой новой работой фактические HEAD, PR и CI необходимо перепроверять.
+PR #7 остаётся Draft до закрытия evidence gates.
 
 ## Реализованный фундамент
 
-- localhost FastAPI runtime и браузерный raid constructor;
-- class/spec/role catalog и Python validation;
+- localhost FastAPI runtime и raid constructor;
+- class/spec/role catalog и validation;
 - DuckDB persistence и CRUD raid plans;
 - immutable content-addressed raw archive;
-- отдельные retrieval observations;
+- retrieval observations;
 - JSON/HAR privacy-safe tooling;
 - schema fingerprints и reviewed mapping gates;
 - canonical report/encounter/actor/participant/aura records;
@@ -86,149 +101,47 @@ E3 остаётся Draft. Перед любой новой работой фа�
 - Ubuntu/Windows repository verification;
 - public-release audit.
 
-## Report/encounter и combatants checkpoint
+## Progression checkpoint
 
 ```text
-normalized:
-  reports: 2
-  encounters: 15
-  actors: 31
-  participants: 31
-  aura events: 0
-
-reconstructed:
-  reports: 1
-  encounters: 14
-  actors: 31
-  participants: 31
-  field conflicts: 0
-
-persisted through 0007:
-  canonical entity observations: 77
-
-combatants through 0008:
-  parser observations: 1343
-  actor/build observations: 1339
-  linked actors: 11
-  integrity checks: 14/14
+route candidate: /api/guilds/progression
+usage context reviewed: true
+helper/call-site reviewed: true
+call class: generic_helper_call
+HTTP method candidate: POST
+method candidate unambiguous: true
+helper identity resolved: false
+request payload mapping resolved: false
+request shape verified: false
+ready for bounded route probe: false
 ```
 
-Это подтверждает воспроизводимость parser/persistence pipeline, но не подтверждает игровые механики или пригодность данных для scoring.
-
-## Public manifest, identity и filtering
+Implemented helper-definition inventory:
 
 ```text
-public reports: 6454
-unique public report IDs: 6454
-public-manifest checks: 19/19
-exact Argentum label reports: 17
-identity-decision checks: 16/16
-guild identity verified: true
-selected guild reports: 17
-unique selected report IDs: 17
-filter checks: 14/14
+src/coa_workbench/collector/guild_progression_helper_definition_command.py
+src/coa_workbench/collector/guild_progression_helper_definition_index.py
+src/coa_workbench/collector/guild_progression_helper_definition_inventory.py
+scripts/inventory_guild_progression_helper_definition.py
+tests/unit/test_guild_progression_helper_definition_command.py
+tests/unit/test_guild_progression_helper_definition_index.py
+tests/unit/test_guild_progression_helper_definition_inventory.py
 ```
-
-Source guild ID и report IDs остаются private. Публичные receipts содержат только counts, hashes, schemas и решения.
-
-## Full-crawl contract
-
-```text
-receipt: evidence/real-data/argentum-guild-full-crawl-contract.json
-integrity checks: 12/12
-full crawl collection contract reviewed: true
-verified private comparison baseline: 17 reports
-```
-
-Contract требует до полного crawl отдельно доказать:
-
-- точный route/query contract;
-- response schema;
-- limit behavior;
-- pagination semantics;
-- termination semantics;
-- completeness boundary;
-- deterministic comparison API-derived report set с private 17-report baseline.
-
-## Guild route/schema checkpoint
-
-Capture:
-
-```text
-receipt: evidence/real-data/argentum-guild-route-semantics-capture.json
-attempts: 3
-completed attempts: 3
-HTTP 200 responses: 3
-capture checks: 13/13
-observed result counts: [1]
-```
-
-Review:
-
-```text
-receipt: evidence/real-data/argentum-guild-route-semantics-review.json
-review checks: 22/22
-route template verified: true
-query shapes verified: true
-response schema verified: true
-limit parameter accepted: true
-ready for bounded limit-semantics capture: true
-```
-
-Verified guild record fields:
-
-```text
-id: integer
-name: string
-realm: string
-report_count: string
-```
-
-Все три запроса вернули одну и ту же запись. Поэтому это не доказывает truncation semantics.
-
-## Реализованный следующий probe
-
-```text
-src/coa_workbench/collector/guild_limit_semantics_capture.py
-scripts/capture_guild_limit_semantics.py
-tests/unit/test_guild_limit_semantics_capture.py
-```
-
-Probe выполняет:
-
-```text
-private query + low limit
-private query + high limit
-private query + identical high-limit repeat
-```
-
-Capture становится готовым к отдельному review только если:
-
-- все три ответа полные и валидные;
-- schema стабильна;
-- low-limit выдача заполняет low limit;
-- high-limit выдача содержит больше записей;
-- повтор high-limit даёт тот же ordered-record hash и source-ID order hash;
-- low-limit source-ID hash sequence является точным префиксом high-limit sequence.
-
-Даже успешный capture не включает full crawl. Он устанавливает только `ready_for_limit_semantics_review=true`.
 
 ## Текущая граница
 
 ```text
-guild identity verified: true
-guild filtering completed: true
-full crawl collection contract reviewed: true
-guild route template verified: true
-guild query shapes verified: true
-guild response schema verified: true
-limit parameter accepted: true
-ready for bounded limit-semantics capture: true
-limit truncation semantics verified: false
+helper-definition inventory implementation complete: true
+helper-definition inventory executed on private artifacts: false
+helper-definition public receipt validated: false
+helper-definition receipt versioned: false
+helper-definition review complete: false
+progression helper identity resolved: false
+progression request payload mapping resolved: false
+ready for bounded progression route probe: false
 pagination semantics verified: false
 termination semantics verified: false
 completeness verified: false
-guild API route semantics verified: false
 automatic full guild crawl allowed: false
 ready for full guild crawl: false
 ready for multi-report character graph: false
@@ -237,17 +150,17 @@ ready for BiS 25 scoring: false
 planner scoring allowed: false
 ```
 
-## Следующие шаги
+## Следующий этап
 
-1. Дождаться green Ubuntu, Windows и public-release-audit на актуальном HEAD.
-2. Локально выбрать privacy-safe query, которая возвращает несколько гильдий.
-3. Запустить `scripts/capture_guild_limit_semantics.py`.
-4. Загрузить только public receipt `data/exchange/out/argentum-guild-limit-semantics-capture.json`.
-5. Проверить receipt и выпустить отдельный scalar-free limit-semantics review.
-6. Отдельно доказать pagination, termination и completeness.
-7. Сравнить будущий API-derived report set с private 17-report baseline.
-8. Только после прохождения всех gates отдельно разрешать full crawl.
-9. После полного verified corpus переходить к character identity graph, performance corpus и BiS 25 optimizer.
+1. Проверить текущий documentation HEAD и CI.
+2. Fast-forward локальную ветку `e3/real-log-capture`.
+3. Убедиться, что working tree чист и private evidence сохранён.
+4. Запустить offline helper-definition inventory на exact local private artifacts.
+5. Проверить private output, все `36` integrity checks и privacy boundaries.
+6. Валидировать scalar-free public receipt.
+7. Версионировать только public receipt.
+8. Реализовать отдельный deterministic helper-definition review.
+9. Рассматривать bounded progression route probe только после подтверждения helper identity и exact payload contract.
 
 ## Установка и проверка
 
@@ -256,10 +169,14 @@ Python >= 3.12
 uv
 ```
 
+Canonical CI verification:
+
 ```powershell
 uv sync --frozen --extra dev
 uv run python scripts/verify_repo.py
 ```
+
+На текущей Windows-машине локальный `uv sync --frozen --extra dev` ранее попытался собрать Ruff `0.12.12` из исходников и остановился из-за отсутствия MSVC `link.exe`. Для разового форматирования использовался официальный standalone Ruff `0.12.12`; Visual Studio Build Tools специально для этого не устанавливались.
 
 Запуск приложения:
 
@@ -274,7 +191,7 @@ http://127.0.0.1:8000/docs
 
 ## Data policy
 
-В Git версионируются код, tests, migrations, reviewed mappings, документация и scalar-free receipts.
+Versioned: code, tests, migrations, reviewed mappings/reviews, documentation and scalar-free receipts.
 
 Local-only:
 
@@ -288,7 +205,19 @@ data/exchange/in/
 data/exchange/out/
 ```
 
-Не коммитить raw payloads, unsanitized HAR, DuckDB/WAL, private batches, private receipts, source guild IDs, report IDs, cookies, Authorization headers, tokens, browser profiles, `.env` или абсолютные локальные пути с username.
+Не коммитить raw payloads, unsanitized HAR, DuckDB/WAL, private receipts, source guild IDs, report IDs, raw JavaScript, cookies, Authorization headers, tokens, browser profiles, `.env` или private queries.
+
+## Workflow notification convention
+
+После каждого push или connector write, запускающего GitHub Actions:
+
+1. сразу проверить новый workflow run;
+2. показать текущие статусы `public-release-audit`, Ubuntu и Windows;
+3. предложить одноразовое уведомление для exact run;
+4. создать задачу только после подтверждения пользователя;
+5. отключить её после завершения или supersession.
+
+Пользователь предпочитает проверку раз в 15 минут. Текущая automation platform поддерживает не чаще одного раза в час, поэтому нельзя утверждать, что настроено 15-минутное polling.
 
 ## Документация
 
