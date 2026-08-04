@@ -76,10 +76,7 @@ def main() -> int:
         "ready for helper/call-site review: "
         f"{boundary['ready_for_guild_progression_helper_callsite_review']}"
     )
-    print(
-        "ready for bounded route probe: "
-        f"{boundary['ready_for_bounded_progression_route_probe']}"
-    )
+    print(f"ready for bounded route probe: {boundary['ready_for_bounded_progression_route_probe']}")
     print(f"guild API route semantics verified: {boundary['guild_api_route_semantics_verified']}")
     print(f"ready for full guild crawl: {boundary['ready_for_full_guild_crawl']}")
     print(f"planner scoring allowed: {boundary['planner_scoring_allowed']}")
