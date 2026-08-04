@@ -2,8 +2,6 @@
 
 Дата актуализации: **2026-08-04**.
 
-Перед любой работой перепроверять live-состояние GitHub, текущий HEAD, PR, CI, versioned receipts и local-only artifacts. Этот документ фиксирует доказанный checkpoint, но его собственное обновление создаёт новый commit.
-
 ## Репозиторий
 
 ```text
@@ -13,79 +11,115 @@ main
     └── e3/real-log-capture         PR #7 -> e2, Draft
 ```
 
-PR #7 остаётся Draft до явного закрытия evidence gates.
+PR #7 открыт, Draft и mergeable. Его base — `e2/log-evidence-refactor`, head — `e3/real-log-capture`.
 
-## Последний полностью проверенный implementation checkpoint
+## Последний полностью завершённый CI до текущей documentation series
 
 ```text
-implementation HEAD: 82265903a26bbf8e0032e6dc2512e623055da972
-commit: Format guild progression helper definition CLI
-Verify repository run: #578
+HEAD: 49bf9cdae01817cc0a7c6eb073d23d588ba6045e
+Verify repository run: #583
 conclusion: success
 public-release-audit: success
 Ubuntu: success
 Windows: success
 migrations: 0001–0008
-working tree after push: clean
 ```
 
-После этого checkpoint началась серия documentation-only commits. Для текущего HEAD CI проверять отдельно.
+После этого HEAD добавлена серия documentation-only commits, актуализирующая CoA-only предметную область, provisional utility baseline и целевую формулировку продукта. Exact текущий HEAD и CI необходимо проверять live, так как этот документ сам создаёт новый commit.
 
-## Подтверждённые checkpoints
+## Исправленная предметная граница
 
-- public manifest: `6454` уникальных отчёта;
-- Argentum identity decision;
-- private comparison baseline: `17` отчётов;
-- reviewed full-crawl collection contract;
-- `/api/guilds/search` route/schema review;
-- bounded multi-result limit capture `1 / 7 / 7`;
-- explicit limit-truncation review;
-- offline `/api/guilds/progression` usage-context inventory и review;
-- offline helper/call-site inventory и review;
-- evidence-backed unambiguous `POST` method candidate;
-- offline helper-definition inventory implementation;
-- deterministic helper-definition tests;
-- Ruff formatting defect fixed and verified by run #578.
+Проект теперь канонически ограничен **Conquest of Azeroth only**.
 
-## Progression helper/call-site checkpoint
+Добавлены:
 
 ```text
-inventory: evidence/real-data/argentum-guild-progression-callsite.json
-inventory version: guild-progression-helper-callsite-inventory-v1
-canonical LF SHA-256: ad8a5addf9ac9dd566284e0bc395ac40100986d0f14f0a49e9519a6aef28d351
-integrity checks: 32/32
-network requests: 0
-route occurrences: 1
-call candidates: 1
-direct invocation candidates: 1
+docs/COA_DOMAIN_BOUNDARY.md
+docs/COA_TARGET_PRODUCT_DEFINITION.md
+docs/COA_RAID_UTILITY_BASELINE_2026-08-02.md
+```
+
+Удалены из канонических предположений:
+
+- Mystic Enchants;
+- Bronzebeard-specific mechanics;
+- Classless Ascension ability-selection model;
+- Hero Architect assumptions;
+- shared FAQ statements without exact CoA evidence.
+
+## Целевой продукт
+
+Главный конечный сценарий больше не формулируется как один постоянный `optimal BiS 25 roster`.
+
+Каноническая цель:
+
+```text
+actual attendance
++
+verified player/build/performance evidence
++
+encounter requirements
++
+relevant external benchmarks
+=
+explainable dynamic roster completion
+```
+
+Система должна объяснять, почему конкретный игрок нужен именно текущему составу.
+
+## Provisional raid utility baseline
+
+Supplied HTML был структурно проанализирован и зафиксирован как research reference:
+
+```text
+source SHA-256: adbb2f7f06d750ddad4d981cca3f22b3141f471e8f9819e87f528f357fabdddd
+class cards: 28
+class/spec associations: 87
+unique specialization labels: 67
+utility rows: 187
+rows observed in latest 30-log sample: 132
+rows with 0 observations: 55
+combatants-info present: 23/30 logs
+```
+
+Это не доказанный полный каталог 69 специализаций и не input для planner scoring.
+
+## Подтверждённые data checkpoints
+
+```text
+public reports: 6454
+unique public report IDs: 6454
+exact Argentum label reports: 17
+guild identity verified: true
+private selected baseline: 17 unique reports
+full-crawl collection contract reviewed: true
+```
+
+Guild-search:
+
+```text
+route/schema verified: true
+limit result counts: 1 / 7 / 7
+limit truncation semantics verified: true
+```
+
+Progression helper/call-site:
+
+```text
+route candidate observed: true
 call class: generic_helper_call
 HTTP method candidate: POST
-method evidence: method_property_literal
 method candidate unambiguous: true
-```
-
-```text
-review: evidence/real-data/argentum-guild-progression-callsite-review.json
-review version: guild-progression-helper-callsite-review-v1
-SHA-256: d79302d755eab918ce3f85a9ad39e78231720391c8f0692925fe2e79b6adc60f
-integrity checks: 36/36
-helper/call-site reviewed: true
 helper identity resolved: false
 request payload mapping resolved: false
-request shape sufficient for bounded probe: false
-ready for helper-definition inventory: true
 ready for bounded route probe: false
 ```
 
-Blockers remain:
+## Armory boundary
 
-```text
-generic_helper_identity_unresolved
-structural_envelope_overbroad
-request_payload_mapping_unresolved
-```
+Reviewed mappings support selected extraction of character identity, realm, class, upstream role, active specialization index, resolved talent ranks, selected stats and talent-grid structure.
 
-`POST` is a method candidate inside the observed generic-helper call. It is not yet a verified request contract.
+They do not prove runtime magnitude, stacking, scope, provider equivalence or planner criticality.
 
 ## Helper-definition inventory implementation
 
@@ -102,29 +136,16 @@ tests/unit/test_guild_progression_helper_definition_inventory.py
 Properties:
 
 - offline-only;
-- reads the exact archived SPA asset;
-- binds to published call-site and recovery hashes;
-- keeps raw helper definitions, aliases, callees and JavaScript contexts private;
-- emits only scalar-free public receipt data;
-- applies bounded scans and `36` integrity checks;
-- never raises route/full-crawl/scoring gates automatically.
-
-The implementation is complete and CI-green, but the inventory has not yet been executed against the current local private artifacts and no helper-definition receipt/review is versioned.
+- exact archived SPA asset;
+- exact bound private/public inputs;
+- raw definitions and aliases private;
+- scalar-free public receipt;
+- 36 integrity checks;
+- all downstream gates remain false.
 
 ## Current exact boundary
 
 ```text
-guild identity verified: true
-guild filtering completed: true
-full crawl collection contract reviewed: true
-guild-search route/schema verified: true
-guild-search limit truncation verified: true
-progression route candidate observed: true
-progression usage context reviewed: true
-progression helper/call-site inventory observed: true
-progression helper/call-site reviewed: true
-progression HTTP method candidate: POST
-progression method candidate unambiguous: true
 helper-definition inventory implementation complete: true
 helper-definition inventory executed on private artifacts: false
 helper-definition public receipt validated: false
@@ -134,77 +155,46 @@ progression helper identity resolved: false
 progression request payload mapping resolved: false
 progression request shape verified: false
 ready for bounded progression route probe: false
-progression route semantics verified: false
 pagination semantics verified: false
 termination semantics verified: false
 completeness verified: false
-guild API route semantics verified: false
 automatic full guild crawl allowed: false
 ready for full guild crawl: false
 ready for multi-report character graph: false
 ready for performance model: false
-ready for BiS 25 scoring: false
+ready for encounter-aware roster completion: false
 planner scoring allowed: false
 ```
 
-## Следующий допустимый bounded этап
+## Следующий bounded этап
 
 ```text
-verify current documentation-only HEAD and CI
--> sync local branch by fast-forward
--> confirm clean working tree and preserved local evidence
--> run offline helper-definition inventory on exact private artifacts
--> inspect private output and integrity checks
+verify exact documentation HEAD and CI
+-> fast-forward local e3/real-log-capture
+-> confirm clean working tree and preserved private evidence
+-> run offline helper-definition inventory
+-> inspect private output and all 36 checks
 -> validate scalar-free public receipt
--> version only the public receipt if privacy and bindings pass
--> implement explicit helper-definition review
--> bounded progression route probe only if helper identity and exact payload contract become verified
+-> version only the public receipt
+-> implement deterministic helper-definition review
 ```
 
-Until explicit helper-definition review passes, do not perform a guessed network request to `/api/guilds/progression`.
+Do not perform a guessed network request to `/api/guilds/progression`.
 
-## Local Windows state and tooling
+## Local Windows facts
 
 ```text
 repo: C:\Users\Simpa\source\repos\coa-raid-intelligence-workbench
-local implementation HEAD before documentation commits: 82265903a26bbf8e0032e6dc2512e623055da972
-working tree: clean
-evidence paths: preserved
+last known local implementation HEAD before documentation pull: 82265903a26bbf8e0032e6dc2512e623055da972
+private evidence paths: preserve
 ```
 
-Known environment detail:
-
-- `.venv` was not activated;
-- local `uv sync --frozen --extra dev` attempted to build Ruff `0.12.12` from source and failed because MSVC `link.exe` was unavailable;
-- the CI formatting fix was applied with the official standalone Ruff `0.12.12` Windows binary and passed lint/format checks;
-- future local instructions should use `git --no-pager diff` to avoid stopping at `(END)`.
-
-## Workflow notification convention
-
-After any push or GitHub connector write that starts a workflow:
-
-1. check the exact new run immediately;
-2. report current job states;
-3. offer one opt-in completion notification for that exact run;
-4. create the task only after user acceptance;
-5. disable it after completion or supersession.
-
-User preference is 15-minute polling. Current automation minimum is one hour, so never state that 15-minute polling is active unless platform support changes.
-
-## Data and Git policy
-
-Versioned: code/tests, migrations, reviewed mappings, canonical documentation and scalar-free evidence receipts.
-
-Local-only:
+Known local issue:
 
 ```text
-data/raw/
-data/warehouse/
-data/normalized/
-data/reconstructed/
-data/extracted/
-data/exchange/in/
-data/exchange/out/
+uv sync --frozen --extra dev
+-> attempted source build of ruff==0.12.12
+-> failed because MSVC link.exe was unavailable
 ```
 
-Never commit source guild IDs, report IDs, source rows, private queries, private receipts, raw JavaScript contexts, raw callees, DuckDB, credentials, cookies, tokens, Authorization headers, browser profiles, `.env` or unsanitized HAR.
+Do not install Visual Studio Build Tools solely for formatting. Use `git --no-pager diff`.
