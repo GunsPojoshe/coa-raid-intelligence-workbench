@@ -2,82 +2,100 @@
 
 Дата полной сверки: **2026-08-04**.
 
-Этот документ определяет долгосрочную цель, архитектуру, truth model и обязательную последовательность развития. Изменяемые HEAD, CI и оперативные blockers фиксируются в `docs/PROJECT_STATE.md` и всегда перепроверяются live.
+Этот документ определяет долгосрочную цель, архитектуру, truth model и обязательную последовательность развития. Оперативные HEAD, CI и blockers фиксируются в `docs/PROJECT_STATE.md` и всегда перепроверяются live.
 
-## 1. Миссия
+## 1. Каноническая предметная область
 
-Создать localhost-first браузерное приложение для подготовки рейдов FLEX / 10 / 25 / 40 и evidence-first raid intelligence для Classless / Ascension WoW.
+Проект предназначен **только для Conquest of Azeroth**.
 
-Система должна:
+Обязательные документы:
 
-- хранить и проверять рейдовые планы;
-- собирать реальные наблюдения с `coa.ascensionlogs.gg`;
-- сохранять исходные ответы без изменений;
-- связывать выводы с exact evidence;
-- различать parser correctness, source identity, gameplay semantics и player performance;
-- не использовать непроверенные наблюдения в planner scoring.
+- `docs/COA_DOMAIN_BOUNDARY.md` — что относится и не относится к CoA;
+- `docs/COA_TARGET_PRODUCT_DEFINITION.md` — конечный продуктовый результат;
+- `docs/COA_RAID_UTILITY_BASELINE_2026-08-02.md` — provisional utility reference, требующий проверки логами.
+
+Не использовать Bronzebeard, Classless Ascension, Mystic Enchants, Hero Architect или другие realm-specific механики как CoA-факты без отдельного exact CoA evidence.
+
+## 2. Миссия
+
+Создать localhost-first evidence-first платформу рейдовой аналитики для CoA, которая:
+
+- максимально полно покрывает доступные данные CoA Ascension Logs;
+- связывает reports, encounters, characters, guilds, Armory, talent-grid, rankings и statistics;
+- использует CoA BisBeard как build-planning источник;
+- анализирует наши и релевантные внешние боевые результаты;
+- объясняет ошибки состава и исполнения на конкретных энкаунтерах;
+- помогает РЛ формировать динамический состав под фактическую явку;
+- объясняет, почему конкретный человек нужен именно текущему составу.
 
 Канонический принцип:
 
 ```text
 combat-log event = observation
-combat-log event != automatic proof of a general mechanic
+combat-log event != automatic proof of a mechanic
+class/spec presence != capability coverage
+shared Ascension text != CoA mechanic proof
 ```
 
 Planner scoring допускает только `corroborated` и `confirmed` mechanics.
 
-## 2. Product contours
+## 3. Продуктовый контекст
+
+Гильдия играет в полухардкорном режиме с элементами спокойной игры. Есть ядро примерно из 15–20 постоянных игроков, но фактическая явка меняется.
+
+Система не ищет один неизменный BiS-состав из 25 человек.
+
+Главный сценарий:
+
+```text
+кто сегодня пришёл
++
+как эти люди реально играют
++
+какие билды и роли они реально используют
++
+что требует конкретный энкаунтер
++
+кого ещё можно позвать
+=
+объяснимый добор, замена и план рейда
+```
+
+## 4. Product contours
 
 ### Raid Planner
 
-- составы до 40 персонажей;
-- class/spec/role catalog;
-- структурная валидация;
-- CRUD планов в DuckDB;
-- explainable recommendations с provenance;
-- constrained future BiS 25 optimizer.
+- составы FLEX / 10 / 25 / 40;
+- фактическая явка и доступность;
+- class/spec/role/build representation;
+- ручные ограничения РЛ;
+- несколько допустимых вариантов состава;
+- объяснимые рекомендации с provenance.
 
 ### Raid Intelligence
 
 - immutable raw capture;
-- separate retrieval observations;
+- retrieval observations;
 - hashes и schema fingerprints;
 - reviewed mappings/extractors;
-- canonical parser records;
 - deterministic normalization/reconstruction;
 - immutable observations;
-- supporting/contradicting evidence;
+- player/build/encounter/guild identities;
+- supporting и contradicting evidence;
 - explicit trust evaluation;
-- scoring только для достаточно подтверждённых mechanics.
+- encounter-aware player and roster analysis.
 
-## 3. Долгосрочная цель
+### Dynamic roster completion
 
-```text
-verified Argentum report corpus
--> stable multi-report identity for 30-40 candidate characters
--> comparable performance observations
--> global benchmark corpus
--> confidence-aware player evaluation
--> role/utility/availability constraints
--> explainable optimal BiS 25 roster
-```
+Система должна показывать:
 
-Каждый переход требует отдельного воспроизводимого receipt/review. Долгосрочная цель не разрешает перепрыгивать evidence gates.
-
-## 4. Этапы и ветки
-
-```text
-E0  Excel baseline — закрыт как основной runtime
-E1  localhost web and planner foundation
-E2  evidence-first foundation — PR #3, Draft
-E3  real log capture, review and persistence — PR #7, Draft
-```
-
-```text
-main
-└── e2/log-evidence-refactor        PR #3 -> main
-    └── e3/real-log-capture         PR #7 -> e2
-```
+- что закрыто надёжно;
+- что закрыто слабо;
+- что отсутствует;
+- что дублируется;
+- кого добавить или заменить;
+- почему этот игрок нужен этому составу;
+- альтернативы и последствия.
 
 ## 5. Evidence architecture
 
@@ -87,7 +105,7 @@ source response
 -> retrieval observation
 -> SHA-256 + schema fingerprint
 -> structural/field review
--> versioned mapping or dedicated extractor
+-> versioned mapping or extractor
 -> exact raw validation
 -> explicit promotion/publication
 -> normalization/extraction
@@ -96,10 +114,10 @@ source response
 -> read models
 -> hypotheses and evidence
 -> trust evaluation
--> planner scoring
+-> explainable recommendation
 ```
 
-Верхний слой не может переписать нижний. Любой derived вывод обязан сохранять exact provenance.
+Верхний слой не может переписать нижний. Derived вывод обязан сохранять exact provenance.
 
 ## 6. Trust model
 
@@ -129,13 +147,56 @@ manual_override
 - schema verification;
 - guild identity verification;
 - deterministic filtering;
-- collection contract review;
-- route/schema review;
 - successful persistence;
-- один combat-log event;
-- display name или nickname.
+- talent description;
+- class/spec presence;
+- one combat-log event;
+- high parse;
+- one successful raid composition;
+- correlation between composition and result.
 
-## 7. Реализованный фундамент
+## 7. Источники
+
+### CoA Ascension Logs
+
+Целевое покрытие:
+
+- reports;
+- encounters;
+- rankings;
+- statistics;
+- characters;
+- Armory;
+- talent-grid;
+- guild reports;
+- guild progression;
+- future exact routes discovered and reviewed.
+
+### CoA BisBeard
+
+Используется для talent, item, gear и BiS planning. Не является автоматическим доказательством runtime combat behavior.
+
+### Provisional references
+
+Могут versioned-храниться как research input, если явно отмечены как непроверенные и запрещены для scoring.
+
+## 8. Provisional utility baseline
+
+`docs/COA_RAID_UTILITY_BASELINE_2026-08-02.md` фиксирует supplied artifact:
+
+```text
+source SHA-256: adbb2f7f06d750ddad4d981cca3f22b3141f471e8f9819e87f528f357fabdddd
+class cards: 28
+class/spec associations: 87
+unique specialization labels: 67
+utility rows: 187
+observed in 30-log sample: 132
+zero observations in sample: 55
+```
+
+Это не полный проверенный каталог 69 специализаций и не planner input.
+
+## 9. Реализованный фундамент
 
 - localhost FastAPI raid planner;
 - DuckDB plans and CRUD;
@@ -151,7 +212,7 @@ manual_override
 - Ubuntu/Windows CI;
 - public-release audit.
 
-## 8. Verified report and guild baseline
+## 10. Verified report and guild baseline
 
 ```text
 public reports: 6454
@@ -164,7 +225,20 @@ full-crawl collection contract reviewed: true
 
 Source guild ID, report IDs and private rows remain local-only.
 
-## 9. Guild-search semantics checkpoint
+## 11. Armory boundary
+
+Reviewed mappings currently establish selected reproducible extraction for:
+
+- character identity, realm, class, race and level;
+- upstream role and active specialization index;
+- resolved talent-rank records;
+- selected compact stat summaries;
+- talent-grid tree identity;
+- talent IDs, spell IDs, display fields, coordinates, node type and connections.
+
+They do not prove runtime magnitude, stacking, scope, provider equivalence or planner criticality.
+
+## 12. Guild-search checkpoint
 
 Verified:
 
@@ -176,15 +250,13 @@ limit result counts: 1 / 7 / 7
 limit truncation semantics verified: true
 ```
 
-This proves bounded search-list truncation only. It does not prove guild-report pagination, termination or completeness.
+This proves bounded search-list truncation only.
 
-## 10. Progression route discovery checkpoint
+## 13. Progression checkpoint
 
-The archived SPA asset contains one `/api/guilds/progression` route candidate.
+The archived SPA asset contains one `/api/guilds/progression` candidate.
 
-Usage-context review proved only a literal route reference and did not authorize a network probe.
-
-A later helper/call-site inventory and review established:
+Reviewed evidence:
 
 ```text
 call class: generic_helper_call
@@ -197,9 +269,9 @@ request shape sufficient for bounded probe: false
 ready for bounded route probe: false
 ```
 
-The structural envelope around the call is overbroad and generic-helper identity remains unresolved. Therefore `POST` is not yet a complete request contract.
+`POST` is not a complete request contract.
 
-## 11. Helper-definition inventory stage
+## 14. Helper-definition inventory stage
 
 Implemented:
 
@@ -218,15 +290,13 @@ Contract:
 - offline-only;
 - exact archived SPA asset;
 - exact bound call-site/recovery artifacts;
-- bounded helper-definition and alias search;
-- private raw definitions, aliases, callees and JavaScript contexts;
+- bounded definition and alias search;
+- raw definitions private;
 - scalar-free public receipt;
 - `36` integrity checks;
-- no automatic promotion of route, pagination, completeness, crawl or scoring gates.
+- no automatic downstream promotion.
 
-The implementation is CI-green at implementation HEAD `82265903a26bbf8e0032e6dc2512e623055da972`, run #578. The inventory has not yet been executed on the current local private artifacts and no helper-definition receipt/review is versioned.
-
-## 12. Current decision boundary
+## 15. Current decision boundary
 
 ```text
 guild identity verified: true
@@ -252,70 +322,43 @@ progression route semantics verified: false
 pagination semantics verified: false
 termination semantics verified: false
 completeness verified: false
-guild API route semantics verified: false
 automatic full guild crawl allowed: false
 ready for full guild crawl: false
 ready for multi-report character graph: false
 ready for performance model: false
-ready for BiS 25 scoring: false
+ready for encounter-aware roster completion: false
 planner scoring allowed: false
 ```
 
-## 13. Обязательная дальнейшая последовательность
+## 16. Обязательная дальнейшая последовательность
 
 ```text
-verify current documentation HEAD and CI
--> sync local branch by fast-forward
--> run offline helper-definition inventory against exact private artifacts
--> inspect private definitions/aliases/call-chain candidates
--> validate all integrity checks and privacy boundaries
--> version only the scalar-free public receipt
--> implement explicit deterministic helper-definition review
--> bounded progression route probe only if helper identity and payload mapping are verified
+sync local branch by fast-forward
+-> run offline helper-definition inventory
+-> inspect private candidates and 36 checks
+-> validate/version scalar-free public receipt
+-> implement explicit helper-definition review
+-> bounded progression probe only after exact helper/payload verification
 -> response schema review
 -> pagination/termination/completeness evidence
--> deterministic API-versus-private-17-report-baseline comparison
--> explicit full-crawl promotion only if every gate passes
+-> compare API report set with private 17-report baseline
+-> explicit full-crawl promotion
 -> multi-report character identity graph
--> performance corpus
--> confidence-aware scoring
--> constrained BiS 25 optimizer
+-> verified build and capability observations
+-> encounter requirement models
+-> player reliability and performance corpus
+-> dynamic attendance-aware roster completion
 ```
 
-## 14. API-versus-baseline comparison contract
-
-Future API-derived report set must be compared with the private verified 17-report baseline as:
-
-```text
-matching_reports
-missing_from_guild_api
-extra_in_guild_api
-conflicting_report_records
-```
-
-Rules:
-
-- exact typed report-ID comparison;
-- deduplicate before comparison;
-- preserve source order where applicable;
-- preserve contradicting evidence;
-- keep report IDs private;
-- never mark partial capture complete;
-- preserve failures as observations;
-- bind resume/checkpoints to exact contract/hash.
-
-## 15. Aura boundary
-
-The current bounded report slice contains `0` aura events. Fixtures prove technical Aura State Engine behavior, not magnitude, stacking, scope, provider equivalence or gameplay criticality.
-
-## 16. Data and Git policy
+## 17. Data and Git policy
 
 Versioned:
 
 - code/tests;
 - migrations;
-- mappings and review decisions;
-- documentation;
+- reviewed mappings and decisions;
+- canonical documentation;
+- approved provisional references;
 - scalar-free receipts.
 
 Local-only:
@@ -332,32 +375,12 @@ data/exchange/out/
 
 Never commit secrets, cookies, tokens, Authorization headers, browser profiles, unsanitized HAR, source guild IDs, report IDs, private queries, private receipts, raw JavaScript or raw archive content.
 
-## 17. Local Windows operating conventions
+## 18. Branches
 
 ```text
-repo: C:\Users\Simpa\source\repos\coa-raid-intelligence-workbench
+main
+└── e2/log-evidence-refactor        PR #3 -> main, Draft
+    └── e3/real-log-capture         PR #7 -> e2, Draft
 ```
 
-- provide one complete PowerShell block;
-- validate branch, expected HEAD and clean working tree;
-- preserve evidence paths and tracked `.gitkeep` files;
-- use `git --no-pager diff`;
-- do not assume active `.venv` is required for standalone tools;
-- do not install Visual Studio Build Tools solely for Ruff formatting;
-- report any deviation from canonical `uv sync --frozen --extra dev` verification.
-
-## 18. Workflow notification convention
-
-After each push or connector write that launches GitHub Actions:
-
-1. check the exact new run immediately;
-2. report job states;
-3. offer one opt-in completion notification for that run;
-4. create it only after user acceptance;
-5. disable it after completion or supersession.
-
-The user prefers 15-minute polling. The current automation platform supports no more than hourly checking, so the limitation must be stated honestly.
-
-## 19. Completion criteria for E3
-
-PR #7 remains Draft until reviewed identity/filtering/crawl boundaries, reviewed combatants observations, sufficient aura observations and intervals, independent supporting observations, contradicting evidence review, reproducible provenance, and green Ubuntu/Windows verification are present.
+PR #7 remains Draft until evidence gates are explicitly closed.
