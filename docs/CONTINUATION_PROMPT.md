@@ -4,6 +4,7 @@ Continue development of:
 
 ```text
 repository: GunsPojoshe/coa-raid-intelligence-workbench
+local repo: C:\Users\Simpa\source\repos\coa-raid-intelligence-workbench
 branch: e3/real-log-capture
 Draft PR #7: e3/real-log-capture -> e2/log-evidence-refactor
 parent Draft PR #3: e2/log-evidence-refactor -> main
@@ -13,21 +14,45 @@ Work evidence-first. Never trust stale HEAD, CI, hashes, counts, routes or readi
 
 ## Mandatory start
 
-1. Verify PR #7 state, draft status, mergeability, base/head and current SHA.
-2. Verify PR #3 and target branch relation.
-3. Inspect the latest `Verify repository` run and all jobs for the exact current HEAD.
-4. Read:
+1. Inspect PR #7 state, draft status, mergeability, base/head and current SHA.
+2. Inspect PR #3 and branch relation.
+3. Inspect the latest `Verify repository` run and every job for the exact current HEAD.
+4. Read in order:
    - `AGENTS.md`;
    - `docs/PROJECT_MASTER_CONTEXT.md`;
    - `docs/PROJECT_STATE.md`;
    - `docs/CONTINUATION_PROMPT.md`;
    - `docs/REAL_LOG_CAPTURE.md`;
    - `docs/GUILD_WIDE_COLLECTION_CONTRACT.md`;
-   - `docs/ADR_012_LOG_EVIDENCE_TRUTH_MODEL.md`;
+   - relevant ADR/capture/review documents;
    - `evidence/real-data/README.md`.
 5. Compare documentation with code, migrations and versioned receipts.
-6. Use the GitHub connector for repository operations.
-7. For local Windows-only evidence actions, provide one complete PowerShell block.
+6. Inspect local Git state before requesting local execution:
+
+```powershell
+git branch --show-current
+git rev-parse HEAD
+git status --porcelain=v1 --untracked-files=all
+git fetch --all --prune
+git rev-parse origin/e3/real-log-capture
+```
+
+7. If the remote branch is ahead and the working tree is clean, provide one complete `git pull --ff-only` PowerShell block.
+8. Preserve all ignored/private evidence paths and tracked `.gitkeep` files.
+
+## Collaboration convention
+
+After every push or connector write that launches GitHub Actions:
+
+1. identify the exact new HEAD and workflow run;
+2. check and report `public-release-audit`, Ubuntu and Windows immediately;
+3. offer one opt-in completion notification tied to that exact run;
+4. create the condition-watch task only after the user presses/accepts it;
+5. disable the task after completion or if superseded.
+
+The user prefers a 15-minute check interval. Current automation supports no more than hourly checking. Use the fastest supported cadence and state the limitation honestly. Do not claim 15-minute polling is active.
+
+Do not passively wait inside the response. Check the current state now; use the task only for later completion.
 
 ## Core truth model
 
@@ -47,7 +72,7 @@ source response
 combat-log observation != automatic gameplay mechanic proof
 ```
 
-## Verified baseline
+## Verified project baseline
 
 ```text
 public reports: 6454
@@ -59,46 +84,27 @@ full-crawl collection contract reviewed: true
 migrations: 0001–0008
 ```
 
-Private source guild ID, report IDs and source rows are not versioned.
+Private source guild ID, report IDs, raw JavaScript and source rows are not versioned.
 
-## Guild-search checkpoint
-
-```text
-route: /api/guilds/search
-response keys: guilds, success
-guild fields: id, name, realm, report_count
-route review checks: 22/22
-limit result counts: 1 / 7 / 7
-limit capture checks: 15/15
-limit review checks: 30/30
-limit truncation semantics verified: true
-```
-
-This verifies search-list truncation only. It does not verify guild-report pagination.
-
-## Progression usage-context checkpoint
+## Last fully verified implementation checkpoint
 
 ```text
-inventory: evidence/real-data/argentum-guild-progression-usage-context.json
-inventory SHA-256: e19cc1a72175bd838b151b8438861af1aece14ba2a30f94da8f6989ce7be3d59
-inventory checks: 23/23
-review: evidence/real-data/argentum-guild-progression-usage-review.json
-review SHA-256: 063abc51579e3942c4b33766fa9d1f9ba336a921a78bc15a5849971025a77198
-review checks: 30/30
-network requests: 0
-route occurrences: 1
-classification: literal_reference
-ready for bounded route probe: false
+HEAD: 82265903a26bbf8e0032e6dc2512e623055da972
+commit: Format guild progression helper definition CLI
+Verify repository run: #578
+conclusion: success
+public-release-audit: success
+Ubuntu: success
+Windows: success
+working tree after push: clean
 ```
 
-The literal route reference did not prove a caller, helper, HTTP method or request shape. It authorized only the separate offline helper/call-site inventory.
+Documentation-only commits were created after this checkpoint. Recheck the live current HEAD and its CI before new implementation work.
 
 ## Progression helper/call-site checkpoint
 
-Versioned inventory:
-
 ```text
-evidence/real-data/argentum-guild-progression-callsite.json
+inventory: evidence/real-data/argentum-guild-progression-callsite.json
 inventory version: guild-progression-helper-callsite-inventory-v1
 canonical LF SHA-256: ad8a5addf9ac9dd566284e0bc395ac40100986d0f14f0a49e9519a6aef28d351
 integrity checks: 32/32
@@ -107,28 +113,17 @@ route occurrences: 1
 call candidates: 1
 direct invocation candidates: 1
 call class: generic_helper_call
-method candidate: POST
+HTTP method candidate: POST
 method evidence: method_property_literal
 method candidate unambiguous: true
 ```
 
-Observed structural spans:
-
 ```text
-call/envelope characters: 2479207
-function characters: 2411715
-reviewable threshold: 65536
-```
-
-Versioned review:
-
-```text
-evidence/real-data/argentum-guild-progression-callsite-review.json
+review: evidence/real-data/argentum-guild-progression-callsite-review.json
 review version: guild-progression-helper-callsite-review-v1
 SHA-256: d79302d755eab918ce3f85a9ad39e78231720391c8f0692925fe2e79b6adc60f
 integrity checks: 36/36
 helper/call-site reviewed: true
-HTTP method candidate: POST
 helper identity resolved: false
 request payload mapping resolved: false
 request shape sufficient for bounded probe: false
@@ -144,41 +139,59 @@ structural_envelope_overbroad
 request_payload_mapping_unresolved
 ```
 
-`POST` is an evidence-backed candidate inside the observed generic-helper call. It is not a verified request contract. Do not perform a guessed network request.
+`POST` is evidence-backed but not a verified request contract. Do not perform a guessed network request.
 
-Implementation:
-
-```text
-src/coa_workbench/collector/guild_progression_callsite_contract.py
-src/coa_workbench/collector/guild_progression_js_index.py
-src/coa_workbench/collector/guild_progression_callsite_inventory.py
-scripts/inventory_guild_progression_callsite.py
-src/coa_workbench/collector/guild_progression_callsite_review.py
-scripts/review_guild_progression_callsite.py
-tests/unit/test_guild_progression_callsite_inventory.py
-tests/unit/test_guild_progression_callsite_review.py
-tests/unit/test_versioned_guild_progression_callsite_review.py
-```
-
-The deterministic review uses canonical LF hashes for versioned JSON sources so Linux and Windows checkouts generate the same receipt.
-
-## Last confirmed implementation checkpoint
-
-Before the documentation checkpoint, the exact implementation HEAD was:
+## Implemented helper-definition inventory
 
 ```text
-HEAD: 2bfd1e15abe715d37454db95d6b46fd17619ed99
-Verify repository run: #570
-public-release-audit: success
-Ubuntu: success
-Windows: success
-pytest: 356 passed, 1 warning
-Doctor: success
-DuckDB clean/repeated initialization: success
-migrations: 0001–0008
+src/coa_workbench/collector/guild_progression_helper_definition_command.py
+src/coa_workbench/collector/guild_progression_helper_definition_index.py
+src/coa_workbench/collector/guild_progression_helper_definition_inventory.py
+scripts/inventory_guild_progression_helper_definition.py
+tests/unit/test_guild_progression_helper_definition_command.py
+tests/unit/test_guild_progression_helper_definition_index.py
+tests/unit/test_guild_progression_helper_definition_inventory.py
 ```
 
-Recheck live. Do not transfer this result to a later HEAD.
+The implementation:
+
+- performs no network requests;
+- reads the exact archived SPA asset and bound call-site/recovery artifacts;
+- searches bounded helper-definition and alias candidates;
+- keeps raw helper definitions, aliases, callees and JavaScript contexts private;
+- emits a scalar-free public receipt;
+- applies `36` integrity checks;
+- keeps route, pagination, completeness, crawl and scoring gates false.
+
+The implementation and formatting are CI-green. It has not yet been executed against the current local private artifacts, and no helper-definition receipt or review is versioned.
+
+## Local Windows tooling facts
+
+```text
+repo: C:\Users\Simpa\source\repos\coa-raid-intelligence-workbench
+last local implementation HEAD before documentation commits: 82265903a26bbf8e0032e6dc2512e623055da972
+working tree after push: clean
+private evidence paths: preserved
+virtual environment at that time: not activated
+```
+
+Known issue:
+
+```text
+uv sync --frozen --extra dev
+-> attempted source build of ruff==0.12.12
+-> failed because MSVC link.exe was unavailable
+```
+
+Do not install Visual Studio Build Tools solely to format one file. The previous formatting fix used the official standalone Ruff `0.12.12` Windows binary and passed:
+
+```text
+ruff check: success
+ruff format --check: success
+git diff --check: success
+```
+
+Use `git --no-pager diff` in PowerShell instructions to avoid entering the `(END)` pager.
 
 ## Current exact boundary
 
@@ -194,10 +207,14 @@ progression helper/call-site inventory observed: true
 progression helper/call-site reviewed: true
 progression HTTP method candidate: POST
 progression method candidate unambiguous: true
+helper-definition inventory implementation complete: true
+helper-definition inventory executed on private artifacts: false
+helper-definition public receipt validated: false
+helper-definition receipt versioned: false
+helper-definition review complete: false
 progression helper identity resolved: false
 progression request payload mapping resolved: false
 progression request shape verified: false
-ready for helper-definition inventory: true
 ready for bounded progression route probe: false
 progression route semantics verified: false
 pagination semantics verified: false
@@ -215,15 +232,27 @@ planner scoring allowed: false
 ## Required next sequence
 
 ```text
-offline helper-definition inventory from the exact archived SPA asset
--> bind definition/call-chain candidates to the published callee hash
--> publish scalar-free definition/call-chain hashes and classifications
--> explicit helper-definition review
--> bounded progression route probe only if helper identity and exact request contract become verified
--> response schema review
--> pagination/termination/completeness review
--> API-versus-private-baseline set comparison
--> explicit full-crawl promotion
+verify current documentation HEAD and CI
+-> fast-forward local e3/real-log-capture
+-> confirm clean working tree and preserved private evidence
+-> inspect the helper-definition CLI contract and required paths
+-> run offline helper-definition inventory against exact local private artifacts
+-> preserve private output under data/extracted
+-> inspect all 36 integrity checks and candidate classifications
+-> verify public receipt contains no private scalars or raw JavaScript
+-> version only the scalar-free public receipt if valid
+-> implement explicit deterministic helper-definition review
+-> bounded progression route probe only if helper identity and exact payload contract become verified
 ```
 
-No false gate may be raised by inference. Never version private recovery, private inventories, raw JavaScript contexts, raw callees, source IDs, credentials or raw archive contents.
+## Local execution guardrails
+
+- Provide one complete PowerShell block, not fragmented commands.
+- Validate branch, expected HEAD and clean working tree before changes.
+- Do not delete `data/raw`, `data/extracted`, `data/warehouse`, `data/exchange/in` or `data/exchange/out`.
+- Do not delete tracked `.gitkeep` files.
+- Do not commit private recovery, private inventory, raw archive, source IDs, report IDs, private queries, HAR, cookies, tokens or browser profiles.
+- Show the exact public file that would be committed.
+- Stop on any integrity, privacy, binding or unexpected-diff failure.
+
+No false gate may be raised by inference.
