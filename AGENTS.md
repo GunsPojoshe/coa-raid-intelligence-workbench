@@ -30,16 +30,30 @@ Only `corroborated` and `confirmed` mechanics may enter canonical planner scorin
 
 ## Required start sequence
 
-1. Inspect repository, branch, remote HEAD and working tree.
-2. Inspect PR #7, its base and PR #3.
-3. Inspect the latest GitHub Actions run and every job.
+1. Inspect repository, current branch, remote HEAD and working tree.
+2. Inspect PR #7, its base branch and parent PR #3.
+3. Inspect the latest GitHub Actions run and every job for the exact current HEAD.
 4. Read the canonical context documents in the order above.
 5. Compare documentation claims with code, migrations and versioned receipts.
-6. Inspect required local private artifacts before any local-only decision or network capture.
+6. Inspect required local private artifacts before any local-only decision or capture.
 7. Run focused deterministic tests before bounded real capture.
 8. Report material discrepancies before changing analytical semantics.
 
 Do not trust old commit, CI run, test count, hash, route, source count or readiness claim without checking.
+
+## Collaboration and workflow notifications
+
+After every push or connector write that starts a GitHub Actions workflow:
+
+1. report the new HEAD and workflow run number/status;
+2. offer one opt-in notification tied to that exact run;
+3. create the condition-watch task only after the user accepts;
+4. include final conclusions for `public-release-audit`, Ubuntu and Windows;
+5. disable the task when the run completes or is superseded.
+
+The user prefers checks every 15 minutes. Use the fastest cadence supported by the automation platform. The current platform limit is once per hour; never claim that 15-minute polling was configured when it was not.
+
+Do not enter passive waiting. Check the current state during the active turn and use the notification task only for later completion.
 
 ## Current milestone
 
@@ -49,137 +63,82 @@ main
     └── e3/real-log-capture         PR #7 -> e2, Draft
 ```
 
+PR #7 remains Draft until its evidence gates are explicitly closed.
+
 ## Completed E3 checkpoints
 
 - verified Armory and public-report discovery mappings;
 - report/encounter/combatants capture and persistence through migration `0008`;
-- promoted public-report pagination limit `25`;
-- exhaustive deduplicated public-report manifest;
-- explicit verified Argentum identity decision;
-- deterministic filtering by verified private source guild ID;
-- scalar-free 17-report guild manifest;
+- exhaustive deduplicated public-report manifest: `6454` reports;
+- verified Argentum identity and private comparison baseline: `17` reports;
 - reviewed full-crawl collection contract;
-- bounded guild-search route capture;
-- explicit scalar-free route/schema review;
-- bounded multi-result limit capture implementation and deterministic tests.
+- `/api/guilds/search` route/schema review;
+- bounded limit capture `1 / 7 / 7` and explicit limit-truncation review;
+- offline `/api/guilds/progression` usage-context inventory and review;
+- offline helper/call-site inventory and review;
+- helper-definition inventory implementation and deterministic tests.
 
-Do not repeat completed pagination, public manifest, identity decision, filtering, contract review or route/schema review unless a bound hash/fingerprint changes.
+Do not repeat a completed checkpoint unless a bound hash, fingerprint or contract changes.
 
-## Exact completed evidence facts
+## Current progression boundary
 
-```text
-report/encounter:
-  normalized: 2 reports, 15 encounters, 31 actors, 31 participants, 0 aura events
-  reconstructed: 1 report, 14 encounters, 31 actors, 31 participants
-  persisted through 0007: 77 observations
+The helper/call-site review established an evidence-backed `POST` candidate but did not resolve generic-helper identity or payload mapping.
 
-combatants:
-  persisted through 0008: 1343 observations
-  actor/build observations: 1339
-  linked actors: 11
-  integrity checks: 14/14
-
-public manifest:
-  reports: 6454
-  unique report IDs: 6454
-  integrity checks: 19/19
-
-identity/filtering:
-  identity checks: 16/16
-  guild identity verified: true
-  selected reports: 17
-  unique selected report IDs: 17
-  filter checks: 14/14
-
-full-crawl contract:
-  integrity checks: 12/12
-  contract reviewed: true
-  private comparison baseline: 17 reports
-
-route capture:
-  attempts: 3
-  completed attempts: 3
-  HTTP 200: 3
-  integrity checks: 13/13
-  observed result counts: [1]
-
-route/schema review:
-  integrity checks: 22/22
-  route template verified: true
-  query shapes verified: true
-  response schema verified: true
-  limit parameter accepted: true
-  ready for bounded limit-semantics capture: true
-```
-
-Versioned receipts:
+The implemented next tool is:
 
 ```text
-evidence/real-data/argentum-public-report-manifest.json
-evidence/real-data/argentum-guild-identity-decision.json
-evidence/real-data/argentum-guild-report-manifest.json
-evidence/real-data/argentum-guild-full-crawl-contract.json
-evidence/real-data/argentum-guild-route-semantics-capture.json
-evidence/real-data/argentum-guild-route-semantics-review.json
+src/coa_workbench/collector/guild_progression_helper_definition_command.py
+src/coa_workbench/collector/guild_progression_helper_definition_index.py
+src/coa_workbench/collector/guild_progression_helper_definition_inventory.py
+scripts/inventory_guild_progression_helper_definition.py
+tests/unit/test_guild_progression_helper_definition_command.py
+tests/unit/test_guild_progression_helper_definition_index.py
+tests/unit/test_guild_progression_helper_definition_inventory.py
 ```
 
-## Implemented current probe
+It is offline-only, reads the exact archived SPA asset and bound private/public call-site/recovery artifacts, keeps raw definitions and aliases private, emits a scalar-free public receipt, and enforces `36` integrity checks.
+
+It must keep every downstream gate false, including:
 
 ```text
-src/coa_workbench/collector/guild_limit_semantics_capture.py
-scripts/capture_guild_limit_semantics.py
-tests/unit/test_guild_limit_semantics_capture.py
+ready for bounded progression route probe: false
+guild API route semantics verified: false
+pagination semantics verified: false
+termination semantics verified: false
+completeness verified: false
+ready for full guild crawl: false
+planner scoring allowed: false
 ```
 
-The probe performs exactly three bounded requests:
+No versioned helper-definition receipt or explicit helper-definition review exists yet. The next bounded task is to run this inventory locally against the exact private artifacts, inspect the private output, validate the scalar-free public receipt, and only then consider versioning it.
 
-```text
-private query + low limit
-private query + high limit
-private query + identical high-limit repeat
-```
+Do not perform a guessed network request to `/api/guilds/progression`.
 
-A capture is ready for separate limit review only when:
-
-- all three responses are complete and valid;
-- response schema is stable;
-- low-limit result count equals the low limit;
-- high-limit result count is greater than low and does not exceed high;
-- the high-limit repeat has the same ordered-record and source-ID-order hashes;
-- the low-limit source-ID hash sequence is an exact prefix of the high-limit sequence.
-
-The capture implementation must never publish the query, request URLs, source IDs, raw records or error text. A successful capture sets only `ready_for_limit_semantics_review=true`; it must leave `limit_truncation_semantics_verified=false` until a separate review receipt exists.
-
-## Current bounded sequence
-
-1. Confirm green CI on the current HEAD.
-2. Select a privacy-safe private query expected to return multiple guild records.
-3. Run the bounded multi-result limit capture locally.
-4. Upload only the scalar-free public capture receipt.
-5. Validate the receipt and version it if privacy/integrity checks pass.
-6. Implement and run a separate deterministic limit-semantics review.
-7. Version the scalar-free limit review only after explicit promotion.
-8. Separately prove pagination, termination and completeness.
-9. Compare any future API-derived report set with the private 17-report baseline.
-10. Preserve matching, missing, extra and conflicting partitions.
-11. Keep full crawl, character graph, performance model and scoring closed until their own gates pass.
-
-## Current boundary
+## Current decision boundary
 
 ```text
 guild identity verified: true
 guild filtering completed: true
 full crawl collection contract reviewed: true
-guild route template verified: true
-guild query shapes verified: true
-guild response schema verified: true
-limit parameter accepted: true
-ready for bounded limit-semantics capture: true
-limit truncation semantics verified: false
+guild-search route/schema verified: true
+guild-search limit truncation verified: true
+progression route candidate observed: true
+progression usage context reviewed: true
+progression helper/call-site reviewed: true
+progression HTTP method candidate: POST
+progression method candidate unambiguous: true
+helper-definition inventory implementation complete: true
+helper-definition inventory executed on private artifacts: false
+helper-definition receipt versioned: false
+helper-definition review complete: false
+progression helper identity resolved: false
+progression request payload mapping resolved: false
+progression request shape verified: false
+ready for bounded progression route probe: false
+progression route semantics verified: false
 pagination semantics verified: false
 termination semantics verified: false
 completeness verified: false
-guild API route semantics verified: false
 automatic full guild crawl allowed: false
 ready for full guild crawl: false
 ready for multi-report character graph: false
@@ -197,12 +156,10 @@ planner scoring allowed: false
 - Unknown fingerprint means reject and review.
 - Preserve contradicting evidence and failed requests.
 - Accepted parameter does not prove its semantics.
-- Route/schema verification does not prove limit truncation, pagination, termination or completeness.
-- A one-result response cannot verify limit truncation behavior.
-- Public receipts must not expose source guild IDs, report IDs, query values, request URLs, raw rows or error text.
+- A method candidate does not prove helper identity, payload mapping or request shape.
+- Public receipts must not expose source guild IDs, report IDs, private query values, request URLs, raw rows, raw JavaScript, callees, helper symbols, definitions, aliases or error text.
 - Partial results may not be marked complete.
 - Full crawl requires explicit route/query, schema, limit, pagination, termination, completeness and set-comparison evidence.
-- Parser correctness, identity verification, filtering and collection review do not confirm gameplay mechanics.
 
 ## Raw data and privacy
 
@@ -220,7 +177,18 @@ data/exchange/in/
 data/exchange/out/
 ```
 
-Never commit cookies, tokens, Authorization headers, browser profiles, `.env` secrets, unsanitized HAR, credentials, source guild IDs, report IDs, private queries or private packets.
+Never commit cookies, tokens, Authorization headers, browser profiles, `.env` secrets, unsanitized HAR, credentials, source guild IDs, report IDs, private queries, raw JavaScript contexts or private receipts.
+
+## Local Windows rules
+
+- User repository: `C:\Users\Simpa\source\repos\coa-raid-intelligence-workbench`.
+- Preserve all evidence paths during cleanup.
+- Do not delete tracked `.gitkeep` files inside ignored directories.
+- Use `git --no-pager diff` in PowerShell blocks to avoid stopping at `(END)`.
+- Do not assume an activated virtual environment is required for `uvx` or a standalone tool.
+- Local `uv sync --frozen --extra dev` previously attempted to build Ruff `0.12.12` from source and failed because MSVC `link.exe` was unavailable. Do not install Visual Studio Build Tools solely for formatting. Use the official standalone Ruff `0.12.12` Windows binary when required, or fix the dependency resolution separately.
+- Prefer `uv run --no-sync` or the existing environment for project commands only after verifying required runtime dependencies are present.
+- Provide one complete PowerShell block for local actions.
 
 ## Database and collector rules
 
@@ -232,17 +200,18 @@ Never commit cookies, tokens, Authorization headers, browser profiles, `.env` se
 - Archive before interpretation.
 - Write scalar-free receipts atomically.
 - Preserve checkpoints on ordinary transport failure.
-- Keep retries and response sizes bounded.
-- Use same-origin HTTPS and no credentials for public-source probes.
+- Keep retries, scans, contexts and response sizes bounded.
 
-## Required verification
+## Verification
+
+Canonical CI verification remains:
 
 ```powershell
 uv sync --frozen --extra dev
 uv run python scripts/verify_repo.py
 ```
 
-Run focused tests and inspect exact Actions results. Never claim a check passed unless it ran on the claimed HEAD.
+For local Windows work, adapt tooling only when the environment cannot satisfy the locked dev installation, and report the deviation explicitly. Never claim a check passed unless it ran on the claimed HEAD.
 
 ## Completion report
 
