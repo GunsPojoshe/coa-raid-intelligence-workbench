@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from coa_workbench.collector.guild_progression_helper_definition_inventory import (
+from coa_workbench.collector.guild_progression_helper_definition_command import (
     inventory_guild_progression_helper_definition,
 )
 
