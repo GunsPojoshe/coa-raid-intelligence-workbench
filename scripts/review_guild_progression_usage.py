@@ -18,23 +18,17 @@ def main() -> int:
     parser.add_argument(
         "--inventory",
         type=Path,
-        default=Path(
-            "evidence/real-data/argentum-guild-progression-usage-context.json"
-        ),
+        default=Path("evidence/real-data/argentum-guild-progression-usage-context.json"),
     )
     parser.add_argument(
         "--profiled-recovery",
         type=Path,
-        default=Path(
-            "evidence/real-data/argentum-guild-asset-profiled-recovery.json"
-        ),
+        default=Path("evidence/real-data/argentum-guild-asset-profiled-recovery.json"),
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path(
-            "data/exchange/out/argentum-guild-progression-usage-review.json"
-        ),
+        default=Path("data/exchange/out/argentum-guild-progression-usage-review.json"),
     )
     args = parser.parse_args()
 
