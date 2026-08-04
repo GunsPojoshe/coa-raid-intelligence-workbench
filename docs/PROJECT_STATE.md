@@ -25,7 +25,9 @@ PR #7 должен оставаться `open`, `Draft` и `mergeable`, пока
 - bounded multi-result limit capture `1 / 7 / 7`;
 - explicit limit-truncation review;
 - offline SPA usage-context inventory для `/api/guilds/progression`;
-- explicit usage-context review без semantic overclaim.
+- explicit usage-context review без semantic overclaim;
+- offline helper/call-site inventory;
+- explicit helper/call-site review с сохранением закрытого route probe.
 
 ## Guild-search limit evidence
 
@@ -39,57 +41,108 @@ limit truncation semantics verified: true
 
 Это доказывает только стабильное ограничение списка результатов guild search. Guild-report pagination этим не подтверждена.
 
-## Progression usage inventory
+## Progression usage-context checkpoint
 
 ```text
 inventory: evidence/real-data/argentum-guild-progression-usage-context.json
-inventory version: guild-progression-usage-context-inventory-v1
 inventory SHA-256: e19cc1a72175bd838b151b8438861af1aece14ba2a30f94da8f6989ce7be3d59
-integrity checks: 23/23
-network requests: 0
-route occurrences: 1
-call styles: literal_reference
-method candidates: []
-method candidate unambiguous: false
-query construction markers: []
-```
-
-Public inventory не содержит raw JavaScript context, asset URL, source guild ID или source scalar values. Raw context остаётся private/local.
-
-## Explicit progression usage review
-
-```text
+inventory checks: 23/23
 review: evidence/real-data/argentum-guild-progression-usage-review.json
-review version: guild-progression-usage-context-review-v1
 review SHA-256: 063abc51579e3942c4b33766fa9d1f9ba336a921a78bc15a5849971025a77198
-integrity checks: 30/30
+review checks: 30/30
+route occurrences: 1
+usage classification: literal_reference
+usage-context HTTP method candidates: []
 usage context reviewed: true
-actual invocation observed: false
-HTTP method resolved: false
 bounded route probe ready: false
 ```
 
-Review зафиксировал три blockers:
+Этот этап не подтвердил call site или HTTP method. Он разрешил только отдельный offline helper/call-site inventory.
+
+## Progression helper/call-site checkpoint
+
+Versioned inventory:
 
 ```text
-http_method_unresolved
-literal_reference_without_call_site
-invocation_shape_unresolved
+inventory: evidence/real-data/argentum-guild-progression-callsite.json
+inventory version: guild-progression-helper-callsite-inventory-v1
+inventory SHA-256: ad8a5addf9ac9dd566284e0bc395ac40100986d0f14f0a49e9519a6aef28d351
+integrity checks: 32/32
+network requests: 0
+route occurrences: 1
+call candidates: 1
+direct invocation candidates: 1
+call class: generic_helper_call
+method candidate: POST
+method candidate unambiguous: true
+method evidence: method_property_literal
 ```
 
-Единственная строковая ссылка на route не доказывает HTTP method, фактический call site или request shape. Выполнять network probe с угаданным `GET`/`POST` запрещено.
+Observed structural spans:
+
+```text
+call/envelope characters: 2479207
+function characters: 2411715
+reviewable threshold: 65536
+```
+
+Versioned review:
+
+```text
+review: evidence/real-data/argentum-guild-progression-callsite-review.json
+review version: guild-progression-helper-callsite-review-v1
+review SHA-256: d79302d755eab918ce3f85a9ad39e78231720391c8f0692925fe2e79b6adc60f
+integrity checks: 36/36
+helper/call-site reviewed: true
+HTTP method candidate: POST
+helper identity resolved: false
+request payload mapping resolved: false
+request shape sufficient for bounded probe: false
+ready for helper-definition inventory: true
+ready for bounded route probe: false
+```
+
+Review зафиксировал blockers:
+
+```text
+generic_helper_identity_unresolved
+structural_envelope_overbroad
+request_payload_mapping_unresolved
+```
+
+`POST` является однозначным method candidate внутри найденного generic-helper call. Это не подтверждает identity helper, фактическое отображение `body/data/params`, response schema или route semantics.
 
 Implementation:
 
 ```text
-src/coa_workbench/collector/guild_progression_usage_inventory.py
-scripts/inventory_guild_progression_usage.py
-src/coa_workbench/collector/guild_progression_usage_review.py
-scripts/review_guild_progression_usage.py
-tests/unit/test_guild_progression_usage_inventory.py
-tests/unit/test_guild_progression_usage_review.py
-tests/unit/test_versioned_guild_progression_usage_review.py
+src/coa_workbench/collector/guild_progression_callsite_contract.py
+src/coa_workbench/collector/guild_progression_js_index.py
+src/coa_workbench/collector/guild_progression_callsite_inventory.py
+scripts/inventory_guild_progression_callsite.py
+src/coa_workbench/collector/guild_progression_callsite_review.py
+scripts/review_guild_progression_callsite.py
+tests/unit/test_guild_progression_callsite_inventory.py
+tests/unit/test_guild_progression_callsite_review.py
+tests/unit/test_versioned_guild_progression_callsite_review.py
 ```
+
+Source receipt hashes in the deterministic review use canonical LF bytes so Linux and Windows checkouts produce the same review document.
+
+## Last confirmed implementation checkpoint
+
+```text
+HEAD: 2bfd1e15abe715d37454db95d6b46fd17619ed99
+Verify repository run: #570
+public-release-audit: success
+Ubuntu: success
+Windows: success
+pytest: 356 passed, 1 warning
+Doctor: success
+DuckDB clean/repeated initialization: success
+migrations: 0001–0008
+```
+
+Recheck live. Do not transfer this result to a later HEAD.
 
 ## Current decision boundary
 
@@ -101,10 +154,15 @@ full crawl collection contract reviewed: true
 guild-search route/schema verified: true
 guild-search limit truncation verified: true
 progression route candidate observed: true
-progression usage context observed: true
 progression usage context reviewed: true
-progression HTTP method resolved: false
+progression helper/call-site inventory observed: true
+progression helper/call-site reviewed: true
+progression HTTP method candidate: POST
+progression method candidate unambiguous: true
+progression helper identity resolved: false
+progression request payload mapping resolved: false
 progression request shape verified: false
+ready for helper-definition inventory: true
 ready for bounded progression route probe: false
 progression route semantics verified: false
 pagination semantics verified: false
@@ -121,9 +179,9 @@ planner scoring allowed: false
 
 ## Current blockers
 
-1. SPA asset содержит только literal route reference; фактический caller/helper не восстановлен.
-2. HTTP method `/api/guilds/progression` не определён.
-3. Request body/query shape не определены.
+1. Generic helper identity не восстановлен из exact archived SPA asset.
+2. Structural envelope около `2.48M` символов слишком широк для semantic promotion.
+3. Отображение `body`, `data` и `params` в фактический POST payload не подтверждено.
 4. Response schema и relation to guild report membership не подтверждены.
 5. Pagination, termination и completeness не подтверждены.
 6. API-derived membership не сравнивался с private 17-report baseline.
@@ -134,17 +192,18 @@ planner scoring allowed: false
 ## Следующий допустимый bounded этап
 
 ```text
-offline helper/call-site recovery from archived SPA asset
--> scalar-free public inventory
--> explicit helper/call-site review
--> bounded progression route probe only if exact method and request shape become unambiguous
+offline helper-definition inventory from the exact archived SPA asset
+-> bind helper-definition candidates to the published callee hash
+-> publish scalar-free definition/call-chain hashes and classifications
+-> explicit helper-definition review
+-> bounded progression route probe only if helper identity and exact request contract are verified
 -> response schema review
 -> pagination/termination/completeness evidence
 -> API-versus-private-baseline set comparison
 -> explicit full-crawl promotion only if every gate passes
 ```
 
-Следующий этап должен быть offline-only и читать local private recovery/raw archive. До explicit review запрещено выполнять network request к `/api/guilds/progression`.
+Следующий этап должен быть offline-only и читать local private recovery/raw archive. До explicit helper-definition review запрещено выполнять network request к `/api/guilds/progression`.
 
 ## Trust boundary
 
@@ -171,4 +230,4 @@ data/exchange/in/
 data/exchange/out/
 ```
 
-Never commit source guild IDs, report IDs, source rows, private queries, private receipts, raw JavaScript contexts, DuckDB, credentials, cookies, tokens, Authorization headers, browser profiles, `.env` or unsanitized HAR.
+Never commit source guild IDs, report IDs, source rows, private queries, private receipts, raw JavaScript contexts, raw callees, DuckDB, credentials, cookies, tokens, Authorization headers, browser profiles, `.env` or unsanitized HAR.
