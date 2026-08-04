@@ -1,0 +1,115 @@
+{
+  "cross_occurrence_evidence": {
+    "call_style_candidates": [
+      "literal_reference"
+    ],
+    "contains_raw_context": false,
+    "contains_source_scalar_values": false,
+    "method_candidate_count": 0,
+    "method_candidate_unambiguous": false,
+    "method_candidates": [],
+    "occurrence_count": 1,
+    "query_construction_markers": [],
+    "query_shape_candidate_unambiguous": true
+  },
+  "decision_boundary": {
+    "automatic_full_guild_crawl_allowed": false,
+    "completeness_verified": false,
+    "guild_api_route_semantics_verified": false,
+    "guild_progression_route_candidate_observed": true,
+    "guild_progression_usage_context_observed": true,
+    "pagination_semantics_verified": false,
+    "planner_scoring_allowed": false,
+    "ready_for_bis25_scoring": false,
+    "ready_for_bounded_progression_route_probe": false,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_guild_progression_usage_review": true,
+    "ready_for_multi_report_character_graph": false,
+    "ready_for_performance_model": false,
+    "status": "guild_progression_usage_context_observed",
+    "termination_semantics_verified": false
+  },
+  "generated_at": "2026-08-04T08:55:15.981873Z",
+  "integrity_checks": {
+    "asset_content_manifest_unique": true,
+    "asset_content_manifest_verified": true,
+    "asset_payload_path_confined_to_raw_root": true,
+    "asset_payload_sha256_verified": true,
+    "asset_uncompressed_byte_count_verified": true,
+    "completeness_not_overclaimed": true,
+    "full_crawl_remains_disabled": true,
+    "network_requests_performed_false": true,
+    "pagination_not_overclaimed": true,
+    "planner_scoring_remains_disabled": true,
+    "private_profiled_recovery_sha256_verified": true,
+    "private_recovery_scalar_boundary_verified": true,
+    "progression_route_candidate_bound_to_recovery": true,
+    "public_profiled_recovery_verified": true,
+    "public_receipt_contains_no_raw_context": true,
+    "public_receipt_scalar_boundary_preserved": true,
+    "public_recovery_integrity_checks_verified": true,
+    "public_recovery_privacy_boundary_verified": true,
+    "raw_usage_context_kept_private": true,
+    "route_occurrence_count_bounded": true,
+    "route_occurrence_observed": true,
+    "route_semantics_not_overclaimed": true,
+    "termination_not_overclaimed": true
+  },
+  "inventory_kind": "guild_progression_usage_context_inventory",
+  "inventory_version": "guild-progression-usage-context-inventory-v1",
+  "request_contract": {
+    "context_chars_per_side": 384,
+    "max_occurrences": 20,
+    "network_requests_performed": false,
+    "raw_archive_only": true
+  },
+  "schema_version": 1,
+  "source_private_inventory_name": "argentum-guild-progression-usage-context.private.json",
+  "source_private_inventory_sha256": "986bff5b9c825137298423fa302ec6f5ec4ce1afebbc66341823675467463ca7",
+  "source_private_recovery_name": "argentum-guild-asset-profiled-recovery.private.json",
+  "source_private_recovery_sha256": "96ec831521da9481c2e67ebd08ee23cbdcf33824bfec2911711ff50b91416acc",
+  "source_public_recovery_name": "argentum-guild-asset-profiled-recovery.json",
+  "source_public_recovery_sha256": "65dd2d30b11195d416260dac9fc1a1ca26253f6ed71f90f0e7e3da482c5ec453",
+  "summary": {
+    "all_integrity_checks_passed": true,
+    "completeness_verified": false,
+    "contains_raw_context": false,
+    "contains_source_scalar_values": false,
+    "guild_api_route_semantics_verified": false,
+    "integrity_check_count": 23,
+    "method_candidate_count": 0,
+    "method_candidate_unambiguous": false,
+    "network_requests_performed": false,
+    "pagination_semantics_verified": false,
+    "planner_scoring_allowed": false,
+    "query_shape_candidate_unambiguous": true,
+    "ready_for_bounded_progression_route_probe": false,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_guild_progression_usage_review": true,
+    "route_occurrence_count": 1,
+    "termination_semantics_verified": false
+  },
+  "target": {
+    "asset_url_published": false,
+    "guild_label": "Argentum",
+    "raw_context_published": false,
+    "route_template": "/api/guilds/progression",
+    "source_guild_id_published": false,
+    "source_scalar_values_published": false
+  },
+  "usage_contexts": [
+    {
+      "call_styles": [
+        "literal_reference"
+      ],
+      "contains_raw_context": false,
+      "contains_source_scalar_values": false,
+      "context_character_count": 791,
+      "context_sha256": "509da5ac237e7784b12fb74d4e3bd3a3eb768e1d50f2a99c4d661d327903c0c2",
+      "dynamic_route_construction_observed": false,
+      "method_candidates": [],
+      "occurrence_index": 1,
+      "query_construction_markers": []
+    }
+  ]
+}
