@@ -2,7 +2,7 @@
 
 Дата актуализации: **2026-08-04**.
 
-Перед любой работой перепроверять live-состояние GitHub, HEAD ветки, PR, CI, versioned receipts и local-only artifacts. HEAD не фиксируется в этом документе как постоянная истина: обновление документа само создаёт новый commit.
+Перед любой работой перепроверять live-состояние GitHub, текущий HEAD, PR, CI, versioned receipts и local-only artifacts. Этот документ фиксирует доказанный checkpoint, но его собственное обновление создаёт новый commit.
 
 ## Репозиторий
 
@@ -13,88 +13,63 @@ main
     └── e3/real-log-capture         PR #7 -> e2, Draft
 ```
 
-PR #7 должен оставаться `open`, `Draft` и `mergeable`, пока не закрыты evidence gates.
+PR #7 остаётся Draft до явного закрытия evidence gates.
+
+## Последний полностью проверенный implementation checkpoint
+
+```text
+implementation HEAD: 82265903a26bbf8e0032e6dc2512e623055da972
+commit: Format guild progression helper definition CLI
+Verify repository run: #578
+conclusion: success
+public-release-audit: success
+Ubuntu: success
+Windows: success
+migrations: 0001–0008
+working tree after push: clean
+```
+
+После этого checkpoint началась серия documentation-only commits. Для текущего HEAD CI проверять отдельно.
 
 ## Подтверждённые checkpoints
 
 - public manifest: `6454` уникальных отчёта;
 - Argentum identity decision;
 - private comparison baseline: `17` отчётов;
-- full-crawl collection contract;
+- reviewed full-crawl collection contract;
 - `/api/guilds/search` route/schema review;
 - bounded multi-result limit capture `1 / 7 / 7`;
 - explicit limit-truncation review;
-- offline SPA usage-context inventory для `/api/guilds/progression`;
-- explicit usage-context review без semantic overclaim;
-- offline helper/call-site inventory;
-- explicit helper/call-site review с сохранением закрытого route probe.
-
-## Guild-search limit evidence
-
-```text
-capture: evidence/real-data/argentum-guild-limit-semantics-capture.json
-capture SHA-256: 690d7d93d5e9c592877a4fa049d2638b0a5a523430f9205777ce4fa06e624e58
-capture checks: 15/15
-review checks: 30/30
-limit truncation semantics verified: true
-```
-
-Это доказывает только стабильное ограничение списка результатов guild search. Guild-report pagination этим не подтверждена.
-
-## Progression usage-context checkpoint
-
-```text
-inventory: evidence/real-data/argentum-guild-progression-usage-context.json
-inventory SHA-256: e19cc1a72175bd838b151b8438861af1aece14ba2a30f94da8f6989ce7be3d59
-inventory checks: 23/23
-review: evidence/real-data/argentum-guild-progression-usage-review.json
-review SHA-256: 063abc51579e3942c4b33766fa9d1f9ba336a921a78bc15a5849971025a77198
-review checks: 30/30
-route occurrences: 1
-usage classification: literal_reference
-usage-context HTTP method candidates: []
-usage context reviewed: true
-bounded route probe ready: false
-```
-
-Этот этап не подтвердил call site или HTTP method. Он разрешил только отдельный offline helper/call-site inventory.
+- offline `/api/guilds/progression` usage-context inventory и review;
+- offline helper/call-site inventory и review;
+- evidence-backed unambiguous `POST` method candidate;
+- offline helper-definition inventory implementation;
+- deterministic helper-definition tests;
+- Ruff formatting defect fixed and verified by run #578.
 
 ## Progression helper/call-site checkpoint
-
-Versioned inventory:
 
 ```text
 inventory: evidence/real-data/argentum-guild-progression-callsite.json
 inventory version: guild-progression-helper-callsite-inventory-v1
-inventory SHA-256: ad8a5addf9ac9dd566284e0bc395ac40100986d0f14f0a49e9519a6aef28d351
+canonical LF SHA-256: ad8a5addf9ac9dd566284e0bc395ac40100986d0f14f0a49e9519a6aef28d351
 integrity checks: 32/32
 network requests: 0
 route occurrences: 1
 call candidates: 1
 direct invocation candidates: 1
 call class: generic_helper_call
-method candidate: POST
-method candidate unambiguous: true
+HTTP method candidate: POST
 method evidence: method_property_literal
+method candidate unambiguous: true
 ```
-
-Observed structural spans:
-
-```text
-call/envelope characters: 2479207
-function characters: 2411715
-reviewable threshold: 65536
-```
-
-Versioned review:
 
 ```text
 review: evidence/real-data/argentum-guild-progression-callsite-review.json
 review version: guild-progression-helper-callsite-review-v1
-review SHA-256: d79302d755eab918ce3f85a9ad39e78231720391c8f0692925fe2e79b6adc60f
+SHA-256: d79302d755eab918ce3f85a9ad39e78231720391c8f0692925fe2e79b6adc60f
 integrity checks: 36/36
 helper/call-site reviewed: true
-HTTP method candidate: POST
 helper identity resolved: false
 request payload mapping resolved: false
 request shape sufficient for bounded probe: false
@@ -102,7 +77,7 @@ ready for helper-definition inventory: true
 ready for bounded route probe: false
 ```
 
-Review зафиксировал blockers:
+Blockers remain:
 
 ```text
 generic_helper_identity_unresolved
@@ -110,46 +85,37 @@ structural_envelope_overbroad
 request_payload_mapping_unresolved
 ```
 
-`POST` является однозначным method candidate внутри найденного generic-helper call. Это не подтверждает identity helper, фактическое отображение `body/data/params`, response schema или route semantics.
+`POST` is a method candidate inside the observed generic-helper call. It is not yet a verified request contract.
 
-Implementation:
-
-```text
-src/coa_workbench/collector/guild_progression_callsite_contract.py
-src/coa_workbench/collector/guild_progression_js_index.py
-src/coa_workbench/collector/guild_progression_callsite_inventory.py
-scripts/inventory_guild_progression_callsite.py
-src/coa_workbench/collector/guild_progression_callsite_review.py
-scripts/review_guild_progression_callsite.py
-tests/unit/test_guild_progression_callsite_inventory.py
-tests/unit/test_guild_progression_callsite_review.py
-tests/unit/test_versioned_guild_progression_callsite_review.py
-```
-
-Source receipt hashes in the deterministic review use canonical LF bytes so Linux and Windows checkouts produce the same review document.
-
-## Last confirmed implementation checkpoint
+## Helper-definition inventory implementation
 
 ```text
-HEAD: 2bfd1e15abe715d37454db95d6b46fd17619ed99
-Verify repository run: #570
-public-release-audit: success
-Ubuntu: success
-Windows: success
-pytest: 356 passed, 1 warning
-Doctor: success
-DuckDB clean/repeated initialization: success
-migrations: 0001–0008
+src/coa_workbench/collector/guild_progression_helper_definition_command.py
+src/coa_workbench/collector/guild_progression_helper_definition_index.py
+src/coa_workbench/collector/guild_progression_helper_definition_inventory.py
+scripts/inventory_guild_progression_helper_definition.py
+tests/unit/test_guild_progression_helper_definition_command.py
+tests/unit/test_guild_progression_helper_definition_index.py
+tests/unit/test_guild_progression_helper_definition_inventory.py
 ```
 
-Recheck live. Do not transfer this result to a later HEAD.
+Properties:
 
-## Current decision boundary
+- offline-only;
+- reads the exact archived SPA asset;
+- binds to published call-site and recovery hashes;
+- keeps raw helper definitions, aliases, callees and JavaScript contexts private;
+- emits only scalar-free public receipt data;
+- applies bounded scans and `36` integrity checks;
+- never raises route/full-crawl/scoring gates automatically.
+
+The implementation is complete and CI-green, but the inventory has not yet been executed against the current local private artifacts and no helper-definition receipt/review is versioned.
+
+## Current exact boundary
 
 ```text
 guild identity verified: true
 guild filtering completed: true
-guild report manifest deduplicated: true
 full crawl collection contract reviewed: true
 guild-search route/schema verified: true
 guild-search limit truncation verified: true
@@ -159,10 +125,14 @@ progression helper/call-site inventory observed: true
 progression helper/call-site reviewed: true
 progression HTTP method candidate: POST
 progression method candidate unambiguous: true
+helper-definition inventory implementation complete: true
+helper-definition inventory executed on private artifacts: false
+helper-definition public receipt validated: false
+helper-definition receipt versioned: false
+helper-definition review complete: false
 progression helper identity resolved: false
 progression request payload mapping resolved: false
 progression request shape verified: false
-ready for helper-definition inventory: true
 ready for bounded progression route probe: false
 progression route semantics verified: false
 pagination semantics verified: false
@@ -177,46 +147,53 @@ ready for BiS 25 scoring: false
 planner scoring allowed: false
 ```
 
-## Current blockers
-
-1. Generic helper identity не восстановлен из exact archived SPA asset.
-2. Structural envelope около `2.48M` символов слишком широк для semantic promotion.
-3. Отображение `body`, `data` и `params` в фактический POST payload не подтверждено.
-4. Response schema и relation to guild report membership не подтверждены.
-5. Pagination, termination и completeness не подтверждены.
-6. API-derived membership не сравнивался с private 17-report baseline.
-7. Multi-report character identity graph не построен.
-8. Bounded report slice содержит `0` aura events.
-9. Planner scoring остаётся disabled.
-
 ## Следующий допустимый bounded этап
 
 ```text
-offline helper-definition inventory from the exact archived SPA asset
--> bind helper-definition candidates to the published callee hash
--> publish scalar-free definition/call-chain hashes and classifications
--> explicit helper-definition review
--> bounded progression route probe only if helper identity and exact request contract are verified
--> response schema review
--> pagination/termination/completeness evidence
--> API-versus-private-baseline set comparison
--> explicit full-crawl promotion only if every gate passes
+verify current documentation-only HEAD and CI
+-> sync local branch by fast-forward
+-> confirm clean working tree and preserved local evidence
+-> run offline helper-definition inventory on exact private artifacts
+-> inspect private output and integrity checks
+-> validate scalar-free public receipt
+-> version only the public receipt if privacy and bindings pass
+-> implement explicit helper-definition review
+-> bounded progression route probe only if helper identity and exact payload contract become verified
 ```
 
-Следующий этап должен быть offline-only и читать local private recovery/raw archive. До explicit helper-definition review запрещено выполнять network request к `/api/guilds/progression`.
+Until explicit helper-definition review passes, do not perform a guessed network request to `/api/guilds/progression`.
 
-## Trust boundary
+## Local Windows state and tooling
 
 ```text
-combat-log event = observation
-combat-log event != automatic proof of a general mechanic
+repo: C:\Users\Simpa\source\repos\coa-raid-intelligence-workbench
+local implementation HEAD before documentation commits: 82265903a26bbf8e0032e6dc2512e623055da972
+working tree: clean
+evidence paths: preserved
 ```
 
-Parser/schema, identity, filtering и route reviews не подтверждают gameplay mechanics. Planner scoring допускает только `corroborated` и `confirmed` mechanics.
+Known environment detail:
+
+- `.venv` was not activated;
+- local `uv sync --frozen --extra dev` attempted to build Ruff `0.12.12` from source and failed because MSVC `link.exe` was unavailable;
+- the CI formatting fix was applied with the official standalone Ruff `0.12.12` Windows binary and passed lint/format checks;
+- future local instructions should use `git --no-pager diff` to avoid stopping at `(END)`.
+
+## Workflow notification convention
+
+After any push or GitHub connector write that starts a workflow:
+
+1. check the exact new run immediately;
+2. report current job states;
+3. offer one opt-in completion notification for that exact run;
+4. create the task only after user acceptance;
+5. disable it after completion or supersession.
+
+User preference is 15-minute polling. Current automation minimum is one hour, so never state that 15-minute polling is active unless platform support changes.
 
 ## Data and Git policy
 
-Versioned: source code/tests, migrations, reviewed mappings, canonical documentation and scalar-free evidence receipts.
+Versioned: code/tests, migrations, reviewed mappings, canonical documentation and scalar-free evidence receipts.
 
 Local-only:
 
