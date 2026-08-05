@@ -36,9 +36,7 @@ def main() -> int:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path(
-            "data/exchange/out/argentum-guild-progression-helper-definition-review.json"
-        ),
+        default=Path("data/exchange/out/argentum-guild-progression-helper-definition-review.json"),
     )
     args = parser.parse_args()
 
