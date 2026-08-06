@@ -5,15 +5,17 @@
 ```text
 scope: Conquest of Azeroth only
 branch: e3/real-log-capture
-last_reviewed: 2026-08-06
-verified_baseline_head: 8b24f5225b79172cb998c9ca53188fb76a6109ca
-verified_ci_run: 595
-verified_ci_result: success
+last_reviewed: 2026-08-07
+last_fully_verified_head: 50e6f50cf478eed4c6abf5bc032c2c1661c8ef8e
+last_fully_verified_ci_run: 596
+last_fully_verified_ci_result: success
+reference_receipt_head: e664d258bd6e93cc8fce8ff4781d577ca8f17fa6
+reference_review_implementation: staged
 ```
 
 ## Цель evidence chain
 
-Guild progression разрешается использовать только после последовательного доказательства request contract, collection semantics и полноты. Обнаружение route или HTTP method candidate само по себе не разрешает сетевой probe.
+Guild progression разрешается использовать только после последовательного доказательства request contract, collection semantics и полноты. Обнаружение route, HTTP method candidate, маркеров payload или сходного имени helper само по себе не разрешает сетевой probe.
 
 ```text
 route discovery
@@ -21,6 +23,7 @@ route discovery
 -> helper call-site inventory and review
 -> helper-definition inventory and review
 -> helper-reference inventory and review
+-> helper-owner inventory and review
 -> exact bounded request contract
 -> bounded route probe
 -> pagination, termination and completeness review
@@ -34,6 +37,7 @@ route candidate: /api/guilds/progression
 HTTP method candidate: POST
 method candidate unambiguous: true
 helper identity resolved: false
+helper owner binding resolved: false
 request payload mapping resolved: false
 request shape verified: false
 ready for bounded route probe: false
@@ -71,87 +75,121 @@ ready for bounded route probe: false
 
 The single 40-character terminal-symbol method is not sufficient to bind the observed call site to a transport implementation. It does not prove receiver ownership, alias ownership, payload mapping, headers, serialization or response handling.
 
-## Current bounded stage: helper-reference inventory
+## Helper-reference inventory
 
-The implementation inventories every bounded code reference to the exact private callee chain and its terminal symbol in the already archived SPA asset.
-
-It does not perform network requests.
-
-### Inputs
+### Versioned public receipt
 
 ```text
-evidence/real-data/argentum-guild-progression-helper-definition-review.json
-evidence/real-data/argentum-guild-progression-helper-definition.json
-data/extracted/report-discovery/argentum-guild-progression-helper-definition.private.json
-data/raw/<exact recovered asset>
+public receipt: evidence/real-data/argentum-guild-progression-helper-reference.json
+receipt SHA-256: f21a0b74a70e76f4728e3322e6c79571289895453f3fae6e44e851f3818da982
+private output SHA-256: 5542e7979fe01cd85239b09c81aaa8ca667fedd8c8ef1b4db541333c008d5bbd
+integrity checks: 40/40
+full-chain occurrences: 2
+terminal-symbol occurrences: 31
+terminal-symbol-only occurrences: 29
+unique reference candidates: 31
+definition overlaps: 1
+route-context references: 0
+direct transport markers: []
+request-shape markers: [JSON.stringify, body, data, params, url]
+all scans truncated: false
+network requests performed: false
 ```
 
-### Private output
+Reference kinds observed:
+
+```text
+definition_candidate
+invocation
+member_reference
+object_key
+```
+
+The request-shape marker classes were observed only inside broad bounded reference contexts. No reference context contains the progression route, and no direct transport marker was observed. Therefore those marker classes do not establish route binding, helper ownership or payload mapping.
+
+### Privacy boundary
+
+The private output remains ignored by Git:
 
 ```text
 data/extracted/report-discovery/argentum-guild-progression-helper-reference.private.json
 ```
 
-The private output may contain:
-
-- exact callee and terminal symbol;
-- source offsets;
-- bounded raw contexts;
-- definition-span alignment;
-- transport and request-shape marker observations.
-
-It must remain ignored by Git.
-
-### Public output
-
-```text
-data/exchange/out/argentum-guild-progression-helper-reference.json
-```
-
-The public receipt contains only:
+The public receipt publishes only:
 
 - occurrence counts and truncation flags;
-- reference classifications;
-- symbol scope classifications;
+- reference and symbol-scope classifications;
 - context SHA-256 values and character counts;
 - marker classes;
 - definition-overlap and route-context booleans;
 - explicit false downstream gates.
 
-It must not publish raw callee, raw symbol, source offsets, raw context, guild identifiers or request payload values.
+It does not publish raw callee, raw symbol, source offsets, raw context, guild identifiers or request payload values.
 
-### Bounded controls
+## Current bounded stage: explicit helper-reference review
+
+Implementation files:
 
 ```text
-max symbol occurrences: 500
-max reference candidates: 500
-private context characters per side: 1024
-raw archive only: true
+src/coa_workbench/collector/guild_progression_helper_reference_review.py
+scripts/review_guild_progression_helper_references.py
+tests/unit/test_guild_progression_helper_reference_review.py
+```
+
+The review stage:
+
+1. Binds the versioned public inventory to the exact private inventory and helper-definition review.
+2. Revalidates all 31 public/private reference rows in order.
+3. Recomputes private context hashes and validates bounded context spans.
+4. Reviews each reference without publishing raw symbols or contexts.
+5. Separates request-shape marker proximity from actual route/transport binding.
+6. Keeps helper identity, owner binding, payload mapping and route-probe gates false.
+7. Selects helper-owner inventory as the next bounded gate.
+
+Expected review disposition:
+
+```text
+unresolved_references_without_route_or_transport_binding
+```
+
+Expected blockers:
+
+```text
+route_not_observed_in_reference_contexts
+direct_transport_markers_not_observed
+receiver_or_owner_binding_unresolved
+request_shape_markers_not_bound_to_route_invocation
+```
+
+Integrity contract:
+
+```text
+integrity checks: 46
+public/private reference alignment: required
 network requests performed: false
+raw contexts published: false
+ready for helper-owner inventory: true
+ready for bounded route probe: false
 ```
 
-### Required reconciliation
-
-The new scan must reconcile exactly with the versioned definition inventory:
+Local implementation validation:
 
 ```text
-full-chain occurrence count
-terminal-symbol occurrence count
-scan truncation state
-definition candidate overlap
-asset payload SHA-256
-private inventory SHA-256
-public inventory SHA-256
-helper-definition review SHA-256
+Python compilation: passed
+focused unit tests: 5 passed
 ```
-
-Any mismatch stops the stage.
 
 ## Decision boundary
 
-Until helper-reference evidence is privately executed and explicitly reviewed:
+Until helper-reference review is executed on the exact private inventory and its scalar-free public receipt is versioned:
 
 ```text
+helper-reference inventory complete: true
+helper-reference public receipt versioned: true
+helper-reference review implementation complete: true
+helper-reference review private execution complete: false
+helper-reference review public receipt versioned: false
+helper owner binding resolved: false
 helper identity resolved: false
 request payload mapping resolved: false
 request shape verified: false
@@ -168,12 +206,13 @@ ready for BiS25 scoring: false
 planner scoring allowed: false
 ```
 
-## Acceptance criteria for this stage
+## Next bounded action
 
-1. The implementation reads only versioned receipts, the exact private definition inventory and the exact archived asset.
-2. Full-chain and terminal-symbol counts reconcile with prior evidence.
-3. All scans are bounded and non-truncated.
-4. Raw symbols and contexts remain private.
-5. The public receipt is scalar-free and passes its integrity checks.
-6. The stage selects explicit helper-reference review as the next gate.
-7. No route probe, full crawl or planner scoring gate is enabled.
+```text
+verify CI for the versioned helper-reference inventory receipt
+-> publish explicit helper-reference review implementation
+-> execute review against the exact private reference inventory
+-> validate scalar-free public review receipt
+-> version only the public review receipt
+-> implement helper-owner inventory
+```
