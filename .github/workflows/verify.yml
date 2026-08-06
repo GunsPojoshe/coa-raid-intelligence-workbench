@@ -3,7 +3,10 @@ name: Verify repository
 on:
   pull_request:
   push:
-    branches: [e2/log-evidence-refactor]
+    branches:
+      - e2/log-evidence-refactor
+      - e3/real-log-capture
+  workflow_dispatch:
 
 permissions:
   contents: read
