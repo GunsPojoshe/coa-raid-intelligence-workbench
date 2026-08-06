@@ -18,9 +18,7 @@ def main() -> int:
     parser.add_argument(
         "--inventory",
         type=Path,
-        default=Path(
-            "evidence/real-data/argentum-guild-progression-helper-reference.json"
-        ),
+        default=Path("evidence/real-data/argentum-guild-progression-helper-reference.json"),
     )
     parser.add_argument(
         "--private-inventory",
@@ -33,16 +31,12 @@ def main() -> int:
     parser.add_argument(
         "--definition-review",
         type=Path,
-        default=Path(
-            "evidence/real-data/argentum-guild-progression-helper-definition-review.json"
-        ),
+        default=Path("evidence/real-data/argentum-guild-progression-helper-definition-review.json"),
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path(
-            "data/exchange/out/argentum-guild-progression-helper-reference-review.json"
-        ),
+        default=Path("data/exchange/out/argentum-guild-progression-helper-reference-review.json"),
     )
     args = parser.parse_args()
 
