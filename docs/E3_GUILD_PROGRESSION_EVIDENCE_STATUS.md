@@ -2,22 +2,25 @@
 
 ## Статус
 
+Дата актуализации: **2026-08-07**.
+
 ```text
 scope: Conquest of Azeroth only
 branch: e3/real-log-capture
-last_reviewed: 2026-08-07
-last_fully_verified_head: 50e6f50cf478eed4c6abf5bc032c2c1661c8ef8e
-last_fully_verified_ci_run: 596
-last_fully_verified_ci_result: success
-reference_receipt_head: e664d258bd6e93cc8fce8ff4781d577ca8f17fa6
-reference_review_implementation: versioned
-reference_review_implementation_head: 1f5806dabaa28b7659fb471068d5a16ca273abf8
-current_ci_status: pending_new_pull_request_run
+verified implementation checkpoint: 66fd5ed89520070a7d48392f41fbfb7cb352b0f7
+last fully verified CI run: #598
+run ID: 31128752182
+trigger mode: workflow_dispatch
+last fully verified CI result: success
+public-release-audit: success
+ubuntu: success
+windows: success
+current live HEAD after documentation updates: must be queried live
 ```
 
 ## Цель evidence chain
 
-Guild progression разрешается использовать только после последовательного доказательства request contract, collection semantics и полноты. Обнаружение route, HTTP method candidate, маркеров payload или сходного имени helper само по себе не разрешает сетевой probe.
+Guild progression разрешается использовать только после последовательного доказательства request contract, collection semantics и полноты. Обнаружение route, HTTP method candidate, payload markers или сходного имени helper само по себе не разрешает сетевой probe.
 
 ```text
 route discovery
@@ -128,7 +131,7 @@ The public receipt publishes only:
 
 It does not publish raw callee, raw symbol, source offsets, raw context, guild identifiers or request payload values.
 
-## Current bounded stage: explicit helper-reference review
+## Helper-reference review implementation
 
 Versioned implementation files:
 
@@ -174,29 +177,27 @@ ready for helper-owner inventory: true
 ready for bounded route probe: false
 ```
 
-Local implementation validation:
+Verified implementation validation at checkpoint `66fd5ed`:
 
 ```text
-Python compilation: passed
-focused unit tests: 5 passed
+Ruff lint: passed
+Ruff format: passed
+focused helper-reference tests: passed
+full pytest: 387 passed
+repository verification: 10/10 passed
 ```
 
-## CI trigger note
-
-The implementation commits were first assembled on the temporary staging branch and the main E3 ref was then fast-forwarded through the Git data API. That ref move did not create a new Actions run. This status update is an ordinary commit on `e3/real-log-capture` and is intended to create the required `pull_request synchronize` event.
-
-The temporary staging branch is not a second product branch and must not receive a separate pull request.
-
-## Decision boundary
-
-Until helper-reference review is executed on the exact private inventory and its scalar-free public receipt is versioned:
+## Current decision boundary
 
 ```text
+helper-definition inventory complete: true
+helper-definition review complete: true
 helper-reference inventory complete: true
 helper-reference public receipt versioned: true
 helper-reference review implementation complete: true
 helper-reference review private execution complete: false
 helper-reference review public receipt versioned: false
+helper-owner inventory complete: false
 helper owner binding resolved: false
 helper identity resolved: false
 request payload mapping resolved: false
@@ -210,17 +211,40 @@ automatic full guild crawl allowed: false
 ready for full guild crawl: false
 ready for multi-report character graph: false
 ready for performance model: false
-ready for BiS25 scoring: false
+ready for encounter-aware roster completion: false
 planner scoring allowed: false
 ```
 
-## Next bounded action
+## Repository-audit gate before the next evidence stage
+
+Перед выполнением private helper-reference review пользователь зафиксировал обязательный отдельный этап:
 
 ```text
-verify CI for the explicit helper-reference review implementation
--> synchronize local branch
--> execute review against the exact private reference inventory
+full local and GitHub audit
+-> branch inventory
+-> architecture refactoring plan
+-> repository cleanup inventory
+-> legacy Excel/workbook dependency audit
+-> explicit approval for destructive actions
+-> atomic cleanup
+-> full local and exact-head CI verification
+```
+
+Этот audit не изменяет evidence gates сам по себе. Cleanup не должен удалять public receipts, integrity contracts, migrations, private-data protections или reproducibility records без отдельного доказательства безопасности.
+
+## Следующий bounded product action после audit/cleanup
+
+```text
+execute helper-reference review against exact private reference inventory
+-> inspect all integrity checks and private result
 -> validate scalar-free public review receipt
 -> version only the public review receipt
--> implement helper-owner inventory
+-> implement helper-owner inventory and review
+-> consider bounded progression probe only after exact owner, helper and payload verification
 ```
+
+Do not perform a guessed network request to `/api/guilds/progression`.
+
+## CI note
+
+Automatic `push` run delivery for `e3/real-log-capture` remained absent during the controlled push to checkpoint `66fd5ed`. Manual `workflow_dispatch` run #598 is the last fully verified execution. Follow `docs/CI_OPERATIONS.md` and query current exact-head runs live.
