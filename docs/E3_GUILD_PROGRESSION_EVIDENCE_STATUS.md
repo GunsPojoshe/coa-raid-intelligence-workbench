@@ -10,7 +10,9 @@ last_fully_verified_head: 50e6f50cf478eed4c6abf5bc032c2c1661c8ef8e
 last_fully_verified_ci_run: 596
 last_fully_verified_ci_result: success
 reference_receipt_head: e664d258bd6e93cc8fce8ff4781d577ca8f17fa6
-reference_review_implementation: staged
+reference_review_implementation: versioned
+reference_review_implementation_head: 1f5806dabaa28b7659fb471068d5a16ca273abf8
+current_ci_status: pending_new_pull_request_run
 ```
 
 ## Цель evidence chain
@@ -128,7 +130,7 @@ It does not publish raw callee, raw symbol, source offsets, raw context, guild i
 
 ## Current bounded stage: explicit helper-reference review
 
-Implementation files:
+Versioned implementation files:
 
 ```text
 src/coa_workbench/collector/guild_progression_helper_reference_review.py
@@ -179,6 +181,12 @@ Python compilation: passed
 focused unit tests: 5 passed
 ```
 
+## CI trigger note
+
+The implementation commits were first assembled on the temporary staging branch and the main E3 ref was then fast-forwarded through the Git data API. That ref move did not create a new Actions run. This status update is an ordinary commit on `e3/real-log-capture` and is intended to create the required `pull_request synchronize` event.
+
+The temporary staging branch is not a second product branch and must not receive a separate pull request.
+
 ## Decision boundary
 
 Until helper-reference review is executed on the exact private inventory and its scalar-free public receipt is versioned:
@@ -209,8 +217,8 @@ planner scoring allowed: false
 ## Next bounded action
 
 ```text
-verify CI for the versioned helper-reference inventory receipt
--> publish explicit helper-reference review implementation
+verify CI for the explicit helper-reference review implementation
+-> synchronize local branch
 -> execute review against the exact private reference inventory
 -> validate scalar-free public review receipt
 -> version only the public review receipt
