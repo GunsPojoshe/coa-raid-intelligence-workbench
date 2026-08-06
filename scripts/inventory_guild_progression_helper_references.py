@@ -18,9 +18,7 @@ def main() -> int:
     parser.add_argument(
         "--definition-review",
         type=Path,
-        default=Path(
-            "evidence/real-data/argentum-guild-progression-helper-definition-review.json"
-        ),
+        default=Path("evidence/real-data/argentum-guild-progression-helper-definition-review.json"),
     )
     parser.add_argument(
         "--public-definition-inventory",
@@ -47,9 +45,7 @@ def main() -> int:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path(
-            "data/exchange/out/argentum-guild-progression-helper-reference.json"
-        ),
+        default=Path("data/exchange/out/argentum-guild-progression-helper-reference.json"),
     )
     parser.add_argument("--max-symbol-occurrences", type=int, default=500)
     parser.add_argument("--max-reference-candidates", type=int, default=500)
