@@ -1,0 +1,70 @@
+{
+  "decision_boundary": {
+    "full_crawl_collection_contract_reviewed": false,
+    "guild_api_route_semantics_verified": false,
+    "guild_filtering_completed": true,
+    "guild_identity_verified": true,
+    "guild_report_manifest_deduplicated": true,
+    "planner_scoring_allowed": false,
+    "ready_for_bis25_scoring": false,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_guild_filtering": true,
+    "ready_for_multi_report_character_graph": false,
+    "ready_for_performance_model": false,
+    "status": "verified_guild_report_manifest_filtered"
+  },
+  "integrity_checks": {
+    "explicit_operator_promotion_verified": true,
+    "private_identity_decision_sha256_verified": true,
+    "private_manifest_sha256_verified": true,
+    "public_identity_decision_verified": true,
+    "public_manifest_verified": true,
+    "public_receipt_contains_no_source_scalar_values": true,
+    "raw_report_records_not_published": true,
+    "selected_report_ids_unique": true,
+    "selected_report_membership_matches_identity_decision": true,
+    "selected_reports_match_target_label_casefold": true,
+    "selected_reports_match_verified_source_guild_id": true,
+    "source_guild_id_not_published": true,
+    "source_manifest_report_ids_unique": true,
+    "verified_source_guild_id_loaded_from_private_decision": true
+  },
+  "manifest_hashes": {
+    "ordered_report_ids_sha256": "90460c38368f35d32aa28fdf135ae881658ce0cd3817a14283300e08fd749084",
+    "ordered_report_records_sha256": "ce6fd165c831c995854af67b17e7a56a7a690ded846ea3fbc365b226b6233542"
+  },
+  "manifest_kind": "verified_guild_report_manifest",
+  "manifest_version": "verified-guild-report-manifest-v1",
+  "schema_version": 1,
+  "selection_contract": {
+    "deduplication_key": "/reports/*/id",
+    "filter_field": "/reports/*/guild_id",
+    "filter_operation": "equals_verified_private_source_guild_id",
+    "selection_order": "source_manifest_order"
+  },
+  "source_private_guild_manifest_name": "argentum-guild-report-manifest.private.json",
+  "source_private_guild_manifest_sha256": "cc22da3a5f709d427671e3c69f3e3a2de365913b481e260ce3093e520c3d79f8",
+  "source_public_identity_decision_name": "argentum-guild-identity-decision.json",
+  "source_public_identity_decision_sha256": "f4643b523622da98b19c034cb278d615dabc0b7cda50ed4ca84a28c6a0cc7785",
+  "source_public_manifest_name": "argentum-public-report-manifest.json",
+  "source_public_manifest_sha256": "aaad2a9301bdb6a8e2af62a04fc74083a3d1fcd255c293b72dba3d4953b49e57",
+  "summary": {
+    "all_integrity_checks_passed": true,
+    "contains_raw_payload": false,
+    "contains_source_scalar_values": false,
+    "duplicate_selected_report_occurrence_count": 0,
+    "guild_filtering_completed": true,
+    "guild_identity_verified": true,
+    "planner_scoring_allowed": false,
+    "ready_for_full_guild_crawl": false,
+    "selected_report_count": 17,
+    "source_report_count": 6454,
+    "unique_selected_report_id_count": 17
+  },
+  "target": {
+    "guild_label": "Argentum",
+    "raw_report_records_published": false,
+    "report_ids_published": false,
+    "source_guild_id_published": false
+  }
+}

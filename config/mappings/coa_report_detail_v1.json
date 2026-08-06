@@ -1,0 +1,351 @@
+{
+  "deferred_fields": [
+    "/report/difficulty",
+    "/report/guild_id",
+    "/report/guild_name",
+    "/report/is_speed_run",
+    "/report/last_reprocessed_at",
+    "/report/log_source",
+    "/report/original_created_at",
+    "/report/processing_warnings",
+    "/report/reprocessing_count",
+    "/report/speed_run_base_duration_ms",
+    "/report/speed_run_duration_ms",
+    "/report/speed_run_end_time",
+    "/report/speed_run_penalty_seconds",
+    "/report/speed_run_start_time",
+    "/report/speed_run_validated_at",
+    "/report/speed_run_zone",
+    "/report/updated_at",
+    "/report/uploaded_by",
+    "/report/user_id"
+  ],
+  "deferred_scopes": [],
+  "entities": {
+    "encounters": {
+      "collection": "/encounters/*",
+      "fields": {
+        "end_time": "@item/end_time",
+        "kill_time": "@item/kill_time",
+        "name": "@item/name",
+        "source_encounter_id": "@item/id",
+        "source_report_id": "@root/report/id",
+        "start_time": "@item/start_time",
+        "success": "@item/success",
+        "wipe_percent": "@item/wipe_percent"
+      },
+      "required": [
+        "source_encounter_id",
+        "source_report_id",
+        "name",
+        "start_time",
+        "end_time",
+        "success"
+      ]
+    },
+    "reports": {
+      "collection": "/report",
+      "fields": {
+        "created_at": "@item/created_at",
+        "end_time": "@item/end_time",
+        "has_telemetry": "@item/has_telemetry",
+        "realm": "@item/realm",
+        "source_report_id": "@item/id",
+        "start_time": "@item/start_time",
+        "status": "@item/status",
+        "timezone": "@item/timezone",
+        "title": "@item/title",
+        "visibility": "@item/visibility",
+        "zone": "@item/zone"
+      },
+      "required": [
+        "source_report_id",
+        "title",
+        "created_at",
+        "start_time",
+        "end_time",
+        "visibility",
+        "timezone",
+        "realm",
+        "zone",
+        "status",
+        "has_telemetry"
+      ]
+    }
+  },
+  "event_type_map": {},
+  "field_contracts": [
+    {
+      "canonical_field": "source_report_id",
+      "entity": "reports",
+      "expression": "@item/id",
+      "nullable": false,
+      "required": true,
+      "review_path": "/report/id",
+      "review_scope": "/report",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "integer"
+      ]
+    },
+    {
+      "canonical_field": "title",
+      "entity": "reports",
+      "expression": "@item/title",
+      "nullable": false,
+      "required": true,
+      "review_path": "/report/title",
+      "review_scope": "/report",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "created_at",
+      "entity": "reports",
+      "expression": "@item/created_at",
+      "nullable": false,
+      "required": true,
+      "review_path": "/report/created_at",
+      "review_scope": "/report",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "start_time",
+      "entity": "reports",
+      "expression": "@item/start_time",
+      "nullable": false,
+      "required": true,
+      "review_path": "/report/start_time",
+      "review_scope": "/report",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "end_time",
+      "entity": "reports",
+      "expression": "@item/end_time",
+      "nullable": false,
+      "required": true,
+      "review_path": "/report/end_time",
+      "review_scope": "/report",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "visibility",
+      "entity": "reports",
+      "expression": "@item/visibility",
+      "nullable": false,
+      "required": true,
+      "review_path": "/report/visibility",
+      "review_scope": "/report",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "timezone",
+      "entity": "reports",
+      "expression": "@item/timezone",
+      "nullable": false,
+      "required": true,
+      "review_path": "/report/timezone",
+      "review_scope": "/report",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "realm",
+      "entity": "reports",
+      "expression": "@item/realm",
+      "nullable": false,
+      "required": true,
+      "review_path": "/report/realm",
+      "review_scope": "/report",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "zone",
+      "entity": "reports",
+      "expression": "@item/zone",
+      "nullable": false,
+      "required": true,
+      "review_path": "/report/zone",
+      "review_scope": "/report",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "status",
+      "entity": "reports",
+      "expression": "@item/status",
+      "nullable": false,
+      "required": true,
+      "review_path": "/report/status",
+      "review_scope": "/report",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "has_telemetry",
+      "entity": "reports",
+      "expression": "@item/has_telemetry",
+      "nullable": false,
+      "required": true,
+      "review_path": "/report/has_telemetry",
+      "review_scope": "/report",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "boolean"
+      ]
+    },
+    {
+      "canonical_field": "source_encounter_id",
+      "entity": "encounters",
+      "expression": "@item/id",
+      "nullable": false,
+      "required": true,
+      "review_path": "/encounters/*/id",
+      "review_scope": "/encounters/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "integer"
+      ]
+    },
+    {
+      "canonical_field": "source_report_id",
+      "entity": "encounters",
+      "expression": "@root/report/id",
+      "nullable": false,
+      "required": true,
+      "review_path": "/report/id",
+      "review_scope": "/report",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "integer"
+      ]
+    },
+    {
+      "canonical_field": "name",
+      "entity": "encounters",
+      "expression": "@item/name",
+      "nullable": false,
+      "required": true,
+      "review_path": "/encounters/*/name",
+      "review_scope": "/encounters/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "start_time",
+      "entity": "encounters",
+      "expression": "@item/start_time",
+      "nullable": false,
+      "required": true,
+      "review_path": "/encounters/*/start_time",
+      "review_scope": "/encounters/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "end_time",
+      "entity": "encounters",
+      "expression": "@item/end_time",
+      "nullable": false,
+      "required": true,
+      "review_path": "/encounters/*/end_time",
+      "review_scope": "/encounters/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "string"
+      ]
+    },
+    {
+      "canonical_field": "success",
+      "entity": "encounters",
+      "expression": "@item/success",
+      "nullable": false,
+      "required": true,
+      "review_path": "/encounters/*/success",
+      "review_scope": "/encounters/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "boolean"
+      ]
+    },
+    {
+      "canonical_field": "kill_time",
+      "entity": "encounters",
+      "expression": "@item/kill_time",
+      "nullable": true,
+      "required": false,
+      "review_path": "/encounters/*/kill_time",
+      "review_scope": "/encounters/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "null",
+        "object"
+      ]
+    },
+    {
+      "canonical_field": "wipe_percent",
+      "entity": "encounters",
+      "expression": "@item/wipe_percent",
+      "nullable": true,
+      "required": false,
+      "review_path": "/encounters/*/wipe_percent",
+      "review_scope": "/encounters/*",
+      "semantic_status": "verified_parser_field",
+      "types": [
+        "null",
+        "string"
+      ]
+    }
+  ],
+  "mapping_id": "coa-report-detail-v1",
+  "mapping_schema_version": 1,
+  "mapping_version": "1",
+  "mechanic_semantics_verified": false,
+  "promotion_validation_kind": "observed_report_slice_candidate_mapping_validation",
+  "promotion_validation_name": "observed-report-slice-candidate-mapping-validation.json",
+  "provenance_type": "upstream_derived",
+  "review_notes": [
+    "Normalizes the exact report object and its fourteen observed encounter-list items.",
+    "The encounter-to-report relation uses the exact reviewed /report/id root field.",
+    "Speed-run, processing-warning, guild and uploader fields remain deferred from this minimal slice.",
+    "Manual promotion verifies selectors, JSON types, nullability, exact raw archive identity, dry-run counts and cross-payload linkage.",
+    "Promotion does not verify gameplay mechanics, class/spec codebooks, combatants-info enrichment or aura semantics."
+  ],
+  "review_summary_schema_version": 1,
+  "reviewed_at": "2026-07-29T18:28:00+03:00",
+  "reviewed_by": "GunsPojoshe (operator), OpenAI-assisted review",
+  "reviewed_payload_hash": "161739896f0b8321f884bcc24d1896efb894a9c6e05166269189f9871c64cba9",
+  "route_template": "/api/reports/{template}",
+  "schema_fingerprint": "3d533a4178b67957bbd31544ddf5484bd5959635ebd5edcdd0c7689a4bace216",
+  "source_code": "coa_ascension_logs",
+  "status": "verified",
+  "verification_scope": "parser_schema_raw_archive_dry_run_and_cross_payload_linkage_only"
+}

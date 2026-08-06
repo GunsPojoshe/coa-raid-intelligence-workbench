@@ -1,0 +1,91 @@
+{
+  "capture_binding": {
+    "bytes_uncompressed": 93,
+    "content_type": "application/json; charset=utf-8",
+    "http_status": 200,
+    "observation_id": "94e02a08a6010935a7dbb0c86dfc62dcf38e6614c1b5f04d0d91f9927a83498b",
+    "payload_hash": "3af0c236bbf2e012112be101f09b4d91a100fafd40adbb9aace76300f9a84186",
+    "raw_id": "51f04098b08d58af0708c34ab6197e11aae667fe47fb1f542abee5efb6425d9d",
+    "schema_fingerprint": "591a876403b641d0e834357beb50a7dfe7dfb2181f81d811334fd1b8493b04af",
+    "selected_access_profile": "spa_fetch_context"
+  },
+  "decision_boundary": {
+    "guild_api_route_candidates_observed": true,
+    "guild_api_route_semantics_verified": false,
+    "guild_identity_verified": false,
+    "guild_search_access_profile_candidate_observed": true,
+    "guild_search_route_response_captured": true,
+    "guild_search_route_semantics_candidate_observed": true,
+    "independent_source_identity_candidate_observed": false,
+    "independent_source_identity_verified": false,
+    "planner_scoring_allowed": false,
+    "ready_for_bis25_scoring": false,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_guild_filtering": false,
+    "ready_for_guild_identity_decision_review": false,
+    "ready_for_multi_report_character_graph": false,
+    "ready_for_performance_model": false,
+    "status": "guild_search_route_semantics_candidate_observed"
+  },
+  "generated_at": "2026-07-31T10:49:45.220161Z",
+  "integrity_checks": {
+    "private_access_diagnostic_sha256_verified": true,
+    "private_search_probe_sha256_verified": true,
+    "public_access_diagnostic_verified": true,
+    "public_private_capture_binding_verified": true,
+    "public_receipt_scalar_boundary_preserved": true,
+    "raw_content_manifest_binding_verified": true,
+    "raw_content_manifest_unique": true,
+    "raw_payload_matches_private_diagnostic": true,
+    "raw_payload_not_published": true,
+    "raw_payload_sha256_verified": true,
+    "selected_access_profile_verified": true,
+    "source_guild_id_not_published": true
+  },
+  "match_review": {
+    "contains_source_scalar_values": false,
+    "distinct_id_like_value_count": 0,
+    "distinct_object_path_count": 0,
+    "exact_label_and_source_id_cooccur": false,
+    "exact_label_field_names": [],
+    "exact_label_object_count": 0,
+    "id_like_field_names": [],
+    "id_like_value_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "object_paths": [],
+    "one_to_one_identity_candidate": false,
+    "source_id_match_object_count": 0
+  },
+  "payload_shape": {
+    "contains_source_scalar_values": false,
+    "guild_object_count": 1,
+    "guilds_is_array": true,
+    "success_boolean_true": true,
+    "top_level_keys": [
+      "guilds",
+      "success"
+    ],
+    "top_level_kind": "object"
+  },
+  "review_kind": "guild_identity_search_capture_review",
+  "review_version": "guild-identity-search-capture-review-v1",
+  "schema_version": 1,
+  "source_private_review_name": "argentum-guild-search-capture-review.private.json",
+  "source_private_review_sha256": "f7cf01f08c327cc5ab84db674f6cda3035b6088eb8f0d283f6587215d17de964",
+  "source_public_diagnostic_name": "argentum-guild-search-access-spa-context.json",
+  "source_public_diagnostic_sha256": "591110d583589097dfdad1be95f43841fd2f3a3a3cfca0b2a808a20b4aa755d4",
+  "summary": {
+    "all_integrity_checks_passed": true,
+    "contains_raw_payload": false,
+    "contains_source_scalar_values": false,
+    "exact_label_object_count": 0,
+    "integrity_check_count": 12,
+    "one_to_one_identity_candidate": false,
+    "route_shape_candidate": true,
+    "source_id_match_object_count": 0
+  },
+  "target": {
+    "guild_label": "Argentum",
+    "raw_payload_published": false,
+    "source_guild_id_published": false
+  }
+}

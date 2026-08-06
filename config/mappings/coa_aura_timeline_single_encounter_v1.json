@@ -1,0 +1,26 @@
+{
+  "mapping_id": "coa-aura-timeline-single-encounter-v1",
+  "source_code": "coa_ascension_logs",
+  "mapping_version": "1",
+  "status": "verified",
+  "schema_fingerprints": [
+    "2994424cb95c2a7e1997651226b7942367ebe77003e0f4614aae5da4920f8b98",
+    "d8b6dd869d6adf8f3433f9e285b8270cd1aa8d640839c915a42c80b2211cbf0b"
+  ],
+  "required_top_level": [
+    "encounter_duration_ms",
+    "report_id",
+    "series",
+    "spell"
+  ],
+  "required_event_fields": [
+    "event_type",
+    "ms",
+    "source_id",
+    "target_id"
+  ],
+  "event_type_map": {
+    "buff_applied": "APPLIED",
+    "buff_removed": "REMOVED"
+  }
+}

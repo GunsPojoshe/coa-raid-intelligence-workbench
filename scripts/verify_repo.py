@@ -55,7 +55,7 @@ def main() -> int:
         ("Ruff lint", [python, "-m", "ruff", "check", "."], None),
         (
             "Ruff format",
-            [python, "-m", "ruff", "format", "--check", "."],
+            [python, "-m", "ruff", "format", "--diff", "."],
             None,
         ),
         ("Full pytest", [python, "-m", "pytest"], clean_env),

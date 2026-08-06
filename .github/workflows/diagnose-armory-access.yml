@@ -1,0 +1,59 @@
+name: Diagnose Armory Access
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: diagnose-armory-access
+  cancel-in-progress: true
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Run safe access matrix
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          set +e
+          python scripts/diagnose_armory_access.py > artifacts/armory-access-diagnostic.json
+          diagnostic_exit=$?
+          set -e
+
+          python - <<'PY'
+          import json
+          from collections import defaultdict
+          from pathlib import Path
+
+          path = Path("artifacts/armory-access-diagnostic.json")
+          payload = json.loads(path.read_text(encoding="utf-8"))
+          grouped = defaultdict(list)
+          for item in payload.get("results", []):
+              grouped[item.get("variant", "unknown")].append(
+                  f"{item.get('endpoint')}={item.get('status')}"
+              )
+          print(f"diagnostic_file={path}")
+          print(f"result_count={len(payload.get('results', []))}")
+          for variant in sorted(grouped):
+              print(f"{variant}: " + ", ".join(grouped[variant]))
+          PY
+
+          exit "$diagnostic_exit"
+      - name: Upload diagnostic artifact
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: armory-access-diagnostic
+          path: artifacts/armory-access-diagnostic.json
+          if-no-files-found: error
+          retention-days: 3

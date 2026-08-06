@@ -1,0 +1,101 @@
+{
+  "mapping_schema_version": 1,
+  "mapping_id": "coa-armory-character-v1",
+  "source_code": "coa_ascension_logs",
+  "mapping_version": "1",
+  "status": "verified",
+  "endpoint_kind": "character",
+  "route_template": "/api/armory/character/{character_id}",
+  "schema_fingerprint": "efbcf618291d824667ba586c22af4ed031fa146d69b11a5539ec17a41d042621",
+  "reviewed_payload_hash": "2a9d752d7af72d41cd9d41836d670069c78e408df7260f5d9caa83b07430985f",
+  "review_packet_schema_version": 2,
+  "provenance_type": "upstream_derived",
+  "reviewed_by": "GunsPojoshe (operator), OpenAI-assisted review",
+  "reviewed_at": "2026-07-29T15:34:00+03:00",
+  "singletons": {
+    "capture_id": {"selector": "/capture/capture_id", "review_path": "/capture/capture_id", "types": ["string"], "nullable": false, "required": true},
+    "captured_at": {"selector": "/capture/captured_at", "review_path": "/capture/captured_at", "types": ["string"], "nullable": false, "required": true},
+    "source_report_id": {"selector": "/capture/encounter/report_id", "review_path": "/capture/encounter/report_id", "types": ["integer"], "nullable": false, "required": true},
+    "source_encounter_id": {"selector": "/capture/encounter/id", "review_path": "/capture/encounter/id", "types": ["integer"], "nullable": false, "required": true},
+    "boss_id": {"selector": "/capture/encounter/boss_id", "review_path": "/capture/encounter/boss_id", "types": ["integer"], "nullable": false, "required": true},
+    "boss_name": {"selector": "/capture/encounter/boss_name", "review_path": "/capture/encounter/boss_name", "types": ["string"], "nullable": false, "required": true},
+    "difficulty": {"selector": "/capture/encounter/difficulty", "review_path": "/capture/encounter/difficulty", "types": ["string"], "nullable": false, "required": true},
+    "encounter_started_at": {"selector": "/capture/encounter/start_time", "review_path": "/capture/encounter/start_time", "types": ["string"], "nullable": false, "required": true},
+    "encounter_ended_at": {"selector": "/capture/encounter/end_time", "review_path": "/capture/encounter/end_time", "types": ["string"], "nullable": false, "required": true},
+    "encounter_success": {"selector": "/capture/encounter/success", "review_path": "/capture/encounter/success", "types": ["boolean"], "nullable": false, "required": true},
+    "source_actor_id": {"selector": "/ci_resolved/player/guid", "review_path": "/ci_resolved/player/guid", "types": ["string"], "nullable": false, "required": true},
+    "nickname": {"selector": "/ci_resolved/player/name", "review_path": "/ci_resolved/player/name", "types": ["string"], "nullable": false, "required": true},
+    "realm": {"selector": "/ci_resolved/player/realm", "review_path": "/ci_resolved/player/realm", "types": ["string"], "nullable": false, "required": true},
+    "class_name": {"selector": "/ci_resolved/player/class", "review_path": "/ci_resolved/player/class", "types": ["string"], "nullable": false, "required": true},
+    "level": {"selector": "/ci_resolved/player/level", "review_path": "/ci_resolved/player/level", "types": ["integer"], "nullable": false, "required": true},
+    "race": {"selector": "/ci_resolved/player/race", "review_path": "/ci_resolved/player/race", "types": ["string"], "nullable": false, "required": true},
+    "role": {"selector": "/stats_summary/context/role", "review_path": "/stats_summary/context/role", "types": ["string"], "nullable": false, "required": true},
+    "spec_name": {"selector": "/stats_summary/context/specName", "review_path": "/stats_summary/context/specName", "types": ["null"], "nullable": true, "required": false, "note": "Observed as null in the reviewed payload; no specialization semantics inferred."},
+    "active_spec_index": {"selector": "/ci_resolved/specialization/active_spec_idx", "review_path": "/ci_resolved/specialization/active_spec_idx", "types": ["integer"], "nullable": false, "required": true}
+  },
+  "collections": {
+    "selected_talents": {
+      "path": "/ci_resolved/specialization/resolved_ca_talent_ranks/*",
+      "observed_occurrences": 51,
+      "fields": {
+        "source_cao_id": {"selector": "/cao_id", "review_path": "/ci_resolved/specialization/resolved_ca_talent_ranks/*/cao_id", "types": ["integer"], "nullable": false, "required": true},
+        "rank": {"selector": "/rank", "review_path": "/ci_resolved/specialization/resolved_ca_talent_ranks/*/rank", "types": ["integer"], "nullable": false, "required": true},
+        "source_bisbeard_tree": {"selector": "/bisbeard_tree", "review_path": "/ci_resolved/specialization/resolved_ca_talent_ranks/*/bisbeard_tree", "types": ["string"], "nullable": false, "required": true},
+        "display_name": {"selector": "/name", "review_path": "/ci_resolved/specialization/resolved_ca_talent_ranks/*/name", "types": ["string"], "nullable": false, "required": true},
+        "icon": {"selector": "/icon", "review_path": "/ci_resolved/specialization/resolved_ca_talent_ranks/*/icon", "types": ["string"], "nullable": false, "required": true}
+      }
+    },
+    "primary_stats": {
+      "path": "/stats_summary/primary/*",
+      "observed_occurrences": 5,
+      "fields": {
+        "stat_key": {"selector": "/key", "review_path": "/stats_summary/primary/*/key", "types": ["string"], "nullable": false, "required": true},
+        "label": {"selector": "/label", "review_path": "/stats_summary/primary/*/label", "types": ["string"], "nullable": false, "required": true},
+        "value": {"selector": "/value", "review_path": "/stats_summary/primary/*/value", "types": ["integer"], "nullable": false, "required": true}
+      }
+    },
+    "offensive_stats": {
+      "path": "/stats_summary/offensive/*",
+      "observed_occurrences": 5,
+      "fields": {
+        "stat_key": {"selector": "/key", "review_path": "/stats_summary/offensive/*/key", "types": ["string"], "nullable": false, "required": true},
+        "label": {"selector": "/label", "review_path": "/stats_summary/offensive/*/label", "types": ["string"], "nullable": false, "required": true},
+        "value": {"selector": "/value", "review_path": "/stats_summary/offensive/*/value", "types": ["integer"], "nullable": false, "required": true}
+      }
+    },
+    "defensive_stats": {
+      "path": "/stats_summary/defensive/*",
+      "observed_occurrences": 5,
+      "fields": {
+        "stat_key": {"selector": "/key", "review_path": "/stats_summary/defensive/*/key", "types": ["string"], "nullable": false, "required": true},
+        "label": {"selector": "/label", "review_path": "/stats_summary/defensive/*/label", "types": ["string"], "nullable": false, "required": true},
+        "value": {"selector": "/value", "review_path": "/stats_summary/defensive/*/value", "types": ["integer"], "nullable": false, "required": true}
+      }
+    },
+    "resistance_stats": {
+      "path": "/stats_summary/resistances/*",
+      "observed_occurrences": 3,
+      "fields": {
+        "stat_key": {"selector": "/key", "review_path": "/stats_summary/resistances/*/key", "types": ["string"], "nullable": false, "required": true},
+        "label": {"selector": "/label", "review_path": "/stats_summary/resistances/*/label", "types": ["string"], "nullable": false, "required": true},
+        "value": {"selector": "/value", "review_path": "/stats_summary/resistances/*/value", "types": ["integer"], "nullable": false, "required": true}
+      }
+    }
+  },
+  "deferred_scopes": [
+    "/ci_resolved/gear",
+    "/ci_resolved/specialization/hero_build",
+    "/ci_resolved/specialization/talents",
+    "/stats_summary/_gearOnly",
+    "/stats_summary/derived",
+    "/stats_summary/raw",
+    "/stats_summary/sourcesByStat"
+  ],
+  "review_notes": [
+    "Verified against one immutable character payload and mapping-review schema v2.",
+    "Raw-archive validation confirmed exact payload hash, schema fingerprint, route template, 19 singleton values and 328 extracted values.",
+    "Field names describe source structure only and do not confirm gameplay mechanics.",
+    "cao_id and bisbeard_tree retain source-specific names because their gameplay semantics were not independently verified.",
+    "Detailed gear, source decomposition and locally derived stat internals remain deferred."
+  ]
+}

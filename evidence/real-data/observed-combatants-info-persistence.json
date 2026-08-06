@@ -1,0 +1,91 @@
+{
+  "applied_migrations": [
+    "0008_combatants_observation_persistence"
+  ],
+  "database_changes": {
+    "canonical_entity_observations": {
+      "inserted": 1343,
+      "matched": 0
+    },
+    "persistence_runs": {
+      "inserted": 1,
+      "matched": 0
+    }
+  },
+  "database_file": "coa.duckdb",
+  "decision_boundary": {
+    "automatic_persistence": false,
+    "combatants_info_enrichment_available": false,
+    "companion_addon_provenance_verified": false,
+    "core_entity_mutation_performed": false,
+    "database_contains_source_scalar_values": true,
+    "immutable_observation_persistence_completed": true,
+    "mechanic_semantics_verified": false,
+    "nested_collection_semantics_verified": false,
+    "planner_scoring_allowed": false,
+    "ready_for_actor_build_observation_queries": true,
+    "ready_for_parser_observation_queries": true,
+    "semantic_uniqueness_verified": false,
+    "status": "persisted_verified_parser_observations"
+  },
+  "generated_at": "2026-07-29T23:32:44.278748Z",
+  "integrity_checks": {
+    "actor_build_read_model_counts_match": true,
+    "all_actor_links_verified": true,
+    "all_observation_counts_verified": true,
+    "all_promoted_designs_verified": true,
+    "canonical_observation_counts_match": true,
+    "core_entity_rows_unchanged": true,
+    "exact_payload_binding_verified": true,
+    "exact_promotion_recomputed": true,
+    "parser_read_model_counts_match": true,
+    "persisted_encounter_reference_verified": true,
+    "persisted_report_reference_verified": true,
+    "private_extraction_sha256_verified": true,
+    "promotion_receipt_sha256_verified": true,
+    "transaction_committed": true
+  },
+  "persisted_entity_counts": {
+    "actor_enrichment_observation": 11,
+    "combatants_classless_talent_rank_observation": 564,
+    "combatants_gear_slot_observation": 189,
+    "combatants_hero_build_entry_observation": 564,
+    "combatants_instance_context_observation": 4,
+    "combatants_talent_container_observation": 11
+  },
+  "persistence_kind": "observed_combatants_info_immutable_observation_persistence",
+  "persistence_run_id": "6d969c852a72077e0329224f41bcae9114c4e863a422e2cb4f5c5ab816a188e3",
+  "persistence_version": "combatants-observation-persistence-v1",
+  "read_model_counts": {
+    "actor_build_observations": 1339,
+    "distinct_linked_actors": 11,
+    "parser_observations": 1343
+  },
+  "schema_fingerprint": "41d6d15422c668f83d2ccae1ec0ff2969671861f9e43b21cb371578961c5f8ff",
+  "schema_version": 1,
+  "source_batch_id": "1bbe697cb4fb5bd6d945252a2f514fc27e1f8e7974a12243bdcd2aa6ab04262d",
+  "source_extraction_receipt_name": "observed-combatants-info-candidate-extraction.json",
+  "source_payload_hash": "45672e0f0ff9eb461c575bdd38385795daa6326378bc3f8ad51474276140dc14",
+  "source_private_extraction_name": "observed-combatants-info.candidate-extraction.json",
+  "source_private_extraction_sha256": "8e0d6cc49764f525c568548ac44d2235a36187e904bc5117b56a6ec6fe8f4610",
+  "source_promotion_name": "observed-combatants-info-candidate-promotion.json",
+  "source_promotion_sha256": "bc95e7529a50f829935661231b873b40bb18956e2cd90dac4c742fb04d5f324b",
+  "summary": {
+    "actor_build_observation_count": 1339,
+    "all_integrity_checks_passed": true,
+    "combatants_info_enrichment_available": false,
+    "contains_source_scalar_values": false,
+    "core_entity_mutation_performed": false,
+    "database_contains_source_scalar_values": true,
+    "design_count": 6,
+    "integrity_check_count": 14,
+    "linked_actor_count": 11,
+    "mechanic_semantics_verified": false,
+    "persisted_observation_count": 1343,
+    "persistence_run_count": 1,
+    "planner_scoring_allowed": false,
+    "ready_for_actor_build_observation_queries": true,
+    "ready_for_parser_observation_queries": true,
+    "transaction_committed": true
+  }
+}

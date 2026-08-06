@@ -1,0 +1,126 @@
+{
+  "decision_boundary": {
+    "guild_identity_verified": false,
+    "manifest_page_range_completed": true,
+    "manifest_report_ids_unique": true,
+    "pagination_terminal_contract_verified": true,
+    "planner_scoring_allowed": false,
+    "private_manifest_contains_source_scalar_values": true,
+    "ready_for_bis25_scoring": false,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_global_benchmark": false,
+    "ready_for_guild_filtering": false,
+    "ready_for_guild_identity_review": true,
+    "ready_for_multi_report_character_graph": false,
+    "ready_for_performance_model": false,
+    "sentinel_stability_verified": true,
+    "status": "exhaustive_public_report_manifest_captured"
+  },
+  "generated_at": "2026-07-31T02:41:07.010802Z",
+  "guild_field_summary": {
+    "distinct_guild_identity_pair_count": 88,
+    "distinct_non_empty_guild_name_count": 88,
+    "distinct_non_null_guild_id_count": 88,
+    "report_count_with_both_guild_fields": 1171,
+    "report_count_with_non_empty_guild_name": 1171,
+    "report_count_with_non_null_guild_id": 1171,
+    "target_label_distinct_non_null_guild_id_count": 1,
+    "target_label_exact_match_report_count": 17
+  },
+  "integrity_checks": {
+    "all_manifest_pages_archived": true,
+    "all_manifest_pages_completed": true,
+    "checkpoint_contract_verified": true,
+    "cross_page_report_ids_unique": true,
+    "expected_manifest_count_verified": true,
+    "full_page_counts_verified": true,
+    "has_more_relation_verified_on_all_pages": true,
+    "has_previous_relation_verified_on_all_pages": true,
+    "limit_relation_verified_on_all_pages": true,
+    "offset_relation_verified_on_all_pages": true,
+    "page_relation_verified_on_all_pages": true,
+    "private_manifest_written": true,
+    "scalar_free_receipt_boundary_preserved": true,
+    "sentinel_payload_stability_verified": true,
+    "sentinel_sweep_consistency_verified": true,
+    "terminal_page_count_verified": true,
+    "terminal_private_sha256_verified": true,
+    "terminal_receipt_verified": true,
+    "verified_mapping_loaded": true
+  },
+  "manifest_hashes": {
+    "ordered_report_ids_sha256": "8106c019bd1049048088858ac2e50caad6befda6e7b5a3dab848b8f08698435e",
+    "ordered_report_records_sha256": "eb102de53f939e0f7fa81e51934a20eb3f884834fcc3de958422a91041ecee75",
+    "page_payload_hashes_sha256": "d0cc1840ed150b563c2c340f07375693ebd818a0c751764b4e3d5c2cad166d6b",
+    "report_key_shapes_sha256": "d14859074b11b71d01708e50b233b516a7f1ced3b10a398c8928b8f60eafdc9b"
+  },
+  "manifest_kind": "public_report_manifest_capture",
+  "manifest_version": "public-report-manifest-v1",
+  "request": {
+    "first_page": 1,
+    "limit": 25,
+    "route_template": "/api/reports/public",
+    "sentinel_pages": [
+      1,
+      130,
+      258,
+      259,
+      260
+    ],
+    "sort_by": "created_at",
+    "sort_order": "desc",
+    "successor_page": 260,
+    "terminal_page": 259
+  },
+  "schema_version": 1,
+  "sentinel_summary": {
+    "all_start_end_payload_hashes_equal": true,
+    "all_sweep_payload_hashes_match_sentinels": true,
+    "sentinel_page_count": 5,
+    "sentinel_pages": [
+      1,
+      130,
+      258,
+      259,
+      260
+    ]
+  },
+  "shape_summary": {
+    "all_reports_contain_required_keys": true,
+    "distinct_page_schema_fingerprint_count": 22,
+    "distinct_report_key_shape_count": 1
+  },
+  "source_mapping_name": "coa_public_report_discovery_v1.json",
+  "source_mapping_sha256": "48649ee29798a2f8cbf5a4c80f1f05bcfa830bacdb39e78c01a2255cb9872197",
+  "source_private_manifest_name": "argentum-public-report-manifest.private.json",
+  "source_private_manifest_sha256": "81ec9e5bccc30a2e3965e7011912a83356608912008634357b58a670029d732f",
+  "source_terminal_private_name": "argentum-report-pagination-terminal-search.private.json",
+  "source_terminal_private_sha256": "0f548b5b0d6b0d73e54602b2e6f772419c630577135763ed696dd1436861b87a",
+  "source_terminal_receipt_name": "argentum-report-pagination-terminal-search.json",
+  "source_terminal_receipt_sha256": "9325240f189364254f8e21a9edd2f290d56411ec626e88102ec41f972be7ea98",
+  "summary": {
+    "all_integrity_checks_passed": true,
+    "completed_page_count": 259,
+    "contains_source_scalar_values": false,
+    "duplicate_report_occurrence_count": 0,
+    "expected_report_count": 6454,
+    "first_page": 1,
+    "full_page_count": 258,
+    "integrity_check_count": 19,
+    "private_manifest_contains_source_scalar_values": true,
+    "ready_for_bis25_scoring": false,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_guild_filtering": false,
+    "ready_for_guild_identity_review": true,
+    "report_occurrence_count": 6454,
+    "resume_checkpoint_used": true,
+    "successor_page": 260,
+    "terminal_page": 259,
+    "terminal_page_report_count": 4,
+    "unique_report_id_count": 6454
+  },
+  "target": {
+    "guild_identity_status": "operator_named_target_unresolved",
+    "guild_label": "Argentum"
+  }
+}
