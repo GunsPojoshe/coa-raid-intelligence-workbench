@@ -48,7 +48,7 @@ jobs:
         with:
           version: "0.12.0"
           enable-cache: false
-      - run: uv sync --frozen --extra dev
+      - run: uv sync --frozen --extra dev --no-build-package ruff
       - run: uv run python scripts/verify_repo.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: ${{ failure() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
@@ -69,7 +69,7 @@ jobs:
         with:
           version: "0.12.0"
           enable-cache: false
-      - run: uv sync --frozen --extra dev
+      - run: uv sync --frozen --extra dev --no-build-package ruff
       - run: uv run pytest
       - run: uv run coa-workbench doctor --project-root .
       - name: Initialize DuckDB twice
