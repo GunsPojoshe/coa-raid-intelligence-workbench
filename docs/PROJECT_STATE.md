@@ -1,8 +1,10 @@
 # Фактическое состояние проекта
 
-Дата актуализации: **2026-08-07**.
+Дата актуализации: **2026-08-12**.
 
-## Репозиторий и pull requests
+Этот документ фиксирует оперативное состояние. Любой новый чат обязан перепроверять live HEAD, PR и CI; SHA ниже являются подтверждёнными checkpoint, а не заменой live verification.
+
+## Репозиторий и ветки
 
 ```text
 repository: GunsPojoshe/coa-raid-intelligence-workbench
@@ -13,143 +15,34 @@ main
     └── e3/real-log-capture         Draft PR #7 -> e2/log-evidence-refactor
 ```
 
-Проверенный implementation checkpoint перед handoff-документами:
+Последняя live-проверка перед этим documentation handoff:
 
 ```text
-HEAD: 66fd5ed89520070a7d48392f41fbfb7cb352b0f7
-PR #7 state: open, Draft
-PR #7 mergeable at final check: true
-Verify repository run: #598
-run ID: 31128752182
-event: workflow_dispatch
+PR #7: open, Draft, mergeable=true
+PR #7 head: 13982825295737c029b425a37d210a34a7ea0762
+PR #3: open, Draft, mergeable=false
+PR #3 head: 4b42a7d0735ba1125e4f0ef14dd01422d4b55afc
+```
+
+PR #7 body содержит устаревшие operational HEAD/CI/evidence сведения и должен быть актуализирован отдельно после следующего versioned implementation checkpoint.
+
+## Последний полностью проверенный code/evidence checkpoint
+
+```text
+HEAD: 13982825295737c029b425a37d210a34a7ea0762
+commit: Review guild progression helper references
+Verify repository run: #603
+run ID: 31533555026
+event: pull_request
 conclusion: success
 public-release-audit: success
 ubuntu: success
 windows: success
 ```
 
-После обновления handoff-документов exact HEAD снова изменится. Новый чат обязан получить branch, HEAD, PR и CI live, а не копировать SHA из документа.
+Этот checkpoint versioned public helper-reference review. Documentation handoff commit, содержащий этот файл, будет иметь более новый SHA и должен быть получен live в следующем чате.
 
-PR #7 body содержит устаревший HEAD и устаревшее CI-состояние. Его актуализация входит в следующий repository audit.
-
-## Локальная проверка checkpoint `66fd5ed`
-
-```text
-Ruff lint: passed
-Ruff format: passed
-focused helper-reference tests: passed
-full pytest: 387 passed
-repository verification: 10/10 passed
-clean database initialization: passed
-repeated database initialization: passed
-working tree after push: clean
-```
-
-Наблюдаемое предупреждение pytest:
-
-```text
-StarletteDeprecationWarning:
-Using httpx with starlette.testclient is deprecated; install httpx2 instead.
-```
-
-Это не ломает текущую проверку, но должно быть классифицировано в следующем dependency audit.
-
-## Последние инфраструктурные commit checkpoint
-
-```text
-c24f6f1c1e6b14ed5e464a2a00fe6d462183ae5b
-Repair Ruff lock distributions
-
-7e53d5e2841808d30f127e1917a36d24cf82bcfd
-Reject Ruff source builds in CI
-
-66fd5ed89520070a7d48392f41fbfb7cb352b0f7
-Document CI operations and diagnostics
-```
-
-Добавлены или изменены:
-
-```text
-uv.lock
-.github/workflows/verify.yml
-docs/CI_OPERATIONS.md
-scripts/inspect_verify_workflow.ps1
-```
-
-Ruff 0.12.12 теперь имеет Windows/Linux wheel records в `uv.lock`. CI выполняет:
-
-```text
-uv sync --frozen --extra dev --no-build-package ruff
-```
-
-Источник Ruff больше не должен молча собираться через Rust.
-
-## Подтверждённая проблема GitHub Actions trigger
-
-Обычный push, который перевёл ветку с `42dfc1d` на `66fd5ed`, не зарегистрировал exact-head `push` run даже после того, как `e3/real-log-capture` уже присутствовал в `push.branches`.
-
-При этом подтверждено:
-
-```text
-repository Actions enabled: true
-allowed actions: all
-workflow state: active
-PR head correct: true
-PR mergeable state before final push: clean
-workflow_dispatch availability: true
-```
-
-Рабочий bounded fallback:
-
-```powershell
-gh workflow run verify.yml `
-  --repo GunsPojoshe/coa-raid-intelligence-workbench `
-  --ref e3/real-log-capture
-```
-
-Run #598 доказал работоспособность workflow и всех трёх jobs. Автоматическая доставка `push`-события остаётся отдельной инфраструктурной проблемой и не должна маскироваться пустыми commit или слепым polling.
-
-GitHub Actions также выдал annotation о том, что pinned `actions/checkout` target Node.js 20 принудительно выполняется на Node.js 24. Это отдельный upgrade/audit item.
-
-## Каноническая предметная граница
-
-Проект предназначен только для **Conquest of Azeroth**.
-
-Не использовать как CoA-факты без независимого exact CoA evidence:
-
-- Bronzebeard-specific mechanics;
-- Classless Ascension ability-selection model;
-- Mystic Enchants;
-- Hero Architect assumptions;
-- shared Ascension FAQ/frontend statements с неясным realm scope.
-
-Главный продуктовый вопрос:
-
-> Почему конкретный игрок нужен именно текущему составу?
-
-Каноническая модель истины:
-
-```text
-source response
--> immutable raw archive
--> exact hash and schema fingerprint
--> reviewed mapping/extractor
--> deterministic normalization/reconstruction
--> immutable observations
--> supporting and contradicting evidence
--> explicit trust decision
--> explainable raid-leader recommendation
-```
-
-```text
-combat-log observation != mechanic proof
-class/spec presence != capability coverage
-shared Ascension text != CoA mechanic proof
-```
-
-Только `corroborated` и `confirmed` mechanics могут входить в planner scoring.
-
-## Проверенные data checkpoints
+## Проверенная data baseline
 
 ```text
 public reports: 6454
@@ -161,43 +54,104 @@ full-crawl collection contract reviewed: true
 migrations: 0001–0008
 ```
 
-Private source guild ID, report IDs, raw JavaScript, raw contexts and private source rows не должны попадать в Git.
+Private source guild ID, report IDs, raw JavaScript, raw contexts, private queries и private source rows не versioned.
 
-## Guild progression evidence boundary
+## Guild progression evidence — завершённые versioned этапы
 
 ```text
-route candidate: /api/guilds/progression
-HTTP method candidate: POST
-method candidate unambiguous: true
-helper identity resolved: false
-helper owner binding resolved: false
-request payload mapping resolved: false
-request shape verified: false
-ready for bounded route probe: false
-network requests performed by evidence stages: false
+helper-definition inventory: 36/36, versioned
+helper-definition review: 42/42, versioned
+helper-reference inventory: 40/40, versioned
+helper-reference review: 46/46, versioned
 ```
 
-Подтверждено и versioned:
+Helper-reference review:
 
 ```text
-helper-definition inventory: complete
-helper-definition review: complete
-helper-reference inventory: complete
-helper-reference public receipt: versioned
-helper-reference review implementation: complete
+public receipt: evidence/real-data/argentum-guild-progression-helper-reference-review.json
+reference count: 31
+disposition: unresolved_references_without_route_or_transport_binding
+route-context references: 0
+direct transport contexts: 0
+route transport bindings: 0
+route request-shape bindings: 0
+request-shape contexts: 17
+request-shape marker classes: [JSON.stringify, body, data, params, url]
+ready for helper-owner inventory: true
+network requests performed: false
 ```
 
-Текущая evidence boundary:
+Blockers:
 
 ```text
-helper-reference review private execution complete: false
-helper-reference review public receipt versioned: false
-helper-owner inventory complete: false
-helper owner binding resolved: false
+route_not_observed_in_reference_contexts
+direct_transport_markers_not_observed
+receiver_or_owner_binding_unresolved
+request_shape_markers_not_bound_to_route_invocation
+```
+
+## Текущий локальный незакоммиченный этап
+
+На пользовательской Windows-машине подготовлена и валидирована реализация helper-owner inventory. Она **не versioned** и отсутствует в remote HEAD на момент handoff.
+
+Ожидаемые untracked implementation files:
+
+```text
+scripts/inventory_guild_progression_helper_owners.py
+src/coa_workbench/collector/guild_progression_helper_owner_index.py
+src/coa_workbench/collector/guild_progression_helper_owner_inventory.py
+tests/unit/test_guild_progression_helper_owner_inventory.py
+```
+
+Последний локальный resume-run дошёл до `STOP BOUNDARY` без исключения после formatting, focused validation и полного repository verification. Зафиксированный boundary:
+
+```text
+Helper-owner implementation is formatted and validated.
+No real helper-owner inventory was executed.
+No private helper-owner artifact was created.
+No progression route network request was performed.
+Helper owner binding remains unresolved.
+Bounded progression route probe remains disabled.
+No files staged.
+No commit performed.
+No push performed.
+```
+
+Реализация содержит offline-only owner-candidate inventory и контракт из `54` integrity checks. До versioning нельзя считать helper-owner inventory implementation remote/project checkpoint.
+
+## Временные локальные PowerShell helper scripts
+
+На момент handoff в корне локального repository оставались untracked:
+
+```text
+run-e3-commit-push-reference-review.ps1
+run-e3-helper-reference-review-fixed-v3.ps1
+run-e3-implement-helper-owner-inventory.ps1
+run-e3-resume-helper-owner-inventory.ps1
+run-e3-resume-helper-owner-inventory-v2.ps1
+run-e3-resume-helper-owner-inventory-v3.ps1
+```
+
+Это одноразовые orchestration helpers, не project source. Их можно удалить точечно после live `git status` и до staging helper-owner implementation. Не использовать широкие wildcard/recurse удаления и не затрагивать versioned scripts, private evidence или `.gitkeep`.
+
+## Текущая decision boundary
+
+```text
+helper-definition inventory complete: true
+helper-definition review complete: true
+helper-reference inventory complete: true
+helper-reference review complete and versioned: true
+helper-owner inventory implementation prepared locally: true
+helper-owner inventory implementation versioned: false
+helper-owner inventory executed on real private evidence: false
+helper-owner public receipt versioned: false
+helper-owner review complete: false
 helper identity resolved: false
+helper owner binding resolved: false
 request payload mapping resolved: false
 request shape verified: false
 ready for bounded progression route probe: false
+guild API route semantics verified: false
 pagination semantics verified: false
 termination semantics verified: false
 completeness verified: false
@@ -211,112 +165,50 @@ planner scoring allowed: false
 
 Do not perform a guessed network request to `/api/guilds/progression`.
 
-## Первая задача следующего чата
+## PowerShell / VS Code development environment
 
-До продолжения evidence implementation необходимо выполнить **полный repository audit, refactoring и cleanup**.
-
-Никакие ветки, файлы, документы или старые Excel-артефакты нельзя удалять до инвентаризации и классификации.
-
-Обязательный порядок:
+Пользователь работает в VS Code с extension:
 
 ```text
-1. live local/GitHub state verification
-2. complete local and remote branch inventory
-3. repository file and dependency inventory
-4. classify every cleanup candidate as KEEP / REFACTOR / ARCHIVE / DELETE
-5. present evidence-backed cleanup plan
-6. obtain explicit approval for destructive actions
-7. perform atomic refactoring and cleanup
-8. run full local verification
-9. run exact-head CI through proven trigger/fallback
-10. update canonical docs and PR metadata
+Identifier: ms-vscode.powershell
+Observed version at handoff: 2025.4.0
 ```
 
-Branch inventory должна содержать:
+Extension оставляем. Основная проблема последних helper scripts была не в extension, а в фактическом runtime Windows PowerShell 5.1 / .NET Framework. Были воспроизведены несовместимости/quirks вокруг `System.IO.Path.GetRelativePath`, multiline external-command quoting, `gh --jq` quoting и root-array `ConvertFrom-Json` semantics.
+
+Для дальнейшей проектной automation стандарт на Windows: **PowerShell 7+ (`pwsh`)**. Он устанавливается side-by-side с Windows PowerShell 5.1. Подробности: `docs/WINDOWS_DEVELOPMENT_ENVIRONMENT.md`.
+
+## Следующие действия — обязательный порядок
+
+1. Новый чат получает live GitHub state и локально выполняет `git fetch`/status.
+2. Documentation handoff commit после `139828...` безопасно fast-forward pull-ится только после проверки, что он не затрагивает четыре untracked helper-owner implementation paths.
+3. Проверить/настроить PowerShell 7 для VS Code и integrated terminal.
+4. Удалить только перечисленные obsolete root `run-e3-*.ps1`, если они всё ещё существуют.
+5. Повторно показать exact diff четырёх helper-owner implementation files и проверить privacy/network boundary.
+6. На синхронизированном HEAD повторить relevant focused tests и полный `scripts/verify_repo.py`.
+7. Stage **ровно четыре** helper-owner implementation files; не смешивать docs/evidence/temp scripts.
+8. Commit и push atomic implementation change.
+9. Проверить exact new HEAD CI: `public-release-audit`, `ubuntu`, `windows`.
+10. Только после versioned green implementation выполнить **offline** helper-owner inventory против exact private reference inventory/raw asset.
+11. Проверить 54/54, private/public hash binding, scalar-free public candidate и все false downstream gates.
+12. Version only approved public helper-owner inventory receipt отдельным commit.
+13. Реализовать explicit helper-owner review отдельным этапом.
+14. Bounded route probe разрешать только после exact helper identity + owner binding + payload/request-shape evidence.
+
+## Privacy / integrity rules
+
+Сохранять local-only contents:
 
 ```text
-branch name
-local/remote
-last commit
-linked PR
-merged/unmerged status
-unique commits against intended base
-protected or operational role
-KEEP / DELETE candidate
-exact reason
+data/raw/
+data/extracted/
+data/normalized/
+data/reconstructed/
+data/warehouse/
+data/exchange/in/
+data/exchange/out/
 ```
 
-До подтверждения `unique commits = 0` или осознанного сохранения истории ветку не удалять.
+Never commit cookies, tokens, browser profiles, unsanitized HAR, source IDs, report IDs, private query, raw JS, raw owner chains, private receipts или raw private contexts.
 
-## Старый Excel-контур
-
-Следующий audit должен найти все упоминания и зависимости по признакам:
-
-```text
-Excel
-xlsx
-workbook
-openpyxl
-baseline workbook
-/workbook/
-старые названия конструктора состава
-старые import/export scripts
-legacy formulas and plans
-```
-
-Каждый объект сначала классифицировать:
-
-```text
-active runtime dependency
-active development plan
-required migration/history record
-obsolete prototype
-redundant generated artifact
-unrelated legacy content
-```
-
-Удалять только то, что доказанно не требуется runtime, тестам, evidence chain, миграциям, актуальным ADR или планам разработки.
-
-Цель cleanup — оставить:
-
-- действующую логику продукта;
-- проверяемые data/evidence contracts;
-- актуальные архитектурные решения;
-- реальный план разработки;
-- необходимые operational instructions;
-- минимальную достаточную историческую трассируемость.
-
-## Обязательные ограничения cleanup
-
-Сохранить и не публиковать private contents из:
-
-```text
-data/raw
-data/extracted
-data/normalized
-data/reconstructed
-data/warehouse
-data/exchange/in
-data/exchange/out
-local backups
-browser/HAR/cookie/token/profile artifacts
-```
-
-Не удалять `.gitkeep`, миграции, public scalar-free receipts или доказательства целостности без отдельного анализа.
-
-Большие PowerShell automation blocks с `if/elseif/else`, loops или here-strings запускать только как `.ps1`, а не вставлять построчно в интерактивную консоль.
-
-## Продолжение функциональной разработки после cleanup
-
-После завершения и проверки cleanup вернуться к bounded sequence:
-
-```text
-execute helper-reference review against exact private inventory
--> inspect all integrity checks and private result
--> validate scalar-free public review receipt
--> version only public receipt
--> implement helper-owner inventory and review
--> consider bounded route probe only after exact owner, helper and payload binding
-```
-
-No false gate may be raised by inference.
+Не удалять `.gitkeep`. Не переписывать опубликованные migrations. Не повышать evidence gate по inference.

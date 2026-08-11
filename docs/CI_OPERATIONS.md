@@ -2,16 +2,9 @@
 
 ## Purpose
 
-This document defines the safe operating procedure for the `Verify repository`
-GitHub Actions workflow and records the CI incident investigated on 2026-08-07.
+Safe operating procedure for `.github/workflows/verify.yml` and the local verification path.
 
-Canonical workflow:
-
-```text
-.github/workflows/verify.yml
-```
-
-Expected jobs:
+Required jobs:
 
 ```text
 public-release-audit
@@ -19,15 +12,16 @@ ubuntu
 windows
 ```
 
-## Final verified checkpoint
+## Last fully verified code/evidence checkpoint
 
-Implementation checkpoint before the subsequent handoff-document commits:
+Before the 2026-08-12 docs-only handoff:
 
 ```text
-HEAD: 66fd5ed89520070a7d48392f41fbfb7cb352b0f7
-Verify repository run: #598
-run ID: 31128752182
-event: workflow_dispatch
+HEAD: 13982825295737c029b425a37d210a34a7ea0762
+commit: Review guild progression helper references
+Verify repository run: #603
+run ID: 31533555026
+event: pull_request
 status: completed
 conclusion: success
 public-release-audit: success
@@ -35,66 +29,50 @@ ubuntu: success
 windows: success
 ```
 
-Local verification for the same implementation checkpoint:
+Always query current HEAD and exact-head runs live after subsequent commits.
 
-```text
-Ruff lint: passed
-Ruff format: passed
-focused helper-reference tests: passed
-full pytest: 387 passed
-repository verification: 10/10 passed
-working tree after push: clean
+## Dependency boundary
+
+Ruff lock metadata was previously repaired so clean Windows/Linux environments use wheels rather than silently compiling Ruff from source.
+
+Dependency preparation:
+
+```powershell
+uv sync --frozen --extra dev --no-build-package ruff
 ```
 
-The documentation commits created after this checkpoint change the live branch
-HEAD. Always query current HEAD and exact-head runs live.
+Do not install Visual Studio Build Tools solely to work around Ruff packaging. Do not hand-edit `uv.lock`.
 
-## Relevant corrective commits
+## Local verification
 
-```text
-7180894952f2f54a23e07a0782847669ae51a495
-Format helper reference review command
+After dependency preparation, prefer deterministic no-resolve commands:
 
-42dfc1de713fa4b20be64ff5ff0119920df6ee3a
-Enable E3 verification triggers
-
-c24f6f1c1e6b14ed5e464a2a00fe6d462183ae5b
-Repair Ruff lock distributions
-
-7e53d5e2841808d30f127e1917a36d24cf82bcfd
-Reject Ruff source builds in CI
-
-66fd5ed89520070a7d48392f41fbfb7cb352b0f7
-Document CI operations and diagnostics
+```powershell
+uv run --no-sync python -m ruff check .
+uv run --no-sync python -m ruff format --check .
+uv run --no-sync python -m pytest
+uv run --no-sync python scripts/verify_repo.py
 ```
 
-## Confirmed failures and corrections
+Repository verifier must remain the final aggregate check. Do not claim a passing checkpoint when only focused tests ran.
 
-### Automatic `push` run remains absent
+## GitHub Actions exact-head policy
 
-The workflow was active, repository Actions were enabled, allowed actions were
-`all`, PR #7 was clean and mergeable, and `e3/real-log-capture` was already in
-`push.branches` before the controlled push from `42dfc1d` to `66fd5ed`.
+A successful `git push` does not itself prove CI exists for the new commit.
 
-The controlled normal push created no exact-head `push` run during the bounded
-observation window.
+For every pushed implementation/evidence change:
 
-Therefore:
+1. read the exact new commit SHA;
+2. query workflow runs bound to that SHA;
+3. identify one concrete run ID;
+4. inspect all required jobs;
+5. report trigger mode and conclusions.
 
-```text
-workflow availability: proven
-job execution: proven
-automatic push-event delivery for this branch: not proven / currently absent
-```
+Do not use an older Actions-page run as evidence for a newer HEAD.
 
-Do not hide this condition with repeated empty commits.
+## Trigger history
 
-### Manual dispatch is the proven bounded fallback
-
-Manual dispatch created run #598 for exact HEAD `66fd5ed` and all three jobs
-completed successfully.
-
-Known-good command:
+During the 2026-08-07 incident, an expected automatic `push` run for E3 did not appear even though the workflow was active and the branch filter existed. The bounded fallback was:
 
 ```powershell
 gh workflow run verify.yml `
@@ -102,154 +80,98 @@ gh workflow run verify.yml `
   --ref e3/real-log-capture
 ```
 
-Manual dispatch proves workflow availability and exact-head verification. It
-does not prove automatic `push` event delivery.
+A later exact-head `pull_request` run #603 was delivered normally and passed all jobs. Therefore historical push-delivery trouble must not be generalized into a claim that PR runs are broken.
 
-### Interactive PowerShell paste split compound statements
+Policy:
 
-A long repair block was pasted directly into interactive PowerShell.
-PowerShell executed a completed `if {}` statement before receiving the following
-`elseif` or `else`, so those tokens were interpreted as commands.
+- make one real atomic push;
+- query exact-head runs;
+- if no suitable run exists, diagnose before dispatch;
+- use `workflow_dispatch` as bounded fallback when needed;
+- never create empty commits merely to retrigger CI.
 
-Operational rule:
+## PowerShell runtime standard
 
-```text
-Run multi-branch or here-string-heavy automation from a .ps1 file.
-Do not paste it statement-by-statement into an interactive prompt.
-```
+New Windows automation uses **PowerShell 7+ (`pwsh`)**. See `docs/WINDOWS_DEVELOPMENT_ENVIRONMENT.md`.
 
-### Unsafe run polling
-
-The first polling command assumed that every object returned by `gh run list`
-had a `headSha` property. Under PowerShell `Set-StrictMode`, this produced
-`PropertyNotFoundStrict`.
-
-Use REST queries and check property existence before dereferencing JSON fields.
-
-### Ruff was missing locally
-
-The local `.venv` initially lacked Ruff. `scripts/verify_repo.py` therefore
-reported 8/10 although application tests passed.
-
-Synchronize development dependencies before repository verification.
-
-### Ruff lock entry contained only an sdist
-
-The Ruff 0.12.12 entry in `uv.lock` contained only an sdist URL and no wheels.
-
-Consequences:
-
-- clean Windows sync attempted a Rust source build;
-- local Windows sync failed because MSVC `link.exe` was not installed;
-- clean GitHub runners spent the dependency phase compiling Ruff;
-- CI behavior depended on native compiler availability.
-
-The lock entry was regenerated through `uv lock`; it was not hand-edited.
-
-The workflow now uses:
+The following failures were encountered when orchestration ran in Windows PowerShell 5.1:
 
 ```text
-uv sync --frozen --extra dev --no-build-package ruff
+System.IO.Path.GetRelativePath missing
+multiline python -c quoting corrupted
+gh --jq expression quoting corrupted
+ConvertFrom-Json root-array/member-enumeration produced accidental multi-run values
 ```
 
-This forces an explicit failure when Ruff wheels are missing instead of silently
-compiling Rust.
+These were shell/runtime defects, not evidence-chain failures.
 
-### Ruff formatter failure
+Do not add more compatibility workarounds for Windows PowerShell 5.1 unless a genuine project requirement appears. Prefer migrating one-off orchestration to `pwsh`.
 
-The helper-reference review command initially failed `ruff format --diff`.
-The formatter-only correction was committed independently.
+## GitHub CLI JSON rules
 
-## Current annotations and warnings to audit
+For scripts that inspect Actions:
 
-GitHub Actions emitted an annotation that the pinned `actions/checkout` target
-uses deprecated Node.js 20 metadata and is being forced to run on Node.js 24.
-The next repository/dependency audit must determine the correct pinned upgrade.
+- bind to exact SHA;
+- use an exact known run ID when available;
+- verify the run's `headSha` before trusting it;
+- normalize JSON arrays explicitly;
+- verify every external command exit code;
+- avoid shell-sensitive jq expressions when robust native JSON parsing is simpler;
+- never print tokens, credentials or private evidence.
 
-Pytest currently emits:
+## Interactive-shell rule
 
-```text
-StarletteDeprecationWarning:
-Using httpx with starlette.testclient is deprecated; install httpx2 instead.
-```
-
-This warning is non-blocking at the verified checkpoint but must be classified
-before dependency changes.
-
-## Required local verification
+Large PowerShell automation containing `if/elseif/else`, loops or here-strings must run from a `.ps1` file:
 
 ```powershell
-uv sync --frozen --extra dev --no-build-package ruff
-uv run python -m ruff check .
-uv run python -m ruff format --check .
-uv run python -m pytest
-uv run python scripts/verify_repo.py
+pwsh -NoProfile -File .\script.ps1
 ```
 
-Expected result:
+Do not paste it statement-by-statement. Prior interactive execution split completed `if {}` blocks from following `else` clauses.
 
-```text
-Summary: 10/10 checks passed
-```
+## Temporary root helper scripts
 
-## Safe exact-head diagnosis
+One-off `run-e3-*.ps1` files created to bridge a bounded local operation should stay untracked unless deliberately promoted into reusable project tooling.
 
-Use the versioned script:
+Once the bounded operation is closed:
+
+1. inspect `git status`;
+2. confirm each file is untracked and obsolete;
+3. delete only the explicit filenames;
+4. do not use recursive/wildcard cleanup over repository data.
+
+## Atomic commit scopes
+
+Do not mix:
+
+1. implementation code;
+2. public evidence receipt;
+3. CI/dependency repair;
+4. documentation;
+5. cleanup.
+
+Before commit:
 
 ```powershell
-pwsh -NoProfile -File scripts/inspect_verify_workflow.ps1 `
-  -HeadSha <exact-40-character-sha> `
-  -Event push
+git diff --cached --name-only
+git --no-pager diff --cached
+git diff --cached --check
 ```
 
-The script uses REST endpoints and checks JSON property existence before
-reading values.
+## Known non-blocking dependency warning
 
-Do not infer run creation from:
+Historical pytest runs emitted a `StarletteDeprecationWarning` involving `httpx`/`starlette.testclient`. Treat it as a dependency-audit item, not evidence to make an unreviewed dependency upgrade during unrelated E3 work.
 
-- successful `git push`;
-- branch movement;
-- PR head movement;
-- an older run shown on the Actions page.
+## Actions runtime annotation
 
-## Trigger policy
-
-Attempt the normal push once as part of a real atomic change and inspect the
-exact HEAD through REST.
-
-If no exact-head `push` run appears in a bounded window, use the documented
-manual dispatch fallback and record:
-
-```text
-trigger mode: workflow_dispatch
-automatic push run absent: true
-exact verified HEAD: <sha>
-```
-
-Do not create additional commits solely to retry event delivery.
-
-## Atomic commit policy
-
-Keep these scopes separate:
-
-1. dependency and lock repair;
-2. workflow trigger or guardrail changes;
-3. formatter-only corrections;
-4. evidence receipts;
-5. operational documentation;
-6. repository cleanup and branch deletion.
-
-Do not mix evidence conclusions with CI infrastructure changes.
+GitHub previously annotated a pinned `actions/checkout` Node.js runtime migration. Audit pinned action versions separately; do not mix that maintenance with evidence semantics.
 
 ## Never repeat
 
-- Do not create repeated empty commits before proving the trigger contract.
-- Do not use long blind polling loops before a run ID exists.
-- Do not install Visual Studio Build Tools only to work around a missing Ruff
-  wheel.
-- Do not edit `uv.lock` manually.
-- Do not paste a large multi-branch PowerShell program directly into the
-  interactive prompt.
-- Do not publish raw private evidence in CI logs, receipts or documentation.
-- Do not delete branches before checking linked PRs, merge-base and unique
-  commits.
+- no blind long polling before a concrete run exists;
+- no repeated empty trigger commits;
+- no manual `uv.lock` editing;
+- no Visual Studio Build Tools install only for Ruff;
+- no large interactive PowerShell paste;
+- no raw private evidence in CI logs;
+- no CI success claim without exact-head verification.
