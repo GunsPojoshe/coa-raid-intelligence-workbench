@@ -63,6 +63,8 @@ _FORBIDDEN_PUBLIC_FIELDS = {
     "context_start",
     "end",
     "owner_chain",
+    "owner_chain_character_count",
+    "owner_chain_sha256",
     "owner_end",
     "owner_start",
     "private_excerpt",
@@ -245,9 +247,7 @@ def _validate_public_reference_inventory(
             f"public helper reference {expected_index}",
         )
         if row.get("symbol_scope") not in _SYMBOL_SCOPES:
-            raise ValueError(
-                f"public helper reference {expected_index} symbol scope mismatch"
-            )
+            raise ValueError(f"public helper reference {expected_index} symbol scope mismatch")
         if row.get("reference_kind") not in _REFERENCE_KINDS:
             raise ValueError(f"public helper reference {expected_index} kind mismatch")
         sha256_value(
@@ -259,9 +259,7 @@ def _validate_public_reference_inventory(
             f"public helper reference {expected_index} context character count",
         )
         if count < 1:
-            raise ValueError(
-                f"public helper reference {expected_index} context count is invalid"
-            )
+            raise ValueError(f"public helper reference {expected_index} context count is invalid")
         references.append(row)
     return target, references
 
@@ -344,9 +342,7 @@ def _validate_private_reference_inventory(
                 )
         symbol = row.get("raw_symbol")
         if not isinstance(symbol, str) or not symbol:
-            raise ValueError(
-                f"private helper reference {expected_index} raw symbol is missing"
-            )
+            raise ValueError(f"private helper reference {expected_index} raw symbol is missing")
         start = integer_value(
             row.get("start"),
             f"private helper reference {expected_index} start",
@@ -356,22 +352,14 @@ def _validate_private_reference_inventory(
             f"private helper reference {expected_index} end",
         )
         if start < 0 or end <= start or end - start != len(symbol):
-            raise ValueError(
-                f"private helper reference {expected_index} symbol span is invalid"
-            )
+            raise ValueError(f"private helper reference {expected_index} symbol span is invalid")
         context = row.get("context")
         if not isinstance(context, str):
-            raise ValueError(
-                f"private helper reference {expected_index} context is missing"
-            )
+            raise ValueError(f"private helper reference {expected_index} context is missing")
         if sha256(context.encode()) != public_row.get("context_sha256"):
-            raise ValueError(
-                f"private helper reference {expected_index} context SHA-256 mismatch"
-            )
+            raise ValueError(f"private helper reference {expected_index} context SHA-256 mismatch")
         if len(context) != public_row.get("context_character_count"):
-            raise ValueError(
-                f"private helper reference {expected_index} context length mismatch"
-            )
+            raise ValueError(f"private helper reference {expected_index} context length mismatch")
         context_start = integer_value(
             row.get("context_start"),
             f"private helper reference {expected_index} context start",
@@ -385,9 +373,7 @@ def _validate_private_reference_inventory(
             or context_end <= context_start
             or context_end - context_start != len(context)
         ):
-            raise ValueError(
-                f"private helper reference {expected_index} context span is invalid"
-            )
+            raise ValueError(f"private helper reference {expected_index} context span is invalid")
         private_references.append(row)
     return callee, payload_hash, private_references
 
@@ -497,6 +483,12 @@ def inventory_guild_progression_helper_owners(
     )
     private_groups = list(owner_result["groups"])
     evidence = dict(owner_result["evidence"])
+    owner_group_index_by_hash = {
+        str(group["owner_chain_sha256"]): int(group["owner_group_index"])
+        for group in private_groups
+    }
+    if len(owner_group_index_by_hash) != len(private_groups):
+        raise ValueError("private owner groups are not uniquely keyed by owner hash")
 
     public_candidates = [
         {
@@ -506,12 +498,9 @@ def inventory_guild_progression_helper_owners(
             "reference_kind": row["reference_kind"],
             "definition_candidate_overlap": row["definition_candidate_overlap"],
             "candidate_source": row["candidate_source"],
-            "owner_chain_sha256": row["owner_chain_sha256"],
-            "owner_chain_character_count": row["owner_chain_character_count"],
+            "owner_group_index": owner_group_index_by_hash[str(row["owner_chain_sha256"])],
             "owner_chain_depth": row["owner_chain_depth"],
-            "source_reference_context_sha256": row[
-                "source_reference_context_sha256"
-            ],
+            "source_reference_context_sha256": row["source_reference_context_sha256"],
             "contains_raw_owner_chain": False,
             "contains_raw_symbol": False,
             "contains_raw_context": False,
@@ -522,8 +511,6 @@ def inventory_guild_progression_helper_owners(
     public_groups = [
         {
             "owner_group_index": group["owner_group_index"],
-            "owner_chain_sha256": group["owner_chain_sha256"],
-            "owner_chain_character_count": group["owner_chain_character_count"],
             "owner_chain_depth": group["owner_chain_depth"],
             "occurrence_count": group["occurrence_count"],
             "reference_indexes": list(group["reference_indexes"]),
@@ -547,12 +534,8 @@ def inventory_guild_progression_helper_owners(
             "inventory_version": VERSION,
             "generated_at": generated_at(),
             "source_reference_review_sha256": sha256(review_body),
-            "source_public_reference_inventory_sha256": sha256(
-                public_inventory_body
-            ),
-            "source_private_reference_inventory_sha256": sha256(
-                private_inventory_body
-            ),
+            "source_public_reference_inventory_sha256": sha256(public_inventory_body),
+            "source_private_reference_inventory_sha256": sha256(private_inventory_body),
             "asset_payload_hash": payload_hash,
             "asset_content_manifest_path": str(manifest_path),
             "route": ROUTE,
@@ -578,15 +561,9 @@ def inventory_guild_progression_helper_owners(
         "source_reference_review_name": reference_review_path.name,
         "source_reference_review_sha256": sha256(canonical_lf(review_body)),
         "source_reference_inventory_name": public_reference_inventory_path.name,
-        "source_reference_inventory_sha256": sha256(
-            canonical_lf(public_inventory_body)
-        ),
-        "source_private_reference_inventory_name": (
-            private_reference_inventory_path.name
-        ),
-        "source_private_reference_inventory_sha256": sha256(
-            private_inventory_body
-        ),
+        "source_reference_inventory_sha256": sha256(canonical_lf(public_inventory_body)),
+        "source_private_reference_inventory_name": (private_reference_inventory_path.name),
+        "source_private_reference_inventory_sha256": sha256(private_inventory_body),
         "source_private_inventory_name": private_output_path.name,
         "source_private_inventory_sha256": sha256(private_body_out),
         "target": {

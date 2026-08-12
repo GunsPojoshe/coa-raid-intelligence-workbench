@@ -22,9 +22,7 @@ def _sha256(value: bytes) -> str:
 
 
 def _write_json(path: Path, payload: object) -> bytes:
-    body = (
-        json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
-    ).encode()
+    body = (json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode()
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(body)
     return body
@@ -37,11 +35,8 @@ def _checks(count: int) -> dict[str, bool]:
 def _inputs(tmp_path: Path) -> dict[str, Path]:
     callee = "client.helper"
     definition = "helper(payload){return payload}"
-    asset_text = (
-        f"const client={{{definition}}};"
-        "client.helper();"
-        "client.helper();"
-        + ("helper();" * 28)
+    asset_text = f"const client={{{definition}}};client.helper();client.helper();" + (
+        "helper();" * 28
     )
     definition_start = asset_text.index(definition)
     definition_end = definition_start + len(definition)
@@ -60,13 +55,7 @@ def _inputs(tmp_path: Path) -> dict[str, Path]:
     raw_root = tmp_path / "raw"
     payload = asset_text.encode()
     payload_hash = _sha256(payload)
-    folder = (
-        raw_root
-        / "source=test"
-        / "year=2026"
-        / "month=08"
-        / "endpoint=test"
-    )
+    folder = raw_root / "source=test" / "year=2026" / "month=08" / "endpoint=test"
     folder.mkdir(parents=True)
     payload_path = folder / f"{payload_hash}.bin.gz"
     with payload_path.open("wb") as raw_stream:
@@ -102,8 +91,7 @@ def _inputs(tmp_path: Path) -> dict[str, Path]:
             "callee": callee,
             "callee_sha256": callee_hash,
             "references": [
-                {**row, "reference_index": index}
-                for index, row in enumerate(private_rows, 1)
+                {**row, "reference_index": index} for index, row in enumerate(private_rows, 1)
             ],
             "summary": {
                 **evidence,
@@ -257,17 +245,24 @@ def test_owner_inventory_is_scalar_free_and_selects_owner_review(
     assert summary["network_requests_performed"] is False
 
     encoded = json.dumps(receipt)
+    client_hash = _sha256(b"client")
     assert "client" not in encoded
+    assert client_hash not in encoded
+    assert '"owner_chain_sha256"' not in encoded
+    assert '"owner_chain_character_count"' not in encoded
     assert '"raw_owner_chain"' not in encoded
     assert '"context"' not in encoded
     assert '"raw_symbol"' not in encoded
+    assert {row["owner_group_index"] for row in receipt["owner_candidates"]} == {1}
+    assert [group["owner_group_index"] for group in receipt["owner_groups"]] == [1]
 
     private_payload = json.loads(
         (tmp_path / "helper-owner.private.json").read_text(encoding="utf-8")
     )
-    assert {
-        row["raw_owner_chain"] for row in private_payload["owner_candidates"]
-    } == {"client"}
+    assert {row["raw_owner_chain"] for row in private_payload["owner_candidates"]} == {"client"}
+    assert {row["owner_chain_sha256"] for row in private_payload["owner_candidates"]} == {
+        client_hash
+    }
 
 
 def test_private_reference_hash_mismatch_blocks_owner_inventory(
