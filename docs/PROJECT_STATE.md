@@ -2,43 +2,9 @@
 
 Дата актуализации: **2026-08-13**.
 
-Этот документ фиксирует оперативное состояние. Любой новый чат обязан перепроверять live HEAD, PR и CI; SHA ниже являются checkpoint, а не заменой live verification.
+## GitHub
 
-## 1. GitHub — live состояние на момент cleanup
-
-```text
-repository: GunsPojoshe/coa-raid-intelligence-workbench
-local repo: C:\Users\Simpa\source\repos\coa-raid-intelligence-workbench
-
-main
-└── e2/log-evidence-refactor        Draft PR #3 -> main
-    └── e3/real-log-capture         Draft PR #7 -> e2/log-evidence-refactor
-```
-
-Live PR state перед этим docs commit:
-
-```text
-PR #7: open, Draft, mergeable=true
-PR #7 head: be899cc5f66c7bd82a1006116dbe57d91ecaed84
-PR #3: open, Draft
-```
-
-Последний проверенный remote code/evidence checkpoint:
-
-```text
-HEAD: be899cc5f66c7bd82a1006116dbe57d91ecaed84
-commit: Review guild progression helper owner binding
-Verify repository: #613
-run ID: 31651028612
-conclusion: success
-public-release-audit: success
-ubuntu: success
-windows: success
-```
-
-## 2. Branch audit и cleanup
-
-На GitHub было 11 веток. Для продолжения разработки нужны только:
+Active branches:
 
 ```text
 main
@@ -46,213 +12,96 @@ e2/log-evidence-refactor
 e3/real-log-capture
 ```
 
-Подтверждённо устаревшие ветки:
+Obsolete cleanup/Codex/E0/E1/E3-stage branches removed 2026-08-13.
+
+PR #7 remains Draft: `e3/real-log-capture -> e2/log-evidence-refactor`.
+
+Last fully verified checkpoint before the current progression-contract commits:
 
 ```text
-cleanup/remove-obsolete-baseline
-codex/audit-repository-and-current-branch
-codex/implement-cli-commands-for-har-inventory
-codex/implement-project-verification-infrastructure
-e0/approved-25-fixture
-e1/localhost-web-pivot
-e3/helper-reference-inventory-stage
-e3/helper-reference-review-stage
+HEAD: 005c6cbf017f7bea7c3b0b0554e05381dc4679f5
+Verify repository #615: success
+public-release-audit: success
+ubuntu: success
+windows: success
 ```
 
-Основания:
+Newer HEAD/CI must always be checked live.
 
-- cleanup/codex/e1 branches относятся к уже merged/closed PR;
-- `e0/approved-25-fixture` относится к закрытому без merge legacy Excel PR #1 и больше не является active product path;
-- обе `e3/helper-reference-*-stage` ветки являются строгими предками `e3/real-log-capture` (`behind_by=0` относительно active branch) и не содержат уникального continuation state.
+## Major progression finding
 
-Политика после cleanup: temporary branch удаляется после merge/closure либо после доказанного включения всех её commits в active branch.
-
-## 3. Важная коррекция evidence chain
-
-Исторические versioned helper receipts на remote HEAD были построены на lexical scanner, который позднее оказался недостаточно строгим.
-
-Узкая offline диагностика доказала:
+The local handoff included the exact private recovery metadata and exact archived SPA payload:
 
 ```text
-2 relevant owner/reference anchors = template_text
-0 = template-expression executable code
+SHA-256: da381a27e44be6cad3f60c4326251c7cbdd1ea8b31c5ccd5d8be03331855dacc
 ```
 
-То есть helper-like terminal text внутри JavaScript template literal был принят за исполняемый reference.
-
-Из-за общего упрощённого lexical подхода это затронуло не только owner interpretation, но и counts на definition/reference stages.
-
-Следствие: старые versioned значения остаются историческими артефактами, но **не являются текущим доказательством helper identity/owner binding**:
+Direct analysis established that the exact literal:
 
 ```text
-1 definition
-31 references
-17 owner candidates
-8 owner groups
-full-chain owner group 5
-definition owner group 7
+/api/guilds/progression
 ```
 
-Старый вывод `5 != 7` не переносить в дальнейшую разработку.
+occurs as a `noCacheEndpoints` configuration value and has **zero direct request occurrences**.
 
-## 4. Текущее локальное исправление — provisional, не versioned
-
-Пользователь передал `e3-current-local.patch`. Он содержит 10 tracked modified files:
+Actual direct progression contracts:
 
 ```text
-src/coa_workbench/collector/guild_progression_helper_definition_index.py
-src/coa_workbench/collector/guild_progression_helper_definition_review.py
-src/coa_workbench/collector/guild_progression_helper_owner_index.py
-src/coa_workbench/collector/guild_progression_helper_owner_inventory.py
-src/coa_workbench/collector/guild_progression_helper_reference_index.py
-src/coa_workbench/collector/guild_progression_helper_reference_inventory.py
-src/coa_workbench/collector/guild_progression_helper_reference_review.py
-tests/unit/test_guild_progression_helper_definition_review.py
-tests/unit/test_guild_progression_helper_reference_inventory.py
-tests/unit/test_guild_progression_helper_reference_review.py
+GET /api/guilds/progression/rankings
+GET /api/guilds/progression/full-clears
+GET /api/guilds/progression/rankings/{bossId}
 ```
 
-`git diff HEAD` не показывает untracked files. По фактической истории текущей сессии дополнительно созданы как минимум:
+Four direct frontend calls were observed, all GET. No direct POST progression request was observed.
+
+Therefore the old helper-definition/reference/owner chain is retained as audit history but is superseded for choosing the progression HTTP contract.
+
+## New versioned contract stage
+
+Added to the active branch:
 
 ```text
-src/coa_workbench/collector/guild_progression_js_lexical.py
-tests/unit/test_guild_progression_js_lexical.py
+src/coa_workbench/collector/guild_progression_frontend_contract.py
+tests/unit/test_guild_progression_frontend_contract.py
+evidence/real-data/argentum-guild-progression-frontend-request-contract.json
 ```
 
-Последний owner-hardening updater завершился сообщением `owner inventory test asset block not found`, но до этой ошибки успел изменить tracked owner code. Поэтому current local state является **частично применённым repair**, а не завершённым атомарным change.
+The review is offline-only and binds its public result to the exact archived SPA/private recovery evidence. The receipt publishes route templates and parameter-key names, not raw JavaScript/private source values.
 
-Последний предложенный `finish-e3-owner-hardening.py` пользователь **не запускал**.
-
-## 5. Provisional результаты после lexical hardening
-
-Они полезны для направления разработки, но не должны называться remote/versioned checkpoint до завершения repair.
-
-### Definition
+Decision:
 
 ```text
-full-chain occurrences: 2
-terminal-symbol occurrences: 45
-definition candidates: 3
-definition kinds: method_definition
-binding scopes: terminal_symbol
-marker classes: []
+legacy exact-prefix probe allowed: false
+bounded rankings GET contract observed: true
+bounded rankings GET probe ready: true
+network requests performed by review: false
 ```
 
-Definition review:
+## User's current Windows working tree
+
+The user's checkout still contains the older uncommitted lexical/helper repair from the mistaken route path. It is no longer on the critical product path.
+
+Do not commit that repair automatically. After the current remote contract checkpoint is green, remove only those obsolete local code changes with one bounded local operation, preserve private/raw evidence, and fast-forward to the remote branch.
+
+## Next action
+
+After exact-head CI for the current contract stage is green:
 
 ```text
-disposition: unresolved_multiple_terminal_method_definitions_without_transport_semantics
-helper identity resolved: false
-request payload mapping resolved: false
-ready for bounded route probe: false
+clean obsolete local helper-repair diff
+-> sync local checkout
+-> perform one bounded GET /api/guilds/progression/rankings using no invented query values
+-> archive exact response
+-> review schema/fingerprint
+-> establish pagination/termination evidence before expanding collection
 ```
 
-### References
+No request to the exact legacy `/api/guilds/progression` prefix. No guessed POST. No further broad helper/owner/alias diagnostics are required before the bounded rankings GET.
 
-```text
-references: 45
-full-chain: 2
-terminal: 45
-definition overlaps: 3
-reference kinds: definition_candidate, invocation, member_reference, object_key
-route-context references: 0
-direct transport contexts: 0
-request-shape contexts: 29
-request-shape marker classes: JSON.stringify, body, data, method, params, url
-```
+## Development process
 
-Reference-review blockers remain:
-
-```text
-route_not_observed_in_reference_contexts
-direct_transport_markers_not_observed
-receiver_or_owner_binding_unresolved
-request_shape_markers_not_bound_to_route_invocation
-```
-
-### Owners
-
-Latest provisional public owner inventory:
-
-```text
-references: 45
-owner candidates: 21
-owner groups: 12
-definition owner candidates: 1
-references without owner candidates: 24
-owner depths observed: 1, 2
-full-chain owner group: 6, refs 6 and 20
-cross-definition owner group: 8
-helper owner binding resolved: false
-ready for bounded route probe: false
-network requests performed: false
-```
-
-Group `8` binds one definition candidate to eight non-definition references. It does **not** bind the two full-chain invocations in group `6`, so helper ownership is still unresolved.
-
-The old `5 vs 7` owner model is superseded.
-
-## 6. Verification status of local repair
-
-Focused Ruff/tests shown in the terminal passed at multiple intermediate points, including a 25-test focused suite after the partial owner updater.
-
-However:
-
-```text
-full scripts/verify_repo.py after the final current local diff: NOT RUN
-current local repair committed: false
-current local repair pushed: false
-exact-head CI for the repair: does not exist
-```
-
-Do not call the local repair complete until the working tree is normalized, regression tests cover the lexical defect, one aggregate verifier passes, then the coherent change is committed/pushed and exact-head CI is green.
-
-## 7. Development process agreed on 2026-08-13
-
-- Agent performs all GitHub work it can perform itself.
-- User is not a manual GitHub operator.
-- Private/raw files may be inspected during analysis; privacy is a publication/versioning boundary.
-- If local Windows execution is unavoidable, give the user one bundled action with one compact result/handoff.
-- Prefer focused tests during iteration + one `verify_repo.py` before push + exact-head CI after push.
-- One coherent commit per meaningful change; avoid process-driven micro-commits.
-- Use diagnostics only to choose between concrete fixes.
-- Do not create an endless chain of owner/alias evidence stages.
-
-## 8. Next development action
-
-Do **not** continue the old owner-relationship diagnostic loop.
-
-At the next development session:
-
-```text
-normalize the partially applied lexical/analyzer repair
--> add/verify regression coverage for template text vs ${...} code
--> remove old hardcoded evidence counts from affected validators
--> run focused tests
--> run one full scripts/verify_repo.py
--> commit/push one coherent repair
--> verify exact-head CI
--> trace provenance of the two actual full-chain invocations (refs 6 and 20)
--> identify the concrete helper implementation
--> map exact helper arguments to request payload
--> only then review/allow one bounded /api/guilds/progression request
-```
-
-No guessed network request.
-
-## 9. Local visibility boundary
-
-The agent can read the full GitHub repository itself. It cannot directly enumerate the user's Windows filesystem unless the user shares an artifact/result.
-
-For future local handoff:
-
-- do not assume `git diff` is a complete working-tree snapshot;
-- include untracked-file awareness;
-- request one compact handoff artifact rather than many terminal commands;
-- never ask the user to reproduce information already available from GitHub or already shared private files.
-
-## 10. Privacy / integrity
-
-Local-only data directories remain local/private. They may be inspected for analysis when shared, but are not published by default.
-
-Do not delete `.gitkeep`. Do not rewrite published migrations. Do not raise evidence gates by inference.
+- Agent performs all GitHub work available to it.
+- User participates only at inaccessible local Windows/private runtime boundaries.
+- Private/raw artifacts may be inspected for analysis; publication/versioning is a separate boundary.
+- Focused tests during iteration; one aggregate verifier before a meaningful push; exact-head CI afterward.
+- Prefer one coherent product change over process-driven micro-stages.
