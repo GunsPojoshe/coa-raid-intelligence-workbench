@@ -1,4 +1,4 @@
-schema_version: 2
+schema_version: 3
 source_code: coa_ascension_logs
 base_url: https://coa.ascensionlogs.gg
 status: discovery
@@ -12,6 +12,8 @@ principles:
   - newer observations receive greater weight through a versioned policy
   - guild and global samples are retained as separate cohorts
   - upstream class and spec labels are retained as derived observations, not raw mechanic truth
+  - reviewed network contracts are preferred over frontend-internal inference
+  - source changes create scoped reanalysis requests instead of global rebuilds
 
 routes:
   - endpoint_code: public_home
@@ -41,6 +43,23 @@ routes:
     auth_mode: public
     status: verified_html
     use: guild_and_report_navigation_discovery
+
+  - endpoint_code: guild_progression_rankings_api
+    route_template: /api/guilds/progression/rankings
+    method: GET
+    auth_mode: probe_without_auth
+    status: reviewed
+    use: guild_progression_rankings_source_observation
+    parameter_keys:
+      - bracket
+      - difficulty
+      - location
+      - phaseId
+      - realm
+    dimension_keys: []
+    discovery_source: archived_spa_frontend_request_contract_v1
+    review_state: verified
+    empty_params_observed: true
 
   - endpoint_code: report_metadata
     route_template: null
@@ -93,3 +112,5 @@ prohibited_assumptions:
   - absence in one log disproves a mechanic
   - old and new game versions are directly interchangeable
   - upstream detected specialization proves a provider mechanic
+  - a route name proves response semantics
+  - a newly observed field may enter planner scoring without semantic review

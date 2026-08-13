@@ -9,6 +9,7 @@ import pytest
 from coa_workbench.collector.raw_archive import RawArchive, request_key_from_url
 from coa_workbench.collector.source_observatory import (
     ReviewedGetContract,
+    capture_reviewed_get,
     observe_raw_capture,
     register_artifact_dependency,
 )
@@ -19,13 +20,13 @@ duckdb = pytest.importorskip("duckdb")
 
 def _contract() -> ReviewedGetContract:
     return ReviewedGetContract(
-        source_code="coa_logs",
-        endpoint_code="guild_progression_rankings",
+        source_code="coa_ascension_logs",
+        endpoint_code="guild_progression_rankings_api",
         base_url="https://coa.ascensionlogs.gg",
         route_template="/api/guilds/progression/rankings",
         parameter_keys=("bracket", "difficulty", "location", "phaseId", "realm"),
-        auth_state="none",
-        discovery_source="archived_spa_review",
+        auth_state="probe_without_auth",
+        discovery_source="archived_spa_frontend_request_contract_v1",
         review_state="verified",
         logical_name="Guild progression rankings",
     )
@@ -61,6 +62,80 @@ def _observe(
         request_url=url,
         dimension_keys=("bossId",),
     )
+
+
+class _Headers:
+    def get_content_type(self) -> str:
+        return "application/json"
+
+
+class _FakeResponse:
+    def __init__(self, body: bytes) -> None:
+        self.status = 200
+        self.headers = _Headers()
+        self._body = body
+        self._offset = 0
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        return None
+
+    def read1(self, size: int) -> bytes:
+        if self._offset >= len(self._body):
+            return b""
+        chunk = self._body[self._offset : self._offset + size]
+        self._offset += len(chunk)
+        return chunk
+
+
+def test_capture_reviewed_get_uses_empty_params_and_archives_response(tmp_path: Path) -> None:
+    root = Path(__file__).resolve().parents[2]
+    migrations = root / "migrations"
+    database = tmp_path / "coa.duckdb"
+    archive = RawArchive(
+        tmp_path / "raw",
+        database_path=database,
+        migrations_dir=migrations,
+    )
+    contract = _contract()
+    body = json.dumps({"rows": [{"bossId": 1, "score": 10}]}).encode()
+
+    def opener(request, *, timeout, context):
+        assert timeout == 5.0
+        assert context is not None
+        assert request.method == "GET"
+        assert request.full_url == (
+            "https://coa.ascensionlogs.gg/api/guilds/progression/rankings"
+        )
+        return _FakeResponse(body)
+
+    observation = capture_reviewed_get(
+        archive=archive,
+        database_path=database,
+        migrations_dir=migrations,
+        contract=contract,
+        query_params={},
+        dimension_keys=("bossId",),
+        timeout_seconds=5.0,
+        opener=opener,
+    )
+
+    assert observation.capture.http_status == 200
+    assert observation.capture.bytes_uncompressed == len(body)
+    assert observation.capture.schema_fingerprint
+    assert len(observation.change_event_ids) == 1
+
+    with duckdb.connect(str(database)) as connection:
+        assert connection.execute("SELECT COUNT(*) FROM raw_object").fetchone()[0] == 1
+        assert connection.execute(
+            "SELECT COUNT(*) FROM raw_fetch_observation"
+        ).fetchone()[0] == 1
+        assert connection.execute("SELECT COUNT(*) FROM source_capture").fetchone()[0] == 1
+        assert connection.execute(
+            "SELECT change_type FROM source_change_event"
+        ).fetchone()[0] == "endpoint_added"
 
 
 def test_observatory_records_changes_and_queues_scoped_reanalysis(tmp_path: Path) -> None:
@@ -144,7 +219,7 @@ def test_observatory_records_changes_and_queues_scoped_reanalysis(tmp_path: Path
         ).fetchone()
         assert endpoint is not None
         assert endpoint[0:3] == (
-            "coa_logs",
+            "coa_ascension_logs",
             "GET",
             "/api/guilds/progression/rankings",
         )
