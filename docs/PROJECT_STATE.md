@@ -1,10 +1,10 @@
 # Фактическое состояние проекта
 
-Дата актуализации: **2026-08-12**.
+Дата актуализации: **2026-08-13**.
 
-Этот документ фиксирует оперативное состояние. Любой новый чат обязан перепроверять live HEAD, PR и CI; SHA ниже являются подтверждёнными checkpoint, а не заменой live verification.
+Этот документ фиксирует оперативное состояние. Любой новый чат обязан перепроверять live HEAD, PR и CI; SHA ниже являются checkpoint, а не заменой live verification.
 
-## Репозиторий и ветки
+## 1. GitHub — live состояние на момент cleanup
 
 ```text
 repository: GunsPojoshe/coa-raid-intelligence-workbench
@@ -15,73 +15,153 @@ main
     └── e3/real-log-capture         Draft PR #7 -> e2/log-evidence-refactor
 ```
 
-Последняя live-проверка перед этим documentation handoff:
+Live PR state перед этим docs commit:
 
 ```text
 PR #7: open, Draft, mergeable=true
-PR #7 head: 13982825295737c029b425a37d210a34a7ea0762
-PR #3: open, Draft, mergeable=false
-PR #3 head: 4b42a7d0735ba1125e4f0ef14dd01422d4b55afc
+PR #7 head: be899cc5f66c7bd82a1006116dbe57d91ecaed84
+PR #3: open, Draft
 ```
 
-PR #7 body содержит устаревшие operational HEAD/CI/evidence сведения и должен быть актуализирован отдельно после следующего versioned implementation checkpoint.
-
-## Последний полностью проверенный code/evidence checkpoint
+Последний проверенный remote code/evidence checkpoint:
 
 ```text
-HEAD: 13982825295737c029b425a37d210a34a7ea0762
-commit: Review guild progression helper references
-Verify repository run: #603
-run ID: 31533555026
-event: pull_request
+HEAD: be899cc5f66c7bd82a1006116dbe57d91ecaed84
+commit: Review guild progression helper owner binding
+Verify repository: #613
+run ID: 31651028612
 conclusion: success
 public-release-audit: success
 ubuntu: success
 windows: success
 ```
 
-Этот checkpoint versioned public helper-reference review. Documentation handoff commit, содержащий этот файл, будет иметь более новый SHA и должен быть получен live в следующем чате.
+## 2. Branch audit и cleanup
 
-## Проверенная data baseline
+На GitHub было 11 веток. Для продолжения разработки нужны только:
 
 ```text
-public reports: 6454
-unique public report IDs: 6454
-exact Argentum label reports: 17
-guild identity verified: true
-private selected baseline: 17 unique reports
-full-crawl collection contract reviewed: true
-migrations: 0001–0008
+main
+e2/log-evidence-refactor
+e3/real-log-capture
 ```
 
-Private source guild ID, report IDs, raw JavaScript, raw contexts, private queries и private source rows не versioned.
-
-## Guild progression evidence — завершённые versioned этапы
+Подтверждённо устаревшие ветки:
 
 ```text
-helper-definition inventory: 36/36, versioned
-helper-definition review: 42/42, versioned
-helper-reference inventory: 40/40, versioned
-helper-reference review: 46/46, versioned
+cleanup/remove-obsolete-baseline
+codex/audit-repository-and-current-branch
+codex/implement-cli-commands-for-har-inventory
+codex/implement-project-verification-infrastructure
+e0/approved-25-fixture
+e1/localhost-web-pivot
+e3/helper-reference-inventory-stage
+e3/helper-reference-review-stage
 ```
 
-Helper-reference review:
+Основания:
+
+- cleanup/codex/e1 branches относятся к уже merged/closed PR;
+- `e0/approved-25-fixture` относится к закрытому без merge legacy Excel PR #1 и больше не является active product path;
+- обе `e3/helper-reference-*-stage` ветки являются строгими предками `e3/real-log-capture` (`behind_by=0` относительно active branch) и не содержат уникального continuation state.
+
+Политика после cleanup: temporary branch удаляется после merge/closure либо после доказанного включения всех её commits в active branch.
+
+## 3. Важная коррекция evidence chain
+
+Исторические versioned helper receipts на remote HEAD были построены на lexical scanner, который позднее оказался недостаточно строгим.
+
+Узкая offline диагностика доказала:
 
 ```text
-public receipt: evidence/real-data/argentum-guild-progression-helper-reference-review.json
-reference count: 31
-disposition: unresolved_references_without_route_or_transport_binding
+2 relevant owner/reference anchors = template_text
+0 = template-expression executable code
+```
+
+То есть helper-like terminal text внутри JavaScript template literal был принят за исполняемый reference.
+
+Из-за общего упрощённого lexical подхода это затронуло не только owner interpretation, но и counts на definition/reference stages.
+
+Следствие: старые versioned значения остаются историческими артефактами, но **не являются текущим доказательством helper identity/owner binding**:
+
+```text
+1 definition
+31 references
+17 owner candidates
+8 owner groups
+full-chain owner group 5
+definition owner group 7
+```
+
+Старый вывод `5 != 7` не переносить в дальнейшую разработку.
+
+## 4. Текущее локальное исправление — provisional, не versioned
+
+Пользователь передал `e3-current-local.patch`. Он содержит 10 tracked modified files:
+
+```text
+src/coa_workbench/collector/guild_progression_helper_definition_index.py
+src/coa_workbench/collector/guild_progression_helper_definition_review.py
+src/coa_workbench/collector/guild_progression_helper_owner_index.py
+src/coa_workbench/collector/guild_progression_helper_owner_inventory.py
+src/coa_workbench/collector/guild_progression_helper_reference_index.py
+src/coa_workbench/collector/guild_progression_helper_reference_inventory.py
+src/coa_workbench/collector/guild_progression_helper_reference_review.py
+tests/unit/test_guild_progression_helper_definition_review.py
+tests/unit/test_guild_progression_helper_reference_inventory.py
+tests/unit/test_guild_progression_helper_reference_review.py
+```
+
+`git diff HEAD` не показывает untracked files. По фактической истории текущей сессии дополнительно созданы как минимум:
+
+```text
+src/coa_workbench/collector/guild_progression_js_lexical.py
+tests/unit/test_guild_progression_js_lexical.py
+```
+
+Последний owner-hardening updater завершился сообщением `owner inventory test asset block not found`, но до этой ошибки успел изменить tracked owner code. Поэтому current local state является **частично применённым repair**, а не завершённым атомарным change.
+
+Последний предложенный `finish-e3-owner-hardening.py` пользователь **не запускал**.
+
+## 5. Provisional результаты после lexical hardening
+
+Они полезны для направления разработки, но не должны называться remote/versioned checkpoint до завершения repair.
+
+### Definition
+
+```text
+full-chain occurrences: 2
+terminal-symbol occurrences: 45
+definition candidates: 3
+definition kinds: method_definition
+binding scopes: terminal_symbol
+marker classes: []
+```
+
+Definition review:
+
+```text
+disposition: unresolved_multiple_terminal_method_definitions_without_transport_semantics
+helper identity resolved: false
+request payload mapping resolved: false
+ready for bounded route probe: false
+```
+
+### References
+
+```text
+references: 45
+full-chain: 2
+terminal: 45
+definition overlaps: 3
+reference kinds: definition_candidate, invocation, member_reference, object_key
 route-context references: 0
 direct transport contexts: 0
-route transport bindings: 0
-route request-shape bindings: 0
-request-shape contexts: 17
-request-shape marker classes: [JSON.stringify, body, data, params, url]
-ready for helper-owner inventory: true
-network requests performed: false
+request-shape contexts: 29
+request-shape marker classes: JSON.stringify, body, data, method, params, url
 ```
 
-Blockers:
+Reference-review blockers remain:
 
 ```text
 route_not_observed_in_reference_contexts
@@ -90,125 +170,89 @@ receiver_or_owner_binding_unresolved
 request_shape_markers_not_bound_to_route_invocation
 ```
 
-## Текущий локальный незакоммиченный этап
+### Owners
 
-На пользовательской Windows-машине подготовлена и валидирована реализация helper-owner inventory. Она **не versioned** и отсутствует в remote HEAD на момент handoff.
-
-Ожидаемые untracked implementation files:
+Latest provisional public owner inventory:
 
 ```text
-scripts/inventory_guild_progression_helper_owners.py
-src/coa_workbench/collector/guild_progression_helper_owner_index.py
-src/coa_workbench/collector/guild_progression_helper_owner_inventory.py
-tests/unit/test_guild_progression_helper_owner_inventory.py
-```
-
-Последний локальный resume-run дошёл до `STOP BOUNDARY` без исключения после formatting, focused validation и полного repository verification. Зафиксированный boundary:
-
-```text
-Helper-owner implementation is formatted and validated.
-No real helper-owner inventory was executed.
-No private helper-owner artifact was created.
-No progression route network request was performed.
-Helper owner binding remains unresolved.
-Bounded progression route probe remains disabled.
-No files staged.
-No commit performed.
-No push performed.
-```
-
-Реализация содержит offline-only owner-candidate inventory и контракт из `54` integrity checks. До versioning нельзя считать helper-owner inventory implementation remote/project checkpoint.
-
-## Временные локальные PowerShell helper scripts
-
-На момент handoff в корне локального repository оставались untracked:
-
-```text
-run-e3-commit-push-reference-review.ps1
-run-e3-helper-reference-review-fixed-v3.ps1
-run-e3-implement-helper-owner-inventory.ps1
-run-e3-resume-helper-owner-inventory.ps1
-run-e3-resume-helper-owner-inventory-v2.ps1
-run-e3-resume-helper-owner-inventory-v3.ps1
-```
-
-Это одноразовые orchestration helpers, не project source. Их можно удалить точечно после live `git status` и до staging helper-owner implementation. Не использовать широкие wildcard/recurse удаления и не затрагивать versioned scripts, private evidence или `.gitkeep`.
-
-## Текущая decision boundary
-
-```text
-helper-definition inventory complete: true
-helper-definition review complete: true
-helper-reference inventory complete: true
-helper-reference review complete and versioned: true
-helper-owner inventory implementation prepared locally: true
-helper-owner inventory implementation versioned: false
-helper-owner inventory executed on real private evidence: false
-helper-owner public receipt versioned: false
-helper-owner review complete: false
-helper identity resolved: false
+references: 45
+owner candidates: 21
+owner groups: 12
+definition owner candidates: 1
+references without owner candidates: 24
+owner depths observed: 1, 2
+full-chain owner group: 6, refs 6 and 20
+cross-definition owner group: 8
 helper owner binding resolved: false
-request payload mapping resolved: false
-request shape verified: false
-ready for bounded progression route probe: false
-guild API route semantics verified: false
-pagination semantics verified: false
-termination semantics verified: false
-completeness verified: false
-automatic full guild crawl allowed: false
-ready for full guild crawl: false
-ready for multi-report character graph: false
-ready for performance model: false
-ready for encounter-aware roster completion: false
-planner scoring allowed: false
+ready for bounded route probe: false
+network requests performed: false
 ```
 
-Do not perform a guessed network request to `/api/guilds/progression`.
+Group `8` binds one definition candidate to eight non-definition references. It does **not** bind the two full-chain invocations in group `6`, so helper ownership is still unresolved.
 
-## PowerShell / VS Code development environment
+The old `5 vs 7` owner model is superseded.
 
-Пользователь работает в VS Code с extension:
+## 6. Verification status of local repair
+
+Focused Ruff/tests shown in the terminal passed at multiple intermediate points, including a 25-test focused suite after the partial owner updater.
+
+However:
 
 ```text
-Identifier: ms-vscode.powershell
-Observed version at handoff: 2025.4.0
+full scripts/verify_repo.py after the final current local diff: NOT RUN
+current local repair committed: false
+current local repair pushed: false
+exact-head CI for the repair: does not exist
 ```
 
-Extension оставляем. Основная проблема последних helper scripts была не в extension, а в фактическом runtime Windows PowerShell 5.1 / .NET Framework. Были воспроизведены несовместимости/quirks вокруг `System.IO.Path.GetRelativePath`, multiline external-command quoting, `gh --jq` quoting и root-array `ConvertFrom-Json` semantics.
+Do not call the local repair complete until the working tree is normalized, regression tests cover the lexical defect, one aggregate verifier passes, then the coherent change is committed/pushed and exact-head CI is green.
 
-Для дальнейшей проектной automation стандарт на Windows: **PowerShell 7+ (`pwsh`)**. Он устанавливается side-by-side с Windows PowerShell 5.1. Подробности: `docs/WINDOWS_DEVELOPMENT_ENVIRONMENT.md`.
+## 7. Development process agreed on 2026-08-13
 
-## Следующие действия — обязательный порядок
+- Agent performs all GitHub work it can perform itself.
+- User is not a manual GitHub operator.
+- Private/raw files may be inspected during analysis; privacy is a publication/versioning boundary.
+- If local Windows execution is unavoidable, give the user one bundled action with one compact result/handoff.
+- Prefer focused tests during iteration + one `verify_repo.py` before push + exact-head CI after push.
+- One coherent commit per meaningful change; avoid process-driven micro-commits.
+- Use diagnostics only to choose between concrete fixes.
+- Do not create an endless chain of owner/alias evidence stages.
 
-1. Новый чат получает live GitHub state и локально выполняет `git fetch`/status.
-2. Documentation handoff commit после `139828...` безопасно fast-forward pull-ится только после проверки, что он не затрагивает четыре untracked helper-owner implementation paths.
-3. Проверить/настроить PowerShell 7 для VS Code и integrated terminal.
-4. Удалить только перечисленные obsolete root `run-e3-*.ps1`, если они всё ещё существуют.
-5. Повторно показать exact diff четырёх helper-owner implementation files и проверить privacy/network boundary.
-6. На синхронизированном HEAD повторить relevant focused tests и полный `scripts/verify_repo.py`.
-7. Stage **ровно четыре** helper-owner implementation files; не смешивать docs/evidence/temp scripts.
-8. Commit и push atomic implementation change.
-9. Проверить exact new HEAD CI: `public-release-audit`, `ubuntu`, `windows`.
-10. Только после versioned green implementation выполнить **offline** helper-owner inventory против exact private reference inventory/raw asset.
-11. Проверить 54/54, private/public hash binding, scalar-free public candidate и все false downstream gates.
-12. Version only approved public helper-owner inventory receipt отдельным commit.
-13. Реализовать explicit helper-owner review отдельным этапом.
-14. Bounded route probe разрешать только после exact helper identity + owner binding + payload/request-shape evidence.
+## 8. Next development action
 
-## Privacy / integrity rules
+Do **not** continue the old owner-relationship diagnostic loop.
 
-Сохранять local-only contents:
+At the next development session:
 
 ```text
-data/raw/
-data/extracted/
-data/normalized/
-data/reconstructed/
-data/warehouse/
-data/exchange/in/
-data/exchange/out/
+normalize the partially applied lexical/analyzer repair
+-> add/verify regression coverage for template text vs ${...} code
+-> remove old hardcoded evidence counts from affected validators
+-> run focused tests
+-> run one full scripts/verify_repo.py
+-> commit/push one coherent repair
+-> verify exact-head CI
+-> trace provenance of the two actual full-chain invocations (refs 6 and 20)
+-> identify the concrete helper implementation
+-> map exact helper arguments to request payload
+-> only then review/allow one bounded /api/guilds/progression request
 ```
 
-Never commit cookies, tokens, browser profiles, unsanitized HAR, source IDs, report IDs, private query, raw JS, raw owner chains, private receipts или raw private contexts.
+No guessed network request.
 
-Не удалять `.gitkeep`. Не переписывать опубликованные migrations. Не повышать evidence gate по inference.
+## 9. Local visibility boundary
+
+The agent can read the full GitHub repository itself. It cannot directly enumerate the user's Windows filesystem unless the user shares an artifact/result.
+
+For future local handoff:
+
+- do not assume `git diff` is a complete working-tree snapshot;
+- include untracked-file awareness;
+- request one compact handoff artifact rather than many terminal commands;
+- never ask the user to reproduce information already available from GitHub or already shared private files.
+
+## 10. Privacy / integrity
+
+Local-only data directories remain local/private. They may be inspected for analysis when shared, but are not published by default.
+
+Do not delete `.gitkeep`. Do not rewrite published migrations. Do not raise evidence gates by inference.

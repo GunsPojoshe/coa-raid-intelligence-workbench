@@ -1,6 +1,6 @@
 # CoA Raid Intelligence Workbench — канонический контекст проекта
 
-Дата актуализации: **2026-08-12**.
+Дата актуализации: **2026-08-13**.
 
 Этот документ фиксирует долгосрочную цель, архитектуру и truth model. Оперативные working-tree/HEAD/CI сведения находятся в `docs/PROJECT_STATE.md` и всегда перепроверяются live.
 
@@ -69,16 +69,6 @@ rejected
 
 Only `corroborated` and `confirmed` mechanics may enter canonical planner scoring.
 
-Provenance examples:
-
-```text
-raw_log
-upstream_derived
-companion_addon
-local_inference
-manual_override
-```
-
 ## 4. Evidence architecture
 
 ```text
@@ -141,18 +131,7 @@ System should explain:
 
 ### CoA Ascension Logs
 
-Target coverage includes:
-
-- reports;
-- encounters;
-- rankings;
-- statistics;
-- characters;
-- Armory;
-- talent-grid;
-- guild reports;
-- guild progression;
-- future exact reviewed routes.
+Target coverage includes reports, encounters, rankings, statistics, characters, Armory, talent-grid, guild reports, guild progression and future exact reviewed routes.
 
 ### CoA BisBeard
 
@@ -190,7 +169,7 @@ full-crawl collection contract reviewed: true
 
 Private source IDs/report IDs/source rows remain local-only.
 
-## 9. Guild progression chain
+## 9. Guild progression chain — corrected interpretation
 
 Observed route candidate:
 
@@ -206,34 +185,38 @@ POST
 
 `POST` is not a complete request contract.
 
-Completed/versioned bounded stages:
+The remote history contains completed helper definition/reference/owner inventory/review stages. They remain reproducible historical artifacts, but the old helper identity/owner interpretation is no longer current because a later offline diagnostic proved that the lexical scanner counted helper-like terminal text inside JavaScript template-literal **text** as executable references.
+
+Therefore the historical model:
 
 ```text
-usage-context review
-helper call-site inventory/review
-helper-definition inventory: 36/36
-helper-definition review: 42/42
-helper-reference inventory: 40/40
-helper-reference review: 46/46
+1 definition
+31 references
+owner groups 5 vs 7
 ```
 
-Current verified helper-reference review boundary:
+must not be used as current helper-identity evidence.
+
+The local correction, not yet versioned at the 2026-08-13 cleanup checkpoint, introduced a shared lexical scanner and produced provisional corrected observations:
 
 ```text
-references: 31
+full-chain occurrences: 2
+definition candidates: 3
+reference candidates: 45
+definition overlaps: 3
 route-context references: 0
 direct transport contexts: 0
-request-shape contexts: 17
+request-shape contexts in reviewed references: 29
+owner candidates: 21
+owner groups: 12
 helper identity resolved: false
 helper owner binding resolved: false
 request payload mapping resolved: false
-request shape sufficient for bounded probe: false
-ready for helper-owner inventory: true
 ready for bounded route probe: false
 network requests performed: false
 ```
 
-At the 2026-08-12 handoff a helper-owner inventory implementation had been prepared and validated **locally only**, not versioned and not executed against the real private evidence. Exact operational details are in `docs/PROJECT_STATE.md` and `docs/E3_GUILD_PROGRESSION_EVIDENCE_STATUS.md`.
+These numbers are provisional local results until the analyzer repair, regression tests, aggregate verification, commit and exact-head CI are complete.
 
 ## 10. Progression decision boundary
 
@@ -245,11 +228,9 @@ guild-search route/schema verified: true
 guild-search limit truncation verified: true
 progression route candidate observed: true
 progression usage context reviewed: true
-helper definition inventory/review complete: true
-helper reference inventory/review complete: true
-helper owner inventory implementation versioned: false
-helper owner inventory real execution complete: false
-helper owner review complete: false
+historical helper evidence reproducible: true
+historical helper identity/owner interpretation superseded: true
+lexical analyzer repair versioned: false
 helper identity resolved: false
 helper owner binding resolved: false
 request payload mapping resolved: false
@@ -271,17 +252,18 @@ No guessed network request to `/api/guilds/progression`.
 
 ## 11. Required progression sequence
 
+The project no longer expands owner/alias evidence stages indefinitely. The shortest evidence-backed path is:
+
 ```text
-version and verify helper-owner inventory implementation
--> execute offline helper-owner inventory on exact private evidence
--> validate/version scalar-free owner receipt
--> explicit helper-owner review
--> establish exact helper identity + owner binding + payload/request shape
--> bounded progression route probe
--> response schema review
+stabilize/version lexical analyzer repair
+-> trace provenance of the two actual full-chain invocations
+-> identify the concrete helper implementation/binding
+-> establish exact argument -> request payload mapping
+-> review exact bounded request contract
+-> perform one bounded progression route probe
+-> review response schema
 -> pagination/termination/completeness evidence
--> compare full API set with known private baseline
--> explicit full-crawl promotion
+-> full guild crawl promotion
 -> multi-report character identity graph
 -> verified build/capability observations
 -> encounter requirement models
@@ -289,9 +271,17 @@ version and verify helper-owner inventory implementation
 -> dynamic attendance-aware roster completion
 ```
 
-No false gate may be raised by inference.
+A narrow offline diagnostic is acceptable only when it chooses between concrete implementation paths. No false gate may be raised by inference.
 
-## 12. Data/Git policy
+## 12. Development operating model
+
+The agent performs all GitHub/repository operations available through its tools. The user should not be used as a manual GitHub operator.
+
+When access to the user's Windows filesystem is genuinely required, use one bundled local action with a compact result/handoff. Private/raw files may be inspected for analysis; the restriction is on publication/versioning, not on private reading.
+
+Focused tests are used during iteration. One aggregate verifier is required before a meaningful push, followed by exact-head GitHub CI.
+
+## 13. Data/Git policy
 
 Versioned:
 
@@ -302,7 +292,7 @@ Versioned:
 - approved provisional references;
 - scalar-free public receipts.
 
-Local-only:
+Local/private:
 
 ```text
 data/raw/
@@ -314,13 +304,11 @@ data/exchange/in/
 data/exchange/out/
 ```
 
-Never commit secrets, cookies, tokens, browser profiles, unsanitized HAR, source IDs, report IDs, private queries, private receipts, raw JavaScript, raw owner chains or raw private contexts.
+Never publish secrets, cookies, tokens, browser profiles, unsanitized HAR, private source IDs/report IDs, private queries, private receipts, raw JavaScript, raw owner chains or raw private contexts unless an explicit reviewed publication contract permits the exact field.
 
-## 13. Development environment
+## 14. Branch policy
 
-Windows automation standard is PowerShell 7+ (`pwsh`). VS Code PowerShell extension is supported, but the active runtime must be verified. See `docs/WINDOWS_DEVELOPMENT_ENVIRONMENT.md`.
-
-## 14. Branches
+Active structure:
 
 ```text
 main
@@ -328,4 +316,4 @@ main
     └── e3/real-log-capture         PR #7 -> e2, Draft
 ```
 
-PR #7 remains Draft until evidence gates are explicitly closed.
+Temporary merged/closed/stage branches are disposable and should be deleted promptly. See the audited list in `docs/PROJECT_STATE.md`.

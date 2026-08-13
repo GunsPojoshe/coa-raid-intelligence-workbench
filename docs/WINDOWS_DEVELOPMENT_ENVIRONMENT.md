@@ -1,154 +1,115 @@
 # Windows development environment
 
+Дата актуализации: **2026-08-13**.
+
 ## Purpose
 
-This document defines the supported Windows shell/tooling baseline for local development and automation in this repository.
-
-## VS Code PowerShell extension
-
-Observed user setup at the 2026-08-12 handoff:
-
-```text
-Identifier: ms-vscode.powershell
-Version: 2025.4.0
-```
-
-Keep this extension. The extension is the VS Code integration layer; project scripts still execute in a concrete PowerShell runtime.
+Supported Windows shell/tooling baseline and the minimal user-interaction contract for this repository.
 
 ## Project shell standard
 
-For new Windows automation use **PowerShell 7+** and invoke it as:
+Use **PowerShell 7+** (`pwsh`) for new project automation. Windows PowerShell 5.1 may remain installed for legacy system tasks but is not a target for new project scripts.
 
-```text
-pwsh
-```
+The existing VS Code `ms-vscode.powershell` extension is supported. The extension is only the integration layer; ensure the active runtime is PowerShell 7 when running project automation.
 
-Windows PowerShell 5.1 may remain installed side-by-side for legacy system tasks, but new project automation should not depend on it.
-
-Why this project standard exists: recent bounded E3 helper scripts exposed multiple Windows PowerShell 5.1 / .NET Framework compatibility problems:
+Historical PowerShell 5.1 failures included:
 
 ```text
 System.IO.Path.GetRelativePath unavailable
-multiline external python -c quoting failure
+multiline external-command quoting corruption
 gh --jq quoting corruption
-ConvertFrom-Json root-array/member-enumeration ambiguity
+ConvertFrom-Json array/member-enumeration ambiguity
 ```
 
-These failures were orchestration/runtime issues, not evidence-stage failures.
+These were orchestration/runtime problems, not evidence failures.
 
-## Verify the active shell
-
-Inside the PowerShell session used for project work:
-
-```powershell
-$PSVersionTable.PSVersion
-(Get-Process -Id $PID).Path
-Get-Command pwsh -ErrorAction SilentlyContinue
-```
-
-Target:
+## Local repository
 
 ```text
-PSVersion Major >= 7
-process path ends in pwsh.exe
-pwsh command is discoverable
+C:\Users\Simpa\source\repos\coa-raid-intelligence-workbench
 ```
 
-## VS Code session
+## Responsibility split
 
-Use the installed `ms-vscode.powershell` extension and select a PowerShell 7 session through the extension's PowerShell session menu.
+The agent handles GitHub, PR, CI, remote branch comparison and repository-source inspection itself whenever tools permit it.
 
-The integrated terminal can also use PowerShell 7 as its default profile. Do not assume that installing the VS Code extension automatically changes the terminal/runtime from Windows PowerShell 5.1 to PowerShell 7.
+The user should not be asked to act as a manual GitHub operator.
 
-No repository `.vscode/settings.json` is required merely to enforce a machine-specific executable path. Prefer a user-level VS Code selection unless the project later adopts a portable team-wide setting.
+The user is required only for things the agent cannot access directly, primarily:
+
+- the exact Windows working tree;
+- unshared local/private artifacts;
+- browser/session state;
+- local runtime execution.
+
+When local work is required, provide **one complete action** whenever possible. Prefer one downloadable script or one short command that produces one compact result/handoff.
+
+Do not send long sequences of commands when a single script can perform the same bounded task.
+
+## Private files
+
+Private/raw files are valid analysis inputs. There is no rule requiring the agent to avoid reading them.
+
+The boundary is publication/versioning:
+
+- secrets remain private;
+- raw source IDs/report IDs remain private by default;
+- raw JavaScript/private contexts/owner chains remain private by default;
+- sanitized/public receipts are reviewed separately.
+
+A private file may be shared with the agent for analysis without implying it should be committed.
+
+## Exact local-state handoff
+
+The agent cannot directly enumerate the user's Windows filesystem. A normal GitHub checkout view is not the same as the user's current working tree.
+
+Also:
+
+```text
+git diff HEAD
+```
+
+does not include untracked files.
+
+When exact local state is needed, use one bounded handoff that captures:
+
+- current branch and HEAD;
+- tracked diff;
+- relevant untracked-file manifest;
+- only the private artifacts actually needed for the decision.
+
+Do not ask the user to manually copy many independent command outputs.
 
 ## Running project automation
 
-Large scripts containing loops, conditionals, here-strings, JSON parsing or multiple external tools must be saved as `.ps1` and run as a file.
-
-Preferred invocation:
+Large scripts containing loops, conditionals, here-strings, JSON parsing or multiple external tools must run as a file:
 
 ```powershell
 pwsh -NoProfile -File .\script.ps1
 ```
 
-Do not paste large compound programs statement-by-statement into the interactive prompt.
+One-off user-facing orchestration should stay outside project source unless it becomes a reusable project operation.
 
-For user-facing one-off orchestration generated during development, keep the file untracked unless it becomes a reusable project operation. Delete obsolete root helpers after their task is closed and after `git status` confirms they are untracked.
+## Python / uv / verification
 
-## External JSON / GitHub CLI rules
-
-For robust automation:
-
-- prefer one exact run/object over parsing a large run list when the ID is already known;
-- parse raw JSON deliberately;
-- normalize arrays explicitly before filtering;
-- do not rely on PowerShell member-enumeration side effects;
-- avoid shell-sensitive `--jq` expressions inside legacy PowerShell;
-- verify external command exit codes;
-- bind workflow checks to exact commit SHA and exact run ID where possible.
-
-## Python / uv / Ruff
-
-Do not install Visual Studio Build Tools merely to work around Ruff packaging.
-
-The repository has already corrected Ruff lock metadata and CI uses a no-source-build boundary. Current local dependency preparation is expected to use:
+Dependency preparation:
 
 ```powershell
 uv sync --frozen --extra dev --no-build-package ruff
 ```
 
-Then use the existing environment without re-resolving dependencies where possible:
+During iteration use focused tests. Before one meaningful push use the repository aggregate verifier:
 
 ```powershell
-uv run --no-sync python -m ruff check .
-uv run --no-sync python -m ruff format --check .
-uv run --no-sync python -m pytest
 uv run --no-sync python scripts/verify_repo.py
 ```
 
-Always compare with the current `docs/CI_OPERATIONS.md` before changing dependency commands.
+The agent verifies exact-head GitHub CI after push.
 
 ## Line endings
 
-Git may print warnings that LF will be replaced by CRLF in the Windows working copy. A warning alone is not a reason to rewrite files or change repository-wide line-ending policy.
+LF/CRLF warnings alone are not a reason for repository-wide rewrites. Review semantic diff and whitespace errors explicitly.
 
-Before commit use:
+## Cleanup safety
 
-```powershell
-git diff --check
-git --no-pager diff
-git --no-pager diff --cached
-```
-
-Review semantic content and whitespace errors explicitly.
-
-## Security and evidence boundary
-
-Shell convenience must never weaken the repository privacy model. Do not print or commit:
-
-```text
-cookies
-tokens
-Authorization values
-browser profiles
-unsanitized HAR
-private guild/report IDs
-private queries
-raw JavaScript
-raw owner chains
-raw private contexts
-```
-
-Do not use shell cleanup commands that recursively remove protected data trees.
-
-## Current recommended setup action
-
-At the next local session:
-
-1. confirm whether `pwsh` is installed;
-2. if absent, install the current supported PowerShell 7 release using official Microsoft instructions;
-3. select that runtime in the VS Code PowerShell extension session menu;
-4. optionally set PowerShell 7 as the VS Code integrated-terminal default profile;
-5. verify the active runtime with `$PSVersionTable` and process path;
-6. use `pwsh -NoProfile -File` for future project automation.
+Do not use recursive wildcard cleanup over project/private data. Do not delete `.gitkeep`. Remove obsolete one-off helpers or branches only after their purpose/history has been classified.

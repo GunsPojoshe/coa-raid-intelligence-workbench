@@ -1,127 +1,125 @@
 # E3 guild progression evidence status
 
-Дата актуализации: **2026-08-12**.
+Дата актуализации: **2026-08-13**.
 
-## Статус checkpoint
+## 1. Remote checkpoint
 
 ```text
 scope: Conquest of Azeroth only
 branch: e3/real-log-capture
-last fully verified code/evidence HEAD: 13982825295737c029b425a37d210a34a7ea0762
-last fully verified CI run: #603
-run ID: 31533555026
-event: pull_request
+remote HEAD before this docs cleanup: be899cc5f66c7bd82a1006116dbe57d91ecaed84
+Verify repository: #613
+run ID: 31651028612
 conclusion: success
 public-release-audit: success
 ubuntu: success
 windows: success
 ```
 
-Этот документ может быть опубликован отдельным более новым docs-only commit. Новый чат обязан получить current live HEAD.
+The remote helper receipts at that checkpoint remain immutable history. Their previous semantic interpretation is partially superseded by a newly demonstrated lexical defect described below.
 
-## Evidence sequence
-
-```text
-route discovery
--> usage-context review
--> helper call-site inventory and review
--> helper-definition inventory and review
--> helper-reference inventory and review
--> helper-owner inventory and review
--> exact bounded request contract
--> bounded route probe
--> pagination / termination / completeness review
--> full guild crawl
-```
-
-Route, HTTP method candidate, helper name similarity или request-shape marker не разрешают сетевой probe сами по себе.
-
-## Подтверждённая progression boundary
+## 2. Progression boundary
 
 ```text
 route candidate: /api/guilds/progression
 HTTP method candidate: POST
-method candidate unambiguous: true
 helper identity resolved: false
 helper owner binding resolved: false
 request payload mapping resolved: false
 request shape verified: false
 ready for bounded route probe: false
-network requests performed by evidence stages: false
+network requests performed by current evidence work: false
 ```
 
-## Helper-definition inventory
+`POST` remains evidence-backed as a method candidate, not a complete request contract.
+
+## 3. Lexical defect discovered
+
+The original definition/reference/owner chain relied on lexical masking that treated an entire JavaScript backtick template as a simple string boundary and did not correctly distinguish template text from executable `${...}` expressions.
+
+A narrow offline diagnostic classified the two suspicious relevant anchors as:
 
 ```text
-public receipt: evidence/real-data/argentum-guild-progression-helper-definition.json
-integrity checks: 36/36
+plain_code: 9
+template_text: 2
+template_expression_code: 0
+```
+
+A contamination-boundary check then established:
+
+```text
+non-code owner candidates: 2
+non-code reference symbols for those candidates: 2
+lexical pair: template_text__reference_template_text
+earliest affected stage: helper_reference_inventory
+```
+
+Inspection of the shared definition/reference lexical implementation showed the same simplified masking assumption also influenced occurrence counts feeding definition evidence. Therefore the safe correction boundary is the shared lexical scanner, not an owner-only patch.
+
+## 4. Historical versioned evidence — reproducible but superseded for inference
+
+The remote history contains successful versioned stages with contracts:
+
+```text
+helper-definition inventory: 36/36
+helper-definition review: 42/42
+helper-reference inventory: 40/40
+helper-reference review: 46/46
+helper-owner inventory: 54/54
+helper-owner review: 16/16
+```
+
+Historical interpretation included:
+
+```text
 definition candidates: 1
-definition kind: method_definition
-binding scope: terminal_symbol
-definition characters: 40
-alias candidates: 0
-marker classes: []
-full-chain occurrences observed: 2
-terminal-symbol occurrences observed: 31
-all scans truncated: false
+references: 31
+definition overlaps: 1
+owner candidates: 17
+owner groups: 8
+full-chain owner group: 5
+definition owner group: 7
 ```
 
-## Helper-definition review
+Do not use those counts/groups as current helper-identity evidence. The files remain historical/auditable receipts; they are not deleted merely because a later defect invalidated part of the interpretation.
+
+## 5. Provisional corrected local evidence
+
+The following results were generated offline after introducing lexical hardening. They are **not yet versioned canonical evidence**.
+
+### Helper-definition inventory/review
 
 ```text
-public receipt: evidence/real-data/argentum-guild-progression-helper-definition-review.json
-integrity checks: 42/42
-disposition: unresolved_terminal_method_without_transport_semantics
+full-chain occurrences: 2
+terminal-symbol occurrences: 45
+definition candidates: 3
+definition kinds: [method_definition]
+binding scopes: [terminal_symbol]
+marker classes: []
+review disposition: unresolved_multiple_terminal_method_definitions_without_transport_semantics
 helper identity resolved: false
 request payload mapping resolved: false
-ready for helper-reference inventory: true
 ready for bounded route probe: false
 ```
 
-## Helper-reference inventory
+### Helper-reference inventory/review
 
 ```text
-public receipt: evidence/real-data/argentum-guild-progression-helper-reference.json
-integrity checks: 40/40
+reference count: 45
 full-chain occurrences: 2
-terminal-symbol occurrences: 31
-terminal-symbol-only occurrences: 29
-unique reference candidates: 31
-definition overlaps: 1
-route-context references: 0
-direct transport markers: []
-request-shape markers: [JSON.stringify, body, data, params, url]
-all scans truncated: false
-network requests performed: false
-```
-
-Private inventory remains ignored:
-
-```text
-data/extracted/report-discovery/argentum-guild-progression-helper-reference.private.json
-```
-
-## Helper-reference review — completed and versioned
-
-```text
-public receipt: evidence/real-data/argentum-guild-progression-helper-reference-review.json
-integrity checks: 46/46
-reference count: 31
-disposition: unresolved_references_without_route_or_transport_binding
+terminal-symbol occurrences: 45
+terminal-symbol-only occurrences: 43
+definition overlaps: 3
+reference kinds: [definition_candidate, invocation, member_reference, object_key]
+symbol scopes: [full_chain, terminal_symbol]
 route-context references: 0
 direct transport contexts: 0
-route transport bindings: 0
-route request-shape bindings: 0
-request-shape contexts: 17
-helper identity resolved: false
-helper owner binding resolved: false
-request payload mapping resolved: false
-request shape sufficient for bounded probe: false
-ready for helper-owner inventory: true
-network requests performed: false
+request-shape contexts: 29
+request-shape markers: [JSON.stringify, body, data, method, params, url]
+disposition: unresolved_references_without_route_or_transport_binding
 ```
 
-Blockers:
+Blockers remain:
 
 ```text
 route_not_observed_in_reference_contexts
@@ -130,99 +128,86 @@ receiver_or_owner_binding_unresolved
 request_shape_markers_not_bound_to_route_invocation
 ```
 
-The review is scalar-free and does not publish raw callee, raw symbols, raw contexts, source IDs or request values.
+### Helper-owner inventory
 
-## Helper-owner inventory — local implementation checkpoint only
-
-Prepared locally but not versioned at the last user terminal checkpoint:
+Latest provisional public receipt produced from the corrected 45-reference set:
 
 ```text
-src/coa_workbench/collector/guild_progression_helper_owner_index.py
-src/coa_workbench/collector/guild_progression_helper_owner_inventory.py
-scripts/inventory_guild_progression_helper_owners.py
-tests/unit/test_guild_progression_helper_owner_inventory.py
+integrity checks: 54/54
+reference count: 45
+owner candidates: 21
+owner groups: 12
+definition owner candidates: 1
+member receiver candidates: 21
+definition container candidates: 0
+references without owner candidates: 24
+owner depths: [1, 2]
+cross-definition owner groups: 1
+helper owner binding resolved: false
+ready for bounded route probe: false
+network requests performed: false
 ```
 
-Design boundary:
-
-- offline-only;
-- reads exact bound helper-reference private inventory and exact archived SPA asset;
-- validates public/private reference alignment and raw asset spans;
-- performs bounded lexical owner-candidate extraction;
-- raw owner chains stay private;
-- public candidate/group evidence exposes hashes, counts and classes only;
-- integrity contract: `54` checks;
-- owner binding is **not inferred** by inventory;
-- next gate after a successful real inventory is explicit helper-owner review;
-- bounded route probe remains false.
-
-The latest local resume output ended successfully at:
+Relevant topology:
 
 ```text
-Helper-owner implementation is formatted and validated.
-No real helper-owner inventory was executed.
-No private helper-owner artifact was created.
-No progression route network request was performed.
-Helper owner binding remains unresolved.
-Bounded progression route probe remains disabled.
-No files staged.
-No commit performed.
-No push performed.
+full-chain invocations: refs 6, 20 -> owner group 6
+cross-definition owner group: 8
+  definition ref: 1
+  non-definition refs: 2, 3, 4, 15, 16, 17, 29, 40
 ```
 
-Therefore these are **not yet project-wide versioned facts**:
+This is not owner convergence. Group 8 does not own the two full-chain invocations.
+
+The corrected owner review has **not** been completed/versioned. Do not infer `6 == 8` or `6 != 8` as a semantic identity relation merely from opaque group indexes.
+
+## 6. Current implementation state
+
+The local analyzer repair is partially applied. A generated updater failed after modifying owner code because its test-fixture text replacement did not match the actual file:
 
 ```text
-helper-owner implementation versioned: false
-helper-owner inventory real execution complete: false
-helper-owner public receipt versioned: false
-helper-owner review complete: false
+owner inventory test asset block not found
 ```
 
-## Current decision boundary
+Subsequent focused Ruff/tests passed, but the final local diff has not had a full aggregate repository verification and is not committed/pushed.
+
+The final `finish-e3-owner-hardening.py` proposed afterward was not executed.
+
+Therefore:
 
 ```text
-helper-definition inventory complete: true
-helper-definition review complete: true
-helper-reference inventory complete: true
-helper-reference review complete/versioned: true
-helper-owner inventory implementation prepared locally: true
-helper-owner inventory implementation versioned: false
-helper-owner inventory executed: false
-helper-owner review complete: false
+lexical analyzer repair versioned: false
+corrected public receipts versioned: false
+corrected owner review complete: false
 helper identity resolved: false
 helper owner binding resolved: false
 request payload mapping resolved: false
-request shape verified: false
-ready for bounded progression route probe: false
-guild API route semantics verified: false
-pagination semantics verified: false
-termination semantics verified: false
-completeness verified: false
-automatic full guild crawl allowed: false
-ready for full guild crawl: false
-ready for multi-report character graph: false
-ready for performance model: false
-ready for encounter-aware roster completion: false
-planner scoring allowed: false
+ready for bounded route probe: false
 ```
 
-## Next bounded sequence
+## 7. Correct next sequence
+
+Stop the open-ended owner/alias investigation.
 
 ```text
-sync local branch to docs handoff HEAD without losing untracked helper-owner files
--> verify/configure PowerShell 7 environment
--> remove obsolete root one-off run-e3 helper scripts only after status inspection
--> inspect exact helper-owner implementation diff
--> repeat focused + full local verification on synchronized HEAD
--> stage exactly four helper-owner implementation files
--> commit/push implementation atomically
--> verify exact-head CI
--> execute offline helper-owner inventory against exact private evidence
--> validate 54/54 and privacy/hash boundaries
--> version only approved public helper-owner receipt
--> implement explicit helper-owner review
--> consider bounded route probe only after exact helper identity, owner and payload binding
+finish one coherent lexical/analyzer repair
+-> regression-test template text vs ${...} expression behavior
+-> remove stale hardcoded 31/1 assumptions from affected validators
+-> focused tests
+-> one full verify_repo.py
+-> one coherent commit/push
+-> exact-head CI
+-> trace the two concrete full-chain invocations (refs 6 and 20)
+-> locate their actual helper provenance/definition
+-> map exact call arguments into request payload
+-> review exact bounded request contract
+-> only then perform one bounded route probe
 ```
 
-Do not perform a guessed network request to `/api/guilds/progression`.
+Use a narrow diagnostic only if it directly distinguishes two concrete provenance paths. Do not introduce another permanent evidence layer merely to continue graph exploration.
+
+## 8. Privacy
+
+Private/raw files can be read for analysis. The publication boundary remains strict: do not version raw JavaScript, private source IDs, request values, raw owner chains, private contexts, secrets or private receipts by default.
+
+No guessed request to `/api/guilds/progression`.

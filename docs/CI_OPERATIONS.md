@@ -1,10 +1,12 @@
-# CI operations and incident record
+# CI operations and development verification
+
+Дата актуализации: **2026-08-13**.
 
 ## Purpose
 
-Safe operating procedure for `.github/workflows/verify.yml` and the local verification path.
+Keep verification strong without turning every development step into repeated ceremony.
 
-Required jobs:
+Required GitHub jobs:
 
 ```text
 public-release-audit
@@ -12,16 +14,13 @@ ubuntu
 windows
 ```
 
-## Last fully verified code/evidence checkpoint
-
-Before the 2026-08-12 docs-only handoff:
+## Last verified remote checkpoint
 
 ```text
-HEAD: 13982825295737c029b425a37d210a34a7ea0762
-commit: Review guild progression helper references
-Verify repository run: #603
-run ID: 31533555026
-event: pull_request
+HEAD: be899cc5f66c7bd82a1006116dbe57d91ecaed84
+commit: Review guild progression helper owner binding
+Verify repository: #613
+run ID: 31651028612
 status: completed
 conclusion: success
 public-release-audit: success
@@ -29,149 +28,124 @@ ubuntu: success
 windows: success
 ```
 
-Always query current HEAD and exact-head runs live after subsequent commits.
+Always verify newer pushed HEADs live.
+
+## Responsibility split
+
+The agent performs GitHub/CI inspection itself through the connector. Do not ask the user to run `gh` commands just to report workflow or PR state when the connector can answer it.
+
+The user is involved only for local Windows/private runtime operations the agent cannot access directly.
 
 ## Dependency boundary
 
-Ruff lock metadata was previously repaired so clean Windows/Linux environments use wheels rather than silently compiling Ruff from source.
-
-Dependency preparation:
+Prepare the locked environment with:
 
 ```powershell
 uv sync --frozen --extra dev --no-build-package ruff
 ```
 
-Do not install Visual Studio Build Tools solely to work around Ruff packaging. Do not hand-edit `uv.lock`.
+Do not install Visual Studio Build Tools solely for Ruff. Do not hand-edit `uv.lock`.
 
-## Local verification
+## Verification strategy
 
-After dependency preparation, prefer deterministic no-resolve commands:
+### During iteration
+
+Run the smallest focused tests that cover the changed behavior. Ruff may be limited to changed files while iterating.
+
+Do not run the entire test suite after every small edit without a reason.
+
+### Before one meaningful push
+
+Run one aggregate local verification:
 
 ```powershell
-uv run --no-sync python -m ruff check .
-uv run --no-sync python -m ruff format --check .
-uv run --no-sync python -m pytest
 uv run --no-sync python scripts/verify_repo.py
 ```
 
-Repository verifier must remain the final aggregate check. Do not claim a passing checkpoint when only focused tests ran.
+If the change is evidence-sensitive, also run its deterministic/public-private/privacy validation before the push.
 
-## GitHub Actions exact-head policy
+`verify_repo.py` is the final local aggregate gate. Do not duplicate the same full suite repeatedly unless a subsequent change invalidated the result.
 
-A successful `git push` does not itself prove CI exists for the new commit.
+### After push
 
-For every pushed implementation/evidence change:
+GitHub CI is the final cross-platform gate. For the exact new commit:
 
-1. read the exact new commit SHA;
-2. query workflow runs bound to that SHA;
-3. identify one concrete run ID;
-4. inspect all required jobs;
-5. report trigger mode and conclusions.
+1. resolve the new HEAD SHA;
+2. query workflow runs for that SHA;
+3. inspect the concrete run ID;
+4. verify `public-release-audit`, `ubuntu`, `windows`;
+5. report actual conclusions.
 
-Do not use an older Actions-page run as evidence for a newer HEAD.
+A successful push does not imply successful CI. An older green run does not validate a newer commit.
 
-## Trigger history
+## Development modes
 
-During the 2026-08-07 incident, an expected automatic `push` run for E3 did not appear even though the workflow was active and the branch filter existed. The bounded fallback was:
+### Normal development
 
-```powershell
-gh workflow run verify.yml `
-  --repo GunsPojoshe/coa-raid-intelligence-workbench `
-  --ref e3/real-log-capture
+```text
+focused iteration tests
+-> one verify_repo.py
+-> one coherent commit/push
+-> exact-head CI
 ```
 
-A later exact-head `pull_request` run #603 was delivered normally and passed all jobs. Therefore historical push-delivery trouble must not be generalized into a claim that PR runs are broken.
+### Evidence-sensitive stage
 
-Policy:
+Add deterministic binding and privacy validation. A coherent code+tests+approved scalar-free receipt commit is acceptable when the files represent one meaningful evidence stage.
+
+### High-risk gate
+
+Do not enable first/unknown network probes, destructive changes or trusted scoring without an explicit reviewed contract.
+
+## Commit scope
+
+Prefer one coherent commit per meaningful change. Avoid micro-commits created only to satisfy process ceremony.
+
+Separate an unrelated dependency repair, migration or repository cleanup when it is genuinely independent.
+
+Never use broad cleanup/staging commands over private data trees.
+
+## Diagnostics
+
+A diagnostic is justified when its answer decides which implementation is required. Keep it narrow and offline where possible.
+
+Do not repeatedly add inventory/review/relationship stages when direct provenance tracing of the concrete invocation can answer the product question more directly.
+
+## GitHub Actions trigger policy
+
+Historical push-trigger delivery was once inconsistent. Current rule:
 
 - make one real atomic push;
 - query exact-head runs;
-- if no suitable run exists, diagnose before dispatch;
-- use `workflow_dispatch` as bounded fallback when needed;
-- never create empty commits merely to retrigger CI.
+- if no suitable run exists, diagnose first;
+- use `workflow_dispatch` only as a bounded fallback;
+- never create empty commits solely to trigger CI.
 
-## PowerShell runtime standard
+## PowerShell runtime
 
-New Windows automation uses **PowerShell 7+ (`pwsh`)**. See `docs/WINDOWS_DEVELOPMENT_ENVIRONMENT.md`.
+New Windows automation uses PowerShell 7+ (`pwsh`). Large compound automation runs as a `.ps1` file, not statement-by-statement in an interactive terminal.
 
-The following failures were encountered when orchestration ran in Windows PowerShell 5.1:
+## Local handoff rule
+
+When the agent needs the exact local state, ask for one bundled handoff rather than a long list of commands.
+
+Remember:
 
 ```text
-System.IO.Path.GetRelativePath missing
-multiline python -c quoting corrupted
-gh --jq expression quoting corrupted
-ConvertFrom-Json root-array/member-enumeration produced accidental multi-run values
+git diff HEAD != complete working tree when untracked files exist
 ```
 
-These were shell/runtime defects, not evidence-chain failures.
-
-Do not add more compatibility workarounds for Windows PowerShell 5.1 unless a genuine project requirement appears. Prefer migrating one-off orchestration to `pwsh`.
-
-## GitHub CLI JSON rules
-
-For scripts that inspect Actions:
-
-- bind to exact SHA;
-- use an exact known run ID when available;
-- verify the run's `headSha` before trusting it;
-- normalize JSON arrays explicitly;
-- verify every external command exit code;
-- avoid shell-sensitive jq expressions when robust native JSON parsing is simpler;
-- never print tokens, credentials or private evidence.
-
-## Interactive-shell rule
-
-Large PowerShell automation containing `if/elseif/else`, loops or here-strings must run from a `.ps1` file:
-
-```powershell
-pwsh -NoProfile -File .\script.ps1
-```
-
-Do not paste it statement-by-statement. Prior interactive execution split completed `if {}` blocks from following `else` clauses.
-
-## Temporary root helper scripts
-
-One-off `run-e3-*.ps1` files created to bridge a bounded local operation should stay untracked unless deliberately promoted into reusable project tooling.
-
-Once the bounded operation is closed:
-
-1. inspect `git status`;
-2. confirm each file is untracked and obsolete;
-3. delete only the explicit filenames;
-4. do not use recursive/wildcard cleanup over repository data.
-
-## Atomic commit scopes
-
-Do not mix:
-
-1. implementation code;
-2. public evidence receipt;
-3. CI/dependency repair;
-4. documentation;
-5. cleanup.
-
-Before commit:
-
-```powershell
-git diff --cached --name-only
-git --no-pager diff --cached
-git diff --cached --check
-```
-
-## Known non-blocking dependency warning
-
-Historical pytest runs emitted a `StarletteDeprecationWarning` involving `httpx`/`starlette.testclient`. Treat it as a dependency-audit item, not evidence to make an unreviewed dependency upgrade during unrelated E3 work.
-
-## Actions runtime annotation
-
-GitHub previously annotated a pinned `actions/checkout` Node.js runtime migration. Audit pinned action versions separately; do not mix that maintenance with evidence semantics.
+The handoff must account for tracked changes and relevant untracked files. Private files may be included/read for analysis when needed; publication restrictions are separate.
 
 ## Never repeat
 
+- no manual user GitHub status collection when the connector can do it;
 - no blind long polling before a concrete run exists;
 - no repeated empty trigger commits;
+- no full-suite reruns after every small edit;
+- no process-driven micro-commits;
 - no manual `uv.lock` editing;
 - no Visual Studio Build Tools install only for Ruff;
 - no large interactive PowerShell paste;
-- no raw private evidence in CI logs;
+- no raw private evidence in CI/public receipts;
 - no CI success claim without exact-head verification.
