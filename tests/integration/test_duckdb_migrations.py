@@ -20,10 +20,14 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         "0006_aura_interval_provenance",
         "0007_selected_parser_persistence",
         "0008_combatants_observation_persistence",
+        "0009_source_observatory",
     ]
     assert apply_migrations(database, root / "migrations") == []
     with duckdb.connect(str(database)) as connection:
         tables = {row[0] for row in connection.execute("SHOW TABLES").fetchall()}
+        source_endpoint_columns = {
+            row[0] for row in connection.execute("DESCRIBE source_endpoint").fetchall()
+        }
         raid_plan_columns = {
             row[0] for row in connection.execute("DESCRIBE raid_plan").fetchall()
         }
@@ -90,7 +94,15 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         "combatants_observation_persistence_run",
         "combatants_parser_observation_v1",
         "combatants_actor_build_observation_v1",
+        "source_contract_version",
+        "source_capture",
+        "source_schema_snapshot",
+        "source_change_event",
+        "artifact_dependency",
+        "analysis_run",
+        "reanalysis_request",
     } <= tables
+    assert {"source_code", "logical_name", "first_seen_at", "last_seen_at"} <= source_endpoint_columns
     assert "plan_name" in raid_plan_columns
     assert {"player_name", "class_code", "spec_code", "role"} <= raid_slot_columns
     assert {"trust_status", "source_kind"} <= effect_columns
