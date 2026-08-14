@@ -21,6 +21,7 @@ class SourceRoute:
     use: str
     parameter_keys: tuple[str, ...] = ()
     dimension_keys: tuple[str, ...] = ()
+    schema_profile_keys: tuple[str, ...] = ()
     discovery_source: str = "registry"
     review_state: str = "unreviewed"
     empty_params_observed: bool = False
@@ -70,7 +71,7 @@ class SourceRegistry:
 
 
 def _source_route(payload: dict[str, Any]) -> SourceRoute:
-    return SourceRoute(
+    route = SourceRoute(
         endpoint_code=str(payload["endpoint_code"]),
         route_template=(
             str(payload["route_template"]) if payload.get("route_template") is not None else None
@@ -81,10 +82,24 @@ def _source_route(payload: dict[str, Any]) -> SourceRoute:
         use=str(payload.get("use", "unspecified")),
         parameter_keys=tuple(str(value) for value in payload.get("parameter_keys", [])),
         dimension_keys=tuple(str(value) for value in payload.get("dimension_keys", [])),
+        schema_profile_keys=tuple(
+            str(value) for value in payload.get("schema_profile_keys", [])
+        ),
         discovery_source=str(payload.get("discovery_source", "registry")),
         review_state=str(payload.get("review_state", "unreviewed")),
         empty_params_observed=bool(payload.get("empty_params_observed", False)),
     )
+    unknown_profile_keys = sorted(set(route.schema_profile_keys) - set(route.parameter_keys))
+    if unknown_profile_keys:
+        raise ValueError(
+            f"source route {route.endpoint_code!r} schema_profile_keys are not reviewed "
+            f"parameter_keys: {unknown_profile_keys}"
+        )
+    if len(route.schema_profile_keys) != len(set(route.schema_profile_keys)):
+        raise ValueError(
+            f"source route {route.endpoint_code!r} schema_profile_keys must be unique"
+        )
+    return route
 
 
 def load_source_registry(path: Path) -> SourceRegistry:

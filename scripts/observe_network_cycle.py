@@ -33,6 +33,7 @@ def _contract(registry, route):
         base_url=registry.base_url,
         route_template=str(route.route_template),
         parameter_keys=route.parameter_keys,
+        schema_profile_keys=route.schema_profile_keys,
         auth_state=route.auth_mode,
         discovery_source=route.discovery_source,
         review_state=route.review_state,
@@ -45,8 +46,9 @@ def main() -> int:
         description=(
             "Run one Network-first Source Observatory cycle from a browser HAR: "
             "inventory traffic, ingest matching reviewed static GET contracts, safely resolve "
-            "correlated reviewed dynamic paths, rebuild approved derived dimensions, and report "
-            "health. If HAR is omitted, use the newest relevant .har from --har-dir."
+            "correlated reviewed dynamic paths, compare schemas within reviewed response profiles, "
+            "rebuild approved derived dimensions, and report health. If HAR is omitted, use the "
+            "newest relevant .har from --har-dir."
         )
     )
     parser.add_argument("har", nargs="?", type=Path)
@@ -190,9 +192,15 @@ def main() -> int:
     resolution_summary["deferred_endpoint_codes"] = deferred_dynamic_routes
     resolution_summary["deferred_route_count"] = len(deferred_dynamic_routes)
 
+    schema_profile_routes = {
+        route.endpoint_code: list(route.schema_profile_keys)
+        for route in registry.routes
+        if route.observatory_ready and route.schema_profile_keys
+    }
+
     health = build_source_health(args.database)
     result = {
-        "cycle_version": "network-source-cycle-v5",
+        "cycle_version": "network-source-cycle-v6",
         "capture_mode": "browser_har",
         "network_requests_performed": False,
         "har_selection": {
@@ -205,6 +213,12 @@ def main() -> int:
             int(item["matching_entry_count"]) for item in observed_routes
         ),
         "dynamic_route_resolution": resolution_summary,
+        "schema_observation_profiles": {
+            "strategy": "reviewed_response_shaping_query_keys",
+            "endpoint_keys": schema_profile_routes,
+            "profile_values_included": False,
+            "profile_hashes_included": False,
+        },
         "source_dimension_index": dimension_index,
         "source_health": health,
         "privacy": {
@@ -215,6 +229,8 @@ def main() -> int:
             "query_values_included": False,
             "dimension_values_included": False,
             "dynamic_path_values_included": False,
+            "schema_profile_values_included": False,
+            "schema_profile_hashes_included": False,
         },
     }
 

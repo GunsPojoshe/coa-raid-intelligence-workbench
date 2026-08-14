@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "receipt_kind": "current_report_runtime_replay_v2_review",
+  "source_code": "coa_ascension_logs",
+  "capture_mode": "browser_har_replay",
+  "network_requests_performed": false,
+  "dynamic_resolution": {
+    "resolver_version": "correlated-dynamic-har-v1",
+    "resolved_route_count": 6,
+    "resolved_concrete_path_count": 9,
+    "rejected_static_collision_count": 1,
+    "rejected_uncorroborated_candidate_count": 0,
+    "resolved_endpoint_codes": [
+      "report_character_damage_taken_abilities_api",
+      "report_character_spell_healing_api",
+      "report_combatants_roster_api",
+      "report_detail_api",
+      "report_encounter_throughput_timeline_api",
+      "report_encounters_api"
+    ],
+    "deferred_historical_endpoint_codes": [
+      "report_encounter_combatants_info_api",
+      "report_encounter_detail_api"
+    ],
+    "dynamic_path_values_included": false
+  },
+  "runtime_observations": {
+    "reports_queue_status_api": 1,
+    "report_detail_api": 1,
+    "report_encounters_api": 1,
+    "report_combatants_roster_api": 1,
+    "report_encounter_throughput_timeline_api": 12,
+    "report_character_damage_taken_abilities_api": 1,
+    "report_character_spell_healing_api": 1,
+    "all_observed_responses_http_200_json": true,
+    "all_observed_responses_schema_recorded": true
+  },
+  "source_health_before_profile_partition": {
+    "endpoint_count": 11,
+    "captured_endpoint_count": 11,
+    "acquisition_problem_endpoint_count": 0,
+    "active_dependency_count": 3,
+    "completed_analysis_run_count": 2,
+    "pending_reanalysis_request_count": 0,
+    "open_change_event_count": 799,
+    "throughput_open_change_event_count": 789,
+    "all_other_endpoints_open_change_event_count": 10
+  },
+  "throughput_schema_variants": {
+    "without_perspective_query_key": {
+      "occurrence_count": 8,
+      "distinct_structural_schema_count": 3
+    },
+    "with_perspective_query_key": {
+      "occurrence_count": 4,
+      "distinct_structural_schema_count": 1
+    },
+    "interpretation": "profile-unaware sequential schema comparison is not a valid source-change signal for this multi-mode endpoint"
+  },
+  "decision_boundary": {
+    "report_detail_current_runtime_observed": true,
+    "current_report_encounter_catalog_observed": true,
+    "current_report_combatants_roster_observed": true,
+    "current_encounter_throughput_observed": true,
+    "current_character_damage_taken_abilities_observed": true,
+    "current_character_spell_healing_observed": true,
+    "throughput_schema_profile_partition_required": true,
+    "reviewed_throughput_schema_profile_keys": [
+      "metric",
+      "perspective"
+    ],
+    "legacy_profile_unaware_change_events_require_bounded_supersession": true,
+    "planner_scoring_allowed": false
+  },
+  "privacy": {
+    "cookies_included": false,
+    "request_headers_included": false,
+    "har_included": false,
+    "raw_response_bodies_included": false,
+    "query_values_included": false,
+    "dynamic_path_values_included": false,
+    "schema_profile_values_included": false,
+    "schema_profile_hashes_included": false,
+    "report_ids_included": false,
+    "encounter_ids_included": false
+  }
+}

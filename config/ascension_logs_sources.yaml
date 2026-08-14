@@ -1,4 +1,4 @@
-schema_version: 5
+schema_version: 6
 source_code: coa_ascension_logs
 base_url: https://coa.ascensionlogs.gg
 status: discovery
@@ -15,6 +15,7 @@ principles:
   - upstream class and spec labels are retained as derived observations, not raw mechanic truth
   - reviewed network contracts are preferred over frontend-internal inference
   - source changes create scoped reanalysis requests instead of global rebuilds
+  - schema diffs are partitioned only by reviewed response-shaping query keys
 
 routes:
   - endpoint_code: public_home
@@ -183,6 +184,9 @@ routes:
     use: current_encounter_throughput_timeline_source_observation
     parameter_keys:
       - bucket_size_ms
+      - metric
+      - perspective
+    schema_profile_keys:
       - metric
       - perspective
     dimension_keys: []

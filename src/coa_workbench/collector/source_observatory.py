@@ -7,7 +7,7 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping
-from urllib.parse import urlencode, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 from urllib.request import Request, urlopen
 
 from coa_workbench.collector.http_read import read_response_resilient
@@ -75,6 +75,7 @@ class ReviewedGetContract:
     base_url: str
     route_template: str
     parameter_keys: tuple[str, ...] = ()
+    schema_profile_keys: tuple[str, ...] = ()
     auth_state: str = "none"
     discovery_source: str = "reviewed_network"
     review_state: str = "reviewed"
@@ -94,6 +95,14 @@ class ReviewedGetContract:
             raise ValueError("contract parameter_keys must be unique")
         if any(not key for key in self.parameter_keys):
             raise ValueError("contract parameter_keys cannot contain empty values")
+        if len(self.schema_profile_keys) != len(set(self.schema_profile_keys)):
+            raise ValueError("contract schema_profile_keys must be unique")
+        unknown_profile_keys = sorted(set(self.schema_profile_keys) - set(self.parameter_keys))
+        if unknown_profile_keys:
+            raise ValueError(
+                "contract schema_profile_keys are not reviewed parameter_keys: "
+                f"{unknown_profile_keys}"
+            )
 
     @property
     def method(self) -> str:
@@ -113,6 +122,8 @@ class ReviewedGetContract:
             "discovery_source": self.discovery_source,
             "review_state": self.review_state,
         }
+        if self.schema_profile_keys:
+            canonical["schema_profile_keys"] = sorted(self.schema_profile_keys)
         return _sha256_text(_json(canonical))
 
     @property
@@ -183,6 +194,27 @@ def request_fingerprint(method: str, url: str) -> str:
     parts = urlsplit(url)
     canonical = urlunsplit((parts.scheme, parts.netloc, parts.path, parts.query, ""))
     return _sha256_text(f"{method.upper()}\0{canonical}")
+
+
+def observation_profile_key(contract: ReviewedGetContract, request_url: str) -> str | None:
+    """Return a local-only schema profile key for reviewed response-shaping query values.
+
+    Path values and unrelated query parameters never partition schema baselines. The returned hash
+    is intentionally omitted from public summaries because low-entropy query values can be
+    guessable. The selected key names themselves are reviewed registry metadata.
+    """
+    if not contract.schema_profile_keys:
+        return None
+    selected = set(contract.schema_profile_keys)
+    values: dict[str, list[str]] = {key: [] for key in contract.schema_profile_keys}
+    for key, value in parse_qsl(urlsplit(request_url).query, keep_blank_values=True):
+        if key in selected:
+            values[key].append(value)
+    canonical = [
+        (key, tuple(sorted(values[key])))
+        for key in sorted(contract.schema_profile_keys)
+    ]
+    return _sha256_text(f"{OBSERVATORY_VERSION}\0schema-profile\0{_json(canonical)}")
 
 
 def snapshot_json_payload(
@@ -424,6 +456,12 @@ def observe_raw_capture(
 
     snapshot = snapshot_json_payload(payload, dimension_keys=dimension_keys)
     observed_at = _normalize_timestamp(capture.fetched_at)
+    profile_key = observation_profile_key(contract, request_url)
+    observation_metadata = dict(metadata or {})
+    if profile_key is not None:
+        observation_metadata["observation_profile_key"] = profile_key
+        observation_metadata["schema_profile_keys"] = list(contract.schema_profile_keys)
+
     source_capture_id = _sha256_text(
         f"{OBSERVATORY_VERSION}\0capture\0{contract.contract_id}\0{capture.observation_id}"
     )
@@ -460,17 +498,32 @@ def observe_raw_capture(
             [contract.endpoint_code],
         ).fetchone()
 
-        previous_snapshot_row = connection.execute(
-            """
-            SELECT schema_fingerprint, root_type, path_types_json,
-                   dimension_values_json, scan_truncated
-            FROM source_schema_snapshot
-            WHERE endpoint_code = ?
-            ORDER BY observed_at DESC, snapshot_id DESC
-            LIMIT 1
-            """,
-            [contract.endpoint_code],
-        ).fetchone()
+        if profile_key is None:
+            previous_snapshot_row = connection.execute(
+                """
+                SELECT schema_fingerprint, root_type, path_types_json,
+                       dimension_values_json, scan_truncated
+                FROM source_schema_snapshot
+                WHERE endpoint_code = ?
+                  AND json_extract_string(metadata_json, '$.observation_profile_key') IS NULL
+                ORDER BY observed_at DESC, snapshot_id DESC
+                LIMIT 1
+                """,
+                [contract.endpoint_code],
+            ).fetchone()
+        else:
+            previous_snapshot_row = connection.execute(
+                """
+                SELECT schema_fingerprint, root_type, path_types_json,
+                       dimension_values_json, scan_truncated
+                FROM source_schema_snapshot
+                WHERE endpoint_code = ?
+                  AND json_extract_string(metadata_json, '$.observation_profile_key') = ?
+                ORDER BY observed_at DESC, snapshot_id DESC
+                LIMIT 1
+                """,
+                [contract.endpoint_code, profile_key],
+            ).fetchone()
 
         if not endpoint_existed:
             connection.execute(
@@ -521,6 +574,9 @@ def observe_raw_capture(
                 ],
             )
 
+        contract_metadata = dict(metadata or {})
+        if contract.schema_profile_keys:
+            contract_metadata["schema_profile_keys"] = list(contract.schema_profile_keys)
         connection.execute(
             """
             INSERT INTO source_contract_version (
@@ -546,7 +602,7 @@ def observe_raw_capture(
                 contract.review_state,
                 observed_at,
                 observed_at,
-                _json(dict(metadata or {})),
+                _json(contract_metadata),
                 contract.contract_id,
             ],
         )
@@ -579,7 +635,7 @@ def observe_raw_capture(
                 snapshot.schema_fingerprint,
                 capture.http_status,
                 capture.content_type,
-                _json(dict(metadata or {})),
+                _json(observation_metadata),
                 source_capture_id,
             ],
         )
@@ -604,7 +660,7 @@ def observe_raw_capture(
                 _json({key: list(values) for key, values in snapshot.path_types.items()}),
                 _json({key: list(values) for key, values in snapshot.dimension_values.items()}),
                 snapshot.scan_truncated,
-                _json(dict(metadata or {})),
+                _json(observation_metadata),
                 snapshot_id,
             ],
         )
@@ -637,6 +693,16 @@ def observe_raw_capture(
         if previous_snapshot_row:
             previous_snapshot = _snapshot_from_row(previous_snapshot_row)
             changes.extend(diff_schema_snapshots(previous_snapshot, snapshot))
+        elif endpoint_existed and profile_key is not None:
+            changes.append(
+                SourceChange(
+                    change_type="observation_profile_added",
+                    severity="info",
+                    subject_path=contract.route_template,
+                    previous_value=None,
+                    current_value={"schema_profile_keys": list(contract.schema_profile_keys)},
+                )
+            )
 
         for change in changes:
             event_id = _event_id(source_capture_id, change)
@@ -662,7 +728,12 @@ def observe_raw_capture(
                     change.subject_path,
                     _json(change.previous_value) if change.previous_value is not None else None,
                     _json(change.current_value) if change.current_value is not None else None,
-                    _json({"observatory_version": OBSERVATORY_VERSION}),
+                    _json(
+                        {
+                            "observatory_version": OBSERVATORY_VERSION,
+                            "observation_profiled": profile_key is not None,
+                        }
+                    ),
                     event_id,
                 ],
             )
@@ -795,6 +866,7 @@ __all__ = [
     "build_get_url",
     "capture_reviewed_get",
     "diff_schema_snapshots",
+    "observation_profile_key",
     "observe_raw_capture",
     "register_artifact_dependency",
     "request_fingerprint",
