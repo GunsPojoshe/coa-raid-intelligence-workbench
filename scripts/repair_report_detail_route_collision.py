@@ -129,9 +129,7 @@ def repair_false_report_detail_collision(
                 if endpoint_id and raw_ids:
                     query = (
                         "UPDATE raw_object SET endpoint_id = NULL WHERE endpoint_id = ? "
-                        "AND raw_id IN ("
-                        + _placeholders(len(raw_ids))
-                        + ")"
+                        "AND raw_id IN (" + _placeholders(len(raw_ids)) + ")"
                     )
                     connection.execute(query, [endpoint_id, *raw_ids])
 
