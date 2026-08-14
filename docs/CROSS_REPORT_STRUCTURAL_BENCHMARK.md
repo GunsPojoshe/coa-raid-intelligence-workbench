@@ -41,6 +41,8 @@ Those remain false in both the private model and the public-safe review.
 
 This is intentional. Exact zone + encounter name + request profile is sufficient to prove that two reports contain structurally comparable slices, but not sufficient to assert identical difficulty or to merge a player identity across reports.
 
+The second real report already proves generic ingestion across two independent report identities. The next local proof only measures how much exact structural overlap exists between those persisted reports; it does not perform another network capture.
+
 ## Local review
 
 ```powershell
@@ -51,6 +53,10 @@ uv run --no-sync python scripts/review_cross_report_benchmark.py `
 The command performs no network requests. It builds the private benchmark twice from the local DuckDB and emits only scalar-safe counts and verification booleans.
 
 The public review does not include report IDs, encounter IDs, character IDs/names, zone values, encounter names, metric/perspective values, player totals or private fingerprints.
+
+## Source-health note
+
+The second independent report raised the current open Source Observatory change-event count to 645 while pending reanalysis remained zero. This does not invalidate the report/analytics persistence proof, but it is treated as schema-observation noise until endpoint-level distribution is reviewed. The bundled real benchmark proof records only per-endpoint open-change counts so that this can be repaired without exposing private payload values.
 
 ## Next promotion boundary
 
