@@ -288,6 +288,52 @@ legacy /series/123/... + new /series/999/... with the same structure
 A later independent real report capture is still required before claiming multi-report production
 proof.
 
+## Generic current-report derived persistence
+
+The current report now has a deterministic observation-only derived persistence path:
+
+```text
+current browser HAR
+-> exact correlated one-report slice
+-> verified compatible report normalization
+-> current combatants-roster/build parser
+-> exact persisted Source Observatory capture provenance
+-> canonical_entity_observation envelope
+-> completed analysis_run
+```
+
+Real local proof on the reviewed current report completed successfully:
+
+```text
+derived observations: 2031
+
+current_report_observation:              1
+current_encounter_observation:          19
+current_roster_character_observation:   25
+current_roster_snapshot_observation:    29
+current_talent_entry_observation:     1466
+current_gear_slot_observation:         491
+```
+
+The immediate replay of the same real corpus proves idempotence:
+
+```text
+first run: inserted 2031 / matched 0
+replay:    inserted 0    / matched 2031
+```
+
+Core canonical report/encounter tables were not promoted or mutated. Mechanic semantics and planner
+scoring remain disabled. Report-scoped reanalysis dependencies are intentionally not registered yet.
+
+Public safe receipt:
+
+```text
+evidence/real-data/coa-current-report-derived-persistence-real.json
+```
+
+The receipt excludes HAR/raw bodies, source IDs/names, query values, source-capture IDs and private
+input/output fingerprints.
+
 ## Source & Analysis Health
 
 Localhost endpoints:
@@ -297,7 +343,7 @@ Localhost endpoints:
 /api/source-health
 ```
 
-Latest real local summary before the new parser-derived persistence layer:
+Latest real local summary after the current-report derived persistence proof:
 
 ```text
 endpoint count: 11
@@ -305,9 +351,12 @@ captured endpoint count: 11
 open change event count: 34
 acquisition-problem endpoint count: 0
 active dependency count: 3
-completed analysis runs: 2
+completed analysis runs: 3
 pending reanalysis requests: 0
 ```
+
+The derived persistence run changed only `completed analysis runs: 2 -> 3`; source changes,
+dependencies and pending reanalysis remained unchanged.
 
 ## Current boundary
 
@@ -328,8 +377,11 @@ legacy profile-unaware throughput churn repaired locally: true
 Source Observatory numeric-key path normalization: implemented
 legacy numeric-key compatibility synthetic integration: proven
 real multi-report numeric-key proof: false
+generic current-report derived persistence: implemented
+real current-report derived persistence: proven
+real current-report derived persistence idempotence: proven
 profile-cycle optional-field aggregation: pending
-generic current-report derived persistence: pending
+safe report-scoped reanalysis dependencies: pending
 real later upstream change -> scoped reanalysis proven: false
 ready for autonomous full source coverage: false
 planner scoring promoted automatically: false
@@ -337,17 +389,15 @@ planner scoring promoted automatically: false
 
 ## Next product work
 
-The transport/discovery loop is sufficiently proven for this slice. Do not create another browser capture
-merely to re-prove current report routes.
+The transport/discovery and current-report observation persistence loops are sufficiently proven for
+this report slice. Do not create another browser capture merely to re-prove the same routes or parser.
 
 Next:
 
 ```text
 aggregate schema observation per endpoint/profile cycle so data-dependent optional fields do not churn
--> add generic current-report derived persistence
--> persist report/encounter identity + roster/build observations with provenance
+-> register report-scoped provenance/reanalysis dependencies
 -> add deterministic throughput/healing/damage read models
--> register safe reanalysis dependencies
 -> expand rankings/statistics/characters
 -> Armory/talent-grid
 -> BisBeard
