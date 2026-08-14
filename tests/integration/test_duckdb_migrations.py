@@ -21,12 +21,19 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         "0007_selected_parser_persistence",
         "0008_combatants_observation_persistence",
         "0009_source_observatory",
+        "0010_source_acquisition_observation",
     ]
     assert apply_migrations(database, root / "migrations") == []
     with duckdb.connect(str(database)) as connection:
         tables = {row[0] for row in connection.execute("SHOW TABLES").fetchall()}
         source_endpoint_columns = {
             row[0] for row in connection.execute("DESCRIBE source_endpoint").fetchall()
+        }
+        source_acquisition_columns = {
+            row[0]
+            for row in connection.execute(
+                "DESCRIBE source_acquisition_observation"
+            ).fetchall()
         }
         raid_plan_columns = {
             row[0] for row in connection.execute("DESCRIBE raid_plan").fetchall()
@@ -101,8 +108,33 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         "artifact_dependency",
         "analysis_run",
         "reanalysis_request",
+        "source_acquisition_observation",
     } <= tables
-    assert {"source_code", "logical_name", "first_seen_at", "last_seen_at"} <= source_endpoint_columns
+    assert {
+        "source_code",
+        "logical_name",
+        "first_seen_at",
+        "last_seen_at",
+    } <= source_endpoint_columns
+    assert {
+        "acquisition_id",
+        "contract_id",
+        "source_code",
+        "endpoint_code",
+        "observed_at",
+        "capture_mode",
+        "request_fingerprint",
+        "raw_id",
+        "raw_observation_id",
+        "source_capture_id",
+        "http_status",
+        "content_type",
+        "body_kind",
+        "outcome",
+        "blocker_class",
+        "error_class",
+        "metadata_json",
+    } <= source_acquisition_columns
     assert "plan_name" in raid_plan_columns
     assert {"player_name", "class_code", "spec_code", "role"} <= raid_slot_columns
     assert {"trust_status", "source_kind"} <= effect_columns

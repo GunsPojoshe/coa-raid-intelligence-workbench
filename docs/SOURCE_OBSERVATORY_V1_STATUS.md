@@ -17,6 +17,9 @@ source_change_event
 artifact_dependency
 analysis_run
 reanalysis_request
+
+migration 0010
+source_acquisition_observation
 ```
 
 `source_endpoint` расширен source/logical/first-seen/last-seen metadata.
@@ -91,14 +94,34 @@ new source observation
 
 Тесты не выполняют реальный network request. Exact-head CI является acceptance gate этого checkpoint.
 
-## Next slice after green CI
+## Первый реальный acquisition boundary
+
+Первый локальный bounded GET для `guild_progression_rankings_api` был выполнен по уже проверенному пустому params branch. Raw response был сохранён immutable, но plain direct HTTP получил `403` с HTML managed-edge challenge вместо JSON.
+
+Это **не** трактуется как опровержение route contract и **не** повышает семантические gates. Это отдельный acquisition-mode факт:
 
 ```text
-register progression/rankings as first Source Observatory contract
--> one bounded GET using observed empty params branch
--> immutable capture through generic observatory
--> inspect real response schema/dimensions
--> register exact change baseline
+reviewed GET contract -> observed
+plain direct HTTP -> blocked by managed edge challenge
+JSON schema -> not observed
+route semantics -> unresolved
+full crawl -> blocked
+```
+
+Публичный receipt не содержит response body, challenge tokens, cookies, headers, raw IDs, payload hashes или request fingerprints.
+
+`migration 0010` и `collector/source_acquisition.py` отделяют transport/access observation от schema-bearing `source_capture`. Теперь blocked/non-JSON/transport outcomes могут быть зарегистрированы без ложного schema claim.
+
+`observe_source.py --har <file>` принимает browser HAR с response content, выбирает только exact reviewed host/method/route и только разрешённые query keys. HAR используется как наблюдение уже выполненного браузером запроса; код не решает и не обходит edge challenge.
+
+## Next slice
+
+```text
+browser-origin HAR observation for reviewed progression/rankings
+-> immutable response archive
+-> if 2xx JSON: source_capture + schema snapshot
+-> otherwise: acquisition observation only
+-> inspect actual schema/dimensions
 -> then determine pagination/termination semantics
 ```
 

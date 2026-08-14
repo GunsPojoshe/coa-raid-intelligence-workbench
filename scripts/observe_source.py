@@ -5,7 +5,11 @@ import json
 from pathlib import Path
 
 from coa_workbench.collector.raw_archive import RawArchive
-from coa_workbench.collector.source_observatory import ReviewedGetContract, capture_reviewed_get
+from coa_workbench.collector.source_acquisition import (
+    capture_reviewed_get_observation,
+    observe_reviewed_har,
+)
+from coa_workbench.collector.source_observatory import ReviewedGetContract
 from coa_workbench.collector.source_registry import load_source_registry
 
 
@@ -21,39 +25,13 @@ def _pairs(values: list[str], label: str) -> dict[str, str]:
     return result
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(
-        description="Capture one reviewed GET source through Source Observatory v1."
-    )
-    parser.add_argument("endpoint_code")
-    parser.add_argument(
-        "--registry",
-        type=Path,
-        default=Path("config/ascension_logs_sources.yaml"),
-    )
-    parser.add_argument("--param", action="append", default=[], metavar="KEY=VALUE")
-    parser.add_argument("--path-param", action="append", default=[], metavar="KEY=VALUE")
-    parser.add_argument("--raw-root", type=Path, default=Path("data/raw"))
-    parser.add_argument("--database", type=Path, default=Path("data/warehouse/coa.duckdb"))
-    parser.add_argument("--migrations", type=Path, default=Path("migrations"))
-    parser.add_argument("--timeout-seconds", type=float, default=20.0)
-    parser.add_argument("--max-bytes", type=int, default=32 * 1024 * 1024)
-    args = parser.parse_args()
-
-    registry = load_source_registry(args.registry)
-    route = registry.route(args.endpoint_code)
+def _contract(registry_path: Path, endpoint_code: str):
+    registry = load_source_registry(registry_path)
+    route = registry.route(endpoint_code)
     if not route.observatory_ready:
         raise SystemExit(
             f"source route {route.endpoint_code!r} is not Source Observatory capture-ready"
         )
-
-    query_params = _pairs(args.param, "--param")
-    path_params = _pairs(args.path_param, "--path-param")
-    if not query_params and route.parameter_keys and not route.empty_params_observed:
-        raise SystemExit(
-            "this reviewed route has no observed empty-parameter branch; provide reviewed --param values"
-        )
-
     contract = ReviewedGetContract(
         source_code=registry.source_code,
         endpoint_code=route.endpoint_code,
@@ -65,12 +43,66 @@ def main() -> int:
         review_state=route.review_state,
         logical_name=route.use,
     )
+    return route, contract
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Observe one reviewed GET source directly or from a browser HAR."
+    )
+    parser.add_argument("endpoint_code")
+    parser.add_argument(
+        "--registry",
+        type=Path,
+        default=Path("config/ascension_logs_sources.yaml"),
+    )
+    parser.add_argument("--param", action="append", default=[], metavar="KEY=VALUE")
+    parser.add_argument("--path-param", action="append", default=[], metavar="KEY=VALUE")
+    parser.add_argument("--har", type=Path)
+    parser.add_argument("--raw-root", type=Path, default=Path("data/raw"))
+    parser.add_argument("--database", type=Path, default=Path("data/warehouse/coa.duckdb"))
+    parser.add_argument("--migrations", type=Path, default=Path("migrations"))
+    parser.add_argument("--timeout-seconds", type=float, default=20.0)
+    parser.add_argument("--max-bytes", type=int, default=32 * 1024 * 1024)
+    args = parser.parse_args()
+
+    route, contract = _contract(args.registry, args.endpoint_code)
     archive = RawArchive(
         args.raw_root,
         database_path=args.database,
         migrations_dir=args.migrations,
     )
-    observation = capture_reviewed_get(
+
+    if args.har is not None:
+        if args.param or args.path_param:
+            raise SystemExit("--har cannot be combined with --param or --path-param")
+        observations = observe_reviewed_har(
+            args.har,
+            archive=archive,
+            database_path=args.database,
+            migrations_dir=args.migrations,
+            contract=contract,
+            dimension_keys=route.dimension_keys,
+        )
+        result = {
+            "source_code": contract.source_code,
+            "endpoint_code": contract.endpoint_code,
+            "capture_mode": "browser_har",
+            "matching_entry_count": len(observations),
+            "observations": [item.public_summary() for item in observations],
+        }
+        print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+        return 0 if observations else 5
+
+    query_params = _pairs(args.param, "--param")
+    path_params = _pairs(args.path_param, "--path-param")
+    if not query_params and route.parameter_keys and not route.empty_params_observed:
+        raise SystemExit(
+            "this reviewed route has no observed empty-parameter branch; "
+            "provide reviewed --param values"
+        )
+
+    observation = capture_reviewed_get_observation(
         archive=archive,
         database_path=args.database,
         migrations_dir=args.migrations,
@@ -81,23 +113,7 @@ def main() -> int:
         timeout_seconds=args.timeout_seconds,
         max_bytes=args.max_bytes,
     )
-    result = {
-        "source_code": contract.source_code,
-        "endpoint_code": contract.endpoint_code,
-        "contract_id": observation.contract_id,
-        "source_capture_id": observation.source_capture_id,
-        "raw_id": observation.capture.raw_id,
-        "raw_observation_id": observation.capture.observation_id,
-        "payload_hash": observation.capture.payload_hash,
-        "schema_fingerprint": observation.capture.schema_fingerprint,
-        "http_status": observation.capture.http_status,
-        "bytes_uncompressed": observation.capture.bytes_uncompressed,
-        "change_event_count": len(observation.change_event_ids),
-        "change_event_ids": list(observation.change_event_ids),
-        "reanalysis_request_count": len(observation.reanalysis_request_ids),
-        "reanalysis_request_ids": list(observation.reanalysis_request_ids),
-    }
-    print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+    print(json.dumps(observation.public_summary(), ensure_ascii=False, indent=2, sort_keys=True))
     return 0
 
 
