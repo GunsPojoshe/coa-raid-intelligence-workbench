@@ -1,0 +1,61 @@
+{
+  "capture_mode": "private_browser_har_review",
+  "damage_taken": {
+    "dynamic_group_key_count": 165,
+    "dynamic_group_key_target_semantics_verified": false,
+    "dynamic_group_keys_matching_roster_ids": 25,
+    "row_count": 852,
+    "rows_under_roster_matching_group_keys": 626,
+    "safe_join_boundary": "exact_source_group_key_equals_roster_character_id_only"
+  },
+  "decision_boundary": {
+    "cross_opaque_group_aggregation_allowed": false,
+    "damage_exact_group_key_roster_join_allowed": true,
+    "damage_group_key_target_semantics_verified": false,
+    "healing_explicit_character_join_allowed": true,
+    "mechanic_semantics_verified": false,
+    "planner_scoring_allowed": false,
+    "throughput_player_comparison_join_allowed": true
+  },
+  "healing": {
+    "distinct_spell_id_count": 110,
+    "explicit_spell_character_id_count": 26,
+    "source_breakdown_group_key_count": 110,
+    "source_breakdown_group_key_set_equals_spell_id_set": true,
+    "source_breakdown_roster_character_count": 25,
+    "source_breakdown_row_count": 1624,
+    "source_breakdown_rows_matching_roster_by_explicit_character_id": 155,
+    "spell_group_key_count": 26,
+    "spell_group_key_set_equals_explicit_character_id_set": true,
+    "spell_row_count": 178,
+    "spell_rows_matching_roster": 177,
+    "target_breakdown_group_key_count": 110,
+    "target_breakdown_group_key_set_equals_spell_id_set": true,
+    "target_breakdown_roster_character_count": 25,
+    "target_breakdown_row_count": 3451,
+    "target_breakdown_rows_matching_roster_by_explicit_character_id": 1330
+  },
+  "network_requests_performed": false,
+  "privacy": {
+    "character_ids_included": false,
+    "character_names_included": false,
+    "dynamic_group_keys_included": false,
+    "encounter_ids_included": false,
+    "har_included": false,
+    "query_values_included": false,
+    "raw_response_bodies_included": false,
+    "report_ids_included": false
+  },
+  "receipt_kind": "current_report_private_structural_join_review",
+  "roster": {
+    "character_count": 25
+  },
+  "schema_version": 1,
+  "source_code": "coa_ascension_logs",
+  "throughput": {
+    "character_row_count": 299,
+    "character_rows_matching_roster": 296,
+    "point_row_count": 13244,
+    "point_rows_with_exact_within_response_character_key_match": 13244
+  }
+}
