@@ -43,6 +43,19 @@ This is intentional. Exact zone + encounter name + request profile is sufficient
 
 The second real report already proves generic ingestion across two independent report identities. The next local proof only measures how much exact structural overlap exists between those persisted reports; it does not perform another network capture.
 
+## Implementation
+
+The structural benchmark and scalar-safe review are implemented in:
+
+```text
+src/coa_workbench/analytics/cross_report_benchmark.py
+src/coa_workbench/analytics/cross_report_review.py
+scripts/review_cross_report_benchmark.py
+tests/unit/test_cross_report_benchmark.py
+```
+
+The review builds the private benchmark twice and verifies deterministic equality. Public output contains only counts and safety booleans.
+
 ## Local review
 
 ```powershell
