@@ -14,139 +14,122 @@ e3/real-log-capture
 
 PR #7 remains Draft: `e3/real-log-capture -> e2/log-evidence-refactor`.
 
-Last fully verified checkpoint before the current Network-first update:
+Latest fully verified checkpoint before the current Source Health commit:
 
 ```text
-HEAD: 269cbabe066137f2f27c33526e1cdeefa30970ad
-Verify repository #647
+HEAD: 905bf6f38226319964eaa5bd0c9281f206e7505b
+Verify repository #651: success
 public-release-audit: success
 ubuntu: success
 windows: success
 ```
 
-Always verify newer HEAD/CI live.
+Newer HEAD/CI must always be checked live.
 
-## Source Observatory
+## Network-first Source Observatory baseline
 
-Implemented shared infrastructure:
+A sanitized browser HAR from the real `/guilds/progression` page was inventoried and then persisted into the local immutable corpus.
 
-```text
-reviewed contract
--> acquisition observation
--> immutable RawArchive
--> JSON schema snapshot when applicable
--> source change registry
--> dependency lookup
--> scoped reanalysis request
-```
-
-Migrations currently published: `0001`–`0010`.
-
-Direct HTTP and browser-HAR acquisition outcomes are separated so a blocked/non-JSON response cannot be mistaken for schema evidence.
-
-## Network-first correction
-
-A sanitized Chrome HAR of the current `/guilds/progression` page was reviewed directly.
-
-Same-origin API Fetch/XHR inventory contained 7 observations across 6 route shapes. The progression-relevant runtime path was:
+Actual runtime data routes observed in that page load:
 
 ```text
-GET /api/phases                                      -> 200 JSON
-GET /api/guilds/phase-progression?phase=...&difficulty=... -> 200 JSON
+GET /api/phases
+GET /api/guilds/phase-progression?phase=<value>&difficulty=<value>
 ```
 
-The phase-progression response structurally contains:
+Both returned `200 application/json` and were recorded through Source Observatory as schema-bearing captures.
+
+Versioned public baseline receipt:
 
 ```text
-phase
-board
-enabled
-totalBosses
-bossesCollapsed
-bossList
-perBossRankings
-guilds
+evidence/real-data/source-observatory-network-baseline-2026-08-14.json
 ```
 
-Timestamped observation at 2026-08-14:
+The receipt publishes only structural/fingerprint/count metadata. HAR, raw bodies, query values, cookies, headers and dimension values remain private/local.
+
+## Persisted local baseline
+
+Observed Source Observatory state:
 
 ```text
-phase catalog entries: 3
-active phase number: 2
-bossList rows: 12
-perBossRankings groups: 12
-guild progression rows: 16
-observed locations: Molten Core, Onyxia's Lair
-observed raid-size classes: 25-man, flex, mixed
+phases_api
+  capture mode: browser_har
+  HTTP: 200 JSON
+  schema snapshot: recorded
+  phase dimension values observed: 3
+
+guild_phase_progression_api
+  capture mode: browser_har
+  HTTP: 200 JSON
+  schema snapshot: recorded
+  boss dimension values observed: 12
+  location dimension values observed: 2
+  phase dimension values observed: 1
+  difficulty dimension values observed: 1
 ```
 
-These counts are **observations**, not hardcoded product configuration.
+The first observations created two `endpoint_added` change events. No reanalysis requests were created yet because no derived artifact dependency has been registered against these endpoints.
 
-Current SPA additionally confirms that `phase-progression` always maps `phase` and conditionally maps `board` and `difficulty`.
+Local Git status in the handoff had no tracked changes; only the old untracked `e3-current-local.patch` remained.
 
-Canonical public receipt:
+## Important route correction
+
+The historical assumption around a direct `POST /api/guilds/progression` remains superseded.
+
+Current evidence distinguishes:
 
 ```text
-evidence/real-data/coa-guild-phase-progression-browser-network.json
+archived SPA alternate contracts:
+  GET /api/guilds/progression/rankings
+  GET /api/guilds/progression/full-clears
+  GET /api/guilds/progression/rankings/{bossId}
+
+actual runtime requests observed on the current progression page:
+  GET /api/phases
+  GET /api/guilds/phase-progression
 ```
 
-Raw HAR and user/session/guild/report record values remain private.
+Do not assume an alternate SPA contract is currently used merely because it still exists in the frontend bundle.
 
-## Relation to rankings routes
+## Source Observatory operating direction
 
-The earlier reviewed SPA contracts still exist:
+The product path is now:
 
 ```text
-GET /api/guilds/progression/rankings
-GET /api/guilds/progression/full-clears
-GET /api/guilds/progression/rankings/{bossId}
+browser/network observation
+-> sanitized same-origin API inventory
+-> reviewed route registry
+-> immutable raw capture
+-> schema/dimension snapshot
+-> change registry
+-> dependency graph
+-> scoped reanalysis
+-> Source & Analysis Health
 ```
 
-They were **not** exercised by this particular browser capture. Therefore they remain alternate reviewed contracts, not the primary runtime path observed for the current progression page.
-
-The earlier direct rankings GET produced a managed-edge `403`; that remains a transport/acquisition observation only.
-
-## Universal discovery direction
-
-Generic sanitized HAR discovery is now part of the product path:
+The next tooling slice adds:
 
 ```text
-scripts/inventory_network_har.py
+scripts/observe_network_cycle.py
+scripts/source_health.py
+src/coa_workbench/collector/source_health.py
 ```
 
-It inventories same-origin API route shapes, query-key names, HTTP statuses, content families and JSON structural fingerprints without keeping query values, headers, cookies, response bodies or response scalar values.
+`observe_network_cycle.py` processes one browser HAR against all currently reviewed GET contracts, rather than requiring one command per endpoint.
 
-This is the basis for detecting:
+`source_health.py` reports endpoint health, latest acquisition/capture/schema state, open change events and pending reanalysis requests without exposing raw payload or dimension values.
+
+## Next product work
+
+After the operational Source Health slice is green:
 
 ```text
-new/changed endpoint
-new phase
-new boss
-new location/difficulty
-schema change
-new report/data availability
+make recurring capture acquisition easier than manual per-endpoint handling
+-> normalize schema handling for dynamic keyed maps where necessary
+-> register real derived artifact dependencies
+-> create scoped reanalysis requests on source changes
+-> add Source & Analysis Health to localhost UI
+-> expand Network-first discovery to reports/encounters/characters/armory/talent-grid/BisBeard
 ```
 
-and then requesting only the affected reanalysis.
-
-## Next action
-
-```text
-import the observed /api/phases and /api/guilds/phase-progression responses
-into the user's local Source Observatory
--> establish the first real schema/dimension baseline
--> repeat acquisition later
--> prove automatic source-change detection
--> bind change events to scoped reanalysis
--> expand the same Network-first discovery to reports, encounters, characters,
-   Armory/talent-grid and BisBeard
-```
-
-No guessed POST. No open-ended helper/owner archaeology. No hardcoded current boss/phase counts.
-
-## Development process
-
-- Agent performs all GitHub work available to it.
-- User participates only at inaccessible Windows/browser/private-runtime boundaries.
-- Private/raw artifacts may be inspected for analysis; publication/versioning is separate.
-- Prefer one coherent change, one aggregate verifier, one push, then exact-head CI.
+No unknown write contracts. No automatic semantic trust promotion. Raw/private material remains usable for analysis but is not published by default.

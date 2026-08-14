@@ -4,7 +4,9 @@ Continue development of `GunsPojoshe/coa-raid-intelligence-workbench`.
 
 ## Start
 
-The agent performs GitHub/PR/CI/repository work itself. Use the user only for Windows/local/private boundaries that cannot be accessed directly, and bundle those operations into one action.
+The agent first performs all GitHub work itself: inspect repository, PR #7, PR #3, current remote HEAD and exact-head CI. Do not ask the user to run GitHub commands for information available through the connector.
+
+Use the user only for Windows/local/private operations that the agent cannot directly execute. Bundle local work into one action whenever possible.
 
 Read:
 
@@ -13,102 +15,110 @@ AGENTS.md
 docs/PROJECT_MASTER_CONTEXT.md
 docs/PROJECT_STATE.md
 docs/SOURCE_OBSERVABILITY_AND_REANALYSIS.md
-docs/SOURCE_OBSERVATORY_V1_STATUS.md
+docs/SOURCE_OBSERVATORY_BASELINE.md
+docs/E3_GUILD_PROGRESSION_EVIDENCE_STATUS.md
 docs/CI_OPERATIONS.md
 ```
 
-Live GitHub and current local evidence override historical checkpoint text.
+## Current source-discovery model
 
-## Source discovery rule
-
-Use **Network first**:
+Network-first is canonical.
 
 ```text
-real browser Fetch/XHR
--> sanitized HAR inventory
--> reviewed route contract
--> immutable capture
--> schema/dimension baseline
--> change detection
--> scoped reanalysis
+browser/network capture
+-> sanitized same-origin API inventory
+-> reviewed source contracts
+-> immutable raw archive
+-> schema/dimension snapshots
+-> source change registry
+-> dependency/reanalysis graph
 ```
 
-Inspect SPA JavaScript only when Network evidence does not explain request construction or an additional contract detail is needed.
+SPA/static analysis is secondary and is used when real network traffic does not explain request construction or hidden contracts.
 
-## Current progression correction
+## Current progression evidence
 
-Do not resume the old helper/owner investigation.
+Do not resume the old helper/owner investigation and do not use direct `POST /api/guilds/progression`.
 
-A sanitized browser HAR of `/guilds/progression` on 2026-08-14 observed:
+Archived SPA evidence still contains alternate GET contracts:
 
 ```text
-GET /api/phases                                      -> 200 JSON
-GET /api/guilds/phase-progression?phase=...&difficulty=... -> 200 JSON
+GET /api/guilds/progression/rankings
+GET /api/guilds/progression/full-clears
+GET /api/guilds/progression/rankings/{bossId}
 ```
 
-Current SPA supports the phase-progression helper contract:
+But the actual browser runtime capture of the current progression page observed:
 
 ```text
-phase      always mapped
-board      optional
-difficulty optional
+GET /api/phases
+GET /api/guilds/phase-progression?phase=<value>&difficulty=<value>
 ```
 
-The phase-progression response contains:
+Both returned 200 JSON and are now the first persisted Network-first Source Observatory baseline.
+
+Canonical public baseline receipt:
 
 ```text
-phase
-board
-enabled
-totalBosses
-bossesCollapsed
-bossList
-perBossRankings
-guilds
+evidence/real-data/source-observatory-network-baseline-2026-08-14.json
 ```
 
-Canonical receipt:
+## Local corpus boundary
 
-```text
-evidence/real-data/coa-guild-phase-progression-browser-network.json
-```
-
-The older `/api/guilds/progression/rankings*` contracts still exist in the SPA, but they were not exercised by this browser capture. Treat them as alternate reviewed contracts, not as the only/current progression path.
-
-## Source Observatory
-
-Reviewed registry routes now include:
+The user's local DuckDB/raw archive contains the real browser-origin baseline for:
 
 ```text
 phases_api
 guild_phase_progression_api
-guild_progression_rankings_api
 ```
 
-Generic HAR discovery:
+Do not ask the user to re-export or re-run the same HAR merely to rediscover this baseline.
+
+The original HAR/raw bodies remain private/local. Private files may be inspected when required; publication/versioning is a separate decision.
+
+## Operational tooling
+
+Current Source Observatory tooling includes:
 
 ```text
 scripts/inventory_network_har.py
+scripts/observe_source.py
+scripts/observe_network_cycle.py
+scripts/source_health.py
 ```
 
-It must remain scalar-free: no query values, headers, cookies, response bodies or response record scalars.
+Prefer `observe_network_cycle.py` for a complete reviewed-route ingestion cycle from one HAR instead of one endpoint command at a time.
+
+`source_health.py` is the command-line precursor of the future Source & Analysis Health UI.
 
 ## Next product path
 
 ```text
-import the observed phases + phase-progression HAR responses into local Source Observatory
--> establish first real schema/dimension baseline
--> verify change detection on a later capture
--> connect boss/phase/source changes to scoped reanalysis
--> expand Network-first discovery to reports/encounters/characters/Armory/BisBeard
+verify exact-head CI
+-> make browser/network acquisition repeatable with minimal user action
+-> improve dynamic schema normalization where source maps use IDs as object keys
+-> register derived artifact dependencies
+-> generate scoped reanalysis requests from real source changes
+-> expose Source & Analysis Health in localhost UI
+-> expand Network-first source coverage
 ```
 
-Do not hardcode current boss/phase counts into product logic. New bosses, phases, logs and meta changes are expected normal source evolution.
+Expansion targets:
+
+```text
+reports
+encounters
+rankings/statistics
+characters
+Armory/talent-grid
+BisBeard
+```
 
 ## Safety
 
-- Do not rewrite published migrations.
-- Do not delete `.gitkeep`.
-- Do not publish raw HAR/session/user/private evidence.
-- Do not raise semantic/scoring gates by inference.
-- Do not treat one timestamped response as permanent source semantics.
+- Never rewrite published migrations.
+- Never delete `.gitkeep`.
+- Never publish HAR/cookies/tokens/headers/raw private bodies by default.
+- Never promote a new field or source into trusted mechanic/scoring semantics automatically.
+- Never infer a route is current merely because it appears in static frontend code.
+- Do not ask the user to perform GitHub work the connector can do.

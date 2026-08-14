@@ -1,0 +1,69 @@
+{
+  "capture_mode": "browser_har",
+  "change_registry": {
+    "endpoint_added_event_count": 2,
+    "reanalysis_request_count": 0
+  },
+  "decision_boundary": {
+    "automatic_source_change_detection_baselined": true,
+    "full_guild_crawl_ready": false,
+    "guild_phase_progression_schema_observed": true,
+    "network_first_baseline_persisted": true,
+    "phases_schema_observed": true,
+    "planner_scoring_allowed": false
+  },
+  "network_inventory": {
+    "data_candidate_route_count": 3,
+    "network_requests_performed_by_inventory": false,
+    "route_shape_count": 6,
+    "same_origin_api_entry_count": 7,
+    "sanitized_inventory_fingerprint": "dcaeaabb3daf8c14e25f2d86ff827e809e415ae0a494336a3371bf2e5c020fa6"
+  },
+  "observed_at_max": "2026-08-14T08:21:56.132Z",
+  "observed_at_min": "2026-08-14T08:21:56.061Z",
+  "privacy": {
+    "cookies_published": false,
+    "dimension_values_published": false,
+    "har_published": false,
+    "query_values_published": false,
+    "raw_response_bodies_published": false,
+    "request_headers_published": false,
+    "response_scalar_values_published": false
+  },
+  "receipt_kind": "source_observatory_network_baseline",
+  "schema_version": 1,
+  "source_code": "coa_ascension_logs",
+  "verified_baseline_endpoints": [
+    {
+      "body_kind": "json",
+      "dimension_value_counts": {
+        "phase_number": 3
+      },
+      "endpoint_code": "phases_api",
+      "http_status": 200,
+      "outcome": "schema_candidate",
+      "raw_body_archived_privately": true,
+      "root_type": "object",
+      "scan_truncated": false,
+      "schema_fingerprint": "1131f689767517255e9f484253b5afca2d2c8fb695d556658410167eb071d712",
+      "schema_observation_recorded": true
+    },
+    {
+      "body_kind": "json",
+      "dimension_value_counts": {
+        "bossId": 12,
+        "difficulty": 1,
+        "location": 2,
+        "phase": 1
+      },
+      "endpoint_code": "guild_phase_progression_api",
+      "http_status": 200,
+      "outcome": "schema_candidate",
+      "raw_body_archived_privately": true,
+      "root_type": "object",
+      "scan_truncated": false,
+      "schema_fingerprint": "e9dff441acdaa76d3b96eccb6a652726acafdfdc5d9490c5e744f6d48b8f1e5f",
+      "schema_observation_recorded": true
+    }
+  ]
+}
