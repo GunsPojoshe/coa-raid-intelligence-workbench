@@ -5,6 +5,10 @@ import json
 from pathlib import Path
 from urllib.parse import urlsplit
 
+from coa_workbench.collector.har_dynamic_resolution import (
+    observe_resolved_dynamic_har,
+    resolve_correlated_dynamic_har_routes,
+)
 from coa_workbench.collector.har_route_resolution import (
     generic_har_ingest_ready,
     route_requires_explicit_dynamic_resolution,
@@ -40,10 +44,9 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Run one Network-first Source Observatory cycle from a browser HAR: "
-            "inventory traffic, ingest matching reviewed static GET contracts, rebuild approved "
-            "derived dimensions, and report health. Dynamic path templates are inventoried but "
-            "deferred to explicit route resolution. If HAR is omitted, use the newest relevant "
-            ".har from --har-dir."
+            "inventory traffic, ingest matching reviewed static GET contracts, safely resolve "
+            "correlated reviewed dynamic paths, rebuild approved derived dimensions, and report "
+            "health. If HAR is omitted, use the newest relevant .har from --har-dir."
         )
     )
     parser.add_argument("har", nargs="?", type=Path)
@@ -98,25 +101,59 @@ def main() -> int:
         api_prefix="/api/",
     )
 
-    deferred_dynamic_routes = sorted(
-        route.endpoint_code
+    dynamic_routes = [
+        route
         for route in registry.routes
         if route.observatory_ready
         and route_requires_explicit_dynamic_resolution(route.route_template)
+    ]
+    dynamic_templates = {
+        route.endpoint_code: str(route.route_template)
+        for route in dynamic_routes
+        if route.route_template
+    }
+    static_paths = [
+        str(route.route_template)
+        for route in registry.routes
+        if route.route_template
+        and route.method.upper() == "GET"
+        and not route_requires_explicit_dynamic_resolution(route.route_template)
+    ]
+    dynamic_resolution = resolve_correlated_dynamic_har_routes(
+        har_path,
+        allowed_host=allowed_host,
+        dynamic_route_templates=dynamic_templates,
+        static_paths=static_paths,
     )
+    resolved_dynamic_codes = set(dynamic_resolution.resolved_endpoint_codes)
 
     observed_routes: list[dict[str, object]] = []
     for route in registry.routes:
-        if not route.observatory_ready or not generic_har_ingest_ready(route.route_template):
+        if not route.observatory_ready:
             continue
-        observations = observe_reviewed_har(
-            har_path,
-            archive=archive,
-            database_path=args.database,
-            migrations_dir=args.migrations,
-            contract=_contract(registry, route),
-            dimension_keys=route.dimension_keys,
-        )
+
+        observations = ()
+        if generic_har_ingest_ready(route.route_template):
+            observations = observe_reviewed_har(
+                har_path,
+                archive=archive,
+                database_path=args.database,
+                migrations_dir=args.migrations,
+                contract=_contract(registry, route),
+                dimension_keys=route.dimension_keys,
+            )
+        elif route.endpoint_code in resolved_dynamic_codes:
+            observations = observe_resolved_dynamic_har(
+                har_path,
+                allowed_host=allowed_host,
+                concrete_paths=dynamic_resolution.paths_for(route.endpoint_code),
+                archive=archive,
+                database_path=args.database,
+                migrations_dir=args.migrations,
+                contract=_contract(registry, route),
+                dimension_keys=route.dimension_keys,
+            )
+
         if not observations:
             continue
         observed_routes.append(
@@ -132,7 +169,10 @@ def main() -> int:
         for route in registry.routes
         if route.observatory_ready
         and route.dimension_keys
-        and generic_har_ingest_ready(route.route_template)
+        and (
+            generic_har_ingest_ready(route.route_template)
+            or route.endpoint_code in resolved_dynamic_codes
+        )
     ]
     dimension_index = rebuild_source_dimension_index(
         args.database,
@@ -141,9 +181,18 @@ def main() -> int:
         endpoint_codes=dimension_endpoints,
     )
 
+    deferred_dynamic_routes = sorted(
+        route.endpoint_code
+        for route in dynamic_routes
+        if route.endpoint_code not in resolved_dynamic_codes
+    )
+    resolution_summary = dynamic_resolution.public_summary()
+    resolution_summary["deferred_endpoint_codes"] = deferred_dynamic_routes
+    resolution_summary["deferred_route_count"] = len(deferred_dynamic_routes)
+
     health = build_source_health(args.database)
     result = {
-        "cycle_version": "network-source-cycle-v4",
+        "cycle_version": "network-source-cycle-v5",
         "capture_mode": "browser_har",
         "network_requests_performed": False,
         "har_selection": {
@@ -155,11 +204,7 @@ def main() -> int:
         "reviewed_route_observation_count": sum(
             int(item["matching_entry_count"]) for item in observed_routes
         ),
-        "dynamic_route_resolution": {
-            "generic_dynamic_ingestion_allowed": False,
-            "deferred_endpoint_codes": deferred_dynamic_routes,
-            "deferred_route_count": len(deferred_dynamic_routes),
-        },
+        "dynamic_route_resolution": resolution_summary,
         "source_dimension_index": dimension_index,
         "source_health": health,
         "privacy": {
@@ -169,6 +214,7 @@ def main() -> int:
             "headers_included": False,
             "query_values_included": False,
             "dimension_values_included": False,
+            "dynamic_path_values_included": False,
         },
     }
 

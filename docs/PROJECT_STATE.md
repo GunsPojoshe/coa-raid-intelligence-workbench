@@ -14,109 +14,136 @@ e3/real-log-capture
 
 PR #7 remains Draft: `e3/real-log-capture -> e2/log-evidence-refactor`.
 
-Last fully verified checkpoint before the current capture-ergonomics change:
-
-```text
-HEAD: 7e7dbf4d68a79849a545eb4e2d8c4452dd02a9a9
-Verify repository #679: success
-public-release-audit: success
-ubuntu: success
-windows: success
-```
-
 Newer HEAD/CI must always be checked live.
 
-## Real Network-first baseline
+## Network-first Source Observatory
 
-The user's local Source Observatory contains the real browser-origin baseline for:
+The canonical source path is:
+
+```text
+browser/network observation
+-> reviewed contract
+-> immutable RawArchive
+-> acquisition observation
+-> schema/dimension snapshot
+-> source change event
+-> artifact dependency
+-> scoped reanalysis
+-> Source & Analysis Health
+```
+
+SPA/static evidence is supporting evidence, not a replacement for current browser Network observations.
+
+## Current progression baseline
+
+The real browser-origin progression baseline contains:
 
 ```text
 GET /api/phases
 GET /api/guilds/phase-progression?phase=<value>&difficulty=<value>
 ```
 
-Both are `200 application/json`, with immutable raw captures and schema/dimension snapshots.
+Both are persisted locally as immutable captures with schema/dimension observations.
 
-Public structural receipts:
+The historical guessed `POST /api/guilds/progression` path remains superseded.
+
+Archived SPA alternate GET contracts remain reviewed but are not evidence of current runtime usage:
 
 ```text
-evidence/real-data/source-observatory-network-baseline-2026-08-14.json
-evidence/real-data/source-observatory-derived-baseline-2026-08-14.json
+GET /api/guilds/progression/rankings
+GET /api/guilds/progression/full-clears
+GET /api/guilds/progression/rankings/{bossId}
 ```
 
-HAR, raw bodies, query values, cookies, headers and actual dimension values remain private/local.
+## Reports baseline
 
-## Derived Source Observatory layer
-
-Migration `0011_source_dimension_index.sql` adds the first real deterministic derived artifact.
-
-Current real local result:
+The real browser Network `/reports` observation confirmed and the local replay persisted:
 
 ```text
-source_dimension_index status: completed
-observed endpoints: 2
-active source_endpoint dependencies: 2
+reports_public_api
+reports_public_filter_options_api
+reports_queue_status_api
+```
+
+Current derived local result:
+
+```text
+observed dimension endpoints: 3
+active source_endpoint dependencies: 3
 dimension names represented: 5
-dimension values represented: 19
-completed analysis runs: 1
-acquisition-problem endpoints: 0
+dimension values represented: 49
+pending reanalysis requests: 0
 ```
 
-The two active dependencies are:
+Actual dimension values, HAR, raw bodies, headers, cookies and query values remain local/private.
+
+## Report-detail collision repair
+
+The first Reports replay exposed a generic dynamic-template collision:
 
 ```text
-phases_api
-guild_phase_progression_api
+/api/reports/queue-status
 ```
 
-The approved chain is:
+was incorrectly eligible for:
 
 ```text
-source change event
--> active source_endpoint dependency
--> pending reanalysis_request
--> deterministic source_dimension_index rebuild
--> completed analysis_run
--> matching reanalysis_request completed
+/api/reports/{reportId}
 ```
 
-A synthetic unit test proves the change -> scoped reanalysis path.
+The local bounded repair has now been applied and independently replayed.
 
-## Real same-input replay
-
-The already-existing browser HAR was replayed locally through `observe_network_cycle.py`.
-
-No new network request was performed.
-
-Before and after replay:
+Observed repair result:
 
 ```text
-open source-change events: 2 -> 2
-pending reanalysis requests: 0 -> 0
-Source & Analysis Health payload: identical
-new change events from replay: 0
-new reanalysis requests from replay: 0
+repair status: repaired
+derived acquisitions removed: 1
+derived captures removed: 1
+derived change events removed: 1
+raw objects deleted: false
+raw fetch observations deleted: false
 ```
 
-Therefore real same-input/no-change idempotence is proven for the current baseline.
+After replay the only reviewed Reports endpoints observed were:
 
-This does **not** yet prove handling of a genuinely newer upstream source change.
-
-## Recurring capture ergonomics
-
-`observe_network_cycle.py` keeps explicit HAR paths supported, but a path is no longer required.
-
-If the positional HAR argument is omitted, it searches `~/Downloads` (or `--har-dir`) from newest to
-oldest and selects the newest readable `.har` that actually contains same-origin `/api/` traffic for
-the configured source host. Newer unrelated or malformed HAR files are skipped.
-
-So after a future browser export the normal local command is only:
-
-```powershell
-uv run --no-sync python scripts/observe_network_cycle.py
+```text
+reports_public_api
+reports_public_filter_options_api
+reports_queue_status_api
 ```
 
-The selected local HAR path is not included in the public cycle output.
+`report_detail_api` is no longer present in Source Health after cleanup.
+
+Public structural receipt:
+
+```text
+evidence/real-data/coa-reports-observatory-repair-replay-v3-review.json
+```
+
+## Safe dynamic HAR resolution
+
+Generic dynamic-template ingestion remains disabled.
+
+The repository now resolves dynamic reviewed routes only when:
+
+```text
+1. the concrete HAR path is not any known static route;
+2. its placeholder binding is corroborated across multiple reviewed dynamic contracts;
+3. only the pre-resolved concrete paths are passed to HAR acquisition;
+4. concrete path/identifier values remain local-only.
+```
+
+This is intended to prevent static routes such as `queue-status` from being reclassified as report IDs without guessing what a report ID looks like.
+
+Current reviewed historical dynamic templates are:
+
+```text
+GET /api/reports/{reportId}
+GET /api/reports/{reportId}/encounters/{encounterId}
+GET /api/reports/{reportId}/encounters/{encounterId}/combatants-info
+```
+
+They remain historical reviewed contracts until a new browser HAR for a concrete report supplies current-runtime corroboration.
 
 ## Source & Analysis Health
 
@@ -127,33 +154,27 @@ Localhost endpoints:
 /api/source-health
 ```
 
-They expose capture/acquisition state, schema/dimension counts, open changes, active dependencies,
-pending reanalysis and completed analysis runs without exposing raw payloads or dimension values.
-
-## Progression route correction
-
-Do not resume the historical guessed `POST /api/guilds/progression` helper/owner investigation.
-
-The current captured progression page used:
+Current repaired local Source Health summary:
 
 ```text
-/api/phases
-/api/guilds/phase-progression
+endpoint count: 5
+captured endpoint count: 5
+acquisition-problem endpoint count: 0
+completed analysis runs: 2
+pending reanalysis requests: 0
 ```
-
-Archived SPA `progression/rankings*` GET contracts remain alternate reviewed contracts, not proof of
-current runtime use.
 
 ## Current boundary
 
 ```text
 Network-first discovery implemented: true
 browser-origin phases/progression baseline persisted: true
-schema/dimension baselines persisted: true
-Source & Analysis Health UI implemented: true
-real source_dimension_index initialized: true
-real same-input/no-change replay proven: true
-synthetic scoped reanalysis on source change proven: true
+reports public/filter-options/queue-status persisted: true
+false report-detail classification cleaned locally: true
+raw evidence preserved during cleanup: true
+generic dynamic HAR ingestion: disabled
+correlated dynamic resolver implemented: true
+report detail current runtime observed: false
 real later source change -> scoped reanalysis proven: false
 ready for autonomous full source coverage: false
 planner scoring promoted automatically: false
@@ -162,12 +183,13 @@ planner scoring promoted automatically: false
 ## Next product work
 
 ```text
-capture a genuinely later browser/network observation when useful
--> prove real upstream change/no-change behavior
--> expand Network-first coverage to reports/encounters/rankings/statistics/characters
+observe one concrete report in browser Network
+-> let the correlated resolver validate current report/encounter/combatants paths
+-> persist current report-detail observations
+-> bind existing report-slice/combatants parsers into Source Observatory
+-> expand rankings/statistics/characters
 -> Armory/talent-grid
 -> BisBeard
 ```
 
-Do not ask the user to re-run the same HAR or reinitialize the same derived baseline merely to
-rediscover the facts recorded above.
+Do not ask the user to replay the old Reports HAR again merely to rediscover the repaired baseline.
