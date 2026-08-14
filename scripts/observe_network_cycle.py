@@ -22,6 +22,10 @@ from coa_workbench.collector.profile_schema_cycle import (
     aggregate_profile_schema_observations,
 )
 from coa_workbench.collector.raw_archive import RawArchive
+from coa_workbench.collector.scope_schema_cycle import (
+    SCOPE_SCHEMA_CYCLE_VERSION,
+    aggregate_scope_schema_observations,
+)
 from coa_workbench.collector.source_acquisition import observe_reviewed_har
 from coa_workbench.collector.source_dimension_index import rebuild_source_dimension_index
 from coa_workbench.collector.source_health import build_source_health
@@ -51,8 +55,8 @@ def main() -> int:
         description=(
             "Run one Network-first Source Observatory cycle from a browser HAR: "
             "inventory traffic, ingest matching reviewed static GET contracts, safely resolve "
-            "correlated reviewed dynamic paths, aggregate schemas across each reviewed response "
-            "profile within the HAR cycle, reconcile reviewed path-scoped dependencies, rebuild "
+            "correlated reviewed dynamic paths, aggregate schemas across reviewed response "
+            "profiles and reviewed path scopes, reconcile scoped dependencies, rebuild "
             "approved derived dimensions, and report health. If HAR is omitted, use the newest "
             "relevant .har from --har-dir."
         )
@@ -137,6 +141,7 @@ def main() -> int:
 
     observed_routes: list[dict[str, object]] = []
     profile_schema_cycles: list[dict[str, object]] = []
+    scope_schema_cycles: list[dict[str, object]] = []
     for route in registry.routes:
         if not route.observatory_ready:
             continue
@@ -167,8 +172,19 @@ def main() -> int:
         if not observations:
             continue
 
+        scope_cycle_summary = None
         profile_cycle_summary = None
-        if route.schema_profile_keys:
+        if route.scope_path_keys:
+            scope_cycle_summary = aggregate_scope_schema_observations(
+                args.database,
+                args.migrations,
+                contract=contract,
+                scope_path_keys=route.scope_path_keys,
+                observations=observations,
+                metadata={"capture_mode": "browser_har"},
+            )
+            scope_schema_cycles.append(scope_cycle_summary.public_summary())
+        elif route.schema_profile_keys:
             profile_cycle_summary = aggregate_profile_schema_observations(
                 args.database,
                 args.migrations,
@@ -183,6 +199,8 @@ def main() -> int:
             "matching_entry_count": len(observations),
             "observations": [item.public_summary() for item in observations],
         }
+        if scope_cycle_summary is not None:
+            route_summary["scope_schema_cycle"] = scope_cycle_summary.public_summary()
         if profile_cycle_summary is not None:
             route_summary["profile_schema_cycle"] = profile_cycle_summary.public_summary()
         observed_routes.append(route_summary)
@@ -226,10 +244,15 @@ def main() -> int:
         for route in registry.routes
         if route.observatory_ready and route.schema_profile_keys
     }
+    scoped_schema_routes = {
+        route.endpoint_code: list(route.scope_path_keys)
+        for route in registry.routes
+        if route.observatory_ready and route.scope_path_keys
+    }
 
     health = build_source_health(args.database)
     result = {
-        "cycle_version": "network-source-cycle-v8",
+        "cycle_version": "network-source-cycle-v9",
         "capture_mode": "browser_har",
         "network_requests_performed": False,
         "har_selection": {
@@ -248,10 +271,27 @@ def main() -> int:
             "profile_values_included": False,
             "profile_hashes_included": False,
         },
+        "scope_schema_cycle_aggregation": {
+            "strategy": SCOPE_SCHEMA_CYCLE_VERSION,
+            "endpoint_count": len(scope_schema_cycles),
+            "endpoint_keys": scoped_schema_routes,
+            "endpoints": scope_schema_cycles,
+            "member_level_schema_events_are_superseded": True,
+            "legacy_profile_cycle_events_are_superseded_when_reaggregated": True,
+            "raw_captures_preserved": True,
+            "exact_member_schema_snapshots_preserved": True,
+            "scope_values_included": False,
+            "scope_hashes_included": False,
+            "profile_values_included": False,
+            "profile_hashes_included": False,
+            "member_capture_ids_included": False,
+            "schema_fingerprints_included": False,
+        },
         "profile_schema_cycle_aggregation": {
             "strategy": PROFILE_SCHEMA_CYCLE_VERSION,
             "endpoint_count": len(profile_schema_cycles),
             "endpoints": profile_schema_cycles,
+            "scope_partitioned_endpoints_use_scope_schema_cycle": True,
             "member_level_schema_events_are_superseded": True,
             "raw_captures_preserved": True,
             "exact_member_schema_snapshots_preserved": True,
@@ -273,6 +313,8 @@ def main() -> int:
             "dynamic_path_values_included": False,
             "schema_profile_values_included": False,
             "schema_profile_hashes_included": False,
+            "schema_scope_values_included": False,
+            "schema_scope_hashes_included": False,
             "schema_cycle_member_capture_ids_included": False,
             "schema_cycle_fingerprints_included": False,
             "source_scope_values_included": False,
