@@ -137,6 +137,42 @@ routes:
     review_state: verified
     empty_params_observed: true
 
+  - endpoint_code: report_detail_api
+    route_template: /api/reports/{reportId}
+    method: GET
+    auth_mode: historical_public_observed
+    status: reviewed
+    use: report_detail_source_observation
+    parameter_keys: []
+    dimension_keys: []
+    discovery_source: archived_spa_route_inventory_plus_observed_report_slice_v1
+    review_state: verified
+    empty_params_observed: true
+
+  - endpoint_code: report_encounter_detail_api
+    route_template: /api/reports/{reportId}/encounters/{encounterId}
+    method: GET
+    auth_mode: historical_public_observed
+    status: reviewed
+    use: report_encounter_detail_source_observation
+    parameter_keys: []
+    dimension_keys: []
+    discovery_source: archived_spa_route_inventory_plus_observed_report_slice_v1
+    review_state: verified
+    empty_params_observed: true
+
+  - endpoint_code: report_encounter_combatants_info_api
+    route_template: /api/reports/{reportId}/encounters/{encounterId}/combatants-info
+    method: GET
+    auth_mode: historical_public_observed
+    status: reviewed
+    use: encounter_combatants_build_source_observation
+    parameter_keys: []
+    dimension_keys: []
+    discovery_source: archived_spa_route_inventory_plus_observed_report_slice_v1
+    review_state: verified
+    empty_params_observed: true
+
   - endpoint_code: report_metadata
     route_template: null
     method: GET

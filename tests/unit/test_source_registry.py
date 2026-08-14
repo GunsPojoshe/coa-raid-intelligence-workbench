@@ -18,7 +18,7 @@ def test_registry_loads_primary_observation_source() -> None:
     assert registry.source_code == "coa_ascension_logs"
     assert registry.base_url == "https://coa.ascensionlogs.gg"
     assert registry.truth_role == "primary_observation_source"
-    assert len(registry.routes) == 14
+    assert len(registry.routes) == 17
     assert registry.prohibited_assumptions
 
 
@@ -131,6 +131,30 @@ def test_reports_queue_status_is_reviewed_operational_health_without_dimensions(
     assert route.empty_params_observed is True
     assert route.observatory_ready is True
     assert route.production_ready is False
+
+
+def test_historical_report_slice_routes_are_capture_ready_but_not_production_ready() -> None:
+    registry = load_source_registry(registry_path())
+    expected = {
+        "report_detail_api": "/api/reports/{reportId}",
+        "report_encounter_detail_api": "/api/reports/{reportId}/encounters/{encounterId}",
+        "report_encounter_combatants_info_api": (
+            "/api/reports/{reportId}/encounters/{encounterId}/combatants-info"
+        ),
+    }
+
+    for endpoint_code, route_template in expected.items():
+        route = registry.route(endpoint_code)
+        assert route.route_template == route_template
+        assert route.method == "GET"
+        assert route.auth_mode == "historical_public_observed"
+        assert route.status == "reviewed"
+        assert route.review_state == "verified"
+        assert route.parameter_keys == ()
+        assert route.dimension_keys == ()
+        assert route.empty_params_observed is True
+        assert route.observatory_ready is True
+        assert route.production_ready is False
 
 
 def test_unverified_aura_route_cannot_be_used_for_production() -> None:
