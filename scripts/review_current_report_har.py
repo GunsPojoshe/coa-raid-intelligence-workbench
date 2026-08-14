@@ -1,12 +1,9 @@
 from __future__ import annotations
 
 import argparse
-import base64
 import json
-import re
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlsplit
 
 from coa_workbench.collector.compatible_normalization import (
     normalize_verified_compatible_payload,
@@ -14,29 +11,7 @@ from coa_workbench.collector.compatible_normalization import (
 from coa_workbench.collector.current_combatants_roster import (
     parse_current_combatants_roster,
 )
-
-_RE_REPORT = re.compile(r"^/api/reports/[^/]+$")
-_RE_ENCOUNTERS = re.compile(r"^/api/reports/[^/]+/encounters$")
-_RE_THROUGHPUT = re.compile(r"^/api/reports/[^/]+/encounters/[^/]+/throughput-timeline$")
-
-
-def _body(entry: dict[str, Any]) -> dict[str, Any] | None:
-    content = entry.get("response", {}).get("content", {})
-    if not isinstance(content, dict) or content.get("text") is None:
-        return None
-    text = content["text"]
-    if content.get("encoding") == "base64":
-        try:
-            raw = base64.b64decode(str(text), validate=True)
-        except ValueError:
-            return None
-    else:
-        raw = str(text).encode("utf-8")
-    try:
-        value = json.loads(raw)
-    except (UnicodeDecodeError, json.JSONDecodeError):
-        return None
-    return value if isinstance(value, dict) else None
+from coa_workbench.collector.current_report_har import extract_current_report_har_slice
 
 
 def _keys(value: Any) -> list[str]:
@@ -70,68 +45,19 @@ def _dynamic_map_review(value: Any) -> dict[str, Any]:
     }
 
 
-def _single(rows: list[dict[str, Any]], name: str) -> dict[str, Any]:
-    if len(rows) != 1:
-        raise ValueError(f"expected exactly one {name} response, found {len(rows)}")
-    return rows[0]
-
-
 def review_current_report_har(
     har_path: Path,
     *,
     mapping_path: Path,
     allowed_host: str = "coa.ascensionlogs.gg",
 ) -> dict[str, Any]:
-    har = json.loads(har_path.read_text(encoding="utf-8"))
-    entries = har.get("log", {}).get("entries", [])
-    if not isinstance(entries, list):
-        raise ValueError("HAR log.entries must be an array")
-
-    buckets: dict[str, list[dict[str, Any]]] = {
-        "report": [],
-        "encounters": [],
-        "roster": [],
-        "throughput": [],
-        "damage": [],
-        "healing": [],
-    }
-    for raw_entry in entries:
-        if not isinstance(raw_entry, dict):
-            continue
-        request = raw_entry.get("request", {})
-        response = raw_entry.get("response", {})
-        if not isinstance(request, dict) or not isinstance(response, dict):
-            continue
-        if int(response.get("status") or 0) != 200:
-            continue
-        url = str(request.get("url") or "")
-        parts = urlsplit(url)
-        if parts.scheme != "https" or parts.hostname != allowed_host:
-            continue
-        body = _body(raw_entry)
-        if body is None:
-            continue
-        path = parts.path
-        if _RE_REPORT.fullmatch(path) and {"report", "encounters", "summary"} <= set(body):
-            buckets["report"].append(body)
-        elif _RE_ENCOUNTERS.fullmatch(path):
-            buckets["encounters"].append(body)
-        elif path.endswith("/combatants-roster"):
-            buckets["roster"].append(body)
-        elif _RE_THROUGHPUT.fullmatch(path):
-            buckets["throughput"].append(body)
-        elif path.endswith("/character_damage_taken_abilities"):
-            buckets["damage"].append(body)
-        elif path.endswith("/character_spell_healing"):
-            buckets["healing"].append(body)
-
-    report = _single(buckets["report"], "report detail")
-    encounters = _single(buckets["encounters"], "encounter catalog")
-    roster = _single(buckets["roster"], "combatants roster")
-    damage = _single(buckets["damage"], "damage taken abilities")
-    healing = _single(buckets["healing"], "spell healing")
-    if not buckets["throughput"]:
-        raise ValueError("no throughput timeline responses found")
+    har_slice = extract_current_report_har_slice(har_path, allowed_host=allowed_host)
+    report = har_slice.report_detail.payload
+    encounters = har_slice.encounter_catalog.payload
+    roster = har_slice.combatants_roster.payload
+    damage = har_slice.damage_taken_abilities.payload
+    healing = har_slice.spell_healing.payload
+    throughput_payloads = [observation.payload for observation in har_slice.throughput]
 
     mapping_payload = json.loads(mapping_path.read_text(encoding="utf-8"))
     report_normalization = normalize_verified_compatible_payload(report, mapping_payload)
@@ -144,7 +70,7 @@ def review_current_report_har(
     throughput_series_fields: set[str] = set()
     throughput_total_fields: set[str] = set()
     heroism_nonempty = 0
-    for payload in buckets["throughput"]:
+    for payload in throughput_payloads:
         throughput_fields.update(str(key) for key in payload)
         throughput_character_fields.update(_union_row_keys(payload.get("characters")))
         throughput_total_fields.update(_union_row_keys(payload.get("total")))
@@ -178,6 +104,7 @@ def review_current_report_har(
         "review_kind": "current_report_private_har_structure_review",
         "source_code": "coa_ascension_logs",
         "network_requests_performed": False,
+        "har_slice": har_slice.public_summary(),
         "report_detail": {
             "top_level_fields": _keys(report),
             "report_fields": _keys(report.get("report")),
@@ -220,7 +147,7 @@ def review_current_report_har(
             ],
         },
         "throughput_timeline": {
-            "response_count": len(buckets["throughput"]),
+            "response_count": len(throughput_payloads),
             "top_level_fields": sorted(throughput_fields),
             "character_fields": sorted(throughput_character_fields),
             "series_row_fields": sorted(throughput_series_fields),
