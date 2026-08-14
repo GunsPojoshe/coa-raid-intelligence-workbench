@@ -1,0 +1,81 @@
+{
+  "capture_mode": "browser_har_replay",
+  "interpretation": {
+    "next_required_work": "inspect private current-report payload schemas and bind current report/encounter/roster/throughput/damage/healing data into existing parsers",
+    "open_change_count_after_profile_replay": 34,
+    "open_change_count_before_profile_repair": 799,
+    "profile_unaware_churn_superseded": true,
+    "raw_evidence_preserved": true,
+    "remaining_open_changes_are_not_assumed_upstream_changes": true
+  },
+  "network_requests_performed": false,
+  "observed_checkpoint": "da80442c565e52d1eb570d6a1a550a874c680475",
+  "privacy": {
+    "dimension_values_included": false,
+    "dynamic_path_values_included": false,
+    "encounter_ids_included": false,
+    "har_included": false,
+    "query_values_included": false,
+    "raw_response_bodies_included": false,
+    "report_ids_included": false,
+    "schema_profile_hashes_included": false,
+    "schema_profile_values_included": false
+  },
+  "receipt_kind": "current_report_profile_aware_replay_v3_review",
+  "repair": {
+    "linked_reanalysis_request_count": 0,
+    "raw_fetch_observations_deleted": false,
+    "raw_objects_deleted": false,
+    "repair_version": "throughput-schema-profile-repair-v1",
+    "schema_snapshots_deleted": false,
+    "source_captures_deleted": false,
+    "status": "repaired",
+    "superseded_change_event_count": 788,
+    "superseded_change_types": {
+      "field_added": 256,
+      "field_removed": 515,
+      "field_type_changed": 7,
+      "schema_changed": 10
+    }
+  },
+  "runtime_replay": {
+    "cycle_version": "network-source-cycle-v6",
+    "deferred_historical_endpoint_codes": [
+      "report_encounter_combatants_info_api",
+      "report_encounter_detail_api"
+    ],
+    "deferred_historical_route_count": 2,
+    "resolved_concrete_path_count": 9,
+    "resolved_endpoint_codes": [
+      "report_character_damage_taken_abilities_api",
+      "report_character_spell_healing_api",
+      "report_combatants_roster_api",
+      "report_detail_api",
+      "report_encounter_throughput_timeline_api",
+      "report_encounters_api"
+    ],
+    "resolved_route_count": 6,
+    "reviewed_route_observation_count": 18
+  },
+  "schema_profiles": {
+    "profile_hashes_included": false,
+    "profile_values_included": false,
+    "report_encounter_throughput_timeline_api": [
+      "metric",
+      "perspective"
+    ]
+  },
+  "schema_version": 1,
+  "source_code": "coa_ascension_logs",
+  "source_health_after": {
+    "acquisition_problem_endpoint_count": 0,
+    "active_dependency_count": 3,
+    "all_other_endpoints_open_change_event_count": 10,
+    "captured_endpoint_count": 11,
+    "completed_analysis_run_count": 2,
+    "endpoint_count": 11,
+    "open_change_event_count": 34,
+    "pending_reanalysis_request_count": 0,
+    "throughput_open_change_event_count": 24
+  }
+}

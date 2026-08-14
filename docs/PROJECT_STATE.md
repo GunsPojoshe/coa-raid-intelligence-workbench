@@ -16,6 +16,18 @@ PR #7 remains Draft: `e3/real-log-capture -> e2/log-evidence-refactor`.
 
 Newer HEAD/CI must always be checked live.
 
+## Product target
+
+CoA-only localhost-first evidence-first raid intelligence platform.
+
+Main product question:
+
+> Почему конкретный человек нужен именно текущему составу?
+
+The platform must remain adaptive to new bosses, phases, fields, logs and source contracts.
+Source change handling must be automatic, scoped and provenance-preserving rather than implemented
+as one-off collectors.
+
 ## Network-first Source Observatory
 
 Canonical source path:
@@ -62,7 +74,7 @@ reports_public_filter_options_api
 reports_queue_status_api
 ```
 
-Current derived dimension state before report-detail expansion:
+Current derived dimension state:
 
 ```text
 observed dimension endpoints: 3
@@ -75,12 +87,12 @@ pending reanalysis requests: 0
 The earlier `queue-status -> /api/reports/{reportId}` collision was repaired locally without deleting
 raw objects or raw fetch observations.
 
-## Current report runtime: observed and persisted
+## Current report runtime
 
-A browser Network capture of one concrete report plus one selected encounter was replayed through the
-current reviewed registry.
+A browser Network capture of one concrete report plus one selected encounter has now been fully
+consumed by the reviewed Source Observatory.
 
-The correlated dynamic resolver accepted six current-runtime families:
+Current runtime families actually observed and persisted:
 
 ```text
 GET /api/reports/{reportId}
@@ -91,7 +103,7 @@ GET /api/reports/{reportId}/character_damage_taken_abilities?...
 GET /api/reports/{reportId}/character_spell_healing?...
 ```
 
-Observed replay result:
+Profile-aware replay result:
 
 ```text
 dynamic routes resolved: 6
@@ -101,16 +113,6 @@ Source Health endpoints: 11
 captured endpoints: 11
 acquisition-problem endpoints: 0
 pending reanalysis requests: 0
-```
-
-All reviewed report-runtime observations in this capture were `200 JSON` and produced schema
-observations. Report IDs, encounter IDs, query values, raw bodies, headers and cookies remain private.
-
-Public receipts:
-
-```text
-evidence/real-data/coa-current-report-browser-network.json
-evidence/real-data/coa-current-report-runtime-replay-v2-review.json
 ```
 
 Historical exact routes remain reviewed but were not observed in this current capture:
@@ -124,25 +126,18 @@ They must not override the current runtime model.
 
 ## Throughput schema-profile correction
 
-The first persisted report-runtime replay produced:
+The first persisted current-report replay produced false schema churn because
+`throughput-timeline` is a multi-mode endpoint.
+
+Profile-unaware state:
 
 ```text
 open source-change events total: 799
-report_encounter_throughput_timeline_api: 789
+throughput endpoint: 789
 all other endpoints combined: 10
 ```
 
-This is not evidence of 789 upstream changes. The same HAR contains a multi-mode throughput endpoint:
-
-```text
-without perspective query key: 8 responses, 3 structural schema fingerprints
-with perspective query key:    4 responses, 1 structural schema fingerprint
-```
-
-Sequentially diffing every throughput response against the immediately previous response therefore
-compares legitimate response modes against one another and creates false schema churn.
-
-Registry schema v6 now supports explicit `schema_profile_keys`. For the current throughput contract:
+Registry schema v6 defines reviewed response-shaping keys:
 
 ```text
 schema_profile_keys:
@@ -150,27 +145,49 @@ schema_profile_keys:
   - perspective
 ```
 
-Rules:
+A bounded repair then superseded only the legacy profile-unaware schema-change events:
 
 ```text
-path parameter values do not partition schema baselines
-bucket_size_ms does not partition schema baselines
-metric/perspective values partition only local schema comparison state
-profile values and profile hashes are never included in public cycle output
-schema changes are compared only against the previous snapshot of the same reviewed profile
+repair status: repaired
+superseded legacy events: 788
+
+field_added:        256
+field_removed:      515
+field_type_changed:   7
+schema_changed:      10
+
+linked downstream reanalysis requests: 0
+
+raw objects deleted: false
+raw fetch observations deleted: false
+source captures deleted: false
+schema snapshots deleted: false
 ```
 
-A bounded repair exists:
+The same HAR was replayed under `network-source-cycle-v6`.
+
+Result after profile-aware replay:
 
 ```text
-scripts/repair_throughput_schema_profile_churn.py
+open source-change events total: 34
+throughput endpoint: 24
+all other endpoints combined: 10
+pending reanalysis requests: 0
 ```
 
-It supersedes only legacy profile-unaware schema change events, refuses to run if those events already
-have downstream reanalysis requests, and preserves raw objects, raw fetch observations, source
-captures and schema snapshots.
+This validates the profile partition and removes the original 789-event false-churn signal.
+The remaining 34 open events are baseline/profile-aware observations and are **not** automatically
+interpreted as 34 upstream source changes. Their semantics still require structural review before
+they are used as health alarms or planner signals.
 
-Local repair + profile-aware replay against the real HAR is the next required proof.
+Public structural receipt:
+
+```text
+evidence/real-data/coa-current-report-profile-replay-v3-review.json
+```
+
+HAR, raw payloads, report/encounter IDs, query values, headers, cookies, dimension values and schema
+profile values/hashes remain local/private.
 
 ## Source & Analysis Health
 
@@ -181,19 +198,17 @@ Localhost endpoints:
 /api/source-health
 ```
 
-Before the profile-aware repair/replay, the current real local summary is:
+Current real local summary after profile-aware repair/replay:
 
 ```text
 endpoint count: 11
 captured endpoint count: 11
-open change event count: 799
+open change event count: 34
 acquisition-problem endpoint count: 0
+active dependency count: 3
 completed analysis runs: 2
 pending reanalysis requests: 0
 ```
-
-The 799 count must not be used as a source-instability signal until the bounded profile repair and
-profile-aware replay are applied.
 
 ## Current boundary
 
@@ -209,10 +224,10 @@ current combatants-roster runtime observed: true
 current throughput runtime observed: true
 current character damage/healing runtime observed: true
 current report runtime persisted in Source Observatory: true
-throughput multi-mode schema churn identified: true
 reviewed schema-profile mechanism implemented: true
-bounded legacy profile-churn repair implemented: true
-real local profile repair + replay proven: false
+legacy profile-unaware throughput churn repaired locally: true
+profile-aware replay against real HAR proven: true
+raw evidence preserved through repairs: true
 real later upstream change -> scoped reanalysis proven: false
 ready for autonomous full source coverage: false
 planner scoring promoted automatically: false
@@ -220,16 +235,21 @@ planner scoring promoted automatically: false
 
 ## Next product work
 
+The transport/discovery loop is now sufficiently proven for this slice. Do not create another browser
+capture merely to re-prove current report routes.
+
+Next:
+
 ```text
-apply bounded throughput profile-churn repair locally
--> replay the existing current-report HAR once under schema-profile-aware cycle
--> verify false churn collapses without losing raw evidence
--> inspect real report/encounter/roster/throughput/damage/healing schemas from local corpus
--> bind existing report-slice/combatants parsers into Source Observatory
--> expand rankings/statistics/characters
+inspect the private current-report payloads already present in the HAR/local corpus
+-> document real report/encounter/roster/throughput/damage/healing schemas
+-> bind current combatants-roster into existing combatants observation persistence
+-> bind encounter/report identity and provenance
+-> add deterministic current-report derived analysis
+-> then expand rankings/statistics/characters
 -> Armory/talent-grid
 -> BisBeard
 ```
 
-Do not ask the user to make another browser capture until the existing current-report HAR has been
-fully consumed by the profile-aware Observatory.
+A new browser capture is required only when a new source surface must be observed or an existing
+contract changes.
