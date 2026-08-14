@@ -95,6 +95,22 @@ routes:
     review_state: verified
     empty_params_observed: true
 
+  - endpoint_code: reports_public_api
+    route_template: /api/reports/public
+    method: GET
+    auth_mode: public_observed
+    status: reviewed
+    use: public_report_discovery_source_observation
+    parameter_keys:
+      - page
+      - limit
+      - sortBy
+      - sortOrder
+    dimension_keys: []
+    discovery_source: bounded_report_pagination_evidence_2026_07_29
+    review_state: verified
+    empty_params_observed: false
+
   - endpoint_code: report_metadata
     route_template: null
     method: GET

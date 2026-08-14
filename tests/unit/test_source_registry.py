@@ -18,7 +18,7 @@ def test_registry_loads_primary_observation_source() -> None:
     assert registry.source_code == "coa_ascension_logs"
     assert registry.base_url == "https://coa.ascensionlogs.gg"
     assert registry.truth_role == "primary_observation_source"
-    assert len(registry.routes) == 11
+    assert len(registry.routes) == 12
     assert registry.prohibited_assumptions
 
 
@@ -80,6 +80,22 @@ def test_alternate_rankings_contract_remains_reviewed_not_production_ready() -> 
     assert route.method == "GET"
     assert route.status == "reviewed"
     assert route.empty_params_observed is True
+    assert route.observatory_ready is True
+    assert route.production_ready is False
+
+
+def test_reviewed_public_report_api_is_observatory_ready_without_dimensions() -> None:
+    registry = load_source_registry(registry_path())
+    route = registry.route("reports_public_api")
+
+    assert route.route_template == "/api/reports/public"
+    assert route.method == "GET"
+    assert route.auth_mode == "public_observed"
+    assert route.status == "reviewed"
+    assert route.review_state == "verified"
+    assert route.parameter_keys == ("page", "limit", "sortBy", "sortOrder")
+    assert route.dimension_keys == ()
+    assert route.empty_params_observed is False
     assert route.observatory_ready is True
     assert route.production_ready is False
 
