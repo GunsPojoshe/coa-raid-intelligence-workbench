@@ -187,9 +187,7 @@ def main() -> int:
             route_summary["profile_schema_cycle"] = profile_cycle_summary.public_summary()
         observed_routes.append(route_summary)
 
-    observed_endpoint_codes = {
-        str(item["endpoint_code"]) for item in observed_routes
-    }
+    observed_endpoint_codes = {str(item["endpoint_code"]) for item in observed_routes}
     scoped_reanalysis = resolve_scoped_reanalysis_requests(
         args.database,
         args.migrations,
