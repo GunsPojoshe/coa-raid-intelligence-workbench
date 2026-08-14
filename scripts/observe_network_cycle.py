@@ -17,6 +17,10 @@ from coa_workbench.collector.har_source_discovery import (
     inventory_network_har,
     select_latest_relevant_har,
 )
+from coa_workbench.collector.profile_schema_cycle import (
+    PROFILE_SCHEMA_CYCLE_VERSION,
+    aggregate_profile_schema_observations,
+)
 from coa_workbench.collector.raw_archive import RawArchive
 from coa_workbench.collector.source_acquisition import observe_reviewed_har
 from coa_workbench.collector.source_dimension_index import rebuild_source_dimension_index
@@ -46,9 +50,9 @@ def main() -> int:
         description=(
             "Run one Network-first Source Observatory cycle from a browser HAR: "
             "inventory traffic, ingest matching reviewed static GET contracts, safely resolve "
-            "correlated reviewed dynamic paths, compare schemas within reviewed response profiles, "
-            "rebuild approved derived dimensions, and report health. If HAR is omitted, use the "
-            "newest relevant .har from --har-dir."
+            "correlated reviewed dynamic paths, aggregate schemas across each reviewed response "
+            "profile within the HAR cycle, rebuild approved derived dimensions, and report health. "
+            "If HAR is omitted, use the newest relevant .har from --har-dir."
         )
     )
     parser.add_argument("har", nargs="?", type=Path)
@@ -130,10 +134,12 @@ def main() -> int:
     resolved_dynamic_codes = set(dynamic_resolution.resolved_endpoint_codes)
 
     observed_routes: list[dict[str, object]] = []
+    profile_schema_cycles: list[dict[str, object]] = []
     for route in registry.routes:
         if not route.observatory_ready:
             continue
 
+        contract = _contract(registry, route)
         observations = ()
         if generic_har_ingest_ready(route.route_template):
             observations = observe_reviewed_har(
@@ -141,7 +147,7 @@ def main() -> int:
                 archive=archive,
                 database_path=args.database,
                 migrations_dir=args.migrations,
-                contract=_contract(registry, route),
+                contract=contract,
                 dimension_keys=route.dimension_keys,
             )
         elif route.endpoint_code in resolved_dynamic_codes:
@@ -152,19 +158,32 @@ def main() -> int:
                 archive=archive,
                 database_path=args.database,
                 migrations_dir=args.migrations,
-                contract=_contract(registry, route),
+                contract=contract,
                 dimension_keys=route.dimension_keys,
             )
 
         if not observations:
             continue
-        observed_routes.append(
-            {
-                "endpoint_code": route.endpoint_code,
-                "matching_entry_count": len(observations),
-                "observations": [item.public_summary() for item in observations],
-            }
-        )
+
+        profile_cycle_summary = None
+        if route.schema_profile_keys:
+            profile_cycle_summary = aggregate_profile_schema_observations(
+                args.database,
+                args.migrations,
+                contract=contract,
+                observations=observations,
+                metadata={"capture_mode": "browser_har"},
+            )
+            profile_schema_cycles.append(profile_cycle_summary.public_summary())
+
+        route_summary: dict[str, object] = {
+            "endpoint_code": route.endpoint_code,
+            "matching_entry_count": len(observations),
+            "observations": [item.public_summary() for item in observations],
+        }
+        if profile_cycle_summary is not None:
+            route_summary["profile_schema_cycle"] = profile_cycle_summary.public_summary()
+        observed_routes.append(route_summary)
 
     dimension_endpoints = [
         route.endpoint_code
@@ -200,7 +219,7 @@ def main() -> int:
 
     health = build_source_health(args.database)
     result = {
-        "cycle_version": "network-source-cycle-v6",
+        "cycle_version": "network-source-cycle-v7",
         "capture_mode": "browser_har",
         "network_requests_performed": False,
         "har_selection": {
@@ -219,6 +238,18 @@ def main() -> int:
             "profile_values_included": False,
             "profile_hashes_included": False,
         },
+        "profile_schema_cycle_aggregation": {
+            "strategy": PROFILE_SCHEMA_CYCLE_VERSION,
+            "endpoint_count": len(profile_schema_cycles),
+            "endpoints": profile_schema_cycles,
+            "member_level_schema_events_are_superseded": True,
+            "raw_captures_preserved": True,
+            "exact_member_schema_snapshots_preserved": True,
+            "profile_values_included": False,
+            "profile_hashes_included": False,
+            "member_capture_ids_included": False,
+            "schema_fingerprints_included": False,
+        },
         "source_dimension_index": dimension_index,
         "source_health": health,
         "privacy": {
@@ -231,6 +262,8 @@ def main() -> int:
             "dynamic_path_values_included": False,
             "schema_profile_values_included": False,
             "schema_profile_hashes_included": False,
+            "schema_cycle_member_capture_ids_included": False,
+            "schema_cycle_fingerprints_included": False,
         },
     }
 

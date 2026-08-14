@@ -23,6 +23,7 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         "0009_source_observatory",
         "0010_source_acquisition_observation",
         "0011_source_dimension_index",
+        "0012_profile_schema_cycle",
     ]
     assert apply_migrations(database, root / "migrations") == []
     with duckdb.connect(str(database)) as connection:
@@ -40,6 +41,12 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
             row[0]
             for row in connection.execute(
                 "DESCRIBE source_dimension_index_value"
+            ).fetchall()
+        }
+        source_profile_schema_cycle_columns = {
+            row[0]
+            for row in connection.execute(
+                "DESCRIBE source_profile_schema_cycle"
             ).fetchall()
         }
         raid_plan_columns = {
@@ -117,6 +124,7 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         "reanalysis_request",
         "source_acquisition_observation",
         "source_dimension_index_value",
+        "source_profile_schema_cycle",
     } <= tables
     assert {
         "source_code",
@@ -151,6 +159,23 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         "dimension_name",
         "dimension_value",
     } <= source_dimension_index_columns
+    assert {
+        "cycle_snapshot_id",
+        "source_code",
+        "endpoint_code",
+        "contract_id",
+        "observation_profile_key",
+        "cycle_fingerprint",
+        "observed_at",
+        "member_capture_count",
+        "member_capture_ids_json",
+        "schema_fingerprint",
+        "root_type",
+        "path_types_json",
+        "dimension_values_json",
+        "scan_truncated",
+        "metadata_json",
+    } <= source_profile_schema_cycle_columns
     assert "plan_name" in raid_plan_columns
     assert {"player_name", "class_code", "spec_code", "role"} <= raid_slot_columns
     assert {"trust_status", "source_kind"} <= effect_columns
