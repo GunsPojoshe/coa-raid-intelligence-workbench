@@ -4,7 +4,8 @@ These instructions apply to the whole repository.
 
 ## Mission
 
-Build a localhost-first, evidence-first raid intelligence system **only for Conquest of Azeroth** that can eventually explain:
+Build a localhost-first, evidence-first raid intelligence system **only for Conquest of Azeroth** that
+can eventually explain:
 
 > Why is this specific player needed by this exact current roster?
 
@@ -12,11 +13,16 @@ Only `corroborated` and `confirmed` mechanics may enter canonical planner scorin
 
 ## Responsibility
 
-The agent performs everything it can do directly: GitHub repository/branch/PR/CI inspection and mutations, repository source/history inspection, documentation maintenance, and analysis of shared private/raw artifacts.
+The agent performs everything it can do directly: GitHub repository/branch/PR/CI inspection and
+mutations, repository source/history inspection, documentation maintenance, and analysis of shared
+private/raw artifacts.
 
-The user is involved only for the boundary the agent cannot access directly: the user's Windows filesystem, local runtime/browser state, or unshared private files. When local work is required, prefer **one bundled action** producing one compact result or handoff artifact.
+The user is involved only for the boundary the agent cannot access directly: the user's Windows
+filesystem, local runtime/browser state, or unshared private files. When local work is required, prefer
+**one bundled action** producing one compact result or handoff artifact.
 
-Private/raw files are valid analysis inputs. Privacy rules constrain **publication/versioning**, not private analysis.
+Private/raw files are valid analysis inputs. Privacy rules constrain **publication/versioning**, not
+private analysis.
 
 ## Development workflow
 
@@ -28,7 +34,8 @@ focused tests while iterating
 -> exact-head GitHub CI
 ```
 
-Evidence-sensitive work additionally validates deterministic bindings and publication/privacy boundaries. Do not create permanent evidence stages for every intermediate question.
+Evidence-sensitive work additionally validates deterministic bindings and publication/privacy
+boundaries. Do not create permanent evidence stages for every intermediate question.
 
 ## Source discovery rule
 
@@ -44,21 +51,51 @@ browser Network / Fetch / XHR
 -> scoped reanalysis
 ```
 
-Inspect SPA JavaScript when Network evidence does not fully explain request construction, optional parameters or route selection. Do not start with minified-helper archaeology when an actual browser request is available.
+Inspect SPA JavaScript only when Network evidence does not fully explain request construction, optional
+parameters or route selection. Do not start with minified-helper archaeology when an actual browser
+request is available.
 
-A timestamped source response is an observation, not permanent source semantics. Bosses, phases, logs, fields, routes and meta are expected to evolve.
+A timestamped source response is an observation, not permanent source semantics. Bosses, phases, logs,
+fields, routes and meta are expected to evolve.
 
-## Git/branches
+## Current real Source Observatory checkpoint
 
-Keep only active branches unless a temporary branch has a current purpose:
+The user's local Observatory already contains the real browser-origin baseline for:
 
 ```text
-main
-e2/log-evidence-refactor
-e3/real-log-capture
+phases_api
+guild_phase_progression_api
 ```
 
-Delete merged/closed/stage branches promptly. Never rewrite published migrations. Never delete tracked `.gitkeep` files.
+The approved real derived `source_dimension_index` is initialized:
+
+```text
+observed endpoints: 2
+active dependencies: 2
+dimension names represented: 5
+dimension values represented: 19
+completed analysis runs: 1
+```
+
+The same existing HAR has already been replayed and was idempotent:
+
+```text
+open change events: 2 -> 2
+pending reanalysis: 0 -> 0
+new change events: 0
+new reanalysis requests: 0
+```
+
+Do **not** ask the user to re-run this same HAR or reinitialize this same baseline merely to rediscover
+those facts. The next meaningful proof requires a genuinely later observation or expansion to a new
+source surface.
+
+Canonical public receipts:
+
+```text
+evidence/real-data/source-observatory-network-baseline-2026-08-14.json
+evidence/real-data/source-observatory-derived-baseline-2026-08-14.json
+```
 
 ## Current guild-progression boundary
 
@@ -72,7 +109,7 @@ GET /api/guilds/progression/full-clears
 GET /api/guilds/progression/rankings/{bossId}
 ```
 
-A sanitized browser Network capture of the current `/guilds/progression` page on 2026-08-14 actually exercised:
+The real current progression browser capture exercised:
 
 ```text
 GET /api/phases
@@ -81,27 +118,13 @@ GET /api/guilds/phase-progression?phase=<value>&difficulty=<value>
 
 Both returned `200 application/json`.
 
-Current SPA supports the phase-progression helper contract:
-
-```text
-phase      always mapped
-board      optional
-difficulty optional
-```
-
-Canonical current browser-network receipt:
-
-```text
-evidence/real-data/coa-guild-phase-progression-browser-network.json
-```
-
-The rankings contracts remain alternate reviewed evidence because they still exist in the SPA, but they were not exercised by this capture. Do not treat one route family as globally deleted merely because one browser capture used another.
-
-Do not resume the old global helper/owner/alias investigation unless a future concrete request requires it.
+Do not resume the old global helper/owner/alias investigation unless a future concrete request cannot
+be explained from Network evidence.
 
 ## Source Observatory
 
-`Source Observatory v1` is the universal ingestion/change layer. Reviewed sources should flow through the same infrastructure instead of creating endpoint-specific persistence stacks.
+`Source Observatory v1` is the universal ingestion/change layer. Reviewed sources should flow through
+the same infrastructure instead of creating endpoint-specific persistence stacks.
 
 Generic Network discovery:
 
@@ -109,9 +132,25 @@ Generic Network discovery:
 scripts/inventory_network_har.py
 ```
 
-Its output must remain scalar-free: no query values, headers, cookies, response bodies, user/session values, guild/report IDs or other record scalars.
+Its output must remain scalar-free: no query values, headers, cookies, response bodies, user/session
+values, guild/report IDs or other record scalars.
 
-Low-cardinality source dimensions such as phase, boss, difficulty and location may drive automatic change detection. High-cardinality player/guild/report identifiers do not automatically become source-change dimensions.
+Low-cardinality source dimensions such as phase, boss, difficulty and location may drive automatic
+change detection. High-cardinality player/guild/report identifiers do not automatically become
+source-change dimensions.
+
+## Git/branches
+
+Keep only active branches unless a temporary branch has a current purpose:
+
+```text
+main
+e2/log-evidence-refactor
+e3/real-log-capture
+```
+
+Delete merged/closed/stage branches promptly. Never rewrite published migrations. Never delete tracked
+`.gitkeep` files.
 
 ## Privacy
 
@@ -127,7 +166,9 @@ data/exchange/in/
 data/exchange/out/
 ```
 
-Never publish secrets, cookies, tokens, Authorization values, browser profiles, unsanitized HAR, private source IDs/report IDs, private queries, private receipts, raw JavaScript, raw owner chains or raw private contexts unless an explicit reviewed publication contract permits the exact field.
+Never publish secrets, cookies, tokens, Authorization values, browser profiles, unsanitized HAR,
+private source IDs/report IDs, private queries, private receipts, raw JavaScript, raw owner chains or
+raw private contexts unless an explicit reviewed publication contract permits the exact field.
 
 ## Windows
 
@@ -137,7 +178,8 @@ Repository:
 C:\Users\Simpa\source\repos\coa-raid-intelligence-workbench
 ```
 
-Use PowerShell 7+ (`pwsh`) for new project automation. Complex local automation should be a complete downloadable script, not a fragmented interactive paste.
+Use PowerShell 7+ (`pwsh`) for new project automation. Complex local automation should be a complete
+downloadable script, not a fragmented interactive paste.
 
 Remember: `git diff HEAD` does not include untracked files.
 
@@ -155,4 +197,5 @@ Canonical aggregate check before a meaningful push:
 uv run --no-sync python scripts/verify_repo.py
 ```
 
-Use focused tests during iteration. Never claim a pass unless it actually ran against the stated checkout/diff.
+Use focused tests during iteration. Never claim a pass unless it actually ran against the stated
+checkout/diff.

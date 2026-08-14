@@ -4,13 +4,16 @@
 
 ## 1. Цель
 
-Создать localhost-first evidence-first платформу рейдовой аналитики для **Conquest of Azeroth**, которая связывает фактическую явку, проверенные build/performance observations и encounter requirements и объясняет конкретные решения по составу.
+Создать localhost-first evidence-first платформу рейдовой аналитики для **Conquest of Azeroth**,
+которая связывает фактическую явку, проверенные build/performance observations и encounter
+requirements и объясняет конкретные решения по составу.
 
 Главный вопрос:
 
 > Почему конкретный игрок нужен именно этому текущему составу?
 
-Не использовать Bronzebeard/Classless/Mystic/Hero Architect/shared Ascension сведения как CoA-факты без exact CoA evidence.
+Не использовать Bronzebeard/Classless/Mystic/Hero Architect/shared Ascension сведения как CoA-факты
+без exact CoA evidence.
 
 ## 2. Truth model
 
@@ -23,35 +26,36 @@ timestamped source response != permanent source semantics
 
 Only `corroborated` and `confirmed` mechanics may enter canonical planner scoring.
 
-## 3. Evidence and change architecture
+## 3. Canonical evidence/change architecture
 
 ```text
 browser/network/source discovery
 -> reviewed request contract
 -> immutable raw payload
 -> acquisition observation
--> SHA-256 / structural fingerprint
--> reviewed extractor or mapping
--> deterministic normalization/extraction
--> immutable derived observations
+-> schema/dimension snapshot
 -> source-change events
--> dependency graph
--> scoped reanalysis requests
+-> artifact dependency
+-> scoped reanalysis request
+-> deterministic derived analysis
 -> supporting / contradicting evidence
 -> trust decision
 -> explainable recommendation
 ```
 
-The system is designed for changing upstream sources: new bosses, phases, reports, fields, routes and meta are normal events, not exceptional manual migrations.
+Upstream change is normal: new bosses, phases, reports, fields, routes and meta must not require
+hardcoded product rewrites.
 
 ## 4. Implemented foundation
 
 - localhost FastAPI planner;
-- DuckDB migrations `0001`–`0010`;
+- DuckDB migrations `0001`–`0011`;
 - immutable raw archive;
 - retrieval/acquisition observations;
 - privacy-safe JSON/HAR tooling;
 - Source Observatory contract/schema/change/reanalysis foundation;
+- `source_dimension_index` derived artifact;
+- Source & Analysis Health UI/API;
 - report/encounter/actor/participant/aura normalization;
 - hypothesis/evidence/trust layers;
 - repository verifier;
@@ -68,14 +72,16 @@ private selected baseline: 17 unique reports
 full-crawl collection contract reviewed: true
 ```
 
+Private report/guild identifiers are not publication material.
+
 ## 6. Network-first source discovery
 
-Use real browser Fetch/XHR as the preferred discovery evidence.
+Preferred evidence path:
 
 ```text
-Network/HAR
--> scalar-free route inventory
--> contract review
+real browser Fetch/XHR
+-> scalar-free HAR inventory
+-> reviewed route contract
 -> Source Observatory capture
 ```
 
@@ -87,30 +93,22 @@ Generic inventory:
 scripts/inventory_network_har.py
 ```
 
-It must not publish query values, headers, cookies, response bodies or response record scalars.
+It does not publish query values, headers, cookies, response bodies or response record scalars.
 
-## 7. Guild progression — current observed path
+## 7. Guild progression — current runtime evidence
 
-Historical helper/owner work and the old exact `/api/guilds/progression` POST hypothesis are superseded.
+Historical helper/owner work and the guessed exact `POST /api/guilds/progression` path are superseded.
 
-The current SPA still contains alternate rankings contracts:
-
-```text
-GET /api/guilds/progression/rankings
-GET /api/guilds/progression/full-clears
-GET /api/guilds/progression/rankings/{bossId}
-```
-
-A sanitized browser Network capture of the current `/guilds/progression` page on 2026-08-14 actually exercised:
+The current browser capture actually exercised:
 
 ```text
 GET /api/phases
 GET /api/guilds/phase-progression?phase=<value>&difficulty=<value>
 ```
 
-Both returned JSON with HTTP 200.
+Both returned `200 application/json`.
 
-The phase-progression response exposes the aggregate structural domains required for progression analysis:
+The phase-progression response structurally exposes:
 
 ```text
 phase
@@ -121,7 +119,7 @@ perBossRankings
 guilds
 ```
 
-Current SPA request construction shows:
+Current SPA request construction supports:
 
 ```text
 phase      always mapped
@@ -129,52 +127,97 @@ board      optional
 difficulty optional
 ```
 
-Canonical browser-network receipt:
+Archived SPA still contains alternate reviewed contracts:
 
 ```text
-evidence/real-data/coa-guild-phase-progression-browser-network.json
+GET /api/guilds/progression/rankings
+GET /api/guilds/progression/full-clears
+GET /api/guilds/progression/rankings/{bossId}
 ```
 
-## 8. Dynamic source monitoring
+Their static presence is not evidence that the captured current page used them.
 
-Source Observatory should automatically detect low-cardinality source evolution such as:
+## 8. Persisted real Source Observatory baseline
+
+The user's local immutable corpus already contains the browser-origin observations for:
 
 ```text
-new phase
-new boss
-new location
-new difficulty
-request contract change
-schema field add/remove/type change
+phases_api
+guild_phase_progression_api
 ```
 
-High-cardinality guild/player/report IDs remain data observations and do not automatically become global source-change dimensions.
+Current structural observation counts:
 
-Each derived analysis declares dependencies. A relevant source change creates a scoped pending reanalysis request rather than rebuilding everything.
+```text
+observed endpoints: 2
+dimension names represented: 5
+dimension values represented: 19
+active dependencies: 2
+completed source_dimension_index analysis runs: 1
+```
 
-## 9. Current decision boundary
+Canonical public receipts:
+
+```text
+evidence/real-data/source-observatory-network-baseline-2026-08-14.json
+evidence/real-data/source-observatory-derived-baseline-2026-08-14.json
+```
+
+The original HAR, raw JSON, headers, cookies, query values and dimension values remain private/local.
+
+## 9. Dynamic reanalysis
+
+`source_dimension_index` is the first real deterministic derived Source Observatory artifact.
+
+```text
+source change event
+-> matching active source_endpoint dependency
+-> pending reanalysis_request
+-> source_dimension_index rebuild
+-> completed analysis_run
+-> matching reanalysis_request completed
+```
+
+A synthetic test proves the scoped-change path.
+
+The same real HAR was also replayed against the persisted baseline:
+
+```text
+open change events: 2 -> 2
+pending reanalysis: 0 -> 0
+new change events: 0
+new reanalysis requests: 0
+Source Health before/after: identical
+network requests performed by replay: false
+```
+
+So same-input idempotence is proven on real local data. A genuinely later upstream change is not yet
+proven end-to-end.
+
+## 10. Current decision boundary
 
 ```text
 Network-first discovery implemented: true
-current phase-progression request observed in browser: true
-phase-progression JSON structure observed: true
-raw browser HAR versioned: false
-current schema baseline persisted in user's local Observatory: pending
-pagination semantics verified: false
-termination semantics verified: false
-completeness verified: false
-ready for autonomous full guild crawl: false
-planner scoring allowed from progression alone: false
+current progression runtime requests observed: true
+real browser baseline persisted: true
+schema/dimension baseline persisted: true
+real derived source_dimension_index initialized: true
+same-input/no-change replay proven: true
+synthetic source-change -> scoped reanalysis proven: true
+real later source-change -> scoped reanalysis proven: false
+ready for autonomous full source coverage: false
+planner scoring allowed from progression evidence alone: false
 ```
 
-## 10. Next product path
+No source field automatically becomes mechanic truth or planner scoring input.
+
+## 11. Next product path
 
 ```text
-persist phases + phase-progression browser observations locally
--> establish schema/dimension baseline
--> repeat later and prove automatic change detection
--> connect phase/boss/source changes to scoped reanalysis
--> generalize Network-first source discovery to reports/encounters/characters
+obtain a genuinely later browser/network observation when needed
+-> prove real source-change/no-change handling
+-> minimize recurring browser-capture work
+-> expand Network-first discovery to reports/encounters/rankings/statistics/characters
 -> Armory/talent-grid/BisBeard adapters
 -> multi-report character identity
 -> verified build/capability observations
@@ -182,12 +225,15 @@ persist phases + phase-progression browser observations locally
 -> dynamic attendance-aware roster completion
 ```
 
-Do not hardcode today's boss/phase counts into product logic.
+Do not rerun the same historical helper/owner investigation or the same baseline initialization unless
+a concrete regression requires it.
 
-## 11. Development model
+## 12. Development model
 
-The agent performs GitHub/PR/CI/repository work directly whenever tools permit it. The user is involved only for Windows/local/private/browser boundaries the agent cannot access directly.
+The agent performs GitHub/PR/CI/repository work directly whenever tools permit it. The user is involved
+only for Windows/local/private/browser boundaries the agent cannot access directly.
 
 Private/raw files may be inspected for analysis. Publication/versioning remains separately controlled.
 
-Use focused tests while iterating, one aggregate `scripts/verify_repo.py` before a meaningful push, then exact-head CI.
+Use focused tests while iterating, one aggregate `scripts/verify_repo.py` before a meaningful push,
+then exact-head CI.

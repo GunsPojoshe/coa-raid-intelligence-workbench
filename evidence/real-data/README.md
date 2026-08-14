@@ -1,167 +1,90 @@
 # Real-data evidence checkpoint
 
-Дата актуализации: **2026-08-04**.
+Дата актуализации: **2026-08-14**.
 
-Каталог содержит versioned scalar-free receipts и explicit trust boundaries. Private payloads, source rows, queries, raw JavaScript contexts, raw callees, private receipts and DuckDB remain local-only.
+Каталог содержит versioned scalar-free receipts и explicit trust boundaries. Private payloads, source
+rows, queries, raw JavaScript contexts, browser HAR, cookies, headers, private IDs and DuckDB remain
+local-only unless an explicit reviewed publication contract says otherwise.
 
-## Major versioned artifacts
+## Current canonical Network-first receipts
 
 ```text
-observed-combatants-info-candidate-extraction.json
-observed-combatants-info-candidate-promotion.json
-observed-combatants-info-persistence.json
-argentum-report-pagination-limit-promotion.json
-argentum-public-report-manifest.json
-argentum-guild-identity-decision.json
-argentum-guild-report-manifest.json
-argentum-guild-full-crawl-contract.json
-argentum-guild-asset-profiled-recovery.json
-argentum-guild-route-semantics-capture.json
-argentum-guild-route-semantics-review.json
-argentum-guild-limit-semantics-capture.json
-argentum-guild-limit-semantics-review.json
-argentum-guild-progression-usage-context.json
-argentum-guild-progression-usage-review.json
-argentum-guild-progression-callsite.json
-argentum-guild-progression-callsite-review.json
+coa-guild-phase-progression-browser-network.json
+source-observatory-network-baseline-2026-08-14.json
+source-observatory-derived-baseline-2026-08-14.json
 ```
 
-Incomplete or failed receipts remain evidence of an attempt, not a successful semantic promotion.
+Current runtime progression evidence:
 
-## Identity and filtering baseline
+```text
+GET /api/phases                                      -> 200 JSON
+GET /api/guilds/phase-progression?phase=...&difficulty=... -> 200 JSON
+```
+
+Current real local Observatory state recorded structurally by the derived receipt:
+
+```text
+observed endpoints: 2
+active dependencies: 2
+dimension names represented: 5
+dimension values represented: 19
+completed source_dimension_index runs: 1
+same existing HAR replayed: true
+new change events from replay: 0
+new reanalysis requests from replay: 0
+```
+
+The actual dimension values are not published.
+
+## Current progression correction
+
+The historical guessed direct `POST /api/guilds/progression` helper/owner path is superseded.
+
+Archived SPA evidence still contains alternate GET contracts:
+
+```text
+GET /api/guilds/progression/rankings
+GET /api/guilds/progression/full-clears
+GET /api/guilds/progression/rankings/{bossId}
+```
+
+They remain reviewed alternate contracts, not proof of current runtime use.
+
+Older helper/call-site/owner receipts remain audit history and must not override the real browser
+Network evidence.
+
+## Guild/report baseline retained from earlier evidence
 
 ```text
 public reports: 6454
 unique report IDs: 6454
-public-manifest checks: 19/19
 exact Argentum label reports: 17
-identity-decision checks: 16/16
 guild identity verified: true
-filtered reports: 17
-filter checks: 14/14
+private selected baseline: 17 unique reports
+full-crawl collection contract reviewed: true
 ```
 
-Private 17-report set is the future completeness comparison baseline. Source guild ID and report IDs are not published.
+Private source guild ID and report IDs remain local.
 
-## Guild-search route and limit evidence
+## Source Observatory trust boundary
+
+Current chain:
 
 ```text
-route: /api/guilds/search
-response envelope: guilds, success
-guild fields: id, name, realm, report_count
-route review checks: 22/22
-limit result counts: 1 / 7 / 7
-limit capture checks: 15/15
-limit review checks: 30/30
-limit truncation semantics verified: true
+browser/network observation
+-> reviewed contract
+-> immutable capture
+-> schema/dimension snapshot
+-> source change event
+-> artifact dependency
+-> scoped reanalysis request
+-> deterministic derived analysis
 ```
 
-This verifies stable truncation of guild-search results. It does not verify guild-report pagination or full-crawl completeness.
+The first real derived artifact is `source_dimension_index`.
 
-## Progression usage-context evidence
-
-```text
-inventory: argentum-guild-progression-usage-context.json
-inventory SHA-256: e19cc1a72175bd838b151b8438861af1aece14ba2a30f94da8f6989ce7be3d59
-inventory checks: 23/23
-review: argentum-guild-progression-usage-review.json
-review SHA-256: 063abc51579e3942c4b33766fa9d1f9ba336a921a78bc15a5849971025a77198
-review checks: 30/30
-network requests: 0
-route occurrences: 1
-classification: literal_reference
-ready for bounded route probe: false
-```
-
-The public inventory contains hashes and classification only. Raw JavaScript context remains local.
-
-## Progression helper/call-site inventory
-
-```text
-receipt: argentum-guild-progression-callsite.json
-SHA-256: ad8a5addf9ac9dd566284e0bc395ac40100986d0f14f0a49e9519a6aef28d351
-inventory version: guild-progression-helper-callsite-inventory-v1
-integrity checks: 32/32
-network requests: 0
-route occurrences: 1
-call candidates: 1
-direct invocation candidates: 1
-call class: generic_helper_call
-method candidate: POST
-method evidence: method_property_literal
-method unambiguous: true
-```
-
-The receipt publishes hashes, bounded counts and classifications only. Raw context, raw callee, source IDs and scalar source values remain local.
-
-The observed generic-helper structural envelope is overbroad:
-
-```text
-call/envelope characters: 2479207
-function characters: 2411715
-reviewable threshold: 65536
-```
-
-## Explicit helper/call-site review
-
-```text
-receipt: argentum-guild-progression-callsite-review.json
-SHA-256: d79302d755eab918ce3f85a9ad39e78231720391c8f0692925fe2e79b6adc60f
-review version: guild-progression-helper-callsite-review-v1
-integrity checks: 36/36
-helper/call-site reviewed: true
-HTTP method candidate: POST
-helper identity resolved: false
-request payload mapping resolved: false
-ready for helper-definition inventory: true
-ready for bounded route probe: false
-```
-
-Blocked by:
-
-```text
-generic_helper_identity_unresolved
-structural_envelope_overbroad
-request_payload_mapping_unresolved
-```
-
-The review accepts `POST` only as the method candidate observed inside the generic helper call. It does not verify helper identity, request payload mapping, response schema, pagination, termination or completeness.
-
-## Current decision boundary
-
-```text
-progression route candidate observed: true
-progression usage context reviewed: true
-progression helper/call-site inventory observed: true
-progression helper/call-site reviewed: true
-progression HTTP method candidate: POST
-progression method candidate unambiguous: true
-progression helper identity resolved: false
-progression request payload mapping resolved: false
-progression request shape verified: false
-ready for helper-definition inventory: true
-ready for bounded progression route probe: false
-guild API route semantics verified: false
-pagination semantics verified: false
-termination semantics verified: false
-completeness verified: false
-automatic full guild crawl allowed: false
-ready for full guild crawl: false
-planner scoring allowed: false
-```
-
-## Next evidence sequence
-
-```text
-offline helper-definition inventory from the exact archived SPA asset
--> scalar-free definition/call-chain receipt
--> explicit helper-definition review
--> bounded network probe only after helper identity and exact request contract are verified
--> response schema review
--> pagination/termination/completeness evidence
--> API-versus-private-baseline set comparison
--> explicit full-crawl promotion
-```
+A repeated identical HAR does not create fake change/reanalysis work. A genuinely later source change is
+still required to prove the real end-to-end changed-input path.
 
 ## Local-only artifacts
 
@@ -175,4 +98,6 @@ data/exchange/in/
 data/exchange/out/
 ```
 
-Never commit credentials, cookies, tokens, Authorization headers, browser profiles, `.env`, unsanitized HAR, source guild IDs, report IDs, private query values, private recovery receipts, raw JavaScript contexts or raw callees.
+Never commit credentials, cookies, tokens, Authorization headers, browser profiles, `.env`,
+unsanitized HAR, private source identifiers, report IDs, private query values, raw JavaScript contexts
+or raw private receipts.
