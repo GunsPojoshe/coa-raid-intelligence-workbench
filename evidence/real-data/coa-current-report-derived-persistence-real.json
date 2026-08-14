@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "receipt_kind": "current_report_real_derived_persistence",
+  "observed_at": "2026-08-14T14:05:20Z",
+  "source_code": "coa_ascension_logs",
+  "implementation_head": "9ac41d250e3f553a98543e48fbc8f77f0f588dad",
+  "persistence_version": "current-report-derived-persistence-v1",
+  "result": {
+    "status": "completed",
+    "derived_observation_count": 2031,
+    "entity_counts": {
+      "current_report_observation": 1,
+      "current_encounter_observation": 19,
+      "current_roster_character_observation": 25,
+      "current_roster_snapshot_observation": 29,
+      "current_talent_entry_observation": 1466,
+      "current_gear_slot_observation": 491
+    },
+    "source_capture_count": 3,
+    "har_slice": {
+      "report_detail_count": 1,
+      "encounter_catalog_count": 1,
+      "combatants_roster_count": 1,
+      "throughput_count": 12,
+      "damage_taken_abilities_count": 1,
+      "spell_healing_count": 1
+    }
+  },
+  "idempotence": {
+    "first_inserted_observation_count": 2031,
+    "first_matched_observation_count": 0,
+    "replay_inserted_observation_count": 0,
+    "replay_matched_observation_count": 2031,
+    "real_idempotence_proven": true
+  },
+  "source_health": {
+    "completed_analysis_run_count_before": 2,
+    "completed_analysis_run_count_after": 3,
+    "open_change_event_count_before": 34,
+    "open_change_event_count_after": 34,
+    "pending_reanalysis_request_count_before": 0,
+    "pending_reanalysis_request_count_after": 0,
+    "active_dependency_count_before": 3,
+    "active_dependency_count_after": 3,
+    "captured_endpoint_count": 11,
+    "acquisition_problem_endpoint_count": 0
+  },
+  "decision_boundary": {
+    "real_current_report_derived_persistence_proven": true,
+    "real_idempotence_proven": true,
+    "canonical_core_entity_mutation_allowed": false,
+    "mechanic_semantics_verified": false,
+    "planner_scoring_allowed": false,
+    "report_scoped_reanalysis_dependencies_registered": false
+  },
+  "privacy": {
+    "har_included": false,
+    "har_path_included": false,
+    "raw_response_bodies_included": false,
+    "report_ids_included": false,
+    "encounter_ids_included": false,
+    "character_ids_included": false,
+    "character_names_included": false,
+    "query_values_included": false,
+    "source_capture_ids_included": false,
+    "private_input_or_output_fingerprints_included": false
+  }
+}
