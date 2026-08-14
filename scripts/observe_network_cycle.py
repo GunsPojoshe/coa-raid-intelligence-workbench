@@ -27,6 +27,7 @@ from coa_workbench.collector.source_dimension_index import rebuild_source_dimens
 from coa_workbench.collector.source_health import build_source_health
 from coa_workbench.collector.source_observatory import ReviewedGetContract
 from coa_workbench.collector.source_registry import load_source_registry
+from coa_workbench.collector.source_scope import resolve_scoped_reanalysis_requests
 from coa_workbench.storage.migrations import apply_migrations
 
 
@@ -51,8 +52,9 @@ def main() -> int:
             "Run one Network-first Source Observatory cycle from a browser HAR: "
             "inventory traffic, ingest matching reviewed static GET contracts, safely resolve "
             "correlated reviewed dynamic paths, aggregate schemas across each reviewed response "
-            "profile within the HAR cycle, rebuild approved derived dimensions, and report health. "
-            "If HAR is omitted, use the newest relevant .har from --har-dir."
+            "profile within the HAR cycle, reconcile reviewed path-scoped dependencies, rebuild "
+            "approved derived dimensions, and report health. If HAR is omitted, use the newest "
+            "relevant .har from --har-dir."
         )
     )
     parser.add_argument("har", nargs="?", type=Path)
@@ -185,6 +187,16 @@ def main() -> int:
             route_summary["profile_schema_cycle"] = profile_cycle_summary.public_summary()
         observed_routes.append(route_summary)
 
+    observed_endpoint_codes = {
+        str(item["endpoint_code"]) for item in observed_routes
+    }
+    scoped_reanalysis = resolve_scoped_reanalysis_requests(
+        args.database,
+        args.migrations,
+        registry=registry,
+        endpoint_codes=observed_endpoint_codes,
+    )
+
     dimension_endpoints = [
         route.endpoint_code
         for route in registry.routes
@@ -219,7 +231,7 @@ def main() -> int:
 
     health = build_source_health(args.database)
     result = {
-        "cycle_version": "network-source-cycle-v7",
+        "cycle_version": "network-source-cycle-v8",
         "capture_mode": "browser_har",
         "network_requests_performed": False,
         "har_selection": {
@@ -250,6 +262,7 @@ def main() -> int:
             "member_capture_ids_included": False,
             "schema_fingerprints_included": False,
         },
+        "scoped_reanalysis_resolution": scoped_reanalysis.public_summary(),
         "source_dimension_index": dimension_index,
         "source_health": health,
         "privacy": {
@@ -264,6 +277,8 @@ def main() -> int:
             "schema_profile_hashes_included": False,
             "schema_cycle_member_capture_ids_included": False,
             "schema_cycle_fingerprints_included": False,
+            "source_scope_values_included": False,
+            "source_scope_fingerprints_included": False,
         },
     }
 

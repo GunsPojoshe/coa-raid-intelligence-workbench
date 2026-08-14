@@ -14,7 +14,7 @@ def registry_path() -> Path:
 
 def test_registry_loads_primary_observation_source() -> None:
     registry = load_source_registry(registry_path())
-    assert registry.schema_version == 6
+    assert registry.schema_version == 7
     assert registry.source_code == "coa_ascension_logs"
     assert registry.base_url == "https://coa.ascensionlogs.gg"
     assert registry.truth_role == "primary_observation_source"
@@ -40,6 +40,7 @@ def test_public_routes_are_available_only_as_discovery_probes() -> None:
         assert route.status == "verified_html"
         assert route.production_ready is False
         assert route.observatory_ready is False
+        assert route.scope_path_keys == ()
 
 
 def test_network_observed_progression_routes_are_observatory_ready() -> None:
@@ -50,6 +51,7 @@ def test_network_observed_progression_routes_are_observatory_ready() -> None:
     assert phases.method == "GET"
     assert phases.empty_params_observed is True
     assert phases.dimension_keys == ("phase_number",)
+    assert phases.scope_path_keys == ()
     assert phases.observatory_ready is True
     assert phases.production_ready is False
 
@@ -69,6 +71,7 @@ def test_network_observed_progression_routes_are_observatory_ready() -> None:
         "location",
     )
     assert progression.schema_profile_keys == ()
+    assert progression.scope_path_keys == ()
     assert progression.observatory_ready is True
     assert progression.production_ready is False
 
@@ -81,6 +84,7 @@ def test_alternate_rankings_contract_remains_reviewed_not_production_ready() -> 
     assert route.method == "GET"
     assert route.status == "reviewed"
     assert route.empty_params_observed is True
+    assert route.scope_path_keys == ()
     assert route.observatory_ready is True
     assert route.production_ready is False
 
@@ -96,6 +100,7 @@ def test_reviewed_public_report_api_is_observatory_ready_without_dimensions() ->
     assert route.review_state == "verified"
     assert route.parameter_keys == ("page", "limit", "sortBy", "sortOrder")
     assert route.dimension_keys == ()
+    assert route.scope_path_keys == ()
     assert route.empty_params_observed is False
     assert route.observatory_ready is True
     assert route.production_ready is False
@@ -112,6 +117,7 @@ def test_reports_filter_catalog_is_observatory_ready_with_low_cardinality_dimens
     assert route.review_state == "verified"
     assert route.parameter_keys == ()
     assert route.dimension_keys == ("phase_number", "location")
+    assert route.scope_path_keys == ()
     assert route.empty_params_observed is True
     assert route.observatory_ready is True
     assert route.production_ready is False
@@ -129,12 +135,13 @@ def test_reports_queue_status_is_reviewed_operational_health_without_dimensions(
     assert route.use == "reports_collection_operational_health"
     assert route.parameter_keys == ()
     assert route.dimension_keys == ()
+    assert route.scope_path_keys == ()
     assert route.empty_params_observed is True
     assert route.observatory_ready is True
     assert route.production_ready is False
 
 
-def test_current_report_runtime_routes_are_capture_ready() -> None:
+def test_current_report_runtime_routes_are_capture_ready_and_report_scoped() -> None:
     registry = load_source_registry(registry_path())
     expected = {
         "report_detail_api": (
@@ -186,6 +193,7 @@ def test_current_report_runtime_routes_are_capture_ready() -> None:
         assert route.parameter_keys == parameter_keys
         assert route.schema_profile_keys == schema_profile_keys
         assert route.dimension_keys == ()
+        assert route.scope_path_keys == ("reportId",)
         assert route.empty_params_observed is empty_params_observed
         assert route.observatory_ready is True
         assert route.production_ready is False
@@ -210,6 +218,7 @@ def test_historical_report_slice_routes_are_capture_ready_but_not_production_rea
         assert route.parameter_keys == ()
         assert route.dimension_keys == ()
         assert route.schema_profile_keys == ()
+        assert route.scope_path_keys == ("reportId",)
         assert route.empty_params_observed is True
         assert route.observatory_ready is True
         assert route.production_ready is False
@@ -239,6 +248,32 @@ routes:
     )
 
     with pytest.raises(ValueError, match="schema_profile_keys"):
+        load_source_registry(path)
+
+
+def test_registry_rejects_scope_keys_outside_route_path_contract(tmp_path: Path) -> None:
+    path = tmp_path / "registry.yaml"
+    path.write_text(
+        """
+schema_version: 1
+source_code: test
+base_url: https://example.invalid
+status: discovery
+truth_role: test
+routes:
+  - endpoint_code: bad
+    route_template: /api/reports/{reportId}
+    method: GET
+    auth_mode: public
+    status: reviewed
+    use: test
+    scope_path_keys: [encounterId]
+    review_state: verified
+""".lstrip(),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="scope_path_keys"):
         load_source_registry(path)
 
 

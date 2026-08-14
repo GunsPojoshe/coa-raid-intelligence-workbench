@@ -10,7 +10,11 @@ from coa_workbench.collector.compatible_normalization import (
 from coa_workbench.collector.current_combatants_roster import (
     parse_current_combatants_roster,
 )
+from coa_workbench.collector.current_report_dependencies import (
+    register_current_report_scoped_dependencies,
+)
 from coa_workbench.collector.current_report_har import extract_current_report_har_slice
+from coa_workbench.collector.source_registry import load_source_registry
 from coa_workbench.storage.current_report_observations import (
     persist_current_report_derived_observations,
 )
@@ -20,8 +24,9 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Persist one already-observed current CoA report HAR as deterministic derived "
-            "report/encounter/roster/build observations. No network requests are performed and "
-            "canonical core entities are not mutated."
+            "report/encounter/roster/build observations and register report-scoped source "
+            "dependencies. No network requests are performed and canonical core entities are "
+            "not mutated."
         )
     )
     parser.add_argument("har", type=Path)
@@ -35,6 +40,11 @@ def main() -> int:
         "--mapping",
         type=Path,
         default=Path("config/mappings/coa_report_detail_v1.json"),
+    )
+    parser.add_argument(
+        "--registry",
+        type=Path,
+        default=Path("config/ascension_logs_sources.yaml"),
     )
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
@@ -53,6 +63,15 @@ def main() -> int:
         normalization=normalization,
         roster=roster,
     )
+    registry = load_source_registry(args.registry)
+    dependencies = register_current_report_scoped_dependencies(
+        args.database,
+        args.migrations,
+        registry=registry,
+        artifact_key=str(result["input_fingerprint"]),
+    )
+    result["scoped_reanalysis_dependencies"] = dependencies.public_summary()
+    result["reanalysis_dependencies_registered"] = dependencies.dependency_count > 0
     result["har_slice"] = har_slice.public_summary()
     result["network_requests_performed"] = False
     result["privacy"] = {
@@ -64,6 +83,8 @@ def main() -> int:
         "character_names_included": False,
         "query_values_included": False,
         "source_capture_ids_included": False,
+        "source_scope_values_included": False,
+        "source_scope_fingerprints_included": False,
     }
 
     rendered = json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n"

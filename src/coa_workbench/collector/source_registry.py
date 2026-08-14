@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -9,6 +10,9 @@ import yaml
 
 class UnverifiedSourceRouteError(ValueError):
     pass
+
+
+_PATH_PARAMETER = re.compile(r"\{([A-Za-z_][A-Za-z0-9_]*)\}")
 
 
 @dataclass(frozen=True, slots=True)
@@ -22,6 +26,7 @@ class SourceRoute:
     parameter_keys: tuple[str, ...] = ()
     dimension_keys: tuple[str, ...] = ()
     schema_profile_keys: tuple[str, ...] = ()
+    scope_path_keys: tuple[str, ...] = ()
     discovery_source: str = "registry"
     review_state: str = "unreviewed"
     empty_params_observed: bool = False
@@ -85,6 +90,7 @@ def _source_route(payload: dict[str, Any]) -> SourceRoute:
         schema_profile_keys=tuple(
             str(value) for value in payload.get("schema_profile_keys", [])
         ),
+        scope_path_keys=tuple(str(value) for value in payload.get("scope_path_keys", [])),
         discovery_source=str(payload.get("discovery_source", "registry")),
         review_state=str(payload.get("review_state", "unreviewed")),
         empty_params_observed=bool(payload.get("empty_params_observed", False)),
@@ -99,6 +105,22 @@ def _source_route(payload: dict[str, Any]) -> SourceRoute:
         raise ValueError(
             f"source route {route.endpoint_code!r} schema_profile_keys must be unique"
         )
+    if len(route.scope_path_keys) != len(set(route.scope_path_keys)):
+        raise ValueError(f"source route {route.endpoint_code!r} scope_path_keys must be unique")
+    if any(not key for key in route.scope_path_keys):
+        raise ValueError(f"source route {route.endpoint_code!r} scope_path_keys cannot be empty")
+    if route.scope_path_keys:
+        if not route.route_template:
+            raise ValueError(
+                f"source route {route.endpoint_code!r} scope_path_keys require route_template"
+            )
+        placeholders = set(_PATH_PARAMETER.findall(route.route_template))
+        unknown_scope_keys = sorted(set(route.scope_path_keys) - placeholders)
+        if unknown_scope_keys:
+            raise ValueError(
+                f"source route {route.endpoint_code!r} scope_path_keys are not route path "
+                f"parameters: {unknown_scope_keys}"
+            )
     return route
 
 
