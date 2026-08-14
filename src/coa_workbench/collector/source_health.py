@@ -27,10 +27,13 @@ def build_source_health(
     database_path: Path,
     *,
     recent_change_limit: int = 25,
+    recent_analysis_limit: int = 10,
 ) -> dict[str, Any]:
     """Build a compact Source Observatory health view without exposing raw payload values."""
     if recent_change_limit < 1:
         raise ValueError("recent_change_limit must be at least 1")
+    if recent_analysis_limit < 1:
+        raise ValueError("recent_analysis_limit must be at least 1")
 
     import duckdb
 
@@ -130,6 +133,16 @@ def build_source_health(
                 "SELECT COUNT(*) FROM reanalysis_request WHERE status = 'pending'"
             ).fetchone()[0]
         )
+        active_dependencies = int(
+            connection.execute(
+                "SELECT COUNT(*) FROM artifact_dependency WHERE active = TRUE"
+            ).fetchone()[0]
+        )
+        completed_analysis_runs = int(
+            connection.execute(
+                "SELECT COUNT(*) FROM analysis_run WHERE status = 'completed'"
+            ).fetchone()[0]
+        )
         open_change_total = int(
             connection.execute(
                 "SELECT COUNT(*) FROM source_change_event WHERE status = 'open'"
@@ -144,6 +157,16 @@ def build_source_health(
             LIMIT ?
             """,
             [recent_change_limit],
+        ).fetchall()
+        recent_analysis_rows = connection.execute(
+            """
+            SELECT analysis_type, analysis_version, artifact_type, artifact_key,
+                   started_at, finished_at, status
+            FROM analysis_run
+            ORDER BY COALESCE(finished_at, started_at) DESC, analysis_run_id DESC
+            LIMIT ?
+            """,
+            [recent_analysis_limit],
         ).fetchall()
 
     endpoints: list[dict[str, Any]] = []
@@ -190,6 +213,8 @@ def build_source_health(
             "captured_endpoint_count": sum(1 for item in endpoints if item["capture_count"] > 0),
             "open_change_event_count": open_change_total,
             "pending_reanalysis_request_count": pending_reanalysis,
+            "active_dependency_count": active_dependencies,
+            "completed_analysis_run_count": completed_analysis_runs,
             "acquisition_problem_endpoint_count": sum(
                 1 for item in endpoints if item["health_state"] == "acquisition_problem"
             ),
@@ -205,6 +230,18 @@ def build_source_health(
                 "status": str(row[5]),
             }
             for row in recent_rows
+        ],
+        "recent_analysis_runs": [
+            {
+                "analysis_type": str(row[0]),
+                "analysis_version": str(row[1]),
+                "artifact_type": str(row[2]) if row[2] is not None else None,
+                "artifact_key": str(row[3]) if row[3] is not None else None,
+                "started_at": _timestamp(row[4]),
+                "finished_at": _timestamp(row[5]),
+                "status": str(row[6]),
+            }
+            for row in recent_analysis_rows
         ],
         "privacy": {
             "raw_payloads_included": False,

@@ -14,11 +14,11 @@ e3/real-log-capture
 
 PR #7 remains Draft: `e3/real-log-capture -> e2/log-evidence-refactor`.
 
-Latest fully verified checkpoint before the current Source Health UI change:
+Latest fully verified checkpoint before the current derived-dimension change:
 
 ```text
-HEAD: 2a74f237a4b38d5a6a01aa360332af4f64c0a2dc
-Verify repository #671: success
+HEAD: a448d9cd9dd0cbd45891352a9a246b9e6f1c44b2
+Verify repository #673: success
 public-release-audit: success
 ubuntu: success
 windows: success
@@ -28,70 +28,24 @@ Newer HEAD/CI must always be checked live.
 
 ## Network-first Source Observatory baseline
 
-A sanitized browser HAR from the real `/guilds/progression` page was inventoried and persisted into the local immutable corpus.
-
-Actual runtime data routes observed in that page load:
+The real browser `/guilds/progression` baseline is persisted locally for:
 
 ```text
 GET /api/phases
 GET /api/guilds/phase-progression?phase=<value>&difficulty=<value>
 ```
 
-Both returned `200 application/json` and were recorded through Source Observatory as schema-bearing captures.
+Both returned `200 application/json` and have immutable raw captures plus schema/dimension snapshots.
 
-Versioned public baseline receipt:
+Public structural receipt:
 
 ```text
 evidence/real-data/source-observatory-network-baseline-2026-08-14.json
 ```
 
-The receipt publishes only structural/fingerprint/count metadata. HAR, raw bodies, query values, cookies, headers and dimension values remain private/local.
-
-## Persisted local baseline
-
-Observed Source Observatory state:
-
-```text
-phases_api
-  capture mode: browser_har
-  HTTP: 200 JSON
-  schema snapshot: recorded
-  phase dimension values observed: 3
-
-guild_phase_progression_api
-  capture mode: browser_har
-  HTTP: 200 JSON
-  schema snapshot: recorded
-  boss dimension values observed: 12
-  location dimension values observed: 2
-  phase dimension values observed: 1
-  difficulty dimension values observed: 1
-```
-
-The first observations created two `endpoint_added` change events. No reanalysis requests were created yet because no derived artifact dependency has been registered against these endpoints.
-
-## Important route correction
-
-The historical assumption around a direct `POST /api/guilds/progression` remains superseded.
-
-Current evidence distinguishes:
-
-```text
-archived SPA alternate contracts:
-  GET /api/guilds/progression/rankings
-  GET /api/guilds/progression/full-clears
-  GET /api/guilds/progression/rankings/{bossId}
-
-actual runtime requests observed on the current progression page:
-  GET /api/phases
-  GET /api/guilds/phase-progression
-```
-
-Do not assume an alternate SPA contract is currently used merely because it still exists in the frontend bundle.
+HAR, raw bodies, query values, cookies, headers and dimension values remain private/local.
 
 ## Source Observatory operating layer
-
-Current product path:
 
 ```text
 browser/network observation
@@ -111,48 +65,65 @@ Operational tooling:
 scripts/inventory_network_har.py
 scripts/observe_source.py
 scripts/observe_network_cycle.py
+scripts/rebuild_source_dimensions.py
 scripts/source_health.py
 ```
 
-`observe_network_cycle.py` processes one browser HAR against all currently reviewed GET contracts.
+## Real derived dependency: source dimension index
+
+Migration `0011_source_dimension_index.sql` adds the first actual derived Source Observatory artifact.
+
+`source_dimension_index` materializes the **latest complete observed dimension sets** from reviewed endpoint snapshots into the local warehouse. Values remain private/local; summaries expose only counts and fingerprints.
+
+Current intended dependencies are derived automatically from registry routes that are both Observatory-ready and declare `dimension_keys`. For the current registry these are the real baseline routes:
+
+```text
+phases_api
+guild_phase_progression_api
+```
+
+The behavior is now:
+
+```text
+source change event
+-> active source_endpoint dependency
+-> pending reanalysis_request
+-> deterministic source_dimension_index rebuild
+-> completed analysis_run
+-> matching reanalysis_request completed
+```
+
+A unit test proves the complete chain with a synthetic new boss dimension value: first build registers the dependency, the later source observation creates exactly one scoped reanalysis request, and the rebuild completes it while materializing the new dimension set.
+
+`observe_network_cycle.py` now performs this approved deterministic rebuild automatically after ingesting matching reviewed HAR responses.
 
 ## Source & Analysis Health UI
 
-The localhost application now exposes a privacy-safe Source Observatory view:
+Localhost endpoints:
 
 ```text
 /source-health
 /api/source-health
 ```
 
-The page shows:
+The page reports source state, captures, changes, active dependencies, pending reanalysis, completed analysis runs and dimension counts without exposing raw payloads or dimension values.
 
-```text
-registered/captured source counts
-open source-change count
-pending reanalysis count
-acquisition problems
-per-endpoint health state
-method + reviewed route template
-capture count and latest acquisition outcome
-dimension counts without dimension values
-recent change types without raw payloads
-```
+## Important progression route correction
 
-The API initializes migrations before reading the local warehouse, so it also works against a clean localhost database.
+Do not resume the historical helper/owner investigation or guessed `POST /api/guilds/progression`.
 
-It does **not** expose raw payloads, HAR, cookies, request headers or domain dimension values.
+Actual runtime capture observed `/api/phases` and `/api/guilds/phase-progression`. Archived SPA `progression/rankings*` GET contracts remain alternate reviewed contracts only.
 
 ## Next product work
 
 ```text
-register real derived artifact dependencies
--> prove scoped reanalysis from a real source change
--> make recurring browser/network acquisition require minimal operator action
--> normalize dynamic keyed-map schema noise where necessary
--> expand Network-first source coverage to reports/encounters/rankings/statistics/characters
+initialize the dimension index against the user's already-persisted baseline
+-> capture a later browser/network cycle
+-> observe real change/no-change behavior end-to-end
+-> minimize operator work needed to produce recurring browser captures
+-> expand Network-first coverage to reports/encounters/rankings/statistics/characters
 -> Armory/talent-grid
 -> BisBeard
 ```
 
-No unknown write contracts. No automatic semantic trust promotion. Raw/private material remains usable for analysis but is not published by default.
+No unknown write contracts. No automatic semantic trust promotion. New dimensions are observations, not automatic mechanic/scoring truth.

@@ -15,6 +15,9 @@ def test_source_health_empty_database(tmp_path: Path) -> None:
     assert result["summary"]["captured_endpoint_count"] == 0
     assert result["summary"]["open_change_event_count"] == 0
     assert result["summary"]["pending_reanalysis_request_count"] == 0
+    assert result["summary"]["active_dependency_count"] == 0
+    assert result["summary"]["completed_analysis_run_count"] == 0
     assert result["endpoints"] == []
     assert result["recent_changes"] == []
+    assert result["recent_analysis_runs"] == []
     assert result["privacy"]["dimension_values_included"] is False

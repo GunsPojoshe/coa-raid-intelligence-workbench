@@ -8,6 +8,7 @@ from urllib.parse import urlsplit
 from coa_workbench.collector.har_source_discovery import inventory_network_har
 from coa_workbench.collector.raw_archive import RawArchive
 from coa_workbench.collector.source_acquisition import observe_reviewed_har
+from coa_workbench.collector.source_dimension_index import rebuild_source_dimension_index
 from coa_workbench.collector.source_health import build_source_health
 from coa_workbench.collector.source_observatory import ReviewedGetContract
 from coa_workbench.collector.source_registry import load_source_registry
@@ -32,7 +33,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Run one Network-first Source Observatory cycle from a browser HAR: "
-            "inventory traffic, ingest every matching reviewed GET contract, and report health."
+            "inventory traffic, ingest matching reviewed GET contracts, rebuild approved "
+            "derived dimensions, and report health."
         )
     )
     parser.add_argument("har", type=Path)
@@ -83,9 +85,21 @@ def main() -> int:
             }
         )
 
+    dimension_endpoints = [
+        route.endpoint_code
+        for route in registry.routes
+        if route.observatory_ready and route.dimension_keys
+    ]
+    dimension_index = rebuild_source_dimension_index(
+        args.database,
+        args.migrations,
+        source_code=registry.source_code,
+        endpoint_codes=dimension_endpoints,
+    )
+
     health = build_source_health(args.database)
     result = {
-        "cycle_version": "network-source-cycle-v1",
+        "cycle_version": "network-source-cycle-v2",
         "capture_mode": "browser_har",
         "network_requests_performed": False,
         "network_inventory": inventory,
@@ -93,12 +107,14 @@ def main() -> int:
         "reviewed_route_observation_count": sum(
             int(item["matching_entry_count"]) for item in observed_routes
         ),
+        "source_dimension_index": dimension_index,
         "source_health": health,
         "privacy": {
             "har_body_included": False,
             "cookies_included": False,
             "headers_included": False,
             "query_values_included": False,
+            "dimension_values_included": False,
         },
     }
 
