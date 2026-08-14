@@ -1,4 +1,4 @@
-schema_version: 4
+schema_version: 5
 source_code: coa_ascension_logs
 base_url: https://coa.ascensionlogs.gg
 status: discovery
@@ -140,14 +140,89 @@ routes:
   - endpoint_code: report_detail_api
     route_template: /api/reports/{reportId}
     method: GET
-    auth_mode: historical_public_observed
+    auth_mode: browser_context_observed
     status: reviewed
-    use: report_detail_source_observation
+    use: current_report_detail_source_observation
     parameter_keys: []
     dimension_keys: []
-    discovery_source: archived_spa_route_inventory_plus_observed_report_slice_v1
+    discovery_source: browser_network_har_2026_08_14_current_report
     review_state: verified
     empty_params_observed: true
+
+  - endpoint_code: report_encounters_api
+    route_template: /api/reports/{reportId}/encounters
+    method: GET
+    auth_mode: browser_context_observed
+    status: reviewed
+    use: current_report_encounter_catalog_source_observation
+    parameter_keys:
+      - includeTrash
+    dimension_keys: []
+    discovery_source: browser_network_har_2026_08_14_current_report
+    review_state: verified
+    empty_params_observed: false
+
+  - endpoint_code: report_combatants_roster_api
+    route_template: /api/reports/{reportId}/combatants-roster
+    method: GET
+    auth_mode: browser_context_observed
+    status: reviewed
+    use: current_report_combatants_roster_source_observation
+    parameter_keys:
+      - encounterIds
+    dimension_keys: []
+    discovery_source: browser_network_har_2026_08_14_current_report
+    review_state: verified
+    empty_params_observed: false
+
+  - endpoint_code: report_encounter_throughput_timeline_api
+    route_template: /api/reports/{reportId}/encounters/{encounterId}/throughput-timeline
+    method: GET
+    auth_mode: browser_context_observed
+    status: reviewed
+    use: current_encounter_throughput_timeline_source_observation
+    parameter_keys:
+      - bucket_size_ms
+      - metric
+      - perspective
+    dimension_keys: []
+    discovery_source: browser_network_har_2026_08_14_current_report
+    review_state: verified
+    empty_params_observed: false
+
+  - endpoint_code: report_character_damage_taken_abilities_api
+    route_template: /api/reports/{reportId}/character_damage_taken_abilities
+    method: GET
+    auth_mode: browser_context_observed
+    status: reviewed
+    use: current_report_character_damage_taken_abilities_source_observation
+    parameter_keys:
+      - encounterIds[]
+      - format
+      - limit
+      - participantType
+      - scope
+    dimension_keys: []
+    discovery_source: browser_network_har_2026_08_14_current_report
+    review_state: verified
+    empty_params_observed: false
+
+  - endpoint_code: report_character_spell_healing_api
+    route_template: /api/reports/{reportId}/character_spell_healing
+    method: GET
+    auth_mode: browser_context_observed
+    status: reviewed
+    use: current_report_character_spell_healing_source_observation
+    parameter_keys:
+      - encounterIds[]
+      - format
+      - limit
+      - participantType
+      - scope
+    dimension_keys: []
+    discovery_source: browser_network_har_2026_08_14_current_report
+    review_state: verified
+    empty_params_observed: false
 
   - endpoint_code: report_encounter_detail_api
     route_template: /api/reports/{reportId}/encounters/{encounterId}

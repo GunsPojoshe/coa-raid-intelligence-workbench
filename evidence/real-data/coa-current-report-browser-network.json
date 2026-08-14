@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "receipt_kind": "current_report_browser_network_inventory",
+  "source_code": "coa_ascension_logs",
+  "capture_mode": "browser_har",
+  "network_requests_performed": false,
+  "observed_at_min": "2026-08-14T11:51:53.640Z",
+  "observed_at_max": "2026-08-14T11:51:54.088Z",
+  "summary": {
+    "contains_cookies": false,
+    "contains_query_values": false,
+    "contains_request_headers": false,
+    "contains_response_bodies": false,
+    "contains_response_scalar_values": false,
+    "data_candidate_route_count": 8,
+    "network_requests_performed": false,
+    "route_shape_count": 12,
+    "same_origin_api_entry_count": 23,
+    "sanitized_inventory_fingerprint": "194e7265d01005e2c99c3b596fa67011a3161c5ba842d71867cad960c98795be",
+    "semantic_review_required": true
+  },
+  "data_candidate_routes": [
+    {
+      "method": "GET",
+      "route_shape": "/api/reports/queue-status",
+      "query_keys": [],
+      "occurrence_count": 1,
+      "statuses": [200],
+      "content_type_families": ["json"],
+      "json_response_count": 1,
+      "semantic_status": "network_observed_candidate"
+    },
+    {
+      "method": "GET",
+      "route_shape": "/api/reports/{integer}",
+      "query_keys": [],
+      "occurrence_count": 1,
+      "statuses": [200],
+      "content_type_families": ["json"],
+      "json_response_count": 1,
+      "semantic_status": "network_observed_candidate"
+    },
+    {
+      "method": "GET",
+      "route_shape": "/api/reports/{integer}/character_damage_taken_abilities?encounterIds[]=<value>&format=<value>&limit=<value>&participantType=<value>&scope=<value>",
+      "query_keys": ["encounterIds[]", "format", "limit", "participantType", "scope"],
+      "occurrence_count": 1,
+      "statuses": [200],
+      "content_type_families": ["json"],
+      "json_response_count": 1,
+      "semantic_status": "network_observed_candidate"
+    },
+    {
+      "method": "GET",
+      "route_shape": "/api/reports/{integer}/character_spell_healing?encounterIds[]=<value>&format=<value>&limit=<value>&participantType=<value>&scope=<value>",
+      "query_keys": ["encounterIds[]", "format", "limit", "participantType", "scope"],
+      "occurrence_count": 1,
+      "statuses": [200],
+      "content_type_families": ["json"],
+      "json_response_count": 1,
+      "semantic_status": "network_observed_candidate"
+    },
+    {
+      "method": "GET",
+      "route_shape": "/api/reports/{integer}/combatants-roster?encounterIds=<value>",
+      "query_keys": ["encounterIds"],
+      "occurrence_count": 1,
+      "statuses": [200],
+      "content_type_families": ["json"],
+      "json_response_count": 1,
+      "semantic_status": "network_observed_candidate"
+    },
+    {
+      "method": "GET",
+      "route_shape": "/api/reports/{integer}/encounters/{integer}/throughput-timeline?bucket_size_ms=<value>&metric=<value>",
+      "query_keys": ["bucket_size_ms", "metric"],
+      "occurrence_count": 8,
+      "statuses": [200],
+      "content_type_families": ["json"],
+      "json_response_count": 8,
+      "semantic_status": "network_observed_candidate"
+    },
+    {
+      "method": "GET",
+      "route_shape": "/api/reports/{integer}/encounters/{integer}/throughput-timeline?bucket_size_ms=<value>&metric=<value>&perspective=<value>",
+      "query_keys": ["bucket_size_ms", "metric", "perspective"],
+      "occurrence_count": 4,
+      "statuses": [200],
+      "content_type_families": ["json"],
+      "json_response_count": 4,
+      "semantic_status": "network_observed_candidate"
+    },
+    {
+      "method": "GET",
+      "route_shape": "/api/reports/{integer}/encounters?includeTrash=<value>",
+      "query_keys": ["includeTrash"],
+      "occurrence_count": 1,
+      "statuses": [200],
+      "content_type_families": ["json"],
+      "json_response_count": 1,
+      "semantic_status": "network_observed_candidate"
+    }
+  ],
+  "resolver_result": {
+    "resolver_version": "correlated-dynamic-har-v1",
+    "candidate_concrete_path_count": 1,
+    "resolved_route_count": 0,
+    "resolved_concrete_path_count": 0,
+    "rejected_static_collision_count": 1,
+    "rejected_uncorroborated_candidate_count": 1,
+    "interpretation": "current runtime dynamic report traffic exists, but the registry lacked the current correlated report routes needed by resolver v1"
+  },
+  "privacy": {
+    "cookies_included": false,
+    "dimension_values_included": false,
+    "dynamic_path_values_included": false,
+    "har_body_included": false,
+    "har_path_included": false,
+    "headers_included": false,
+    "query_values_included": false
+  }
+}

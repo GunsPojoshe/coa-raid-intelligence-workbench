@@ -163,3 +163,70 @@ def test_dynamic_resolution_ignores_other_hosts_and_non_get_requests(tmp_path: P
 
     assert result.candidate_concrete_path_count == 0
     assert result.resolved_endpoint_codes == ()
+
+
+def test_current_report_runtime_routes_corroborate_report_id_without_format_guess(
+    tmp_path: Path,
+) -> None:
+    har = tmp_path / "current-report.har"
+    _write_har(
+        har,
+        [
+            "https://coa.ascensionlogs.gg/api/reports/queue-status",
+            "https://coa.ascensionlogs.gg/api/reports/123456",
+            "https://coa.ascensionlogs.gg/api/reports/123456/encounters?includeTrash=false",
+            "https://coa.ascensionlogs.gg/api/reports/123456/combatants-roster?encounterIds=9",
+            (
+                "https://coa.ascensionlogs.gg/api/reports/123456/encounters/9/"
+                "throughput-timeline?bucket_size_ms=1000&metric=dps"
+            ),
+            (
+                "https://coa.ascensionlogs.gg/api/reports/123456/"
+                "character_damage_taken_abilities?encounterIds[]=9&format=json&limit=50"
+                "&participantType=player&scope=raid"
+            ),
+            (
+                "https://coa.ascensionlogs.gg/api/reports/123456/"
+                "character_spell_healing?encounterIds[]=9&format=json&limit=50"
+                "&participantType=player&scope=raid"
+            ),
+        ],
+    )
+    templates = {
+        "report_detail_api": "/api/reports/{reportId}",
+        "report_encounters_api": "/api/reports/{reportId}/encounters",
+        "report_combatants_roster_api": "/api/reports/{reportId}/combatants-roster",
+        "report_encounter_throughput_timeline_api": (
+            "/api/reports/{reportId}/encounters/{encounterId}/throughput-timeline"
+        ),
+        "report_character_damage_taken_abilities_api": (
+            "/api/reports/{reportId}/character_damage_taken_abilities"
+        ),
+        "report_character_spell_healing_api": (
+            "/api/reports/{reportId}/character_spell_healing"
+        ),
+    }
+
+    result = resolve_correlated_dynamic_har_routes(
+        har,
+        allowed_host="coa.ascensionlogs.gg",
+        dynamic_route_templates=templates,
+        static_paths=["/api/reports/queue-status"],
+    )
+
+    assert result.resolved_endpoint_codes == (
+        "report_character_damage_taken_abilities_api",
+        "report_character_spell_healing_api",
+        "report_combatants_roster_api",
+        "report_detail_api",
+        "report_encounter_throughput_timeline_api",
+        "report_encounters_api",
+    )
+    assert result.resolved_concrete_path_count == 6
+    assert result.rejected_static_collision_count == 1
+    assert result.rejected_uncorroborated_candidate_count == 0
+
+    public = result.public_summary()
+    assert public["concrete_path_values_included"] is False
+    assert public["path_parameter_values_included"] is False
+    assert "123456" not in json.dumps(public)

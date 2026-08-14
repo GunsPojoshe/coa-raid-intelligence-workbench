@@ -14,11 +14,11 @@ def registry_path() -> Path:
 
 def test_registry_loads_primary_observation_source() -> None:
     registry = load_source_registry(registry_path())
-    assert registry.schema_version == 4
+    assert registry.schema_version == 5
     assert registry.source_code == "coa_ascension_logs"
     assert registry.base_url == "https://coa.ascensionlogs.gg"
     assert registry.truth_role == "primary_observation_source"
-    assert len(registry.routes) == 17
+    assert len(registry.routes) == 22
     assert registry.prohibited_assumptions
 
 
@@ -133,10 +133,58 @@ def test_reports_queue_status_is_reviewed_operational_health_without_dimensions(
     assert route.production_ready is False
 
 
+def test_current_report_runtime_routes_are_capture_ready() -> None:
+    registry = load_source_registry(registry_path())
+    expected = {
+        "report_detail_api": (
+            "/api/reports/{reportId}",
+            (),
+            True,
+        ),
+        "report_encounters_api": (
+            "/api/reports/{reportId}/encounters",
+            ("includeTrash",),
+            False,
+        ),
+        "report_combatants_roster_api": (
+            "/api/reports/{reportId}/combatants-roster",
+            ("encounterIds",),
+            False,
+        ),
+        "report_encounter_throughput_timeline_api": (
+            "/api/reports/{reportId}/encounters/{encounterId}/throughput-timeline",
+            ("bucket_size_ms", "metric", "perspective"),
+            False,
+        ),
+        "report_character_damage_taken_abilities_api": (
+            "/api/reports/{reportId}/character_damage_taken_abilities",
+            ("encounterIds[]", "format", "limit", "participantType", "scope"),
+            False,
+        ),
+        "report_character_spell_healing_api": (
+            "/api/reports/{reportId}/character_spell_healing",
+            ("encounterIds[]", "format", "limit", "participantType", "scope"),
+            False,
+        ),
+    }
+
+    for endpoint_code, (route_template, parameter_keys, empty_params_observed) in expected.items():
+        route = registry.route(endpoint_code)
+        assert route.route_template == route_template
+        assert route.method == "GET"
+        assert route.auth_mode == "browser_context_observed"
+        assert route.status == "reviewed"
+        assert route.review_state == "verified"
+        assert route.parameter_keys == parameter_keys
+        assert route.dimension_keys == ()
+        assert route.empty_params_observed is empty_params_observed
+        assert route.observatory_ready is True
+        assert route.production_ready is False
+
+
 def test_historical_report_slice_routes_are_capture_ready_but_not_production_ready() -> None:
     registry = load_source_registry(registry_path())
     expected = {
-        "report_detail_api": "/api/reports/{reportId}",
         "report_encounter_detail_api": "/api/reports/{reportId}/encounters/{encounterId}",
         "report_encounter_combatants_info_api": (
             "/api/reports/{reportId}/encounters/{encounterId}/combatants-info"
