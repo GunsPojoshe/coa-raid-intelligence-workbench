@@ -11,6 +11,11 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 from urllib.request import Request, urlopen
 
 from coa_workbench.collector.http_read import read_response_resilient
+from coa_workbench.collector.json_structure import (
+    SCHEMA_PATH_NORMALIZATION,
+    normalize_object_key,
+    normalize_path_types,
+)
 from coa_workbench.collector.raw_archive import RawArchive, RawCapture, request_key_from_url
 from coa_workbench.storage.migrations import apply_migrations
 
@@ -257,7 +262,7 @@ def snapshot_json_payload(
                     dimensions[dimension_name].add("true" if child else "false")
                 elif dimension_name and isinstance(child, (str, int, float)):
                     dimensions[dimension_name].add(str(child))
-                walk(child, (*path, str(key)))
+                walk(child, (*path, normalize_object_key(key)))
         elif isinstance(item, list):
             if len(item) > max_array_items:
                 truncated = True
@@ -407,13 +412,15 @@ def register_artifact_dependency(
 
 
 def _snapshot_from_row(row: tuple[Any, ...]) -> SchemaSnapshot:
+    raw_path_types = {
+        str(key): tuple(str(value) for value in values)
+        for key, values in json.loads(row[2]).items()
+    }
+    path_types = normalize_path_types(raw_path_types)
     return SchemaSnapshot(
-        schema_fingerprint=str(row[0]),
+        schema_fingerprint=_sha256_text(_json(path_types)),
         root_type=str(row[1]),
-        path_types={
-            str(key): tuple(str(value) for value in values)
-            for key, values in json.loads(row[2]).items()
-        },
+        path_types=path_types,
         dimension_values={
             str(key): tuple(str(value) for value in values)
             for key, values in json.loads(row[3]).items()
@@ -458,6 +465,7 @@ def observe_raw_capture(
     observed_at = _normalize_timestamp(capture.fetched_at)
     profile_key = observation_profile_key(contract, request_url)
     observation_metadata = dict(metadata or {})
+    observation_metadata["schema_path_normalization"] = SCHEMA_PATH_NORMALIZATION
     if profile_key is not None:
         observation_metadata["observation_profile_key"] = profile_key
         observation_metadata["schema_profile_keys"] = list(contract.schema_profile_keys)
@@ -474,6 +482,20 @@ def observe_raw_capture(
     change_event_ids: list[str] = []
     reanalysis_request_ids: list[str] = []
     with duckdb.connect(str(database_path)) as connection:
+        existing_snapshot = connection.execute(
+            "SELECT snapshot_id FROM source_schema_snapshot WHERE capture_id = ? LIMIT 1",
+            [source_capture_id],
+        ).fetchone()
+        if existing_snapshot is not None:
+            return SourceObservation(
+                capture=capture,
+                contract_id=contract.contract_id,
+                source_capture_id=source_capture_id,
+                snapshot_id=str(existing_snapshot[0]),
+                change_event_ids=(),
+                reanalysis_request_ids=(),
+            )
+
         endpoint_row = connection.execute(
             "SELECT endpoint_id FROM source_endpoint WHERE endpoint_code = ?",
             [contract.endpoint_code],
@@ -575,6 +597,7 @@ def observe_raw_capture(
             )
 
         contract_metadata = dict(metadata or {})
+        contract_metadata["schema_path_normalization"] = SCHEMA_PATH_NORMALIZATION
         if contract.schema_profile_keys:
             contract_metadata["schema_profile_keys"] = list(contract.schema_profile_keys)
         connection.execute(
@@ -732,6 +755,7 @@ def observe_raw_capture(
                         {
                             "observatory_version": OBSERVATORY_VERSION,
                             "observation_profiled": profile_key is not None,
+                            "schema_path_normalization": SCHEMA_PATH_NORMALIZATION,
                         }
                     ),
                     event_id,

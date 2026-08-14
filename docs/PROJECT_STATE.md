@@ -24,9 +24,9 @@ Main product question:
 
 > Почему конкретный человек нужен именно текущему составу?
 
-The platform must remain adaptive to new bosses, phases, fields, logs and source contracts.
-Source change handling must be automatic, scoped and provenance-preserving rather than implemented
-as one-off collectors.
+The platform must remain adaptive to new bosses, phases, fields, logs and source contracts. Source
+change handling must be automatic, scoped and provenance-preserving rather than implemented as
+one-off collectors.
 
 ## Network-first Source Observatory
 
@@ -89,8 +89,8 @@ raw objects or raw fetch observations.
 
 ## Current report runtime
 
-A browser Network capture of one concrete report plus one selected encounter has now been fully
-consumed by the reviewed Source Observatory.
+A browser Network capture of one concrete report plus one selected encounter has been fully consumed by
+the reviewed Source Observatory.
 
 Current runtime families actually observed and persisted:
 
@@ -124,10 +124,93 @@ GET /api/reports/{reportId}/encounters/{encounterId}/combatants-info
 
 They must not override the current runtime model.
 
+## Private current-report payload review
+
+The same private browser HAR has now been inspected as source data, not only as route evidence.
+
+Public scalar-free receipt:
+
+```text
+evidence/real-data/coa-current-report-private-structure-review.json
+```
+
+Observed report slice:
+
+```text
+report encounters: 19
+encounter-catalog rows: 19
+roster characters: 25
+roster snapshots: 29
+throughput responses: 12
+```
+
+The current `/combatants-roster` response already embeds the build-enrichment families previously
+studied through historical `combatants-info`:
+
+```text
+player / guild / instance
+specialization
+resolved_ca_talent_ranks
+hero_build
+talent-grid tree entries
+gear
+resolved item/enchant/set/gems
+resolved BisBeard metadata
+```
+
+Across all 29 reviewed snapshots, three independently present talent structures had exactly the same
+entry-ID membership:
+
+```text
+resolved_ca_talent_ranks.cao_id
+hero_build[].entry_id
+talents.trees[].talents[].entry_id
+```
+
+The current parser therefore performs the join only under this invariant and fails closed on a
+mismatch.
+
+Current scalar-free parser counts from the private capture:
+
+```text
+characters:              25
+snapshots:                29
+joined talent entries:  1466
+gear slot observations: 491
+resolved item rows:      490
+resolved BisBeard rows:  490
+```
+
+`character_spell_healing` and `character_damage_taken_abilities` are also confirmed as report-level
+analytical maps with large numeric-key dictionaries. Raw map keys and source scalar values remain
+private.
+
+## Report parser compatibility
+
+The existing verified mapping:
+
+```text
+config/mappings/coa_report_detail_v1.json
+```
+
+still matches every promoted report/encounter selector and reviewed JSON type in the current response.
+The old sample-specific whole-payload fingerprint/count gates are not reusable because the live report
+contains additive fields and a different encounter count.
+
+`compatible_normalization.py` now uses the manually verified field contracts as the generic gate:
+
+```text
+verified selected field remains type-compatible -> normalize
+mapped field missing/type-changed              -> fail closed
+new unrelated upstream field                   -> ignore for this mapping
+```
+
+This is parser compatibility only. It does not promote gameplay semantics or planner scoring.
+
 ## Throughput schema-profile correction
 
-The first persisted current-report replay produced false schema churn because
-`throughput-timeline` is a multi-mode endpoint.
+The first persisted current-report replay produced false schema churn because `throughput-timeline` is
+a multi-mode endpoint.
 
 Profile-unaware state:
 
@@ -145,28 +228,20 @@ schema_profile_keys:
   - perspective
 ```
 
-A bounded repair then superseded only the legacy profile-unaware schema-change events:
+A bounded repair superseded only the legacy profile-unaware schema-change events:
 
 ```text
-repair status: repaired
 superseded legacy events: 788
-
-field_added:        256
-field_removed:      515
-field_type_changed:   7
-schema_changed:      10
-
+field_added:              256
+field_removed:            515
+field_type_changed:         7
+schema_changed:             10
 linked downstream reanalysis requests: 0
-
-raw objects deleted: false
-raw fetch observations deleted: false
-source captures deleted: false
-schema snapshots deleted: false
 ```
 
-The same HAR was replayed under `network-source-cycle-v6`.
+Raw objects, raw fetch observations, source captures and schema snapshots were preserved.
 
-Result after profile-aware replay:
+After the profile-aware replay:
 
 ```text
 open source-change events total: 34
@@ -175,19 +250,43 @@ all other endpoints combined: 10
 pending reanalysis requests: 0
 ```
 
-This validates the profile partition and removes the original 789-event false-churn signal.
-The remaining 34 open events are baseline/profile-aware observations and are **not** automatically
-interpreted as 34 upstream source changes. Their semantics still require structural review before
-they are used as health alarms or planner signals.
+The remaining throughput observations must not yet be interpreted as 24 upstream changes. The private
+HAR shows that even after profile partitioning and numeric-key normalization, one profile has two
+legitimate field-presence variants across encounters. Optional/data-dependent field presence therefore
+needs cycle/profile aggregation before `field_removed` becomes a reliable alarm.
 
-Public structural receipt:
+## Dynamic numeric object keys
+
+Current payloads use numeric object keys as map indexes/IDs in throughput, healing, damage-taken, gear
+and hero-build structures.
+
+Literal values such as those keys are now normalized to a structural wildcard:
 
 ```text
-evidence/real-data/coa-current-report-profile-replay-v3-review.json
+numeric-object-key-wildcard-v1
+{integer-key}
 ```
 
-HAR, raw payloads, report/encounter IDs, query values, headers, cookies, dimension values and schema
-profile values/hashes remain local/private.
+This normalization is implemented in two places:
+
+```text
+HAR inventory v2 structural fingerprints
+Source Observatory snapshot path/fingerprint comparison
+```
+
+Source Observatory preserves historical rows. Legacy literal numeric paths are normalized only in
+memory when used as a previous comparison baseline. Replaying the exact same raw observation returns
+the already persisted snapshot instead of trying to create a second snapshot under the new algorithm.
+
+Synthetic integration proves:
+
+```text
+legacy /series/123/... + new /series/999/... with the same structure
+-> no false source change
+```
+
+A later independent real report capture is still required before claiming multi-report production
+proof.
 
 ## Source & Analysis Health
 
@@ -198,7 +297,7 @@ Localhost endpoints:
 /api/source-health
 ```
 
-Current real local summary after profile-aware repair/replay:
+Latest real local summary before the new parser-derived persistence layer:
 
 ```text
 endpoint count: 11
@@ -218,16 +317,19 @@ browser-origin phases/progression persisted: true
 reports public/filter-options/queue-status persisted: true
 false report-detail collision cleaned locally: true
 correlated dynamic resolver implemented: true
-current report detail runtime observed: true
-current encounter catalog runtime observed: true
-current combatants-roster runtime observed: true
-current throughput runtime observed: true
-current character damage/healing runtime observed: true
-current report runtime persisted in Source Observatory: true
+current report/encounters/roster/throughput/damage/healing runtime persisted: true
+private current-report payload structures inspected: true
+current report verified-field compatible normalization: implemented
+current combatants-roster parser: implemented
+current talent three-way structural join: implemented
+current roster contains resolved BisBeard observations: true
 reviewed schema-profile mechanism implemented: true
 legacy profile-unaware throughput churn repaired locally: true
-profile-aware replay against real HAR proven: true
-raw evidence preserved through repairs: true
+Source Observatory numeric-key path normalization: implemented
+legacy numeric-key compatibility synthetic integration: proven
+real multi-report numeric-key proof: false
+profile-cycle optional-field aggregation: pending
+generic current-report derived persistence: pending
 real later upstream change -> scoped reanalysis proven: false
 ready for autonomous full source coverage: false
 planner scoring promoted automatically: false
@@ -235,21 +337,21 @@ planner scoring promoted automatically: false
 
 ## Next product work
 
-The transport/discovery loop is now sufficiently proven for this slice. Do not create another browser
-capture merely to re-prove current report routes.
+The transport/discovery loop is sufficiently proven for this slice. Do not create another browser capture
+merely to re-prove current report routes.
 
 Next:
 
 ```text
-inspect the private current-report payloads already present in the HAR/local corpus
--> document real report/encounter/roster/throughput/damage/healing schemas
--> bind current combatants-roster into existing combatants observation persistence
--> bind encounter/report identity and provenance
--> add deterministic current-report derived analysis
--> then expand rankings/statistics/characters
+aggregate schema observation per endpoint/profile cycle so data-dependent optional fields do not churn
+-> add generic current-report derived persistence
+-> persist report/encounter identity + roster/build observations with provenance
+-> add deterministic throughput/healing/damage read models
+-> register safe reanalysis dependencies
+-> expand rankings/statistics/characters
 -> Armory/talent-grid
 -> BisBeard
 ```
 
-A new browser capture is required only when a new source surface must be observed or an existing
-contract changes.
+A new browser capture is required only when a new source surface must be observed, an existing contract
+changes, or a later independent report is deliberately used as a generalization proof.

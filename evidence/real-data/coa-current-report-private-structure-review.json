@@ -1,0 +1,172 @@
+{
+  "capture_mode": "private_browser_har_review",
+  "character_damage_taken_abilities": {
+    "damage_taken_abilities_by_target": {
+      "key_count": 165,
+      "row_count": 852,
+      "row_fields": [
+        "absorb_count", "absorb_full_amount", "absorb_full_count", "absorbs",
+        "block_count", "block_full_amount", "block_full_count", "blocked", "casts",
+        "damage", "deflect_count", "dodge_count", "evade_count", "hit_count",
+        "immune_count", "miss_count", "parry_count", "reflect_count", "resist_count",
+        "resist_full_amount", "resist_full_count", "resisted", "spell_icon", "spell_id",
+        "spell_name", "spell_school", "total"
+      ]
+    },
+    "top_level_fields": ["damage_taken_abilities_by_target", "report_id", "success"]
+  },
+  "character_spell_healing": {
+    "source_breakdowns": {
+      "key_count": 110,
+      "row_count": 1624,
+      "row_fields": [
+        "effective_healing", "hit_count", "overhealing", "source_character_id",
+        "source_class", "source_name", "source_type", "total_absorbs", "total_healing"
+      ]
+    },
+    "spell_healing_by_source": {
+      "key_count": 26,
+      "row_count": 178,
+      "row_fields": [
+        "casts", "character_class", "character_id", "character_name", "character_spec",
+        "character_type", "crits", "effective_healing", "hits", "is_boss", "overhealing",
+        "spell_icon", "spell_id", "spell_name", "spell_school", "total_absorbs", "total_healing"
+      ]
+    },
+    "target_breakdowns": {
+      "key_count": 110,
+      "row_count": 3451,
+      "row_fields": [
+        "effective_healing", "hit_count", "overhealing", "target_character_id",
+        "target_class", "target_name", "target_type", "total_absorbs", "total_healing"
+      ]
+    },
+    "top_level_fields": [
+      "report_id", "source_breakdowns", "spell_healing_by_source", "success", "target_breakdowns"
+    ]
+  },
+  "combatants_roster": {
+    "character_count": 25,
+    "contains_source_scalar_values": false,
+    "exact_talent_alignment_snapshot_count": 29,
+    "gear_slot_fields": [
+      "enchant", "gems", "item_id", "raw", "resolved_bisbeard", "resolved_enchant",
+      "resolved_gems", "resolved_item", "resolved_set", "resolved_suffix", "slot", "suffix", "unique"
+    ],
+    "gear_slot_observation_count": 491,
+    "parser_version": "current-combatants-roster-v1",
+    "planner_scoring_allowed": false,
+    "resolved_bisbeard_fields": [
+      "bind_type", "damage", "damage_dps", "description", "flavor_text", "item_subtype",
+      "match_type", "req_level", "set_bonuses", "sockets", "source", "source_category", "stats", "version"
+    ],
+    "resolved_bisbeard_observation_count": 490,
+    "resolved_item_fields": [
+      "armor", "description", "display_id", "icon", "id", "inventory_type", "item_class",
+      "item_level", "item_subclass", "mythic_tier", "name", "pve_power", "quality"
+    ],
+    "resolved_item_observation_count": 490,
+    "snapshot_count": 29,
+    "snapshot_count_distribution": [
+      {"character_count": 21, "snapshot_count": 1},
+      {"character_count": 4, "snapshot_count": 2}
+    ],
+    "snapshot_fields": [
+      "addon_version", "arena_teams", "captured_at", "captured_by_guid", "captured_for_boss",
+      "captured_for_pull_id", "gear", "guild", "instance", "is_logger", "kf", "mystic_enchants",
+      "player", "schema_version", "server", "session_id", "snapshot_serial", "source",
+      "specialization", "transmog_viewing"
+    ],
+    "specialization_fields": [
+      "active_spec_idx", "active_spec_name", "active_spec_role", "active_spec_slot", "hero_build",
+      "investment", "resolved_ca_known", "resolved_ca_talent_ranks", "talents", "unlocked_specs", "vanilla_talents"
+    ],
+    "talent_alignment_complete": true,
+    "talent_entry_count": 1466,
+    "talent_grid_entry_fields": [
+      "category_label", "entry_id", "grid_col", "grid_row", "icon", "max_ranks", "name",
+      "per_rank_text", "rank", "talent_id", "tree_label", "tree_slug"
+    ]
+  },
+  "cross_structure_checks": {
+    "aligned_snapshot_count": 29,
+    "combatants_roster_embeds_player_guild_instance_specialization_talent_gear_families": true,
+    "combatants_roster_embeds_resolved_bisbeard": true,
+    "joined_talent_entry_count": 1466,
+    "snapshot_talent_sets_exactly_aligned": true
+  },
+  "decision_boundary": {
+    "current_report_payloads_privately_inspected": true,
+    "current_roster_parser_prototype_executed_against_private_har": true,
+    "dynamic_numeric_object_keys_require_schema_normalization_before_multi_report_change_detection": true,
+    "existing_report_mapping_field_contract_is_additive_compatible": true,
+    "historical_sample_specific_persistence_reusable_as_generic_writer": false,
+    "mechanic_semantics_verified": false,
+    "planner_scoring_allowed": false,
+    "public_har_numeric_key_structure_normalization_implemented": true,
+    "real_multi_report_numeric_key_normalization_proven": false,
+    "source_observatory_numeric_key_path_normalization_implemented": true
+  },
+  "encounter_catalog": {
+    "encounter_count": 19,
+    "encounter_fields": [
+      "boss_icon", "boss_id", "cast_event_count", "creature_encounter_id", "creature_id",
+      "damage_event_count", "difficulty", "duration_seconds", "end_time", "has_damage_rules",
+      "has_healing_rules", "heal_event_count", "id", "is_boss_encounter", "kill_time",
+      "max_damage", "max_healing", "name", "participant_count", "player_participant_count",
+      "processing_status", "start_time", "success", "trial_level", "validation_status", "wipe_percent", "zone"
+    ]
+  },
+  "network_requests_performed": false,
+  "privacy": {
+    "character_ids_included": false,
+    "character_names_included": false,
+    "cookies_included": false,
+    "dynamic_map_keys_included": false,
+    "encounter_ids_included": false,
+    "guild_names_included": false,
+    "har_included": false,
+    "headers_included": false,
+    "query_values_included": false,
+    "raw_response_bodies_included": false,
+    "report_ids_included": false,
+    "source_scalar_values_included": false
+  },
+  "receipt_kind": "current_report_private_structure_review",
+  "report_detail": {
+    "encounter_count": 19,
+    "encounter_fields": ["end_time", "id", "kill_time", "name", "start_time", "success", "wipe_percent"],
+    "existing_mapping_review": {
+      "additive_fields_present": true,
+      "legacy_hardcoded_sample_counts_reusable": false,
+      "mapping_id": "coa-report-detail-v1",
+      "optional_kill_time_types": ["null", "object"],
+      "optional_wipe_percent_types": ["null", "string"],
+      "required_encounter_field_types_match": true,
+      "required_report_field_types_match": true
+    },
+    "report_field_count": 36,
+    "report_fields": [
+      "created_at", "difficulty", "end_time", "guild_id", "guild_name", "has_telemetry", "id",
+      "is_speed_run", "keystones", "last_reprocessed_at", "log_source", "original_created_at",
+      "processing_heartbeat_at", "processing_started_at", "processing_warnings", "realm",
+      "reprocessing_count", "speed_run_base_duration_ms", "speed_run_duration_ms", "speed_run_end_time",
+      "speed_run_penalty_seconds", "speed_run_start_time", "speed_run_validated_at", "speed_run_zone",
+      "start_time", "status", "timezone", "title", "updated_at", "upload_client",
+      "upload_client_platform", "upload_client_version", "uploaded_by", "user_id", "visibility", "zone"
+    ]
+  },
+  "schema_version": 1,
+  "source_code": "coa_ascension_logs",
+  "throughput_timeline": {
+    "character_fields": ["character_id", "class", "name", "total_amount"],
+    "dynamic_series_keys_included": false,
+    "heroism_nonempty_response_count": 0,
+    "normalized_profile_structural_variant_counts": [1, 2, 1],
+    "profile_values_included": false,
+    "response_count": 12,
+    "series_row_fields": ["absorb_amount", "amount", "bucket_ms", "effective_amount", "overheal_amount"],
+    "top_level_fields": ["bucket_size_ms", "characters", "duration_ms", "heroism_windows", "series", "success", "total"],
+    "total_row_fields": ["absorb_amount", "amount", "bucket_ms", "effective_amount", "overheal_amount", "per_second"]
+  }
+}

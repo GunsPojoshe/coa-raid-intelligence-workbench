@@ -7,9 +7,13 @@ from pathlib import Path
 from typing import Any, Mapping
 from urllib.parse import parse_qsl, urlsplit
 
+from coa_workbench.collector.json_structure import (
+    SCHEMA_PATH_NORMALIZATION,
+    json_structure_fingerprint,
+)
 from coa_workbench.collector.spa_route_inventory import normalize_api_route_shape
 
-_DISCOVERY_VERSION = "har-network-discovery-v1"
+_DISCOVERY_VERSION = "har-network-discovery-v2"
 _JSON_MIME = "json"
 _ALLOWED_RESOURCE_TYPES = {"fetch", "xhr"}
 
@@ -47,27 +51,6 @@ def _response_body(content: Mapping[str, Any]) -> bytes | None:
     return str(text).encode("utf-8")
 
 
-def _json_shape(value: Any) -> Any:
-    if isinstance(value, dict):
-        return {key: _json_shape(value[key]) for key in sorted(value)}
-    if isinstance(value, list):
-        unique: list[Any] = []
-        for child in value[:100]:
-            candidate = _json_shape(child)
-            if candidate not in unique:
-                unique.append(candidate)
-        return {"list": unique}
-    if value is None:
-        return "null"
-    if isinstance(value, bool):
-        return "bool"
-    if isinstance(value, int):
-        return "int"
-    if isinstance(value, float):
-        return "float"
-    return "str"
-
-
 def _json_schema_fingerprint(body: bytes | None) -> str | None:
     if body is None:
         return None
@@ -75,7 +58,7 @@ def _json_schema_fingerprint(body: bytes | None) -> str | None:
         value = json.loads(body)
     except (UnicodeDecodeError, json.JSONDecodeError):
         return None
-    return _sha256_text(_json(_json_shape(value)))
+    return json_structure_fingerprint(value)
 
 
 def _route_shape(url: str) -> tuple[str, tuple[str, ...]]:
@@ -206,6 +189,7 @@ def inventory_network_har(
         "schema_version": 1,
         "inventory_kind": "same_origin_har_api_inventory",
         "inventory_version": _DISCOVERY_VERSION,
+        "schema_path_normalization": SCHEMA_PATH_NORMALIZATION,
         "allowed_host": allowed_host,
         "api_prefix": api_prefix,
         "observed_at_min": min(observed_times) if observed_times else None,
@@ -223,6 +207,7 @@ def inventory_network_har(
             "contains_cookies": False,
             "contains_response_bodies": False,
             "contains_response_scalar_values": False,
+            "contains_dynamic_numeric_object_keys": False,
             "semantic_review_required": True,
             "network_requests_performed": False,
         },
