@@ -14,11 +14,11 @@ e3/real-log-capture
 
 PR #7 remains Draft: `e3/real-log-capture -> e2/log-evidence-refactor`.
 
-Latest fully verified checkpoint before this documentation/evidence update:
+Last fully verified checkpoint before the current capture-ergonomics change:
 
 ```text
-HEAD: 3ebf2186623b7dffd4033e2b4e9428dd175c91c5
-Verify repository #677: success
+HEAD: 7e7dbf4d68a79849a545eb4e2d8c4452dd02a9a9
+Verify repository #679: success
 public-release-audit: success
 ubuntu: success
 windows: success
@@ -102,6 +102,22 @@ Therefore real same-input/no-change idempotence is proven for the current baseli
 
 This does **not** yet prove handling of a genuinely newer upstream source change.
 
+## Recurring capture ergonomics
+
+`observe_network_cycle.py` keeps explicit HAR paths supported, but a path is no longer required.
+
+If the positional HAR argument is omitted, it searches `~/Downloads` (or `--har-dir`) from newest to
+oldest and selects the newest readable `.har` that actually contains same-origin `/api/` traffic for
+the configured source host. Newer unrelated or malformed HAR files are skipped.
+
+So after a future browser export the normal local command is only:
+
+```powershell
+uv run --no-sync python scripts/observe_network_cycle.py
+```
+
+The selected local HAR path is not included in the public cycle output.
+
 ## Source & Analysis Health
 
 Localhost endpoints:
@@ -148,7 +164,6 @@ planner scoring promoted automatically: false
 ```text
 capture a genuinely later browser/network observation when useful
 -> prove real upstream change/no-change behavior
--> reduce operator effort for recurring browser capture
 -> expand Network-first coverage to reports/encounters/rankings/statistics/characters
 -> Armory/talent-grid
 -> BisBeard

@@ -229,4 +229,40 @@ def inventory_network_har(
     }
 
 
-__all__ = ["inventory_network_har"]
+def select_latest_relevant_har(
+    directory: Path,
+    *,
+    allowed_host: str,
+    api_prefix: str = "/api/",
+) -> Path:
+    """Return the newest readable HAR containing relevant same-origin API traffic."""
+    if not directory.is_dir():
+        raise FileNotFoundError(f"HAR directory does not exist: {directory}")
+
+    candidates = sorted(
+        (
+            path
+            for path in directory.iterdir()
+            if path.is_file() and path.suffix.casefold() == ".har"
+        ),
+        key=lambda path: (path.stat().st_mtime_ns, path.name.casefold()),
+        reverse=True,
+    )
+    for candidate in candidates:
+        try:
+            inventory = inventory_network_har(
+                candidate,
+                allowed_host=allowed_host,
+                api_prefix=api_prefix,
+            )
+        except (OSError, ValueError):
+            continue
+        if int(inventory["summary"]["same_origin_api_entry_count"]) > 0:
+            return candidate
+
+    raise FileNotFoundError(
+        f"No readable .har with same-origin API traffic for {allowed_host} in {directory}"
+    )
+
+
+__all__ = ["inventory_network_har", "select_latest_relevant_har"]

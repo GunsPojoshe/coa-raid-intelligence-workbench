@@ -132,8 +132,21 @@ Generic Network discovery:
 scripts/inventory_network_har.py
 ```
 
-Its output must remain scalar-free: no query values, headers, cookies, response bodies, user/session
-values, guild/report IDs or other record scalars.
+Recurring browser HAR ingestion:
+
+```powershell
+uv run --no-sync python scripts/observe_network_cycle.py
+```
+
+With no positional HAR path, the command selects the newest readable `.har` in `~/Downloads` that
+contains same-origin `/api/` traffic for the configured source host. Use `--har-dir` for another inbox
+or pass an explicit HAR path when needed. Do not ask the user to manually identify a HAR path when this
+automatic selection can resolve it.
+
+Its public output must not include the selected local HAR path.
+
+Generic discovery output must remain scalar-free: no query values, headers, cookies, response bodies,
+user/session values, guild/report IDs or other record scalars.
 
 Low-cardinality source dimensions such as phase, boss, difficulty and location may drive automatic
 change detection. High-cardinality player/guild/report identifiers do not automatically become

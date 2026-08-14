@@ -5,7 +5,10 @@ import json
 from pathlib import Path
 from urllib.parse import urlsplit
 
-from coa_workbench.collector.har_source_discovery import inventory_network_har
+from coa_workbench.collector.har_source_discovery import (
+    inventory_network_har,
+    select_latest_relevant_har,
+)
 from coa_workbench.collector.raw_archive import RawArchive
 from coa_workbench.collector.source_acquisition import observe_reviewed_har
 from coa_workbench.collector.source_dimension_index import rebuild_source_dimension_index
@@ -34,10 +37,20 @@ def main() -> int:
         description=(
             "Run one Network-first Source Observatory cycle from a browser HAR: "
             "inventory traffic, ingest matching reviewed GET contracts, rebuild approved "
-            "derived dimensions, and report health."
+            "derived dimensions, and report health. If HAR is omitted, use the newest "
+            "relevant .har from --har-dir."
         )
     )
-    parser.add_argument("har", type=Path)
+    parser.add_argument("har", nargs="?", type=Path)
+    parser.add_argument(
+        "--har-dir",
+        type=Path,
+        default=Path.home() / "Downloads",
+        help=(
+            "Directory searched for the newest relevant .har when the positional HAR path "
+            "is omitted. Default: ~/Downloads"
+        ),
+    )
     parser.add_argument(
         "--registry",
         type=Path,
@@ -50,6 +63,23 @@ def main() -> int:
     args = parser.parse_args()
 
     registry = load_source_registry(args.registry)
+    allowed_host = urlsplit(registry.base_url).hostname or ""
+    selection_mode = "explicit"
+    if args.har is not None:
+        har_path = args.har
+        if not har_path.is_file():
+            parser.error(f"HAR file does not exist: {har_path}")
+    else:
+        selection_mode = "latest_relevant_in_directory"
+        try:
+            har_path = select_latest_relevant_har(
+                args.har_dir,
+                allowed_host=allowed_host,
+                api_prefix="/api/",
+            )
+        except FileNotFoundError as exc:
+            parser.error(str(exc))
+
     apply_migrations(args.database, args.migrations)
     archive = RawArchive(
         args.raw_root,
@@ -58,8 +88,8 @@ def main() -> int:
     )
 
     inventory = inventory_network_har(
-        args.har,
-        allowed_host=urlsplit(registry.base_url).hostname or "",
+        har_path,
+        allowed_host=allowed_host,
         api_prefix="/api/",
     )
 
@@ -68,7 +98,7 @@ def main() -> int:
         if not route.observatory_ready:
             continue
         observations = observe_reviewed_har(
-            args.har,
+            har_path,
             archive=archive,
             database_path=args.database,
             migrations_dir=args.migrations,
@@ -99,9 +129,13 @@ def main() -> int:
 
     health = build_source_health(args.database)
     result = {
-        "cycle_version": "network-source-cycle-v2",
+        "cycle_version": "network-source-cycle-v3",
         "capture_mode": "browser_har",
         "network_requests_performed": False,
+        "har_selection": {
+            "mode": selection_mode,
+            "selected_path_included": False,
+        },
         "network_inventory": inventory,
         "reviewed_routes_observed": observed_routes,
         "reviewed_route_observation_count": sum(
@@ -111,6 +145,7 @@ def main() -> int:
         "source_health": health,
         "privacy": {
             "har_body_included": False,
+            "har_path_included": False,
             "cookies_included": False,
             "headers_included": False,
             "query_values_included": False,
