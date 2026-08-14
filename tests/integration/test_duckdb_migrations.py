@@ -22,6 +22,7 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         "0008_combatants_observation_persistence",
         "0009_source_observatory",
         "0010_source_acquisition_observation",
+        "0011_source_dimension_index",
     ]
     assert apply_migrations(database, root / "migrations") == []
     with duckdb.connect(str(database)) as connection:
@@ -33,6 +34,12 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
             row[0]
             for row in connection.execute(
                 "DESCRIBE source_acquisition_observation"
+            ).fetchall()
+        }
+        source_dimension_index_columns = {
+            row[0]
+            for row in connection.execute(
+                "DESCRIBE source_dimension_index_value"
             ).fetchall()
         }
         raid_plan_columns = {
@@ -109,6 +116,7 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         "analysis_run",
         "reanalysis_request",
         "source_acquisition_observation",
+        "source_dimension_index_value",
     } <= tables
     assert {
         "source_code",
@@ -135,6 +143,14 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         "error_class",
         "metadata_json",
     } <= source_acquisition_columns
+    assert {
+        "analysis_run_id",
+        "artifact_key",
+        "source_code",
+        "endpoint_code",
+        "dimension_name",
+        "dimension_value",
+    } <= source_dimension_index_columns
     assert "plan_name" in raid_plan_columns
     assert {"player_name", "class_code", "spec_code", "role"} <= raid_slot_columns
     assert {"trust_status", "source_kind"} <= effect_columns
