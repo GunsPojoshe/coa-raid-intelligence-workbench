@@ -111,6 +111,32 @@ routes:
     review_state: verified
     empty_params_observed: false
 
+  - endpoint_code: reports_public_filter_options_api
+    route_template: /api/reports/public/filter-options
+    method: GET
+    auth_mode: browser_context_observed
+    status: reviewed
+    use: public_report_filter_catalog_source_observation
+    parameter_keys: []
+    dimension_keys:
+      - phase_number
+      - location
+    discovery_source: browser_network_har_2026_08_14_reports_page
+    review_state: verified
+    empty_params_observed: true
+
+  - endpoint_code: reports_queue_status_api
+    route_template: /api/reports/queue-status
+    method: GET
+    auth_mode: browser_context_observed
+    status: reviewed
+    use: reports_collection_operational_health
+    parameter_keys: []
+    dimension_keys: []
+    discovery_source: browser_network_har_2026_08_14_reports_page
+    review_state: verified
+    empty_params_observed: true
+
   - endpoint_code: report_metadata
     route_template: null
     method: GET

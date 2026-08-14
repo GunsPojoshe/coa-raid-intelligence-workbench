@@ -1,0 +1,82 @@
+{
+  "capture_mode": "browser_har",
+  "decision_boundary": {
+    "filter_options_ready_for_reviewed_registration": true,
+    "full_report_crawl_ready": false,
+    "planner_scoring_allowed": false,
+    "queue_status_ready_for_operational_registration": true,
+    "report_detail_runtime_observed": false,
+    "reports_filter_options_runtime_observed": true,
+    "reports_public_runtime_observed": true,
+    "reports_queue_status_runtime_observed": true
+  },
+  "network_observations": {
+    "filter_options": {
+      "active_phase_count_observed": 1,
+      "content_type_family": "json",
+      "difficulty_option_count_observed": 5,
+      "dungeon_option_count_observed": 23,
+      "http_status": 200,
+      "keystone_level_option_count_observed": 29,
+      "method": "GET",
+      "phase_count_observed": 3,
+      "query_keys": [],
+      "response_root_keys": [
+        "activePhase",
+        "options",
+        "success"
+      ],
+      "route_template": "/api/reports/public/filter-options",
+      "trial_level_option_count_observed": 0,
+      "unique_location_count_observed": 27
+    },
+    "queue_status": {
+      "content_type_family": "json",
+      "http_status": 200,
+      "method": "GET",
+      "query_keys": [],
+      "response_root_keys": [
+        "backlog",
+        "maintenance",
+        "success"
+      ],
+      "route_template": "/api/reports/queue-status",
+      "semantic_role": "operational_health"
+    },
+    "reports_public": {
+      "content_type_family": "json",
+      "http_status": 200,
+      "method": "GET",
+      "pagination_object_present": true,
+      "query_keys": [
+        "limit",
+        "page",
+        "sortBy",
+        "sortOrder"
+      ],
+      "report_row_count_observed": 100,
+      "response_root_keys": [
+        "pagination",
+        "reports",
+        "success"
+      ],
+      "route_template": "/api/reports/public"
+    }
+  },
+  "privacy": {
+    "cookies_published": false,
+    "dimension_values_published": false,
+    "guild_ids_published": false,
+    "guild_names_published": false,
+    "har_published": false,
+    "query_values_published": false,
+    "raw_response_bodies_published": false,
+    "report_ids_published": false,
+    "request_headers_published": false,
+    "user_identity_published": false
+  },
+  "receipt_kind": "reports_browser_network_contract_review",
+  "schema_version": 1,
+  "source_code": "coa_ascension_logs",
+  "source_page_path": "/reports"
+}

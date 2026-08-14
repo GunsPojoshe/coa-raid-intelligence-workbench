@@ -18,7 +18,7 @@ def test_registry_loads_primary_observation_source() -> None:
     assert registry.source_code == "coa_ascension_logs"
     assert registry.base_url == "https://coa.ascensionlogs.gg"
     assert registry.truth_role == "primary_observation_source"
-    assert len(registry.routes) == 12
+    assert len(registry.routes) == 14
     assert registry.prohibited_assumptions
 
 
@@ -96,6 +96,39 @@ def test_reviewed_public_report_api_is_observatory_ready_without_dimensions() ->
     assert route.parameter_keys == ("page", "limit", "sortBy", "sortOrder")
     assert route.dimension_keys == ()
     assert route.empty_params_observed is False
+    assert route.observatory_ready is True
+    assert route.production_ready is False
+
+
+def test_reports_filter_catalog_is_observatory_ready_with_low_cardinality_dimensions() -> None:
+    registry = load_source_registry(registry_path())
+    route = registry.route("reports_public_filter_options_api")
+
+    assert route.route_template == "/api/reports/public/filter-options"
+    assert route.method == "GET"
+    assert route.auth_mode == "browser_context_observed"
+    assert route.status == "reviewed"
+    assert route.review_state == "verified"
+    assert route.parameter_keys == ()
+    assert route.dimension_keys == ("phase_number", "location")
+    assert route.empty_params_observed is True
+    assert route.observatory_ready is True
+    assert route.production_ready is False
+
+
+def test_reports_queue_status_is_reviewed_operational_health_without_dimensions() -> None:
+    registry = load_source_registry(registry_path())
+    route = registry.route("reports_queue_status_api")
+
+    assert route.route_template == "/api/reports/queue-status"
+    assert route.method == "GET"
+    assert route.auth_mode == "browser_context_observed"
+    assert route.status == "reviewed"
+    assert route.review_state == "verified"
+    assert route.use == "reports_collection_operational_health"
+    assert route.parameter_keys == ()
+    assert route.dimension_keys == ()
+    assert route.empty_params_observed is True
     assert route.observatory_ready is True
     assert route.production_ready is False
 
