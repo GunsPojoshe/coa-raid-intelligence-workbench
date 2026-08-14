@@ -55,7 +55,7 @@ GET /api/phases
 GET /api/guilds/phase-progression?phase=<value>&difficulty=<value>
 ```
 
-Both returned 200 JSON and are now the first persisted Network-first Source Observatory baseline.
+Both returned 200 JSON and are the first persisted Network-first Source Observatory baseline.
 
 Canonical public baseline receipt:
 
@@ -89,17 +89,25 @@ scripts/source_health.py
 
 Prefer `observe_network_cycle.py` for a complete reviewed-route ingestion cycle from one HAR instead of one endpoint command at a time.
 
-`source_health.py` is the command-line precursor of the future Source & Analysis Health UI.
+## Localhost Source & Analysis Health
+
+The web app exposes:
+
+```text
+/source-health
+/api/source-health
+```
+
+The health view is privacy-safe and intentionally shows structural state only: endpoint status, capture/acquisition state, dimension counts, open changes and pending reanalysis. It does not expose raw payloads, HAR, cookies, request headers or dimension values.
 
 ## Next product path
 
 ```text
 verify exact-head CI
--> make browser/network acquisition repeatable with minimal user action
--> improve dynamic schema normalization where source maps use IDs as object keys
--> register derived artifact dependencies
--> generate scoped reanalysis requests from real source changes
--> expose Source & Analysis Health in localhost UI
+-> register real derived artifact dependencies
+-> prove scoped reanalysis from a later real source change
+-> make recurring browser/network capture minimal
+-> normalize dynamic keyed-map schema noise when needed
 -> expand Network-first source coverage
 ```
 
@@ -113,6 +121,8 @@ characters
 Armory/talent-grid
 BisBeard
 ```
+
+Do not hardcode current boss/phase counts into product logic. New bosses, phases, logs and meta changes are expected normal source evolution.
 
 ## Safety
 
