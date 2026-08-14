@@ -5,6 +5,10 @@ import json
 from pathlib import Path
 from urllib.parse import urlsplit
 
+from coa_workbench.collector.har_route_resolution import (
+    generic_har_ingest_ready,
+    route_requires_explicit_dynamic_resolution,
+)
 from coa_workbench.collector.har_source_discovery import (
     inventory_network_har,
     select_latest_relevant_har,
@@ -36,9 +40,10 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Run one Network-first Source Observatory cycle from a browser HAR: "
-            "inventory traffic, ingest matching reviewed GET contracts, rebuild approved "
-            "derived dimensions, and report health. If HAR is omitted, use the newest "
-            "relevant .har from --har-dir."
+            "inventory traffic, ingest matching reviewed static GET contracts, rebuild approved "
+            "derived dimensions, and report health. Dynamic path templates are inventoried but "
+            "deferred to explicit route resolution. If HAR is omitted, use the newest relevant "
+            ".har from --har-dir."
         )
     )
     parser.add_argument("har", nargs="?", type=Path)
@@ -93,9 +98,16 @@ def main() -> int:
         api_prefix="/api/",
     )
 
+    deferred_dynamic_routes = sorted(
+        route.endpoint_code
+        for route in registry.routes
+        if route.observatory_ready
+        and route_requires_explicit_dynamic_resolution(route.route_template)
+    )
+
     observed_routes: list[dict[str, object]] = []
     for route in registry.routes:
-        if not route.observatory_ready:
+        if not route.observatory_ready or not generic_har_ingest_ready(route.route_template):
             continue
         observations = observe_reviewed_har(
             har_path,
@@ -118,7 +130,9 @@ def main() -> int:
     dimension_endpoints = [
         route.endpoint_code
         for route in registry.routes
-        if route.observatory_ready and route.dimension_keys
+        if route.observatory_ready
+        and route.dimension_keys
+        and generic_har_ingest_ready(route.route_template)
     ]
     dimension_index = rebuild_source_dimension_index(
         args.database,
@@ -129,7 +143,7 @@ def main() -> int:
 
     health = build_source_health(args.database)
     result = {
-        "cycle_version": "network-source-cycle-v3",
+        "cycle_version": "network-source-cycle-v4",
         "capture_mode": "browser_har",
         "network_requests_performed": False,
         "har_selection": {
@@ -141,6 +155,11 @@ def main() -> int:
         "reviewed_route_observation_count": sum(
             int(item["matching_entry_count"]) for item in observed_routes
         ),
+        "dynamic_route_resolution": {
+            "generic_dynamic_ingestion_allowed": False,
+            "deferred_endpoint_codes": deferred_dynamic_routes,
+            "deferred_route_count": len(deferred_dynamic_routes),
+        },
         "source_dimension_index": dimension_index,
         "source_health": health,
         "privacy": {
