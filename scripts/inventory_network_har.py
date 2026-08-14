@@ -10,8 +10,7 @@ from coa_workbench.collector.har_source_discovery import inventory_network_har
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
-            "Inventory same-origin API traffic from a browser HAR "
-            "without retaining scalar values."
+            "Inventory same-origin API traffic from a browser HAR without retaining scalar values."
         )
     )
     parser.add_argument("path", type=Path)
