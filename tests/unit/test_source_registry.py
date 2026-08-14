@@ -14,11 +14,11 @@ def registry_path() -> Path:
 
 def test_registry_loads_primary_observation_source() -> None:
     registry = load_source_registry(registry_path())
-    assert registry.schema_version == 3
+    assert registry.schema_version == 4
     assert registry.source_code == "coa_ascension_logs"
     assert registry.base_url == "https://coa.ascensionlogs.gg"
     assert registry.truth_role == "primary_observation_source"
-    assert len(registry.routes) == 9
+    assert len(registry.routes) == 11
     assert registry.prohibited_assumptions
 
 
@@ -42,23 +42,44 @@ def test_public_routes_are_available_only_as_discovery_probes() -> None:
         assert route.observatory_ready is False
 
 
-def test_progression_rankings_api_is_reviewed_for_observatory_capture() -> None:
+def test_network_observed_progression_routes_are_observatory_ready() -> None:
+    registry = load_source_registry(registry_path())
+
+    phases = registry.route("phases_api")
+    assert phases.route_template == "/api/phases"
+    assert phases.method == "GET"
+    assert phases.empty_params_observed is True
+    assert phases.dimension_keys == ("phase_number",)
+    assert phases.observatory_ready is True
+    assert phases.production_ready is False
+
+    progression = registry.route("guild_phase_progression_api")
+    assert progression.route_template == "/api/guilds/phase-progression"
+    assert progression.method == "GET"
+    assert progression.status == "reviewed"
+    assert progression.review_state == "verified"
+    assert progression.auth_mode == "browser_context_observed"
+    assert progression.empty_params_observed is False
+    assert progression.parameter_keys == ("phase", "board", "difficulty")
+    assert progression.dimension_keys == (
+        "phase",
+        "board",
+        "bossId",
+        "difficulty",
+        "location",
+    )
+    assert progression.observatory_ready is True
+    assert progression.production_ready is False
+
+
+def test_alternate_rankings_contract_remains_reviewed_not_production_ready() -> None:
     registry = load_source_registry(registry_path())
     route = registry.route("guild_progression_rankings_api")
 
     assert route.route_template == "/api/guilds/progression/rankings"
     assert route.method == "GET"
     assert route.status == "reviewed"
-    assert route.review_state == "verified"
-    assert route.auth_mode == "probe_without_auth"
     assert route.empty_params_observed is True
-    assert route.parameter_keys == (
-        "bracket",
-        "difficulty",
-        "location",
-        "phaseId",
-        "realm",
-    )
     assert route.observatory_ready is True
     assert route.production_ready is False
 

@@ -4,9 +4,7 @@ Continue development of `GunsPojoshe/coa-raid-intelligence-workbench`.
 
 ## Start
 
-The agent first performs all GitHub work itself: inspect repository, PR #7, PR #3, current remote HEAD and exact-head CI. Do not ask the user to run GitHub commands for information available through the connector.
-
-Use the user only for Windows/local/private operations that the agent cannot directly execute. Bundle local work into one action whenever possible.
+The agent performs GitHub/PR/CI/repository work itself. Use the user only for Windows/local/private boundaries that cannot be accessed directly, and bundle those operations into one action.
 
 Read:
 
@@ -14,62 +12,103 @@ Read:
 AGENTS.md
 docs/PROJECT_MASTER_CONTEXT.md
 docs/PROJECT_STATE.md
-docs/E3_GUILD_PROGRESSION_EVIDENCE_STATUS.md
+docs/SOURCE_OBSERVABILITY_AND_REANALYSIS.md
+docs/SOURCE_OBSERVATORY_V1_STATUS.md
 docs/CI_OPERATIONS.md
 ```
 
-## Critical progression correction
+Live GitHub and current local evidence override historical checkpoint text.
+
+## Source discovery rule
+
+Use **Network first**:
+
+```text
+real browser Fetch/XHR
+-> sanitized HAR inventory
+-> reviewed route contract
+-> immutable capture
+-> schema/dimension baseline
+-> change detection
+-> scoped reanalysis
+```
+
+Inspect SPA JavaScript only when Network evidence does not explain request construction or an additional contract detail is needed.
+
+## Current progression correction
 
 Do not resume the old helper/owner investigation.
 
-Exact archived SPA evidence established:
+A sanitized browser HAR of `/guilds/progression` on 2026-08-14 observed:
 
 ```text
-/api/guilds/progression exact literal -> cache exclusion only
-exact-prefix direct requests -> 0
-direct progression calls -> 4
-methods -> GET only
-POST observed -> false
+GET /api/phases                                      -> 200 JSON
+GET /api/guilds/phase-progression?phase=...&difficulty=... -> 200 JSON
 ```
 
-Actual frontend contracts:
+Current SPA supports the phase-progression helper contract:
 
 ```text
-GET /api/guilds/progression/rankings
-GET /api/guilds/progression/full-clears
-GET /api/guilds/progression/rankings/{bossId}
+phase      always mapped
+board      optional
+difficulty optional
+```
+
+The phase-progression response contains:
+
+```text
+phase
+board
+enabled
+totalBosses
+bossesCollapsed
+bossList
+perBossRankings
+guilds
 ```
 
 Canonical receipt:
 
 ```text
-evidence/real-data/argentum-guild-progression-frontend-request-contract.json
+evidence/real-data/coa-guild-phase-progression-browser-network.json
 ```
 
-The rankings contract contains an observed empty-params branch and is the first bounded progression contract to validate.
+The older `/api/guilds/progression/rankings*` contracts still exist in the SPA, but they were not exercised by this browser capture. Treat them as alternate reviewed contracts, not as the only/current progression path.
 
-## Local state
+## Source Observatory
 
-The user's Windows checkout may still contain the obsolete uncommitted lexical/helper repair from the earlier mistaken route path. Do not merge it into the product path automatically.
+Reviewed registry routes now include:
 
-After verifying the current remote checkpoint and CI, clean those old local changes in one bounded operation, sync to remote, and preserve private/raw data.
+```text
+phases_api
+guild_phase_progression_api
+guild_progression_rankings_api
+```
+
+Generic HAR discovery:
+
+```text
+scripts/inventory_network_har.py
+```
+
+It must remain scalar-free: no query values, headers, cookies, response bodies or response record scalars.
 
 ## Next product path
 
 ```text
-bounded validation of the observed rankings contract
--> immutable raw archive
--> response schema/fingerprint review
--> pagination/termination evidence
--> only then expand collection
+import the observed phases + phase-progression HAR responses into local Source Observatory
+-> establish first real schema/dimension baseline
+-> verify change detection on a later capture
+-> connect boss/phase/source changes to scoped reanalysis
+-> expand Network-first discovery to reports/encounters/characters/Armory/BisBeard
 ```
 
-No guessed POST. Do not treat the exact legacy `/api/guilds/progression` prefix as an endpoint. No broad helper/owner graph work unless new concrete evidence requires it.
+Do not hardcode current boss/phase counts into product logic. New bosses, phases, logs and meta changes are expected normal source evolution.
 
 ## Safety
 
 - Do not rewrite published migrations.
 - Do not delete `.gitkeep`.
-- Do not publish secrets/private evidence accidentally.
-- Do not raise evidence gates by inference.
-- Do not treat local focused-test success as an exact-head remote checkpoint.
+- Do not publish raw HAR/session/user/private evidence.
+- Do not raise semantic/scoring gates by inference.
+- Do not treat one timestamped response as permanent source semantics.

@@ -1,0 +1,89 @@
+{
+  "decision_boundary": {
+    "alternate_rankings_route_exercised_in_this_har": false,
+    "alternate_rankings_routes_still_present_in_spa": true,
+    "current_progression_page_phase_progression_route_observed": true,
+    "full_crawl_ready": false,
+    "network_first_discovery_is_primary": true,
+    "pagination_semantics_verified": false,
+    "planner_scoring_allowed": false,
+    "response_schema_observed_for_phase_progression": true,
+    "termination_semantics_verified": false
+  },
+  "network_observations": {
+    "phase_progression": {
+      "boss_list_count_observed": 12,
+      "content_type_family": "json",
+      "guild_row_count_observed": 16,
+      "http_status": 200,
+      "location_values_observed": [
+        "Molten Core",
+        "Onyxia's Lair"
+      ],
+      "method": "GET",
+      "observed_query_values": {
+        "difficulty": "ascended",
+        "phase": 2
+      },
+      "per_boss_ranking_group_count_observed": 12,
+      "query_keys": [
+        "difficulty",
+        "phase"
+      ],
+      "raid_size_values_observed": [
+        "25-man",
+        "flex",
+        "mixed"
+      ],
+      "response_root_keys": [
+        "board",
+        "bossList",
+        "bossesCollapsed",
+        "enabled",
+        "guilds",
+        "perBossRankings",
+        "phase",
+        "success",
+        "totalBosses"
+      ],
+      "route_template": "/api/guilds/phase-progression"
+    },
+    "phases": {
+      "active_phase_number_observed": 2,
+      "content_type_family": "json",
+      "http_status": 200,
+      "method": "GET",
+      "phase_count_observed": 3,
+      "query_keys": [],
+      "response_root_keys": [
+        "cached",
+        "phases",
+        "success"
+      ],
+      "route_template": "/api/phases"
+    },
+    "same_origin_api_route_shape_count": 6
+  },
+  "observed_at": "2026-08-14T08:21:56.129Z",
+  "privacy": {
+    "cookies_published": false,
+    "encounter_ids_published": false,
+    "guild_ids_published": false,
+    "guild_names_published": false,
+    "raw_har_published": false,
+    "raw_response_bodies_published": false,
+    "report_ids_published": false,
+    "request_headers_published": false,
+    "user_identity_published": false
+  },
+  "receipt_kind": "browser_network_progression_contract_review",
+  "schema_version": 1,
+  "source_code": "coa_ascension_logs",
+  "source_page_path": "/guilds/progression",
+  "supporting_current_spa_contract": {
+    "board_parameter_optional": true,
+    "difficulty_parameter_optional": true,
+    "phase_parameter_always_mapped": true,
+    "phase_progression_route_observed": true
+  }
+}

@@ -1,69 +1,129 @@
 # E3 guild progression evidence status
 
-Дата актуализации: **2026-08-13**.
+Дата актуализации: **2026-08-14**.
 
-## Corrected frontend evidence
+## 1. Historical correction
 
-Offline review of the exact archived SPA asset corrected the historical progression interpretation.
-
-The exact literal `/api/guilds/progression` appears once in frontend cache-exclusion configuration and is not directly requested.
-
-Observed direct progression frontend contracts:
+The exact legacy literal:
 
 ```text
-GET /api/guilds/progression/rankings                 (2 callsites)
-GET /api/guilds/progression/full-clears              (1 callsite)
-GET /api/guilds/progression/rankings/{bossId}        (1 callsite)
+/api/guilds/progression
 ```
 
-All four observed direct progression calls use GET. No direct POST progression call was observed.
+is not a direct POST endpoint in the reviewed SPA evidence. The old helper/owner chain is retained only as audit history and must not drive request selection.
 
-Observed parameter-key sets:
+Alternate SPA contracts remain present:
 
 ```text
-rankings:
-  [bracket]
-  [bracket,difficulty,location,phaseId,realm]
-  explicit empty params-object branch: true
-
-full-clears:
-  [bracket,difficulty,location,page,phaseId,realm]
-
-rankings/{bossId}:
-  [bracket,difficulty,page,phaseId,realm]
+GET /api/guilds/progression/rankings
+GET /api/guilds/progression/full-clears
+GET /api/guilds/progression/rankings/{bossId}
 ```
 
-## Versioned evidence
+A direct empty-parameter rankings acquisition was attempted and produced a managed-edge `403` HTML challenge. That is acquisition evidence only; it does not prove the route absent and does not provide JSON semantics.
+
+## 2. Current browser Network evidence
+
+A sanitized browser HAR from `/guilds/progression` captured the actual runtime requests used by the current page:
+
+```text
+GET /api/phases                                      -> 200 application/json
+GET /api/guilds/phase-progression?phase=...&difficulty=... -> 200 application/json
+```
+
+The phase-progression response contains the structural domains:
+
+```text
+phase
+board
+enabled
+totalBosses
+bossesCollapsed
+bossList
+perBossRankings
+guilds
+```
+
+Timestamped 2026-08-14 observation:
+
+```text
+phase catalog entries: 3
+active phase number: 2
+boss rows: 12
+per-boss ranking groups: 12
+guild progression rows: 16
+locations observed: Molten Core, Onyxia's Lair
+raid-size classes observed: 25-man, flex, mixed
+```
+
+These values are observations and must never become hardcoded permanent game configuration.
+
+Current SPA request construction supports:
+
+```text
+phase      always mapped
+board      optional
+difficulty optional
+```
+
+## 3. Canonical evidence
+
+Historical SPA contract receipt:
 
 ```text
 evidence/real-data/argentum-guild-progression-frontend-request-contract.json
 ```
 
-Exact archived SPA payload SHA-256:
+Current browser-network receipt:
 
 ```text
-da381a27e44be6cad3f60c4326251c7cbdd1ea8b31c5ccd5d8be03331855dacc
+evidence/real-data/coa-guild-phase-progression-browser-network.json
 ```
 
-The review is offline-only, publishes no raw JavaScript/private source values, and performed no network request.
+The browser-network receipt publishes no raw HAR, headers, cookies, user identity, guild names/IDs, report IDs, encounter IDs or raw response bodies.
 
-## Historical helper chain
+## 4. Registry / Observatory boundary
 
-Previous definition/reference/owner receipts remain audit history but are superseded for choosing the progression HTTP contract.
-
-The former `POST /api/guilds/progression` assumption and former opaque owner-group relationships must not be used as current route evidence.
-
-## Decision boundary
+Reviewed Source Observatory routes:
 
 ```text
-legacy exact-prefix direct endpoint: false
-bounded rankings GET contract observed: true
-response semantics verified: false
+phases_api
+guild_phase_progression_api
+guild_progression_rankings_api
+```
+
+The first two are supported by current browser Network evidence. Rankings remains an alternate SPA-reviewed contract.
+
+Generic same-origin HAR discovery:
+
+```text
+scripts/inventory_network_har.py
+```
+
+It is scalar-free and is the preferred way to discover future route changes before adding a reviewed contract.
+
+## 5. Decision boundary
+
+```text
+Network-first discovery: active
+current phase-progression browser request observed: true
+phase-progression JSON structure observed: true
+current browser raw response persisted in user's Observatory: pending
 pagination semantics verified: false
 termination semantics verified: false
 completeness verified: false
-ready for full guild crawl: false
-planner scoring allowed: false
+ready for autonomous full guild crawl: false
+planner scoring allowed from progression evidence alone: false
 ```
 
-The next progression stage is a single bounded validation of the observed rankings contract, followed by immutable response archiving and schema/pagination review before collection is expanded.
+## 6. Next step
+
+```text
+persist /api/phases + /api/guilds/phase-progression browser responses locally
+-> establish schema/dimension baseline
+-> capture again later
+-> detect new phase/boss/location/schema automatically
+-> emit scoped reanalysis requests
+```
+
+Do not resume global helper/owner archaeology unless a concrete future network request cannot be explained without it.

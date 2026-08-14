@@ -1,6 +1,6 @@
 # Фактическое состояние проекта
 
-Дата актуализации: **2026-08-13**.
+Дата актуализации: **2026-08-14**.
 
 ## GitHub
 
@@ -12,39 +12,89 @@ e2/log-evidence-refactor
 e3/real-log-capture
 ```
 
-Obsolete cleanup/Codex/E0/E1/E3-stage branches removed 2026-08-13.
-
 PR #7 remains Draft: `e3/real-log-capture -> e2/log-evidence-refactor`.
 
-Last fully verified checkpoint before the current progression-contract commits:
+Last fully verified checkpoint before the current Network-first update:
 
 ```text
-HEAD: 005c6cbf017f7bea7c3b0b0554e05381dc4679f5
-Verify repository #615: success
+HEAD: 269cbabe066137f2f27c33526e1cdeefa30970ad
+Verify repository #647
 public-release-audit: success
 ubuntu: success
 windows: success
 ```
 
-Newer HEAD/CI must always be checked live.
+Always verify newer HEAD/CI live.
 
-## Major progression finding
+## Source Observatory
 
-The local handoff included the exact private recovery metadata and exact archived SPA payload:
-
-```text
-SHA-256: da381a27e44be6cad3f60c4326251c7cbdd1ea8b31c5ccd5d8be03331855dacc
-```
-
-Direct analysis established that the exact literal:
+Implemented shared infrastructure:
 
 ```text
-/api/guilds/progression
+reviewed contract
+-> acquisition observation
+-> immutable RawArchive
+-> JSON schema snapshot when applicable
+-> source change registry
+-> dependency lookup
+-> scoped reanalysis request
 ```
 
-occurs as a `noCacheEndpoints` configuration value and has **zero direct request occurrences**.
+Migrations currently published: `0001`–`0010`.
 
-Actual direct progression contracts:
+Direct HTTP and browser-HAR acquisition outcomes are separated so a blocked/non-JSON response cannot be mistaken for schema evidence.
+
+## Network-first correction
+
+A sanitized Chrome HAR of the current `/guilds/progression` page was reviewed directly.
+
+Same-origin API Fetch/XHR inventory contained 7 observations across 6 route shapes. The progression-relevant runtime path was:
+
+```text
+GET /api/phases                                      -> 200 JSON
+GET /api/guilds/phase-progression?phase=...&difficulty=... -> 200 JSON
+```
+
+The phase-progression response structurally contains:
+
+```text
+phase
+board
+enabled
+totalBosses
+bossesCollapsed
+bossList
+perBossRankings
+guilds
+```
+
+Timestamped observation at 2026-08-14:
+
+```text
+phase catalog entries: 3
+active phase number: 2
+bossList rows: 12
+perBossRankings groups: 12
+guild progression rows: 16
+observed locations: Molten Core, Onyxia's Lair
+observed raid-size classes: 25-man, flex, mixed
+```
+
+These counts are **observations**, not hardcoded product configuration.
+
+Current SPA additionally confirms that `phase-progression` always maps `phase` and conditionally maps `board` and `difficulty`.
+
+Canonical public receipt:
+
+```text
+evidence/real-data/coa-guild-phase-progression-browser-network.json
+```
+
+Raw HAR and user/session/guild/report record values remain private.
+
+## Relation to rankings routes
+
+The earlier reviewed SPA contracts still exist:
 
 ```text
 GET /api/guilds/progression/rankings
@@ -52,56 +102,51 @@ GET /api/guilds/progression/full-clears
 GET /api/guilds/progression/rankings/{bossId}
 ```
 
-Four direct frontend calls were observed, all GET. No direct POST progression request was observed.
+They were **not** exercised by this particular browser capture. Therefore they remain alternate reviewed contracts, not the primary runtime path observed for the current progression page.
 
-Therefore the old helper-definition/reference/owner chain is retained as audit history but is superseded for choosing the progression HTTP contract.
+The earlier direct rankings GET produced a managed-edge `403`; that remains a transport/acquisition observation only.
 
-## New versioned contract stage
+## Universal discovery direction
 
-Added to the active branch:
-
-```text
-src/coa_workbench/collector/guild_progression_frontend_contract.py
-tests/unit/test_guild_progression_frontend_contract.py
-evidence/real-data/argentum-guild-progression-frontend-request-contract.json
-```
-
-The review is offline-only and binds its public result to the exact archived SPA/private recovery evidence. The receipt publishes route templates and parameter-key names, not raw JavaScript/private source values.
-
-Decision:
+Generic sanitized HAR discovery is now part of the product path:
 
 ```text
-legacy exact-prefix probe allowed: false
-bounded rankings GET contract observed: true
-bounded rankings GET probe ready: true
-network requests performed by review: false
+scripts/inventory_network_har.py
 ```
 
-## User's current Windows working tree
+It inventories same-origin API route shapes, query-key names, HTTP statuses, content families and JSON structural fingerprints without keeping query values, headers, cookies, response bodies or response scalar values.
 
-The user's checkout still contains the older uncommitted lexical/helper repair from the mistaken route path. It is no longer on the critical product path.
+This is the basis for detecting:
 
-Do not commit that repair automatically. After the current remote contract checkpoint is green, remove only those obsolete local code changes with one bounded local operation, preserve private/raw evidence, and fast-forward to the remote branch.
+```text
+new/changed endpoint
+new phase
+new boss
+new location/difficulty
+schema change
+new report/data availability
+```
+
+and then requesting only the affected reanalysis.
 
 ## Next action
 
-After exact-head CI for the current contract stage is green:
-
 ```text
-clean obsolete local helper-repair diff
--> sync local checkout
--> perform one bounded GET /api/guilds/progression/rankings using no invented query values
--> archive exact response
--> review schema/fingerprint
--> establish pagination/termination evidence before expanding collection
+import the observed /api/phases and /api/guilds/phase-progression responses
+into the user's local Source Observatory
+-> establish the first real schema/dimension baseline
+-> repeat acquisition later
+-> prove automatic source-change detection
+-> bind change events to scoped reanalysis
+-> expand the same Network-first discovery to reports, encounters, characters,
+   Armory/talent-grid and BisBeard
 ```
 
-No request to the exact legacy `/api/guilds/progression` prefix. No guessed POST. No further broad helper/owner/alias diagnostics are required before the bounded rankings GET.
+No guessed POST. No open-ended helper/owner archaeology. No hardcoded current boss/phase counts.
 
 ## Development process
 
 - Agent performs all GitHub work available to it.
-- User participates only at inaccessible local Windows/private runtime boundaries.
-- Private/raw artifacts may be inspected for analysis; publication/versioning is a separate boundary.
-- Focused tests during iteration; one aggregate verifier before a meaningful push; exact-head CI afterward.
-- Prefer one coherent product change over process-driven micro-stages.
+- User participates only at inaccessible Windows/browser/private-runtime boundaries.
+- Private/raw artifacts may be inspected for analysis; publication/versioning is separate.
+- Prefer one coherent change, one aggregate verifier, one push, then exact-head CI.

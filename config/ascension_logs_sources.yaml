@@ -1,4 +1,4 @@
-schema_version: 3
+schema_version: 4
 source_code: coa_ascension_logs
 base_url: https://coa.ascensionlogs.gg
 status: discovery
@@ -6,6 +6,7 @@ truth_role: primary_observation_source
 
 principles:
   - raw responses are immutable and content-addressed
+  - browser network captures are primary discovery evidence for live frontend behavior
   - route discovery is separate from production ingestion
   - observations are stored before any mechanic inference
   - inferred mechanics never overwrite contradictory evidence
@@ -44,12 +45,45 @@ routes:
     status: verified_html
     use: guild_and_report_navigation_discovery
 
+  - endpoint_code: phases_api
+    route_template: /api/phases
+    method: GET
+    auth_mode: browser_context_observed
+    status: reviewed
+    use: phase_catalog_source_observation
+    parameter_keys: []
+    dimension_keys:
+      - phase_number
+    discovery_source: browser_network_har_2026_08_14
+    review_state: verified
+    empty_params_observed: true
+
+  - endpoint_code: guild_phase_progression_api
+    route_template: /api/guilds/phase-progression
+    method: GET
+    auth_mode: browser_context_observed
+    status: reviewed
+    use: current_phase_progression_source_observation
+    parameter_keys:
+      - phase
+      - board
+      - difficulty
+    dimension_keys:
+      - phase
+      - board
+      - bossId
+      - difficulty
+      - location
+    discovery_source: browser_network_har_plus_current_spa_2026_08_14
+    review_state: verified
+    empty_params_observed: false
+
   - endpoint_code: guild_progression_rankings_api
     route_template: /api/guilds/progression/rankings
     method: GET
     auth_mode: probe_without_auth
     status: reviewed
-    use: guild_progression_rankings_source_observation
+    use: alternate_progression_rankings_source_observation
     parameter_keys:
       - bracket
       - difficulty

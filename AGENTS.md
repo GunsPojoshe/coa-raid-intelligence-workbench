@@ -30,6 +30,24 @@ focused tests while iterating
 
 Evidence-sensitive work additionally validates deterministic bindings and publication/privacy boundaries. Do not create permanent evidence stages for every intermediate question.
 
+## Source discovery rule
+
+Prefer the shortest evidence path:
+
+```text
+browser Network / Fetch / XHR
+-> sanitized HAR inventory
+-> reviewed request contract
+-> immutable source capture
+-> schema/dimension baseline
+-> source-change event
+-> scoped reanalysis
+```
+
+Inspect SPA JavaScript when Network evidence does not fully explain request construction, optional parameters or route selection. Do not start with minified-helper archaeology when an actual browser request is available.
+
+A timestamped source response is an observation, not permanent source semantics. Bosses, phases, logs, fields, routes and meta are expected to evolve.
+
 ## Git/branches
 
 Keep only active branches unless a temporary branch has a current purpose:
@@ -44,18 +62,9 @@ Delete merged/closed/stage branches promptly. Never rewrite published migrations
 
 ## Current guild-progression boundary
 
-The historical helper chain that treated `/api/guilds/progression` as a candidate POST endpoint is superseded.
+The old exact `/api/guilds/progression` POST hypothesis is superseded.
 
-Direct inspection of the exact archived SPA asset established:
-
-```text
-exact literal /api/guilds/progression: cache-exclusion configuration only
-direct request to exact /api/guilds/progression: none
-observed direct progression methods: GET
-observed direct progression calls: 4
-```
-
-Observed frontend request contracts:
+Historical/current SPA review still contains alternate rankings contracts:
 
 ```text
 GET /api/guilds/progression/rankings
@@ -63,15 +72,46 @@ GET /api/guilds/progression/full-clears
 GET /api/guilds/progression/rankings/{bossId}
 ```
 
-Canonical public receipt:
+A sanitized browser Network capture of the current `/guilds/progression` page on 2026-08-14 actually exercised:
 
 ```text
-evidence/real-data/argentum-guild-progression-frontend-request-contract.json
+GET /api/phases
+GET /api/guilds/phase-progression?phase=<value>&difficulty=<value>
 ```
 
-`GET /api/guilds/progression/rankings` has an observed empty-params branch, so it is the first bounded request contract. The review stage itself performed no network request.
+Both returned `200 application/json`.
 
-Do not continue the old global helper/owner/alias investigation unless a future concrete request path requires it.
+Current SPA supports the phase-progression helper contract:
+
+```text
+phase      always mapped
+board      optional
+difficulty optional
+```
+
+Canonical current browser-network receipt:
+
+```text
+evidence/real-data/coa-guild-phase-progression-browser-network.json
+```
+
+The rankings contracts remain alternate reviewed evidence because they still exist in the SPA, but they were not exercised by this capture. Do not treat one route family as globally deleted merely because one browser capture used another.
+
+Do not resume the old global helper/owner/alias investigation unless a future concrete request requires it.
+
+## Source Observatory
+
+`Source Observatory v1` is the universal ingestion/change layer. Reviewed sources should flow through the same infrastructure instead of creating endpoint-specific persistence stacks.
+
+Generic Network discovery:
+
+```text
+scripts/inventory_network_har.py
+```
+
+Its output must remain scalar-free: no query values, headers, cookies, response bodies, user/session values, guild/report IDs or other record scalars.
+
+Low-cardinality source dimensions such as phase, boss, difficulty and location may drive automatic change detection. High-cardinality player/guild/report identifiers do not automatically become source-change dimensions.
 
 ## Privacy
 
