@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "result_kind": "real_scope_schema_cycle_cleanup_and_cross_report_proof",
+  "input_head": "fd7ca43e2f1b90497e4ce4a5813c9e146d1accbb",
+  "scope_schema_cycle": {
+    "strategy": "scope-schema-cycle-v1",
+    "endpoint_count": 6,
+    "processed_endpoint_codes": [
+      "report_character_damage_taken_abilities_api",
+      "report_character_spell_healing_api",
+      "report_combatants_roster_api",
+      "report_detail_api",
+      "report_encounter_throughput_timeline_api",
+      "report_encounters_api"
+    ],
+    "superseded_member_event_count": 619,
+    "superseded_legacy_profile_event_count": 4,
+    "superseded_total_event_count": 623,
+    "aggregate_change_event_count": 0,
+    "raw_captures_preserved": true,
+    "exact_member_schema_snapshots_preserved": true
+  },
+  "source_health": {
+    "open_change_event_count": {
+      "before": 645,
+      "after": 22
+    },
+    "pending_reanalysis_request_count": {
+      "before": 0,
+      "after": 0
+    },
+    "active_dependency_count": {
+      "before": 21,
+      "after": 21
+    },
+    "completed_analysis_run_count": {
+      "before": 6,
+      "after": 6
+    },
+    "endpoint_open_changes_before": {
+      "guild_phase_progression_api": 1,
+      "phases_api": 1,
+      "report_character_damage_taken_abilities_api": 1,
+      "report_character_spell_healing_api": 3,
+      "report_combatants_roster_api": 614,
+      "report_detail_api": 3,
+      "report_encounter_throughput_timeline_api": 16,
+      "report_encounters_api": 3,
+      "reports_public_api": 1,
+      "reports_public_filter_options_api": 1,
+      "reports_queue_status_api": 1
+    },
+    "endpoint_open_changes_after": {
+      "guild_phase_progression_api": 1,
+      "phases_api": 1,
+      "report_character_damage_taken_abilities_api": 1,
+      "report_character_spell_healing_api": 1,
+      "report_combatants_roster_api": 1,
+      "report_detail_api": 1,
+      "report_encounter_throughput_timeline_api": 12,
+      "report_encounters_api": 1,
+      "reports_public_api": 1,
+      "reports_public_filter_options_api": 1,
+      "reports_queue_status_api": 1
+    }
+  },
+  "cross_report_benchmark": {
+    "report_count": 2,
+    "input_profile_count": 45,
+    "candidate_peer_cohort_count": 3,
+    "eligible_peer_cohort_count": 3,
+    "ambiguous_peer_cohort_count": 0,
+    "eligible_profile_count": 6,
+    "eligible_ranked_player_row_count": 133
+  },
+  "verification": {
+    "full_current_runtime_resolved": true,
+    "cross_report_schema_churn_removed": true,
+    "replay_created_no_new_scoped_schema_change": true,
+    "pending_reanalysis_unchanged": true,
+    "active_dependencies_unchanged": true,
+    "analysis_runs_unchanged": true,
+    "cross_report_benchmark_deterministic": true,
+    "difficulty_equivalence_verified": false,
+    "cross_report_player_identity_verified": false,
+    "numeric_cross_report_scoring_allowed": false,
+    "mechanic_semantics_verified": false,
+    "planner_scoring_allowed": false
+  },
+  "privacy": {
+    "har_included": false,
+    "har_path_included": false,
+    "raw_response_bodies_included": false,
+    "report_ids_included": false,
+    "encounter_ids_included": false,
+    "character_ids_included": false,
+    "character_names_included": false,
+    "query_values_included": false,
+    "scope_values_included": false,
+    "scope_hashes_included": false,
+    "profile_values_included": false,
+    "profile_hashes_included": false,
+    "schema_fingerprints_included": false
+  }
+}

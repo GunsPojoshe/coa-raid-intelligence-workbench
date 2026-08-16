@@ -25,6 +25,29 @@ A candidate becomes `eligible_structural_peer` only when:
 If the same report contributes multiple matching profiles, the cohort is retained as
 `ambiguous_repeated_profile_per_report` and is not eligible for numeric comparison.
 
+## Real two-report proof
+
+The first two independently persisted reports currently produce:
+
+```text
+reports:                         2
+input profiles:                 45
+candidate peer cohorts:          3
+eligible peer cohorts:           3
+ambiguous peer cohorts:          0
+eligible profiles:               6
+eligible ranked player rows:   133
+single-report profile groups:   33
+```
+
+The benchmark is deterministic on an immediate local requery.
+
+Public-safe receipt:
+
+```text
+evidence/real-data/coa-cross-report-structural-real.json
+```
+
 ## Explicitly unverified boundaries
 
 The v1 cohort does not claim:
@@ -40,8 +63,6 @@ planner scoring
 Those remain false in both the private model and the public-safe review.
 
 This is intentional. Exact zone + encounter name + request profile is sufficient to prove that two reports contain structurally comparable slices, but not sufficient to assert identical difficulty or to merge a player identity across reports.
-
-The second real report already proves generic ingestion across two independent report identities. The next local proof only measures how much exact structural overlap exists between those persisted reports; it does not perform another network capture.
 
 ## Implementation
 
@@ -67,9 +88,31 @@ The command performs no network requests. It builds the private benchmark twice 
 
 The public review does not include report IDs, encounter IDs, character IDs/names, zone values, encounter names, metric/perspective values, player totals or private fingerprints.
 
-## Source-health note
+## Source-health correction
 
-The second independent report raised the current open Source Observatory change-event count to 645 while pending reanalysis remained zero. This does not invalidate the report/analytics persistence proof, but it is treated as schema-observation noise until endpoint-level distribution is reviewed. The bundled real benchmark proof records only per-endpoint open-change counts so that this can be repaired without exposing private payload values.
+The second independent report initially raised Source Observatory to 645 open change events because
+schemas from different `reportId` scopes were compared as sequential versions of one source object.
+That was observation noise, not evidence of 645 upstream changes.
+
+`scope-schema-cycle-v1` was replayed over the already captured second-report corpus and superseded 623
+member/legacy cross-report schema events while preserving raw evidence and exact schema snapshots:
+
+```text
+open source changes:       645 -> 22
+new scoped schema changes:       0
+pending reanalysis:          0 -> 0
+```
+
+The structural benchmark remained unchanged at three eligible and zero ambiguous peer cohorts.
+
+Public-safe cleanup receipt:
+
+```text
+evidence/real-data/coa-scope-schema-cycle-real.json
+```
+
+The remaining 22 open signals are not automatically interpreted as true upstream changes; their own
+Source Observatory provenance remains authoritative.
 
 ## Next promotion boundary
 
