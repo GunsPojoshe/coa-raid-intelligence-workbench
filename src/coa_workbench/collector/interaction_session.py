@@ -118,7 +118,8 @@ def build_public_interaction_review(
         "windows": [window.public_summary() for window in windows],
         "transitions": [delta.public_summary() for delta in deltas],
         "repetition_review": build_repetition_review(windows),
-        "baseline_traffic_included": False,
+        "baseline_marker_count": sum(window.action.kind == "baseline" for window in windows),
+        "pre_first_action_traffic_included": False,
         "semantic_promotion_performed": False,
         "privacy": {
             "private_action_labels_included": False,

@@ -86,6 +86,8 @@ def test_action_recorder_uses_session_control_codes_without_public_private_label
 
     public = build_public_interaction_review(recorder.actions, ())
     rendered = json.dumps(public, sort_keys=True)
+    assert public["baseline_marker_count"] == 1
+    assert public["pre_first_action_traffic_included"] is False
     assert "Private Difficulty A" not in rendered
     assert "Private Difficulty B" not in rendered
     assert "Private Boss" not in rendered
@@ -164,3 +166,21 @@ def test_browser_observatory_config_requires_https_exact_host(tmp_path: Path) ->
             assert str(exc) == "start_url must be HTTPS and match allowed_host"
         else:
             raise AssertionError("expected ValueError")
+
+
+def test_browser_event_pump_uses_playwright_wait_until_keyboard_interrupt() -> None:
+    from coa_workbench.collector.browser_observatory import _pump_browser_events
+
+    class _FakePage:
+        def __init__(self) -> None:
+            self.calls: list[float] = []
+
+        def wait_for_timeout(self, timeout: float) -> None:
+            self.calls.append(timeout)
+            if len(self.calls) == 3:
+                raise KeyboardInterrupt
+
+    page = _FakePage()
+    _pump_browser_events(page, interval_ms=125)
+
+    assert page.calls == [125, 125, 125]

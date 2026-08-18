@@ -48,9 +48,13 @@ _ACTION_INIT_SCRIPT = r"""
   }
 
   function payloadFor(element, eventType) {
+    const selectedText = element instanceof HTMLSelectElement && element.selectedOptions.length
+      ? element.selectedOptions[0].textContent
+      : null;
     const text = (
       element.getAttribute('aria-label') ||
       element.getAttribute('title') ||
+      selectedText ||
       element.textContent ||
       ''
     ).trim().replace(/\s+/g, ' ').slice(0, 160);
@@ -291,6 +295,14 @@ def _load_sync_playwright() -> Any:
     return sync_playwright
 
 
+def _pump_browser_events(page: Any, *, interval_ms: float = 250) -> None:
+    try:
+        while True:
+            page.wait_for_timeout(interval_ms)
+    except KeyboardInterrupt:
+        return
+
+
 def _write_json(path: Path, payload: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
@@ -353,8 +365,8 @@ def run_browser_observatory(config: BrowserObservatoryConfig) -> dict[str, objec
         action_recorder.record_baseline()
         page.goto(config.start_url, wait_until="domcontentloaded")
         print("Browser Observatory is active. Use the browser normally.")
-        print("Return to this terminal and press Enter when the discovery session is complete.")
-        input()
+        print("Return to this terminal and press Ctrl+C when the discovery session is complete.")
+        _pump_browser_events(page)
 
         review = build_public_interaction_review(
             tuple(action_recorder.actions),
@@ -368,7 +380,8 @@ def run_browser_observatory(config: BrowserObservatoryConfig) -> dict[str, objec
             "har_recorded": True,
             "trace_recorded": tracing_started,
             "private_paths_included": False,
-            "network_requests_performed_by_automation": False,
+            "browser_navigation_performed": True,
+            "direct_source_api_requests_performed_by_observatory": False,
         }
         _write_json(private_actions_path, action_recorder.private_manifest())
         _write_json(public_review_path, review)
@@ -393,5 +406,6 @@ __all__ = [
     "BrowserObservatoryConfig",
     "LiveNetworkRecorder",
     "PlaywrightUnavailableError",
+    "_pump_browser_events",
     "run_browser_observatory",
 ]
