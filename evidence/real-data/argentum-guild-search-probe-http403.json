@@ -1,0 +1,91 @@
+{
+  "decision_boundary": {
+    "guild_api_route_candidates_observed": true,
+    "guild_api_route_semantics_verified": false,
+    "guild_identity_verified": false,
+    "guild_search_route_response_captured": false,
+    "guild_search_route_semantics_candidate_observed": false,
+    "independent_source_identity_candidate_observed": false,
+    "independent_source_identity_verified": false,
+    "planner_scoring_allowed": false,
+    "ready_for_bis25_scoring": false,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_guild_filtering": false,
+    "ready_for_guild_search_mapping_review": false,
+    "ready_for_multi_report_character_graph": false,
+    "ready_for_performance_model": false,
+    "status": "guild_search_probe_incomplete"
+  },
+  "generated_at": "2026-07-31T09:46:04.562081Z",
+  "integrity_checks": {
+    "credentials_not_supplied": true,
+    "download_size_bounded": true,
+    "error_text_not_published": true,
+    "guild_search_route_candidate_verified": true,
+    "http1_1_profile_selected": true,
+    "private_profiled_recovery_sha256_verified": true,
+    "public_profiled_recovery_verified": true,
+    "public_receipt_scalar_boundary_preserved": true,
+    "redirects_disabled": true,
+    "request_url_https": true,
+    "request_url_same_origin": true,
+    "source_guild_id_not_published": true
+  },
+  "match_review": {
+    "contains_source_scalar_values": false,
+    "distinct_id_like_value_count": 0,
+    "distinct_object_path_count": 0,
+    "exact_label_and_source_id_cooccur": false,
+    "exact_label_field_names": [],
+    "exact_label_object_count": 0,
+    "id_like_field_names": [],
+    "id_like_value_count": 0,
+    "id_like_value_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "object_paths": [],
+    "one_to_one_identity_candidate": false,
+    "source_id_match_object_count": 0
+  },
+  "probe_kind": "guild_identity_search_probe",
+  "probe_version": "guild-identity-search-probe-v1",
+  "request": {
+    "credentials_supplied": false,
+    "limit": 25,
+    "query_keys": [
+      "q",
+      "limit"
+    ],
+    "redirects_allowed": false,
+    "route_shape": "/api/guilds/search?q=<value>&limit=<value>",
+    "route_template": "/api/guilds/search",
+    "sanitized_route": "https://coa.ascensionlogs.gg/api/guilds/search?q=<value>&limit=<value>",
+    "transport_profile": "http1_1"
+  },
+  "response": {
+    "capture": null,
+    "completed": false,
+    "content_type": "application/json; charset=utf-8",
+    "failure_class": "http_status_failure",
+    "http_status": 403,
+    "json_valid": false
+  },
+  "schema_version": 1,
+  "source_private_probe_name": "argentum-guild-search-probe.private.json",
+  "source_private_probe_sha256": "3bfa897cca01f915dfbe5da8d316508acdb5b49186fed36b6bbce6f81240f82a",
+  "source_public_profiled_recovery_name": "argentum-guild-asset-profiled-recovery.json",
+  "source_public_profiled_recovery_sha256": "0c7c21e552a884f7c26733324dcdc74da14926288e4172919c04bf5b64938464",
+  "summary": {
+    "all_integrity_checks_passed": true,
+    "contains_error_text": false,
+    "contains_source_scalar_values": false,
+    "exact_label_object_count": 0,
+    "integrity_check_count": 12,
+    "one_to_one_identity_candidate": false,
+    "response_completed": false,
+    "source_id_match_object_count": 0
+  },
+  "target": {
+    "guild_label": "Argentum",
+    "request_url_published": false,
+    "source_guild_id_published": false
+  }
+}

@@ -7,6 +7,9 @@ __pycache__/
 /data/raw/**
 /data/parquet/**
 /data/warehouse/**
+/data/normalized/**
+/data/reconstructed/**
+/data/extracted/**
 /data/exchange/in/**
 /data/exchange/out/**
 /data/backups/**
@@ -15,6 +18,8 @@ __pycache__/
 /artifacts/**
 !/data/**/.gitkeep
 .env
+.env.*
+!.env.example
 *.local.yaml
 *.egg-info/
 /workbook/working/

@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "result_kind": "second_current_report_generalization_real_review",
+  "source_head": "3c047b4fb58ce75eb15fd272c47e730b9921ecbc",
+  "catalog": {
+    "report_count_before": 1,
+    "report_count_after": 2,
+    "new_report_added": true
+  },
+  "source_observation": {
+    "cycle_version": "network-source-cycle-v8",
+    "dynamic_route_count": 6,
+    "dynamic_concrete_path_count": 16,
+    "resolved_endpoint_count": 6,
+    "open_change_event_count": 645,
+    "pending_reanalysis_request_count": 0,
+    "active_dependency_count": 12
+  },
+  "derived_persistence": {
+    "status": "completed",
+    "entity_count": 2920,
+    "inserted_observation_count": 2920,
+    "matched_observation_count": 0,
+    "scoped_dependency_count": 3,
+    "entity_counts": {
+      "current_report_observation": 1,
+      "current_encounter_observation": 55,
+      "current_roster_character_observation": 27,
+      "current_roster_snapshot_observation": 41,
+      "current_talent_entry_observation": 2092,
+      "current_gear_slot_observation": 704
+    }
+  },
+  "analytics_persistence": {
+    "status": "completed",
+    "entity_count": 28213,
+    "inserted_observation_count": 28213,
+    "matched_observation_count": 0,
+    "source_capture_count": 38,
+    "scoped_dependency_count": 6,
+    "counts": {
+      "throughput_request_count": 33,
+      "throughput_character_count": 867,
+      "throughput_point_count": 16907,
+      "throughput_roster_match_count": 738,
+      "damage_taken_ability_row_count": 1719,
+      "healing_spell_row_count": 227,
+      "healing_spell_roster_match_count": 179,
+      "healing_source_breakdown_row_count": 1259,
+      "healing_target_breakdown_row_count": 7201
+    }
+  },
+  "comparison_review": {
+    "catalog_report_count": 2,
+    "encounter_count": 55,
+    "roster_character_count": 27,
+    "throughput_profile_count": 33,
+    "throughput_ranked_player_row_count": 738,
+    "throughput_unmatched_character_row_count": 129,
+    "throughput_missing_total_row_count": 0,
+    "throughput_point_count": 16907,
+    "throughput_point_exact_character_link_count": 16907,
+    "throughput_point_opaque_group_count": 0,
+    "damage_taken_ability_row_count": 1719,
+    "damage_taken_exact_roster_key_match_row_count": 896,
+    "damage_taken_exact_roster_key_match_character_count": 27,
+    "healing_spell_row_count": 227,
+    "healing_spell_explicit_roster_match_row_count": 179,
+    "healing_source_breakdown_row_count": 1259,
+    "healing_source_explicit_roster_match_row_count": 146,
+    "healing_target_breakdown_row_count": 7201,
+    "healing_target_explicit_roster_match_row_count": 1602
+  },
+  "verification": {
+    "second_independent_report_added": true,
+    "full_current_runtime_resolved": true,
+    "derived_observations_inserted": true,
+    "analytics_observations_inserted": true,
+    "deterministic_comparison_requery": true,
+    "throughput_rankings_sorted_by_observed_total": true,
+    "all_ranked_players_in_roster": true,
+    "mechanic_semantics_verified": false,
+    "planner_scoring_allowed": false
+  },
+  "privacy": {
+    "har_included": false,
+    "raw_response_bodies_included": false,
+    "report_ids_included": false,
+    "encounter_ids_included": false,
+    "character_ids_included": false,
+    "character_names_included": false,
+    "dynamic_group_keys_included": false,
+    "source_capture_ids_included": false,
+    "source_scope_values_included": false,
+    "source_scope_fingerprints_included": false,
+    "input_output_fingerprints_included": false
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "decision_boundary": {
+    "dynamic_report_routes_require_explicit_safe_resolution": true,
+    "false_report_detail_classification_cleaned": true,
+    "planner_scoring_allowed": false,
+    "report_detail_runtime_observed": false,
+    "static_reports_routes_persisted": true
+  },
+  "derived_result": {
+    "acquisition_problem_endpoint_count": 0,
+    "active_dependency_count": 3,
+    "captured_endpoint_count": 5,
+    "completed_analysis_run_count": 2,
+    "dimension_name_count": 5,
+    "dimension_value_count": 49,
+    "observed_dimension_endpoint_count": 3,
+    "pending_reanalysis_request_count": 0,
+    "source_health_endpoint_count": 5
+  },
+  "input_checkpoint": {
+    "capture_mode": "browser_har_replay",
+    "head": "6fc61769a6b49ca84d556a1af1a1ca8b06d50fdd",
+    "network_requests_performed": false
+  },
+  "privacy": {
+    "cookies_published": false,
+    "dimension_values_published": false,
+    "dynamic_path_values_published": false,
+    "har_published": false,
+    "private_fingerprints_published": false,
+    "query_values_published": false,
+    "raw_response_bodies_published": false,
+    "report_ids_published": false,
+    "request_headers_published": false
+  },
+  "receipt_kind": "reports_observatory_repair_replay_v3_review",
+  "repair_result": {
+    "false_endpoint_code": "report_detail_api",
+    "raw_fetch_observations_deleted": false,
+    "raw_objects_deleted": false,
+    "removed_acquisition_count": 1,
+    "removed_capture_count": 1,
+    "removed_change_event_count": 1,
+    "status": "repaired"
+  },
+  "replay_result": {
+    "cycle_version": "network-source-cycle-v4",
+    "deferred_dynamic_endpoint_count": 3,
+    "generic_dynamic_ingestion_allowed": false,
+    "observed_endpoint_codes": [
+      "reports_public_api",
+      "reports_public_filter_options_api",
+      "reports_queue_status_api"
+    ],
+    "report_detail_present_after_cleanup": false,
+    "reviewed_route_observation_count": 3
+  },
+  "schema_version": 1,
+  "source_code": "coa_ascension_logs"
+}

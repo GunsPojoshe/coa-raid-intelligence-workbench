@@ -1,0 +1,158 @@
+{
+  "cross_case_evidence": {
+    "attempt_count": 3,
+    "completed_attempt_count": 3,
+    "contains_source_scalar_values": false,
+    "distinct_field_inventory_hash_count": 1,
+    "distinct_ordered_record_hash_count": 1,
+    "distinct_payload_hash_count": 1,
+    "distinct_schema_fingerprint_count": 1,
+    "distinct_source_id_set_hash_count": 1,
+    "observed_result_counts": [
+      1
+    ],
+    "single_result_observed_in_all_cases": true,
+    "source_id_set_stable_by_hash": true,
+    "target_name_casefold_match_stable": true
+  },
+  "decision_boundary": {
+    "automatic_full_guild_crawl_allowed": false,
+    "bounded_route_semantics_capture_completed": true,
+    "completeness_verified": false,
+    "guild_api_route_semantics_verified": false,
+    "guild_query_shapes_verified": true,
+    "guild_response_schema_verified": true,
+    "guild_route_template_verified": true,
+    "limit_parameter_accepted": true,
+    "limit_truncation_semantics_verified": false,
+    "pagination_object_observed": false,
+    "pagination_semantics_verified": false,
+    "planner_scoring_allowed": false,
+    "ready_for_bis25_scoring": false,
+    "ready_for_bounded_limit_semantics_capture": true,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_multi_report_character_graph": false,
+    "ready_for_performance_model": false,
+    "status": "guild_route_shape_and_schema_reviewed",
+    "target_query_binding_observed": true,
+    "termination_semantics_verified": false
+  },
+  "generated_at": "2026-08-03T19:39:43.403149Z",
+  "integrity_checks": {
+    "all_three_responses_completed": true,
+    "capture_integrity_checks_verified": true,
+    "capture_privacy_boundary_verified": true,
+    "field_inventory_stable": true,
+    "full_crawl_contract_verified": true,
+    "full_crawl_remains_disabled": true,
+    "guild_record_schema_verified": true,
+    "limit_truncation_not_overclaimed": true,
+    "ordered_record_set_stable": true,
+    "pagination_not_overclaimed": true,
+    "payload_hash_stable": true,
+    "planner_scoring_remains_disabled": true,
+    "public_access_diagnostic_verified": true,
+    "query_shapes_verified": true,
+    "request_case_set_verified": true,
+    "response_envelope_verified": true,
+    "route_template_verified": true,
+    "schema_fingerprint_stable": true,
+    "single_result_observed_in_all_cases": true,
+    "source_bindings_verified_across_line_endings": true,
+    "source_id_set_stable_by_hash": true,
+    "target_name_casefold_match_stable": true
+  },
+  "response_schema_review": {
+    "contains_source_scalar_values": false,
+    "guild_collection_field": "guilds",
+    "guild_record_fields": [
+      {
+        "field": "id",
+        "types": [
+          "integer"
+        ]
+      },
+      {
+        "field": "name",
+        "types": [
+          "string"
+        ]
+      },
+      {
+        "field": "realm",
+        "types": [
+          "string"
+        ]
+      },
+      {
+        "field": "report_count",
+        "types": [
+          "string"
+        ]
+      }
+    ],
+    "guild_record_schema_verified": true,
+    "pagination_object_observed": false,
+    "pagination_semantics_verified": false,
+    "response_envelope_verified": true,
+    "schema_fingerprint_stable": true,
+    "top_level_keys": [
+      "guilds",
+      "success"
+    ],
+    "top_level_kind": "object"
+  },
+  "review_kind": "guild_route_semantics_review",
+  "review_version": "guild-route-semantics-review-v1",
+  "route_review": {
+    "contains_query_values": false,
+    "general_search_semantics_verified": false,
+    "limit_parameter_accepted": true,
+    "limit_truncation_semantics_verified": false,
+    "limit_values_observed": [
+      1,
+      25
+    ],
+    "query_parameter_q_observed": true,
+    "query_shape_with_limit_verified": true,
+    "query_shape_without_limit_verified": true,
+    "route_template": "/api/guilds/search",
+    "route_template_verified": true,
+    "target_query_binding_observed": true
+  },
+  "schema_version": 1,
+  "source_binding_review": {
+    "access_line_endings_normalized": false,
+    "contract_line_endings_normalized": false,
+    "semantic_document_identity_preserved": true
+  },
+  "source_capture_name": "argentum-guild-route-semantics-capture.json",
+  "source_capture_sha256": "12cfb6c5b1ec08a6c2b93ad60f05ea2ea0cc87785e797038f99580f8cada2662",
+  "source_contract_name": "argentum-guild-full-crawl-contract.json",
+  "source_contract_sha256": "2b76228754f2f50a08d09c430c4ae07e44a194aa1bc26fed94a3618e95d42d41",
+  "source_public_access_name": "argentum-guild-search-access-spa-context.json",
+  "source_public_access_sha256": "591110d583589097dfdad1be95f43841fd2f3a3a3cfca0b2a808a20b4aa755d4",
+  "summary": {
+    "all_integrity_checks_passed": true,
+    "completeness_verified": false,
+    "contains_raw_payload": false,
+    "contains_source_scalar_values": false,
+    "guild_api_route_semantics_verified": false,
+    "integrity_check_count": 22,
+    "limit_parameter_accepted": true,
+    "limit_truncation_semantics_verified": false,
+    "pagination_semantics_verified": false,
+    "planner_scoring_allowed": false,
+    "ready_for_bounded_limit_semantics_capture": true,
+    "ready_for_full_guild_crawl": false,
+    "route_shape_and_response_schema_reviewed": true,
+    "termination_semantics_verified": false
+  },
+  "target": {
+    "guild_label": "Argentum",
+    "raw_payload_published": false,
+    "report_ids_published": false,
+    "request_urls_published": false,
+    "source_guild_id_published": false
+  }
+}

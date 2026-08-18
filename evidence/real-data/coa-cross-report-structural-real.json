@@ -1,0 +1,101 @@
+{
+  "benchmark": {
+    "ambiguous_peer_cohort_count": 0,
+    "benchmark_version": "cross-report-structural-benchmark-v1",
+    "candidate_peer_cohort_count": 3,
+    "eligible_peer_cohort_count": 3,
+    "eligible_profile_count": 6,
+    "eligible_ranked_player_row_count": 133,
+    "input_profile_count": 45,
+    "network_requests_performed": false,
+    "profiles_without_encounter_name": 0,
+    "profiles_without_zone": 0,
+    "report_count": 2,
+    "review_version": "cross-report-structural-review-v1",
+    "single_report_profile_group_count": 33,
+    "status": "completed"
+  },
+  "privacy": {
+    "character_ids_included": false,
+    "character_names_included": false,
+    "encounter_ids_included": false,
+    "encounter_names_included": false,
+    "local_private_model_included": false,
+    "metric_values_included": false,
+    "numeric_player_totals_included": false,
+    "perspective_values_included": false,
+    "private_fingerprints_included": false,
+    "report_ids_included": false,
+    "zone_values_included": false
+  },
+  "result_kind": "cross_report_structural_benchmark_real_review",
+  "schema_version": 1,
+  "source_head": "c6ff1809547f610fdee49f5476eff94e49f67784",
+  "source_health": {
+    "open_change_counts_by_endpoint": [
+      {
+        "endpoint_code": "guild_phase_progression_api",
+        "open_change_count": 1
+      },
+      {
+        "endpoint_code": "phases_api",
+        "open_change_count": 1
+      },
+      {
+        "endpoint_code": "report_character_damage_taken_abilities_api",
+        "open_change_count": 1
+      },
+      {
+        "endpoint_code": "report_character_spell_healing_api",
+        "open_change_count": 3
+      },
+      {
+        "endpoint_code": "report_combatants_roster_api",
+        "open_change_count": 614
+      },
+      {
+        "endpoint_code": "report_detail_api",
+        "open_change_count": 3
+      },
+      {
+        "endpoint_code": "report_encounter_throughput_timeline_api",
+        "open_change_count": 16
+      },
+      {
+        "endpoint_code": "report_encounters_api",
+        "open_change_count": 3
+      },
+      {
+        "endpoint_code": "reports_public_api",
+        "open_change_count": 1
+      },
+      {
+        "endpoint_code": "reports_public_filter_options_api",
+        "open_change_count": 1
+      },
+      {
+        "endpoint_code": "reports_queue_status_api",
+        "open_change_count": 1
+      }
+    ],
+    "summary": {
+      "acquisition_problem_endpoint_count": 0,
+      "active_dependency_count": 21,
+      "captured_endpoint_count": 11,
+      "completed_analysis_run_count": 6,
+      "endpoint_count": 11,
+      "open_change_event_count": 645,
+      "pending_reanalysis_request_count": 0
+    }
+  },
+  "verification": {
+    "cross_report_player_identity_verified": false,
+    "deterministic_requery_equal": true,
+    "difficulty_equivalence_verified": false,
+    "mechanic_semantics_verified": false,
+    "numeric_cross_report_scoring_allowed": false,
+    "planner_scoring_allowed": false,
+    "structural_peer_boundary_preserved": true,
+    "two_or_more_reports_present": true
+  }
+}

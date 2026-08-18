@@ -48,6 +48,7 @@ select = ["E4", "E7", "E9", "F"]
 
 [tool.ruff.lint.per-file-ignores]
 "src/coa_workbench/web/effects.py" = ["F401"]
+"src/coa_workbench/storage/report_slice.py" = ["F401"]
 
 [tool.ruff.format]
 exclude = ["src/**", "tests/**", "scripts/freeze_workbook_baseline.py"]

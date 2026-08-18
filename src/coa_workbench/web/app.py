@@ -12,8 +12,10 @@ from coa_workbench import __version__
 from coa_workbench.planner import MAX_RAID_SLOTS, RaidFormat
 from coa_workbench.storage import PlanNotFoundError, PlanRepository
 from coa_workbench.web.catalog import catalog_payload
+from coa_workbench.web.current_report_analytics_api import install_current_report_analytics_routes
 from coa_workbench.web.effects import effects_catalog_payload
 from coa_workbench.web.models import PlanPreviewRequest, PlanPreviewResponse, build_plan_preview
+from coa_workbench.web.source_health_page import install_source_health_routes
 from coa_workbench.web.ui import INDEX_HTML
 
 logger = logging.getLogger("uvicorn.error")
@@ -29,6 +31,16 @@ def create_app(
         description="Local-first raid planning application",
     )
     repository = PlanRepository(database_path, migrations_dir)
+    install_source_health_routes(
+        app,
+        database_path=database_path,
+        migrations_dir=migrations_dir,
+    )
+    install_current_report_analytics_routes(
+        app,
+        database_path=database_path,
+        migrations_dir=migrations_dir,
+    )
 
     @app.middleware("http")
     async def request_diagnostics(request: Request, call_next):

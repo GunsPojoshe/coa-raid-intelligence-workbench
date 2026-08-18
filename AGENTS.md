@@ -1,159 +1,214 @@
 # CoA Raid Intelligence — Agent Instructions
 
-These instructions apply to the entire repository. Read them before changing code.
+These instructions apply to the whole repository.
 
 ## Mission
 
-Build a localhost-first raid intelligence system for Classless / Ascension WoW that derives explainable planning recommendations from evidence captured from `coa.ascensionlogs.gg`.
+Build a localhost-first, evidence-first raid intelligence system **only for Conquest of Azeroth** that
+can eventually explain:
 
-The system keeps these layers separate:
+> Why is this specific player needed by this exact current roster?
 
-1. immutable raw observations;
-2. upstream-derived fields;
-3. canonical normalized events;
-4. locally inferred hypotheses;
-5. supporting and contradicting evidence;
-6. corroborated or confirmed mechanics;
-7. planner scoring and recommendations.
+Only `corroborated` and `confirmed` mechanics may enter canonical planner scoring.
 
-A combat-log event is an observation. It is not automatic proof of a general game mechanic.
+## Responsibility
 
-## Mandatory first step
+The agent performs everything it can do directly: GitHub repository/branch/PR/CI inspection and
+mutations, repository source/history inspection, documentation maintenance, and analysis of shared
+private/raw artifacts.
 
-Before modifying code:
+The user is involved only for the boundary the agent cannot access directly: the user's Windows
+filesystem, local runtime/browser state, or unshared private files. When local work is required, prefer
+**one bundled action** producing one compact result or handoff artifact.
 
-1. inspect the current branch, HEAD and working tree;
-2. inspect the active pull request and its base branch when available;
-3. read `README.md`, `docs/PROJECT_STATE.md` and relevant ADR files;
-4. compare documented claims with the actual implementation;
-5. run the available verification commands;
-6. report any discrepancy before extending the analytical model.
+Private/raw files are valid analysis inputs. Privacy rules constrain **publication/versioning**, not
+private analysis.
 
-Do not trust commit counts, test counts, branch state or implementation claims from old prompts without checking them.
+## Development workflow
 
-## Current milestone
-
-The active evidence-refactor branch is `e2/log-evidence-refactor` and its pull request is PR #3 into `main`.
-
-PR #3 remains Draft until the evidence checkpoint is complete unless the user explicitly changes this instruction.
-
-Update this section when the project moves to a new branch or phase.
-
-## Source and data-trust rules
-
-- `coa.ascensionlogs.gg` is the primary source of observations.
-- Never invent source routes, request parameters, JSON fields, event types, spell mappings, class mappings or pagination behavior.
-- Probe and fingerprint a real payload before creating a mapping.
-- Normalization requires an explicitly verified mapping and a matching schema fingerprint.
-- Keep `raw_log`, `upstream_derived`, `companion_addon`, `local_inference` and `manual_override` provenance distinct.
-- Preserve contradicting evidence. Never delete it because a preferred hypothesis exists.
-- Keep global game mechanics separate from guild and individual-player execution quality.
-- Recent evidence may receive more weight, but old observations remain stored.
-- Only `corroborated` and `confirmed` mechanics may participate in canonical planner scoring.
-- Historical static catalogs are non-canonical and must not enter planner scoring.
-
-## Raw data and privacy
-
-- Raw payloads are immutable and content-addressed by SHA-256.
-- Repeated retrieval of the same payload creates another observation, not another payload body.
-- Never commit cookies, authorization headers, access tokens or unsanitized HAR files.
-- Do not commit private player information unless it is intentionally sanitized and documented as a test fixture.
-- Do not modify an archived raw payload to make a test pass.
-
-## Database migrations
-
-- Never edit a migration that has already been published to branch history.
-- Add a new migration for every schema correction.
-- Test migrations on a clean temporary DuckDB database.
-- Test migration repeatability and checksum behavior.
-- Keep migrations deterministic and independent of external network access.
-
-## Aura State Engine
-
-Before building scope, overwrite, stacking or order-sensitive inference, verify at least:
-
-- normal apply/remove;
-- refresh;
-- stack changes;
-- missing remove;
-- duplicate events;
-- out-of-order events;
-- two sources;
-- two targets;
-- encounter-end closure.
-
-Do not silently discard anomalies. Return or persist them with deterministic reason codes.
-
-## Development scope
-
-- Complete one bounded analytical slice at a time.
-- Do not mix unrelated UI redesign with evidence-pipeline work.
-- Do not perform broad refactors unless required by the current acceptance criteria.
-- Do not create speculative CoA Logs mappings or mechanics to unblock development.
-- Heavy analytics belongs in Python, not frontend JavaScript.
-- Algorithms, mappings, policies and inference outputs must be versioned.
-- Results must carry provenance and enough identifiers to reproduce them.
-
-## Required verification
-
-Use the locked environment when possible:
-
-```bash
-uv sync --frozen --extra dev
+```text
+focused tests while iterating
+-> one coherent change
+-> one scripts/verify_repo.py
+-> one push
+-> exact-head GitHub CI
 ```
 
-Run the repository verifier:
+Evidence-sensitive work additionally validates deterministic bindings and publication/privacy
+boundaries. Do not create permanent evidence stages for every intermediate question.
 
-```bash
-uv run python scripts/verify_repo.py
+## Source discovery rule
+
+Prefer the shortest evidence path:
+
+```text
+browser Network / Fetch / XHR
+-> sanitized HAR inventory
+-> reviewed request contract
+-> immutable source capture
+-> schema/dimension baseline
+-> source-change event
+-> scoped reanalysis
 ```
 
-Run change-specific tests when the full verifier does not isolate the changed behavior.
+Inspect SPA JavaScript only when Network evidence does not fully explain request construction, optional
+parameters or route selection. Do not start with minified-helper archaeology when an actual browser
+request is available.
 
-For migration or storage changes, initialize a clean temporary database and run initialization again to verify repeatability:
+A timestamped source response is an observation, not permanent source semantics. Bosses, phases, logs,
+fields, routes and meta are expected to evolve.
 
-```bash
-uv run coa-workbench init-db --database <temporary-path>/coa.duckdb --migrations migrations
+## Current real Source Observatory checkpoint
+
+The user's local Observatory already contains the real browser-origin baseline for:
+
+```text
+phases_api
+guild_phase_progression_api
 ```
 
-For CLI changes, run the affected command's `--help` and a deterministic smoke test.
+The approved real derived `source_dimension_index` is initialized:
 
-Never claim a test passed unless it was actually executed. If a check cannot run, state the exact reason and what was run instead.
+```text
+observed endpoints: 2
+active dependencies: 2
+dimension names represented: 5
+dimension values represented: 19
+completed analysis runs: 1
+```
 
-## Git and concurrent work
+The same existing HAR has already been replayed and was idempotent:
 
-- Do not overwrite unrelated user or agent changes.
-- Before committing, re-check the branch and remote state.
-- If the selected base branch changed while a task was running, refresh safely before publishing.
-- Avoid multiple concurrent write tasks touching the same files.
-- Keep commits limited to one coherent block.
-- Leave the working tree clean when a task is complete.
+```text
+open change events: 2 -> 2
+pending reanalysis: 0 -> 0
+new change events: 0
+new reanalysis requests: 0
+```
 
-## User involvement checkpoint
+Do **not** ask the user to re-run this same HAR or reinitialize this same baseline merely to rediscover
+those facts. The next meaningful proof requires a genuinely later observation or expansion to a new
+source surface.
 
-Do not request manual user testing before the evidence pipeline reaches the agreed checkpoint:
+Canonical public receipts:
 
-1. a real CoA Logs JSON or HAR has been captured immutably;
-2. its schema fingerprint is recorded;
-3. a verified mapping exists;
-4. one report and encounter are normalized;
-5. actors, participants and aura events are linked;
-6. aura intervals are reconstructed;
-7. at least one repeatable mechanic has independent supporting evidence;
-8. contradicting evidence has been checked;
-9. the result is reproducible and visible with provenance.
+```text
+evidence/real-data/source-observatory-network-baseline-2026-08-14.json
+evidence/real-data/source-observatory-derived-baseline-2026-08-14.json
+```
 
-## Completion report
+## Current guild-progression boundary
 
-Every completed task reports:
+The old exact `/api/guilds/progression` POST hypothesis is superseded.
 
-- what was verified;
-- what previous claim was false, incomplete or outdated;
-- files changed;
-- migrations added;
-- exact commands executed;
-- exact test results;
-- remaining limitations;
-- the next bounded task.
+Historical/current SPA review still contains alternate rankings contracts:
 
-Do not hide uncertainty and do not describe scaffolding as confirmed game knowledge.
+```text
+GET /api/guilds/progression/rankings
+GET /api/guilds/progression/full-clears
+GET /api/guilds/progression/rankings/{bossId}
+```
+
+The real current progression browser capture exercised:
+
+```text
+GET /api/phases
+GET /api/guilds/phase-progression?phase=<value>&difficulty=<value>
+```
+
+Both returned `200 application/json`.
+
+Do not resume the old global helper/owner/alias investigation unless a future concrete request cannot
+be explained from Network evidence.
+
+## Source Observatory
+
+`Source Observatory v1` is the universal ingestion/change layer. Reviewed sources should flow through
+the same infrastructure instead of creating endpoint-specific persistence stacks.
+
+Generic Network discovery:
+
+```text
+scripts/inventory_network_har.py
+```
+
+Recurring browser HAR ingestion:
+
+```powershell
+uv run --no-sync python scripts/observe_network_cycle.py
+```
+
+With no positional HAR path, the command selects the newest readable `.har` in `~/Downloads` that
+contains same-origin `/api/` traffic for the configured source host. Use `--har-dir` for another inbox
+or pass an explicit HAR path when needed. Do not ask the user to manually identify a HAR path when this
+automatic selection can resolve it.
+
+Its public output must not include the selected local HAR path.
+
+Generic discovery output must remain scalar-free: no query values, headers, cookies, response bodies,
+user/session values, guild/report IDs or other record scalars.
+
+Low-cardinality source dimensions such as phase, boss, difficulty and location may drive automatic
+change detection. High-cardinality player/guild/report identifiers do not automatically become
+source-change dimensions.
+
+## Git/branches
+
+Keep only active branches unless a temporary branch has a current purpose:
+
+```text
+main
+e2/log-evidence-refactor
+e3/real-log-capture
+```
+
+Delete merged/closed/stage branches promptly. Never rewrite published migrations. Never delete tracked
+`.gitkeep` files.
+
+## Privacy
+
+Local/private by default:
+
+```text
+data/raw/
+data/warehouse/
+data/normalized/
+data/reconstructed/
+data/extracted/
+data/exchange/in/
+data/exchange/out/
+```
+
+Never publish secrets, cookies, tokens, Authorization values, browser profiles, unsanitized HAR,
+private source IDs/report IDs, private queries, private receipts, raw JavaScript, raw owner chains or
+raw private contexts unless an explicit reviewed publication contract permits the exact field.
+
+## Windows
+
+Repository:
+
+```text
+C:\Users\Simpa\source\repos\coa-raid-intelligence-workbench
+```
+
+Use PowerShell 7+ (`pwsh`) for new project automation. Complex local automation should be a complete
+downloadable script, not a fragmented interactive paste.
+
+Remember: `git diff HEAD` does not include untracked files.
+
+## Verification
+
+Dependency preparation:
+
+```powershell
+uv sync --frozen --extra dev --no-build-package ruff
+```
+
+Canonical aggregate check before a meaningful push:
+
+```powershell
+uv run --no-sync python scripts/verify_repo.py
+```
+
+Use focused tests during iteration. Never claim a pass unless it actually ran against the stated
+checkout/diff.

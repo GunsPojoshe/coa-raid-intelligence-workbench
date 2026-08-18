@@ -3,6 +3,7 @@
 
 # Security-sensitive automation and release boundaries.
 /.github/ @GunsPojoshe
+/scripts/audit_public_release.py @GunsPojoshe
 /.gitignore @GunsPojoshe
 
 # Canonical data contracts and forward-only storage changes.

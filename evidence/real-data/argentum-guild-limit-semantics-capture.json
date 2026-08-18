@@ -1,0 +1,310 @@
+{
+  "attempts": [
+    {
+      "body_bytes": 92,
+      "body_captured": true,
+      "capture": {
+        "bytes_uncompressed": 92,
+        "observation_id": "bfff214b4dfd00cefbadc2ded2a67cd3d15aa7955c85c38e8bc3061c1f54aa70",
+        "payload_hash": "c56461c13b01da01116597cc9da9f852d855cad27f32199e24ab8252a2e984e8",
+        "raw_id": "293ec09be32440c71eabfc7e4a69e9195dae1a6858c2739405e60a543d033a06",
+        "schema_fingerprint": "591a876403b641d0e834357beb50a7dfe7dfb2181f81d811334fd1b8493b04af"
+      },
+      "case": "low_limit",
+      "contains_error_text": false,
+      "contains_source_scalar_values": false,
+      "content_type": "application/json; charset=utf-8",
+      "failure_class": null,
+      "http_status": 200,
+      "json_valid": true,
+      "limit": 1,
+      "query_keys": [
+        "q",
+        "limit"
+      ],
+      "response_candidate": true,
+      "return_code": 0,
+      "route_template": "/api/guilds/search",
+      "shape_summary": {
+        "all_records_have_supported_id": true,
+        "contains_source_scalar_values": false,
+        "distinct_non_null_id_count": 1,
+        "guild_collection_observed": true,
+        "guild_field_inventory": [
+          {
+            "field": "id",
+            "types": [
+              "integer"
+            ]
+          },
+          {
+            "field": "name",
+            "types": [
+              "string"
+            ]
+          },
+          {
+            "field": "realm",
+            "types": [
+              "string"
+            ]
+          },
+          {
+            "field": "report_count",
+            "types": [
+              "string"
+            ]
+          }
+        ],
+        "guild_field_inventory_sha256": "f2a4d5388145e9b435808eb1b7246d6aa9b0c5010602e8d54081b3181830c288",
+        "guild_object_count": 1,
+        "guild_result_count": 1,
+        "ordered_record_set_sha256": "cf75d61f3a7571c67679b344a2a8fccf5df751ae6156a353d418b37d0cb97ee6",
+        "ordered_source_id_hashes_sha256": "d839020930ace76ab6a21492e9b75d3e92fa00500537f60b4a10f8beb83f2689",
+        "top_level_keys": [
+          "guilds",
+          "success"
+        ],
+        "top_level_kind": "object"
+      }
+    },
+    {
+      "body_bytes": 529,
+      "body_captured": true,
+      "capture": {
+        "bytes_uncompressed": 529,
+        "observation_id": "29626414eba2ea7506455fd5aa64c61e1462a01f2c03ab0d18a13532676e6a06",
+        "payload_hash": "2db3e5d6bb583694308d53e62cd6d69ad7de5e63ea87d1142514175e6157416d",
+        "raw_id": "836c6141cf52a642e8d42c297dca72b670e6fa4839d5192f836d12c81064e16e",
+        "schema_fingerprint": "591a876403b641d0e834357beb50a7dfe7dfb2181f81d811334fd1b8493b04af"
+      },
+      "case": "high_limit",
+      "contains_error_text": false,
+      "contains_source_scalar_values": false,
+      "content_type": "application/json; charset=utf-8",
+      "failure_class": null,
+      "http_status": 200,
+      "json_valid": true,
+      "limit": 25,
+      "query_keys": [
+        "q",
+        "limit"
+      ],
+      "response_candidate": true,
+      "return_code": 0,
+      "route_template": "/api/guilds/search",
+      "shape_summary": {
+        "all_records_have_supported_id": true,
+        "contains_source_scalar_values": false,
+        "distinct_non_null_id_count": 7,
+        "guild_collection_observed": true,
+        "guild_field_inventory": [
+          {
+            "field": "id",
+            "types": [
+              "integer"
+            ]
+          },
+          {
+            "field": "name",
+            "types": [
+              "string"
+            ]
+          },
+          {
+            "field": "realm",
+            "types": [
+              "string"
+            ]
+          },
+          {
+            "field": "report_count",
+            "types": [
+              "string"
+            ]
+          }
+        ],
+        "guild_field_inventory_sha256": "f2a4d5388145e9b435808eb1b7246d6aa9b0c5010602e8d54081b3181830c288",
+        "guild_object_count": 7,
+        "guild_result_count": 7,
+        "ordered_record_set_sha256": "f6df12ceacb7065ad84d2530b169a80439ee50e471bd428aec42d29be0991da9",
+        "ordered_source_id_hashes_sha256": "c3abda982da79a23f66f9d41d6943e65cff1f696ea63cdc4609bcb467241a517",
+        "top_level_keys": [
+          "guilds",
+          "success"
+        ],
+        "top_level_kind": "object"
+      }
+    },
+    {
+      "body_bytes": 529,
+      "body_captured": true,
+      "capture": {
+        "bytes_uncompressed": 529,
+        "observation_id": "1299f6d3fef3562f826497b9652c07a86f28b14e586e6e10635a55d87273986a",
+        "payload_hash": "2db3e5d6bb583694308d53e62cd6d69ad7de5e63ea87d1142514175e6157416d",
+        "raw_id": "7ee70414145cfed6a620a6b48ac178f41948bcf621aec5b3515e40f7ad139268",
+        "schema_fingerprint": "591a876403b641d0e834357beb50a7dfe7dfb2181f81d811334fd1b8493b04af"
+      },
+      "case": "high_limit_repeat",
+      "contains_error_text": false,
+      "contains_source_scalar_values": false,
+      "content_type": "application/json; charset=utf-8",
+      "failure_class": null,
+      "http_status": 200,
+      "json_valid": true,
+      "limit": 25,
+      "query_keys": [
+        "q",
+        "limit"
+      ],
+      "response_candidate": true,
+      "return_code": 0,
+      "route_template": "/api/guilds/search",
+      "shape_summary": {
+        "all_records_have_supported_id": true,
+        "contains_source_scalar_values": false,
+        "distinct_non_null_id_count": 7,
+        "guild_collection_observed": true,
+        "guild_field_inventory": [
+          {
+            "field": "id",
+            "types": [
+              "integer"
+            ]
+          },
+          {
+            "field": "name",
+            "types": [
+              "string"
+            ]
+          },
+          {
+            "field": "realm",
+            "types": [
+              "string"
+            ]
+          },
+          {
+            "field": "report_count",
+            "types": [
+              "string"
+            ]
+          }
+        ],
+        "guild_field_inventory_sha256": "f2a4d5388145e9b435808eb1b7246d6aa9b0c5010602e8d54081b3181830c288",
+        "guild_object_count": 7,
+        "guild_result_count": 7,
+        "ordered_record_set_sha256": "f6df12ceacb7065ad84d2530b169a80439ee50e471bd428aec42d29be0991da9",
+        "ordered_source_id_hashes_sha256": "c3abda982da79a23f66f9d41d6943e65cff1f696ea63cdc4609bcb467241a517",
+        "top_level_keys": [
+          "guilds",
+          "success"
+        ],
+        "top_level_kind": "object"
+      }
+    }
+  ],
+  "capture_kind": "guild_limit_semantics_capture",
+  "capture_version": "guild-limit-semantics-capture-v1",
+  "cross_case_evidence": {
+    "all_responses_completed": true,
+    "contains_source_scalar_values": false,
+    "high_limit_repeat_stable": true,
+    "high_limit_respected": true,
+    "high_limit_source_id_order_stable_by_hash": true,
+    "limit_truncation_evidence_observed": true,
+    "low_limit_saturated": true,
+    "low_result_is_high_result_prefix_by_id_hash": true,
+    "multi_result_observed": true,
+    "observed_result_counts": [
+      1,
+      7
+    ],
+    "response_schema_consistent": true
+  },
+  "decision_boundary": {
+    "automatic_full_guild_crawl_allowed": false,
+    "bounded_limit_semantics_capture_completed": true,
+    "completeness_verified": false,
+    "guild_api_route_semantics_verified": false,
+    "guild_route_shape_and_schema_reviewed": true,
+    "limit_truncation_evidence_observed": true,
+    "limit_truncation_semantics_verified": false,
+    "multi_result_observed": true,
+    "pagination_semantics_verified": false,
+    "planner_scoring_allowed": false,
+    "ready_for_bis25_scoring": false,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_limit_semantics_review": true,
+    "ready_for_multi_report_character_graph": false,
+    "ready_for_performance_model": false,
+    "status": "guild_limit_semantics_capture_review_ready",
+    "termination_semantics_verified": false
+  },
+  "generated_at": "2026-08-03T20:44:18.683328Z",
+  "integrity_checks": {
+    "captured_bodies_archived": true,
+    "credentials_not_supplied": true,
+    "error_text_not_published": true,
+    "full_crawl_remains_disabled": true,
+    "limits_bounded_and_distinct": true,
+    "planner_scoring_remains_disabled": true,
+    "public_receipt_scalar_boundary_preserved": true,
+    "query_value_not_published": true,
+    "redirects_disabled": true,
+    "request_case_count_bounded": true,
+    "request_urls_not_published": true,
+    "requests_same_origin_https": true,
+    "response_size_bounded": true,
+    "reviewed_route_only": true,
+    "route_schema_review_verified": true
+  },
+  "request_contract": {
+    "case_count": 3,
+    "credentials_supplied": false,
+    "high_limit": 25,
+    "high_limit_repeat_count": 1,
+    "low_limit": 1,
+    "max_bytes_per_case": 262144,
+    "query_keys": [
+      "q",
+      "limit"
+    ],
+    "redirects_allowed": false,
+    "route_template": "/api/guilds/search",
+    "selected_profile": "spa_fetch_context",
+    "timeout_seconds_per_case": 60.0,
+    "transport": "curl_http1_1"
+  },
+  "schema_version": 1,
+  "source_private_capture_name": "argentum-guild-limit-semantics-capture.private.json",
+  "source_private_capture_sha256": "69fca14377035b2f62c5f66dbf02f88438518fdccffede1f68fc5fb9ecc49816",
+  "source_route_review_name": "argentum-guild-route-semantics-review.json",
+  "source_route_review_sha256": "00eb57b8c24ab5f4410ed9c26d66ab54a1bf2eb753f53a7b530ae47fa21b66bd",
+  "summary": {
+    "all_integrity_checks_passed": true,
+    "all_responses_completed": true,
+    "attempt_count": 3,
+    "completed_attempt_count": 3,
+    "completeness_verified": false,
+    "contains_raw_payload": false,
+    "contains_source_scalar_values": false,
+    "guild_api_route_semantics_verified": false,
+    "integrity_check_count": 15,
+    "limit_truncation_evidence_observed": true,
+    "limit_truncation_semantics_verified": false,
+    "multi_result_observed": true,
+    "pagination_semantics_verified": false,
+    "planner_scoring_allowed": false,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_limit_semantics_review": true,
+    "termination_semantics_verified": false
+  },
+  "target": {
+    "query_value_published": false,
+    "raw_records_published": false,
+    "request_urls_published": false,
+    "source_guild_ids_published": false
+  }
+}

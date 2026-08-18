@@ -15,6 +15,8 @@ from coa_workbench import __version__
 from coa_workbench.collector import (
     RawArchive,
     capture_to_dict,
+    inspect_archived_payload,
+    inventory_har as build_har_inventory,
     load_source_registry,
     probe_registry_route,
     probe_result_to_dict,
@@ -185,6 +187,45 @@ def inspect_json(
             encoding="utf-8",
         )
     typer.echo(json.dumps(result, ensure_ascii=False, indent=2))
+
+
+@app.command("inventory-har")
+def inventory_har_command(
+    path: Path = typer.Argument(..., exists=True, dir_okay=False, readable=True),
+    output: Path | None = typer.Option(None, "--output", dir_okay=False),
+    raw_root: Path = typer.Option(Path("data/raw"), "--raw-root", file_okay=False),
+    database: Path = typer.Option(Path("data/warehouse/coa.duckdb"), "--database", dir_okay=False),
+    migrations: Path = typer.Option(Path("migrations"), "--migrations", exists=True, file_okay=False),
+    registry_path: Path = typer.Option(
+        Path("config/ascension_logs_sources.yaml"), "--registry", exists=True, dir_okay=False
+    ),
+) -> None:
+    """Safely inventory and archive response bodies from a local HAR."""
+    registry = load_source_registry(registry_path)
+    allowed_host = urlsplit(registry.base_url).hostname
+    if not allowed_host:
+        raise typer.BadParameter("source registry base_url has no hostname")
+    result = build_har_inventory(
+        path,
+        archive=RawArchive(raw_root, database_path=database, migrations_dir=migrations),
+        source_code=registry.source_code,
+        allowed_host=allowed_host,
+    )
+    rendered = json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    if output:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(rendered, encoding="utf-8")
+    typer.echo(rendered, nl=False)
+
+
+@app.command("inspect-archived")
+def inspect_archived_command(
+    payload_path_or_hash: str = typer.Argument(...),
+    raw_root: Path = typer.Option(Path("data/raw"), "--raw-root", file_okay=False),
+) -> None:
+    """Inspect a gzip JSON payload from the immutable raw archive."""
+    result = inspect_archived_payload(payload_path_or_hash, raw_root=raw_root)
+    typer.echo(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
 
 
 @app.command("normalize-json")

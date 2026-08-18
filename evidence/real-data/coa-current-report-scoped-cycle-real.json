@@ -1,0 +1,72 @@
+{
+  "capture_mode": "existing_private_browser_har_replay",
+  "current_report_persistence": {
+    "derived_observation_count": 2031,
+    "inserted_observation_count": 0,
+    "matched_observation_count": 2031,
+    "report_scoped_dependency_count": 3,
+    "scoped_endpoint_codes": [
+      "report_detail_api",
+      "report_encounters_api",
+      "report_combatants_roster_api"
+    ],
+    "scope_path_keys": ["reportId"]
+  },
+  "network_requests_performed": false,
+  "observed_checkpoint": "4e2be476ac540dce812c65cf8179fdd71141ce15",
+  "privacy": {
+    "character_ids_included": false,
+    "character_names_included": false,
+    "encounter_ids_included": false,
+    "har_included": false,
+    "har_path_included": false,
+    "input_output_fingerprints_included": false,
+    "profile_hashes_included": false,
+    "profile_values_included": false,
+    "query_values_included": false,
+    "raw_response_bodies_included": false,
+    "report_ids_included": false,
+    "schema_fingerprints_included": false,
+    "source_capture_ids_included": false,
+    "source_scope_fingerprints_included": false,
+    "source_scope_values_included": false
+  },
+  "profile_schema_cycle": {
+    "first_replay": {
+      "aggregate_change_event_count": 0,
+      "aggregate_reanalysis_request_count": 0,
+      "member_capture_count": 12,
+      "profile_cycle_count": 3,
+      "superseded_member_event_count": 12,
+      "superseded_reanalysis_request_count": 0
+    },
+    "second_replay": {
+      "aggregate_change_event_count": 0,
+      "aggregate_reanalysis_request_count": 0,
+      "member_capture_count": 12,
+      "profile_cycle_count": 0,
+      "superseded_member_event_count": 0,
+      "superseded_reanalysis_request_count": 0
+    }
+  },
+  "receipt_kind": "current_report_scoped_dependency_and_profile_cycle_real_proof",
+  "schema_version": 1,
+  "source_code": "coa_ascension_logs",
+  "source_health": {
+    "active_dependencies": [3, 6, 6, 6],
+    "completed_analysis_runs": [3, 3, 3, 3],
+    "pending_reanalysis": [0, 0, 0, 0],
+    "throughput_open_changes": [24, 24, 12, 12],
+    "total_open_changes": [34, 34, 22, 22]
+  },
+  "verification": {
+    "exact_member_schema_snapshots_preserved": true,
+    "legacy_member_churn_superseded": true,
+    "old_baseline_events_did_not_back_trigger": true,
+    "planner_scoring_allowed": false,
+    "raw_captures_preserved": true,
+    "real_current_report_scoped_dependencies_registered": true,
+    "real_profile_cycle_aggregation_proven": true,
+    "real_same_har_profile_cycle_idempotence_proven": true
+  }
+}

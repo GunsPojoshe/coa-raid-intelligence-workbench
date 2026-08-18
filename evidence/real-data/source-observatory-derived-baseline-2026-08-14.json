@@ -1,0 +1,54 @@
+{
+  "baseline": {
+    "acquisition_problem_endpoint_count": 0,
+    "active_dependency_count": 2,
+    "completed_analysis_run_count": 1,
+    "dimension_name_count": 5,
+    "dimension_value_count": 19,
+    "observed_endpoint_count": 2,
+    "source_dimension_index_status": "completed"
+  },
+  "decision_boundary": {
+    "automatic_mechanic_trust_promotion": false,
+    "automatic_planner_scoring_promotion": false,
+    "real_later_source_change_scoped_reanalysis_proven": false,
+    "real_local_source_dimension_index_initialized": true,
+    "same_input_no_change_behavior_proven": true
+  },
+  "derived_dependencies": [
+    {
+      "artifact_type": "source_dimension_index",
+      "endpoint_code": "phases_api"
+    },
+    {
+      "artifact_type": "source_dimension_index",
+      "endpoint_code": "guild_phase_progression_api"
+    }
+  ],
+  "idempotence_replay": {
+    "capture_mode": "browser_har",
+    "network_requests_performed": false,
+    "new_change_event_count": 0,
+    "new_reanalysis_request_count": 0,
+    "open_change_event_count_after": 2,
+    "open_change_event_count_before": 2,
+    "pending_reanalysis_request_count_after": 0,
+    "pending_reanalysis_request_count_before": 0,
+    "reviewed_route_observation_count": 2,
+    "same_existing_har_replayed": true,
+    "source_health_identical_before_after": true
+  },
+  "observed_date": "2026-08-14",
+  "privacy": {
+    "cookies_included": false,
+    "dimension_values_included": false,
+    "original_har_included": false,
+    "private_source_identifiers_included": false,
+    "query_values_included": false,
+    "raw_payloads_included": false,
+    "request_headers_included": false
+  },
+  "receipt_kind": "source_observatory_derived_baseline",
+  "schema_version": 1,
+  "source_code": "coa_ascension_logs"
+}

@@ -1,0 +1,50 @@
+{
+  "generated_at": "2026-08-18T21:04:33.8065059Z",
+  "head": "48c55ca5c2edb3a120a49787c9797fcd98ddb7ab",
+  "result_kind": "real_cross_report_difficulty_and_encounter_equivalence_review",
+  "review": {
+    "cohort_evidence": {
+      "difficulty_verified_cohort_count": 0,
+      "eligible_structural_peer_cohort_count": 3,
+      "encounter_equivalence_verified_cohort_count": 0,
+      "encounter_identity_basis": "exact_zone_plus_exact_encounter_name_plus_unique_encounter_per_report_plus_corroborated_equal_difficulty",
+      "encounter_non_unique_cohort_count": 0
+    },
+    "difficulty_evidence": {
+      "ambiguous_report_count": 0,
+      "corroboration_basis": "exact_report_id_link_plus_exact_report_detail_difficulty_equals_public_highest_difficulty",
+      "cross_surface_match_count": 0,
+      "cross_surface_mismatch_count": 0,
+      "distinct_verified_private_label_count": 0,
+      "public_highest_difficulty_observed_count": 0,
+      "report_detail_difficulty_observed_count": 0,
+      "verified_report_count": 0
+    },
+    "privacy": {
+      "character_ids_included": false,
+      "character_names_included": false,
+      "difficulty_values_included": false,
+      "encounter_ids_included": false,
+      "encounter_names_included": false,
+      "private_hashes_included": false,
+      "raw_paths_included": false,
+      "raw_payloads_included": false,
+      "report_ids_included": false,
+      "zone_values_included": false
+    },
+    "public_release_safe": true,
+    "report_count": 2,
+    "review_version": "cross-report-equivalence-review-v1",
+    "status": "insufficient_evidence",
+    "verification": {
+      "all_eligible_cohorts_difficulty_equivalence_verified": false,
+      "all_eligible_cohorts_encounter_equivalence_verified": false,
+      "cross_report_player_identity_verified": false,
+      "fight_duration_comparison_unit_verified": false,
+      "mechanic_semantics_verified": false,
+      "numeric_cross_report_scoring_allowed": false,
+      "planner_scoring_allowed": false
+    }
+  },
+  "schema_version": 1
+}

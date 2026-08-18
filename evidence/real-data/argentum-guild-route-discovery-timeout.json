@@ -1,0 +1,77 @@
+{
+  "asset_failure_summary": {
+    "contains_asset_urls": false,
+    "contains_error_text": false,
+    "failed_asset_count": 1,
+    "failure_class_counts": {
+      "timeout": 1
+    }
+  },
+  "decision_boundary": {
+    "guild_api_route_candidates_observed": false,
+    "guild_api_route_semantics_verified": false,
+    "guild_identity_verified": false,
+    "independent_source_identity_verified": false,
+    "planner_scoring_allowed": false,
+    "ready_for_bis25_scoring": false,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_guild_api_route_review": false,
+    "ready_for_guild_filtering": false,
+    "ready_for_multi_report_character_graph": false,
+    "ready_for_performance_model": false,
+    "snapshot_internal_identity_consistent": true,
+    "status": "guild_api_route_discovery_incomplete"
+  },
+  "discovery_kind": "guild_identity_route_discovery",
+  "discovery_version": "guild-identity-route-discovery-v2",
+  "generated_at": "2026-07-31T07:15:23.729843Z",
+  "integrity_checks": {
+    "all_asset_urls_same_origin": true,
+    "guild_page_archived": true,
+    "guild_page_url_same_origin": true,
+    "private_snapshot_review_sha256_verified": true,
+    "public_receipt_scalar_boundary_preserved": true,
+    "public_route_shapes_redact_candidate_id": true,
+    "public_snapshot_review_verified": true,
+    "snapshot_boundary_preserved": true
+  },
+  "request": {
+    "page_route_shape": "/guilds/{guild_id}/reports",
+    "same_origin_only": true,
+    "timeout_seconds": 90.0
+  },
+  "route_inventory": {
+    "all_api_route_shape_count": 0,
+    "candidate_source_counts": {
+      "assets": 0,
+      "embedded_json": 0,
+      "page_html": 0
+    },
+    "guild_api_route_shape_count": 0,
+    "guild_api_route_shapes": []
+  },
+  "schema_version": 1,
+  "source_private_discovery_name": "argentum-guild-route-discovery.private.json",
+  "source_private_discovery_sha256": "587be5e160974df477d04b98b29bfb16e3f7bdb6ea9f4a8299ea9d80f7e35640",
+  "source_private_snapshot_review_name": "argentum-guild-identity-review.private.json",
+  "source_private_snapshot_review_sha256": "9448c3c83ef05ae194c7082e929142d038b7c18dbb88cab2615f3868c5a45e2f",
+  "source_public_snapshot_review_name": "argentum-guild-identity-snapshot-review.json",
+  "source_public_snapshot_review_sha256": "fe033e9b06833ce3c28bc806c55f5971057eb3832f00a9b9e1ae40f2bcd7794e",
+  "summary": {
+    "all_integrity_checks_passed": true,
+    "api_route_candidate_count": 0,
+    "asset_count": 1,
+    "captured_asset_count": 0,
+    "contains_source_scalar_values": false,
+    "failed_asset_count": 1,
+    "guild_api_route_candidate_count": 0,
+    "integrity_check_count": 8,
+    "page_capture_completed": true,
+    "page_payload_archived": true,
+    "successful_live_asset_count": 0
+  },
+  "target": {
+    "guild_label": "Argentum",
+    "source_guild_id_published": false
+  }
+}

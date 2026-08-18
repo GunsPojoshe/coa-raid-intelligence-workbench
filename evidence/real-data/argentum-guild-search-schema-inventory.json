@@ -1,0 +1,159 @@
+{
+  "capture_binding": {
+    "bytes_uncompressed": 93,
+    "observation_id": "94e02a08a6010935a7dbb0c86dfc62dcf38e6614c1b5f04d0d91f9927a83498b",
+    "payload_hash": "3af0c236bbf2e012112be101f09b4d91a100fafd40adbb9aace76300f9a84186",
+    "raw_id": "51f04098b08d58af0708c34ab6197e11aae667fe47fb1f542abee5efb6425d9d",
+    "schema_fingerprint": "591a876403b641d0e834357beb50a7dfe7dfb2181f81d811334fd1b8493b04af"
+  },
+  "decision_boundary": {
+    "guild_api_route_candidates_observed": true,
+    "guild_api_route_semantics_verified": false,
+    "guild_identity_verified": false,
+    "guild_search_route_response_captured": true,
+    "guild_search_route_semantics_candidate_observed": true,
+    "guild_search_schema_inventory_complete": true,
+    "independent_source_identity_candidate_observed": false,
+    "independent_source_identity_verified": false,
+    "planner_scoring_allowed": false,
+    "ready_for_bis25_scoring": false,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_guild_filtering": false,
+    "ready_for_guild_identity_decision_review": false,
+    "ready_for_guild_search_mapping_review": true,
+    "ready_for_multi_report_character_graph": false,
+    "ready_for_performance_model": false,
+    "status": "guild_search_schema_inventory_complete"
+  },
+  "integrity_checks": {
+    "capture_binding_verified": true,
+    "inventory_node_count_bounded": true,
+    "private_access_diagnostic_sha256_verified": true,
+    "private_capture_review_sha256_verified": true,
+    "private_search_probe_sha256_verified": true,
+    "public_access_diagnostic_sha256_verified": true,
+    "public_capture_review_verified": true,
+    "public_inventory_contains_no_scalar_values": true,
+    "raw_content_manifest_binding_verified": true,
+    "raw_payload_matches_private_diagnostic": true,
+    "raw_payload_not_published": true,
+    "raw_payload_sha256_verified": true,
+    "selected_access_profile_verified": true,
+    "single_guild_object_verified": true,
+    "source_guild_id_not_published": true
+  },
+  "inventory_kind": "guild_identity_search_schema_inventory",
+  "inventory_version": "guild-identity-search-schema-inventory-v1",
+  "schema_inventory": {
+    "casefold_label_match_count": 1,
+    "contains_label_casefold_count": 1,
+    "contains_scalar_values": false,
+    "distinct_field_entry_count": 5,
+    "exact_label_match_count": 0,
+    "field_entries": [
+      {
+        "casefold_label_match": false,
+        "contains_label_casefold": false,
+        "contains_scalar_value": false,
+        "depth": 0,
+        "exact_label_match": false,
+        "field_name": "guilds[]",
+        "field_roles": [],
+        "object_field_names": [
+          "id",
+          "name",
+          "realm",
+          "report_count"
+        ],
+        "occurrence_count": 1,
+        "path": "$.guilds[]",
+        "source_id_match": false,
+        "value_kind": "object"
+      },
+      {
+        "casefold_label_match": false,
+        "contains_label_casefold": false,
+        "contains_scalar_value": false,
+        "depth": 1,
+        "exact_label_match": false,
+        "field_name": "id",
+        "field_roles": [
+          "id_candidate"
+        ],
+        "occurrence_count": 1,
+        "path": "$.guilds[].id",
+        "source_id_match": true,
+        "value_kind": "integer"
+      },
+      {
+        "casefold_label_match": true,
+        "contains_label_casefold": true,
+        "contains_scalar_value": false,
+        "depth": 1,
+        "exact_label_match": false,
+        "field_name": "name",
+        "field_roles": [
+          "label_candidate"
+        ],
+        "occurrence_count": 1,
+        "path": "$.guilds[].name",
+        "source_id_match": false,
+        "value_kind": "string"
+      },
+      {
+        "casefold_label_match": false,
+        "contains_label_casefold": false,
+        "contains_scalar_value": false,
+        "depth": 1,
+        "exact_label_match": false,
+        "field_name": "realm",
+        "field_roles": [
+          "location_candidate"
+        ],
+        "occurrence_count": 1,
+        "path": "$.guilds[].realm",
+        "source_id_match": false,
+        "value_kind": "string"
+      },
+      {
+        "casefold_label_match": false,
+        "contains_label_casefold": false,
+        "contains_scalar_value": false,
+        "depth": 1,
+        "exact_label_match": false,
+        "field_name": "report_count",
+        "field_roles": [],
+        "occurrence_count": 1,
+        "path": "$.guilds[].report_count",
+        "source_id_match": false,
+        "value_kind": "string"
+      }
+    ],
+    "guild_object_count": 1,
+    "id_role_field_count": 1,
+    "label_role_field_count": 1,
+    "source_id_match_count": 1,
+    "total_node_count": 5
+  },
+  "schema_version": 1,
+  "source_private_inventory_name": "argentum-guild-search-schema-inventory.private.json",
+  "source_private_inventory_sha256": "5679a7f7d017e55499b15f9c88adef4a394ff5515616e87935e1eff4cace2714",
+  "source_public_capture_review_name": "argentum-guild-search-capture-review-no-label-fields.json",
+  "source_public_capture_review_sha256": "ab58d01ca4963fe20a0405a78b0be788c9b4d8941619518eccc703f8d7beeb73",
+  "summary": {
+    "all_integrity_checks_passed": true,
+    "casefold_label_match_count": 1,
+    "contains_label_casefold_count": 1,
+    "contains_raw_payload": false,
+    "contains_source_scalar_values": false,
+    "distinct_field_entry_count": 5,
+    "exact_label_match_count": 0,
+    "guild_object_count": 1,
+    "source_id_match_count": 1
+  },
+  "target": {
+    "guild_label": "Argentum",
+    "raw_payload_published": false,
+    "source_guild_id_published": false
+  }
+}

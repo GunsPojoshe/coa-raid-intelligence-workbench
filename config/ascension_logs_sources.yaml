@@ -1,4 +1,4 @@
-schema_version: 2
+schema_version: 7
 source_code: coa_ascension_logs
 base_url: https://coa.ascensionlogs.gg
 status: discovery
@@ -6,12 +6,17 @@ truth_role: primary_observation_source
 
 principles:
   - raw responses are immutable and content-addressed
+  - browser network captures are primary discovery evidence for live frontend behavior
   - route discovery is separate from production ingestion
   - observations are stored before any mechanic inference
   - inferred mechanics never overwrite contradictory evidence
   - newer observations receive greater weight through a versioned policy
   - guild and global samples are retained as separate cohorts
   - upstream class and spec labels are retained as derived observations, not raw mechanic truth
+  - reviewed network contracts are preferred over frontend-internal inference
+  - source changes create scoped reanalysis requests instead of global rebuilds
+  - schema diffs are partitioned only by reviewed response-shaping query keys
+  - high-cardinality artifact dependencies use reviewed path scopes rather than global endpoint dependencies
 
 routes:
   - endpoint_code: public_home
@@ -41,6 +46,228 @@ routes:
     auth_mode: public
     status: verified_html
     use: guild_and_report_navigation_discovery
+
+  - endpoint_code: phases_api
+    route_template: /api/phases
+    method: GET
+    auth_mode: browser_context_observed
+    status: reviewed
+    use: phase_catalog_source_observation
+    parameter_keys: []
+    dimension_keys:
+      - phase_number
+    discovery_source: browser_network_har_2026_08_14
+    review_state: verified
+    empty_params_observed: true
+
+  - endpoint_code: guild_phase_progression_api
+    route_template: /api/guilds/phase-progression
+    method: GET
+    auth_mode: browser_context_observed
+    status: reviewed
+    use: current_phase_progression_source_observation
+    parameter_keys:
+      - phase
+      - board
+      - difficulty
+    dimension_keys:
+      - phase
+      - board
+      - bossId
+      - difficulty
+      - location
+    discovery_source: browser_network_har_plus_current_spa_2026_08_14
+    review_state: verified
+    empty_params_observed: false
+
+  - endpoint_code: guild_progression_rankings_api
+    route_template: /api/guilds/progression/rankings
+    method: GET
+    auth_mode: probe_without_auth
+    status: reviewed
+    use: alternate_progression_rankings_source_observation
+    parameter_keys:
+      - bracket
+      - difficulty
+      - location
+      - phaseId
+      - realm
+    dimension_keys: []
+    discovery_source: archived_spa_frontend_request_contract_v1
+    review_state: verified
+    empty_params_observed: true
+
+  - endpoint_code: reports_public_api
+    route_template: /api/reports/public
+    method: GET
+    auth_mode: public_observed
+    status: reviewed
+    use: public_report_discovery_source_observation
+    parameter_keys:
+      - page
+      - limit
+      - sortBy
+      - sortOrder
+    dimension_keys: []
+    discovery_source: bounded_report_pagination_evidence_2026_07_29
+    review_state: verified
+    empty_params_observed: false
+
+  - endpoint_code: reports_public_filter_options_api
+    route_template: /api/reports/public/filter-options
+    method: GET
+    auth_mode: browser_context_observed
+    status: reviewed
+    use: public_report_filter_catalog_source_observation
+    parameter_keys: []
+    dimension_keys:
+      - phase_number
+      - location
+    discovery_source: browser_network_har_2026_08_14_reports_page
+    review_state: verified
+    empty_params_observed: true
+
+  - endpoint_code: reports_queue_status_api
+    route_template: /api/reports/queue-status
+    method: GET
+    auth_mode: browser_context_observed
+    status: reviewed
+    use: reports_collection_operational_health
+    parameter_keys: []
+    dimension_keys: []
+    discovery_source: browser_network_har_2026_08_14_reports_page
+    review_state: verified
+    empty_params_observed: true
+
+  - endpoint_code: report_detail_api
+    route_template: /api/reports/{reportId}
+    method: GET
+    auth_mode: browser_context_observed
+    status: reviewed
+    use: current_report_detail_source_observation
+    parameter_keys: []
+    dimension_keys: []
+    scope_path_keys:
+      - reportId
+    discovery_source: browser_network_har_2026_08_14_current_report
+    review_state: verified
+    empty_params_observed: true
+
+  - endpoint_code: report_encounters_api
+    route_template: /api/reports/{reportId}/encounters
+    method: GET
+    auth_mode: browser_context_observed
+    status: reviewed
+    use: current_report_encounter_catalog_source_observation
+    parameter_keys:
+      - includeTrash
+    dimension_keys: []
+    scope_path_keys:
+      - reportId
+    discovery_source: browser_network_har_2026_08_14_current_report
+    review_state: verified
+    empty_params_observed: false
+
+  - endpoint_code: report_combatants_roster_api
+    route_template: /api/reports/{reportId}/combatants-roster
+    method: GET
+    auth_mode: browser_context_observed
+    status: reviewed
+    use: current_report_combatants_roster_source_observation
+    parameter_keys:
+      - encounterIds
+    dimension_keys: []
+    scope_path_keys:
+      - reportId
+    discovery_source: browser_network_har_2026_08_14_current_report
+    review_state: verified
+    empty_params_observed: false
+
+  - endpoint_code: report_encounter_throughput_timeline_api
+    route_template: /api/reports/{reportId}/encounters/{encounterId}/throughput-timeline
+    method: GET
+    auth_mode: browser_context_observed
+    status: reviewed
+    use: current_encounter_throughput_timeline_source_observation
+    parameter_keys:
+      - bucket_size_ms
+      - metric
+      - perspective
+    schema_profile_keys:
+      - metric
+      - perspective
+    dimension_keys: []
+    scope_path_keys:
+      - reportId
+    discovery_source: browser_network_har_2026_08_14_current_report
+    review_state: verified
+    empty_params_observed: false
+
+  - endpoint_code: report_character_damage_taken_abilities_api
+    route_template: /api/reports/{reportId}/character_damage_taken_abilities
+    method: GET
+    auth_mode: browser_context_observed
+    status: reviewed
+    use: current_report_character_damage_taken_abilities_source_observation
+    parameter_keys:
+      - encounterIds[]
+      - format
+      - limit
+      - participantType
+      - scope
+    dimension_keys: []
+    scope_path_keys:
+      - reportId
+    discovery_source: browser_network_har_2026_08_14_current_report
+    review_state: verified
+    empty_params_observed: false
+
+  - endpoint_code: report_character_spell_healing_api
+    route_template: /api/reports/{reportId}/character_spell_healing
+    method: GET
+    auth_mode: browser_context_observed
+    status: reviewed
+    use: current_report_character_spell_healing_source_observation
+    parameter_keys:
+      - encounterIds[]
+      - format
+      - limit
+      - participantType
+      - scope
+    dimension_keys: []
+    scope_path_keys:
+      - reportId
+    discovery_source: browser_network_har_2026_08_14_current_report
+    review_state: verified
+    empty_params_observed: false
+
+  - endpoint_code: report_encounter_detail_api
+    route_template: /api/reports/{reportId}/encounters/{encounterId}
+    method: GET
+    auth_mode: historical_public_observed
+    status: reviewed
+    use: report_encounter_detail_source_observation
+    parameter_keys: []
+    dimension_keys: []
+    scope_path_keys:
+      - reportId
+    discovery_source: archived_spa_route_inventory_plus_observed_report_slice_v1
+    review_state: verified
+    empty_params_observed: true
+
+  - endpoint_code: report_encounter_combatants_info_api
+    route_template: /api/reports/{reportId}/encounters/{encounterId}/combatants-info
+    method: GET
+    auth_mode: historical_public_observed
+    status: reviewed
+    use: encounter_combatants_build_source_observation
+    parameter_keys: []
+    dimension_keys: []
+    scope_path_keys:
+      - reportId
+    discovery_source: archived_spa_route_inventory_plus_observed_report_slice_v1
+    review_state: verified
+    empty_params_observed: true
 
   - endpoint_code: report_metadata
     route_template: null
@@ -93,3 +320,5 @@ prohibited_assumptions:
   - absence in one log disproves a mechanic
   - old and new game versions are directly interchangeable
   - upstream detected specialization proves a provider mechanic
+  - a route name proves response semantics
+  - a newly observed field may enter planner scoring without semantic review

@@ -1,0 +1,66 @@
+{
+  "decision_boundary": {
+    "planner_scoring_allowed": false,
+    "production_manifest_limit_changed": false,
+    "promoted_terminal_search_limit": 25,
+    "ready_for_fast_manifest_capture": false,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_guild_filtering": false,
+    "ready_for_guild_identity_review": false,
+    "ready_for_limit_25_terminal_search": true,
+    "status": "limit_25_manually_promoted_for_terminal_search",
+    "terminal_contract_verified_for_limit_25": false,
+    "verified_control_limit": 5
+  },
+  "inconclusive_candidates": {
+    "limits": [
+      50,
+      100,
+      250,
+      500
+    ],
+    "reason": "read timeout after 20 seconds; no pagination semantics conclusion"
+  },
+  "integrity_checks": {
+    "candidate_limit_25_cross_page_report_ids_disjoint": true,
+    "candidate_limit_25_has_previous_relations_verified": true,
+    "candidate_limit_25_limit_relations_verified": true,
+    "candidate_limit_25_observed_supported": true,
+    "candidate_limit_25_offset_relations_verified": true,
+    "candidate_limit_25_page_relations_verified": true,
+    "candidate_limit_25_pages_complete": true,
+    "candidate_limit_25_pages_full": true,
+    "candidate_limit_25_report_ids_unique_within_page": true,
+    "control_limit_5_observed_supported": true,
+    "private_probe_declared_scalar_bearing": true,
+    "source_probe_scalar_free": true
+  },
+  "observed_pages": [
+    1,
+    2
+  ],
+  "promotion_kind": "report_pagination_limit_promotion",
+  "promotion_version": "report-pagination-limit-promotion-v1",
+  "reviewed_at": "2026-07-30T23:24:00+03:00",
+  "reviewed_by": "GunsPojoshe (operator), OpenAI-assisted review",
+  "schema_version": 1,
+  "search_contract": {
+    "fallback_initial_upper_page": 8192,
+    "initial_lower_page": 2,
+    "maximum_request_count": 20,
+    "preferred_initial_upper_page": 1024
+  },
+  "selected_limit": 25,
+  "source_private_probe_name": "argentum-report-pagination-limit-probe.private.json",
+  "source_private_probe_sha256": "23668eee4bacc72735fd060b4a1425f40c6bf3d048852eaa2944e5cfd77e4fb1",
+  "source_probe_name": "argentum-report-pagination-limit-probe.json",
+  "source_probe_sha256": "0902857df42297a828efe2ef95359f37c8c0997e8e73713f1c80ef2ed42d8f21",
+  "summary": {
+    "all_integrity_checks_passed": true,
+    "contains_source_scalar_values": false,
+    "observed_page_count": 2,
+    "ready_for_fast_manifest_capture": false,
+    "ready_for_limit_25_terminal_search": true,
+    "selected_limit": 25
+  }
+}

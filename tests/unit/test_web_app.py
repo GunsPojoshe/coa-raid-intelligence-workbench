@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from fastapi.testclient import TestClient
 
 from coa_workbench.web import create_app
@@ -11,10 +13,37 @@ def test_health_identifies_localhost_mode() -> None:
     assert response.json()["mode"] == "localhost"
 
 
+def test_source_health_page_is_available() -> None:
+    response = client.get("/source-health")
+    assert response.status_code == 200
+    assert "Source & Analysis Health" in response.text
+    assert "/api/source-health" in response.text
+
+
+def test_source_health_api_initializes_clean_database(tmp_path: Path) -> None:
+    local_client = TestClient(
+        create_app(
+            database_path=tmp_path / "source-health.duckdb",
+            migrations_dir=Path("migrations"),
+        )
+    )
+
+    response = local_client.get("/api/source-health")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["health_version"] == "source-health-v1"
+    assert payload["summary"]["endpoint_count"] == 0
+    assert payload["summary"]["pending_reanalysis_request_count"] == 0
+    assert payload["privacy"]["raw_payloads_included"] is False
+    assert payload["privacy"]["dimension_values_included"] is False
+
+
 def test_formats_expose_all_supported_sizes() -> None:
     payload = client.get("/api/formats").json()
     assert payload["formats"] == ["FLEX", "10", "25", "40"]
     assert payload["max_slots"] == 40
+    assert payload["fixed_sizes"] == {"10": 10, "25": 25, "40": 40}
 
 
 def test_preview_activates_exactly_25_slots() -> None:

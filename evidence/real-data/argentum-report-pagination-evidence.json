@@ -1,0 +1,144 @@
+{
+  "decision_boundary": {
+    "automatic_termination_used": false,
+    "cross_page_deduplication_policy_verified": false,
+    "limit_behavior_above_5_verified": false,
+    "pagination_field_semantics_verified": false,
+    "planner_scoring_allowed": false,
+    "private_evidence_contains_source_scalar_values": true,
+    "ready_for_bis25_scoring": false,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_global_benchmark": false,
+    "ready_for_guild_filtering": false,
+    "ready_for_manual_pagination_field_review": true,
+    "ready_for_multi_report_character_graph": false,
+    "ready_for_performance_model": false,
+    "status": "bounded_pagination_evidence_captured",
+    "termination_condition_verified": false
+  },
+  "evidence_kind": "bounded_report_pagination_evidence",
+  "evidence_version": "report-pagination-evidence-v1",
+  "generated_at": "2026-07-29T23:52:57.524957Z",
+  "integrity_checks": {
+    "all_pages_archived_before_review": true,
+    "all_pages_completed": true,
+    "all_report_ids_type_checked": true,
+    "cross_page_duplicate_measurement_completed": true,
+    "explicit_page_window_verified": true,
+    "guild_collection_contract_verified": true,
+    "observed_query_shape_preserved": true,
+    "pagination_objects_present": true,
+    "private_batch_written": true,
+    "scalar_free_receipt_boundary_preserved": true
+  },
+  "pages": [
+    {
+      "duplicate_with_prior_pages_count": 0,
+      "duplicate_within_page_count": 0,
+      "http_status": 200,
+      "limit": 5,
+      "observation_id": "2e89723db3cd82264f2522fac61b4b32c8666b4aaac661448dc4a22c8f4da3b7",
+      "page": 1,
+      "pagination_direct_field_count": 5,
+      "pagination_shape_sha256": "e94b1f832d8301b8df05209fb51c60068476d208143d3a7860f62ef1022ac86c",
+      "payload_hash": "1f78abb3adc4f0eca0a88a7e01dd6f3fce17eba191ea7afc292aeb0cbbdd1aa7",
+      "raw_id": "ce765dcb20cfb5a8678307bd9e66ae4ee87bb844ffeefaaa3fe2f823ccbcec60",
+      "report_id_set_sha256": "30b9faddb8221d13ae351a0462203a995f56d11b6fe7d8da65aa393ffc39760b",
+      "report_occurrence_count": 5,
+      "schema_fingerprint": "e448ad777aa36bcda974c8e005af5f5a5a6f456cafc03cf7e00077b710e67532",
+      "top_level_keys": [
+        "pagination",
+        "reports",
+        "success"
+      ],
+      "unique_report_id_count": 5
+    },
+    {
+      "duplicate_with_prior_pages_count": 0,
+      "duplicate_within_page_count": 0,
+      "http_status": 200,
+      "limit": 5,
+      "observation_id": "9a1a3117cde6a9213143abee2590e82214a7160aac1a71b0b4993bc9595fa744",
+      "page": 2,
+      "pagination_direct_field_count": 5,
+      "pagination_shape_sha256": "e94b1f832d8301b8df05209fb51c60068476d208143d3a7860f62ef1022ac86c",
+      "payload_hash": "c67f64a92402483b9dea95c35f5111a38b4b31b6d42d5d7366f1e589ca88053c",
+      "raw_id": "6112f2d9194d6211b75984019454cb1620e2e749526c72ddfc86b68183d81fd5",
+      "report_id_set_sha256": "ffd0cb9f873f2f7f84a401c6f6cb3e89c78cfd503c443a674e81c03a9274ddeb",
+      "report_occurrence_count": 5,
+      "schema_fingerprint": "4f47885820e6931cd76db538cabd68405b4969778c1bede9dee53a7f1e005ed4",
+      "top_level_keys": [
+        "pagination",
+        "reports",
+        "success"
+      ],
+      "unique_report_id_count": 5
+    },
+    {
+      "duplicate_with_prior_pages_count": 0,
+      "duplicate_within_page_count": 0,
+      "http_status": 200,
+      "limit": 5,
+      "observation_id": "7c5488cda4fb1dded868c9c8249ee82eb283fadd27bb1c536fe7219c6c713e83",
+      "page": 3,
+      "pagination_direct_field_count": 5,
+      "pagination_shape_sha256": "e94b1f832d8301b8df05209fb51c60068476d208143d3a7860f62ef1022ac86c",
+      "payload_hash": "4bc3997e5ef31d68345e6fea9cefe67ffed0ff7a6765a3579c995da69a0afc88",
+      "raw_id": "09a02cdf43cb3a8c727db8952236b392755870f98795ab89d562a92ed5547ea1",
+      "report_id_set_sha256": "0c3f107b1b25e374ba8f603a24a354b54ef49b79fa5baa6e734889f596efaf98",
+      "report_occurrence_count": 5,
+      "schema_fingerprint": "4f47885820e6931cd76db538cabd68405b4969778c1bede9dee53a7f1e005ed4",
+      "top_level_keys": [
+        "pagination",
+        "reports",
+        "success"
+      ],
+      "unique_report_id_count": 5
+    }
+  ],
+  "request": {
+    "http_profile_version": "coa-fetch-context-v1",
+    "limit": 5,
+    "page_count": 3,
+    "query_keys": [
+      "page",
+      "limit",
+      "sortBy",
+      "sortOrder"
+    ],
+    "route_template": "/api/reports/public",
+    "sort_by": "created_at",
+    "sort_order": "desc",
+    "start_page": 1
+  },
+  "schema_version": 1,
+  "source_contract_name": "argentum-guild-report-collection-contract.json",
+  "source_contract_sha256": "ca7eaaf3508035cca984b7d2c40a2a7e74d59421e3f8f391452af3a40af74334",
+  "source_private_evidence_name": "argentum-report-pagination-evidence.private.json",
+  "source_private_evidence_sha256": "eedcd9e0836f2f0ce2dad7e051a1729e2accdadba8c2866ecc8488a21eaf21b2",
+  "summary": {
+    "all_integrity_checks_passed": true,
+    "all_pages_same_pagination_shape": true,
+    "all_pages_same_top_level_shape": false,
+    "completed_page_count": 3,
+    "contains_source_scalar_values": false,
+    "distinct_pagination_shape_count": 1,
+    "distinct_payload_hash_count": 3,
+    "distinct_schema_fingerprint_count": 2,
+    "distinct_top_level_shape_count": 2,
+    "duplicate_report_occurrence_count": 0,
+    "empty_page_count": 0,
+    "integrity_check_count": 10,
+    "private_evidence_contains_source_scalar_values": true,
+    "ready_for_bis25_scoring": false,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_manual_pagination_field_review": true,
+    "report_occurrence_count": 15,
+    "requested_page_count": 3,
+    "unique_report_id_count": 15
+  },
+  "target": {
+    "guild_identity_status": "operator_named_target_unresolved",
+    "guild_label": "Argentum"
+  }
+}
