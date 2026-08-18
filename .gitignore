@@ -14,8 +14,11 @@ __pycache__/
 /data/exchange/out/**
 /data/backups/**
 /data/logs/**
+/data/private/**
 /exports/**
 /artifacts/**
+/playwright-report/**
+/test-results/**
 !/data/**/.gitkeep
 .env
 .env.*
