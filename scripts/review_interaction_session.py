@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -10,6 +11,19 @@ from coa_workbench.collector.interaction_session import (
     ActionMarker,
     build_public_interaction_review,
 )
+
+_PUBLIC_CODE = re.compile(r"^[a-z][a-z0-9_.-]{0,79}$")
+
+
+def _optional_public_code(raw: dict[str, Any], key: str, index: int) -> str | None:
+    value = raw.get(key)
+    if value is None:
+        return None
+    if not isinstance(value, str) or not _PUBLIC_CODE.fullmatch(value):
+        raise ValueError(
+            f"actions[{index}].{key} must match {_PUBLIC_CODE.pattern} or be null"
+        )
+    return value
 
 
 def _load_actions(path: Path) -> tuple[ActionMarker, ...]:
@@ -42,6 +56,8 @@ def _load_actions(path: Path) -> tuple[ActionMarker, ...]:
                 observed_at=observed_at,
                 kind=kind,
                 private_label=private_label,
+                control_code=_optional_public_code(raw, "control_code", index),
+                transition_code=_optional_public_code(raw, "transition_code", index),
             )
         )
     return tuple(actions)
@@ -50,8 +66,9 @@ def _load_actions(path: Path) -> tuple[ActionMarker, ...]:
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
-            "Build a scalar-safe UI-action to Network review from a private HAR and action "
-            "manifest. The HAR and private action labels are not copied into the output."
+            "Build a scalar-safe UI-action to Network differential review from a private HAR "
+            "and action manifest. Private action labels and scalar request/response values are "
+            "not copied into the output."
         )
     )
     parser.add_argument("har", type=Path)

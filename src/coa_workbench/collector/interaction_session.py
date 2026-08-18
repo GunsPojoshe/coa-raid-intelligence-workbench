@@ -6,7 +6,7 @@ from typing import Iterable
 
 from coa_workbench.collector.network_observation import NetworkObservation
 
-INTERACTION_SESSION_VERSION = "interaction-session-v1"
+INTERACTION_SESSION_VERSION = "interaction-session-v2"
 
 
 def _timestamp(value: str) -> datetime:
@@ -23,12 +23,16 @@ class ActionMarker:
     observed_at: str
     kind: str
     private_label: str | None = None
+    control_code: str | None = None
+    transition_code: str | None = None
 
     def public_summary(self) -> dict[str, object]:
         return {
             "action_id": self.action_id,
             "observed_at": self.observed_at,
             "kind": self.kind,
+            "control_code": self.control_code,
+            "transition_code": self.transition_code,
             "private_label_included": False,
         }
 
@@ -100,12 +104,21 @@ def build_public_interaction_review(
     actions: Iterable[ActionMarker],
     observations: Iterable[NetworkObservation],
 ) -> dict[str, object]:
+    from coa_workbench.collector.interaction_differential import (
+        build_repetition_review,
+        build_transition_deltas,
+    )
+
     windows = correlate_actions_with_network(actions, observations)
+    deltas = build_transition_deltas(windows)
     return {
         "review_version": INTERACTION_SESSION_VERSION,
         "action_count": len(windows),
         "network_silent_action_count": sum(window.network_silent for window in windows),
         "windows": [window.public_summary() for window in windows],
+        "transitions": [delta.public_summary() for delta in deltas],
+        "repetition_review": build_repetition_review(deltas),
+        "baseline_traffic_included": False,
         "semantic_promotion_performed": False,
         "privacy": {
             "private_action_labels_included": False,
