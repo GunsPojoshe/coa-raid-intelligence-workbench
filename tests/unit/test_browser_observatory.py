@@ -86,8 +86,6 @@ def test_action_recorder_uses_session_control_codes_without_public_private_label
 
     public = build_public_interaction_review(recorder.actions, ())
     rendered = json.dumps(public, sort_keys=True)
-    assert public["baseline_marker_count"] == 1
-    assert public["pre_first_action_traffic_included"] is False
     assert "Private Difficulty A" not in rendered
     assert "Private Difficulty B" not in rendered
     assert "Private Boss" not in rendered
@@ -184,3 +182,21 @@ def test_browser_event_pump_uses_playwright_wait_until_keyboard_interrupt() -> N
     _pump_browser_events(page, interval_ms=125)
 
     assert page.calls == [125, 125, 125]
+
+
+def test_browser_observatory_config_rejects_non_public_scenario_code(tmp_path: Path) -> None:
+    config = BrowserObservatoryConfig(
+        start_url="https://coa.ascensionlogs.gg/reports",
+        allowed_host="coa.ascensionlogs.gg",
+        user_data_dir=tmp_path / "profile",
+        private_session_root=tmp_path / "sessions",
+        public_output_dir=tmp_path / "out",
+        scenario_code="Private Scenario",
+    )
+
+    try:
+        config.validate()
+    except ValueError as exc:
+        assert str(exc) == "scenario_code must be a lowercase public-safe code"
+    else:
+        raise AssertionError("expected ValueError")

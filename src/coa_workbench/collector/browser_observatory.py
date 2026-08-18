@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, Mapping
 from urllib.parse import urlsplit
 
+from coa_workbench.collector.discovery_scenarios import validate_scenario_code
 from coa_workbench.collector.interaction_session import ActionMarker, build_public_interaction_review
 from coa_workbench.collector.network_observation import NetworkObservation
 
@@ -273,6 +274,8 @@ class BrowserObservatoryConfig:
     private_session_root: Path
     public_output_dir: Path
     api_prefix: str = "/api/"
+    source_code: str = "coa_ascension_logs"
+    scenario_code: str = "unassigned"
     trace_enabled: bool = True
 
     def validate(self) -> None:
@@ -281,6 +284,8 @@ class BrowserObservatoryConfig:
             raise ValueError("start_url must be HTTPS and match allowed_host")
         if not self.api_prefix.startswith("/"):
             raise ValueError("api_prefix must start with /")
+        validate_scenario_code(self.source_code)
+        validate_scenario_code(self.scenario_code)
 
 
 def _load_sync_playwright() -> Any:
@@ -311,6 +316,32 @@ def _write_json(path: Path, payload: object) -> None:
         encoding="utf-8",
     )
     temporary.replace(path)
+
+
+def run_browser_profile_bootstrap(config: BrowserObservatoryConfig) -> dict[str, object]:
+    config.validate()
+    config.user_data_dir.mkdir(parents=True, exist_ok=True)
+    sync_playwright = _load_sync_playwright()
+
+    with sync_playwright() as playwright:
+        context = playwright.chromium.launch_persistent_context(
+            config.user_data_dir,
+            headless=False,
+            no_viewport=True,
+        )
+        page = context.pages[0] if context.pages else context.new_page()
+        page.goto(config.start_url, wait_until="domcontentloaded")
+        print("Dedicated Browser Observatory profile is open. Authenticate if needed.")
+        print("Return to this terminal and press Ctrl+C when profile setup is complete.")
+        _pump_browser_events(page)
+        context.close()
+
+    return {
+        "browser_observatory_version": BROWSER_OBSERVATORY_VERSION,
+        "profile_bootstrap_completed": True,
+        "evidence_capture_performed": False,
+        "private_profile_path_included": False,
+    }
 
 
 def run_browser_observatory(config: BrowserObservatoryConfig) -> dict[str, object]:
@@ -377,6 +408,8 @@ def run_browser_observatory(config: BrowserObservatoryConfig) -> dict[str, objec
             "browser_observatory_version": BROWSER_OBSERVATORY_VERSION,
             "network_request_count": len(network_recorder.observations),
             "action_count": len(action_recorder.actions),
+            "source_code": config.source_code,
+            "scenario_code": config.scenario_code,
             "har_recorded": True,
             "trace_recorded": tracing_started,
             "private_paths_included": False,
@@ -408,4 +441,5 @@ __all__ = [
     "PlaywrightUnavailableError",
     "_pump_browser_events",
     "run_browser_observatory",
+    "run_browser_profile_bootstrap",
 ]
