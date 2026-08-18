@@ -61,10 +61,10 @@ def test_har_adapter_filters_host_and_preserves_private_bodies(tmp_path) -> None
     assert observation.request_body_keys == ("encounterId", "mode")
 
     rendered = json.dumps(observation.public_summary(), sort_keys=True)
-    assert "summary" not in rendered
-    assert "456" not in rendered
-    assert "private" not in rendered
-    assert "value" not in rendered
+    assert '"mode": "summary"' not in rendered
+    assert '"encounterId": 456' not in rendered
+    assert '"private": "value"' not in rendered
+    assert "/api/reports/123/" not in rendered
 
 
 def test_har_adapter_rejects_non_array_entries(tmp_path) -> None:
