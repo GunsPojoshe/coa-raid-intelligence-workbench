@@ -20,9 +20,7 @@ def _optional_public_code(raw: dict[str, Any], key: str, index: int) -> str | No
     if value is None:
         return None
     if not isinstance(value, str) or not _PUBLIC_CODE.fullmatch(value):
-        raise ValueError(
-            f"actions[{index}].{key} must match {_PUBLIC_CODE.pattern} or be null"
-        )
+        raise ValueError(f"actions[{index}].{key} must match {_PUBLIC_CODE.pattern} or be null")
     return value
 
 
