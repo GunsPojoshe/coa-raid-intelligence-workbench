@@ -4,7 +4,6 @@ import json
 
 from coa_workbench.collector.interaction_differential import (
     build_repetition_review,
-    build_transition_deltas,
     compare_action_windows,
 )
 from coa_workbench.collector.interaction_session import ActionMarker, ActionNetworkWindow
@@ -40,14 +39,16 @@ def _window(
     observation: NetworkObservation,
     *,
     control_code: str,
+    transition_code: str = "change",
+    kind: str = "select",
 ) -> ActionNetworkWindow:
     return ActionNetworkWindow(
         action=ActionMarker(
             action_id=action_id,
             observed_at=observed_at,
-            kind="select",
+            kind=kind,
             control_code=control_code,
-            transition_code="change",
+            transition_code=transition_code,
         ),
         observations=(observation,),
     )
@@ -124,20 +125,87 @@ def test_transition_delta_reports_dynamic_path_and_body_key_changes() -> None:
     assert "/encounters/300" not in rendered
 
 
-def test_repetition_review_requires_repeat_and_checks_negative_controls() -> None:
+def test_repetition_review_uses_intrinsic_bursts_not_previous_action() -> None:
+    baseline = _window(
+        "baseline",
+        "2026-08-19T00:00:01Z",
+        _observation(
+            1,
+            "2026-08-19T00:00:02Z",
+            "https://coa.ascensionlogs.gg/api/background",
+        ),
+        control_code="baseline",
+        transition_code="baseline",
+        kind="baseline",
+    )
+    difficulty_one = _window(
+        "difficulty-1",
+        "2026-08-19T00:00:03Z",
+        _observation(
+            2,
+            "2026-08-19T00:00:04Z",
+            "https://coa.ascensionlogs.gg/api/reports/100?difficulty=private-a",
+        ),
+        control_code="difficulty",
+    )
+    unrelated_between = _window(
+        "boss-1",
+        "2026-08-19T00:00:05Z",
+        _observation(
+            3,
+            "2026-08-19T00:00:06Z",
+            "https://coa.ascensionlogs.gg/api/reports/100/encounters/200",
+        ),
+        control_code="boss",
+    )
+    difficulty_two = _window(
+        "difficulty-2",
+        "2026-08-19T00:00:07Z",
+        _observation(
+            4,
+            "2026-08-19T00:00:08Z",
+            "https://coa.ascensionlogs.gg/api/reports/100?difficulty=private-b",
+        ),
+        control_code="difficulty",
+    )
+
+    review = build_repetition_review(
+        (baseline, difficulty_one, unrelated_between, difficulty_two)
+    )
+    difficulty = next(
+        group for group in review["groups"] if group["group_code"] == "difficulty:change"
+    )
+
+    assert review["corroboration_basis"] == "intrinsic_action_request_burst"
+    assert review["adjacent_transition_delta_used_for_corroboration"] is False
+    assert len(difficulty["repeated_signatures"]) == 1
+    repeated = difficulty["repeated_signatures"][0]
+    assert repeated["occurrence_count"] == 2
+    assert repeated["exclusive_to_group"] is True
+    assert repeated["negative_control_group_codes"] == []
+    assert repeated["scalar_variation_observed"] is True
+    evidence = repeated["scalar_variation_evidence"]
+    assert evidence[0]["query_value_keys_varied"] == ["difficulty"]
+    rendered = json.dumps(review, sort_keys=True)
+    assert "private-a" not in rendered
+    assert "private-b" not in rendered
+    assert "/api/reports/100" not in rendered
+
+
+def test_repetition_review_rejects_signature_shared_by_negative_control() -> None:
     windows = (
         _window(
-            "baseline",
+            "difficulty-1",
             "2026-08-19T00:00:01Z",
             _observation(
                 1,
                 "2026-08-19T00:00:02Z",
                 "https://coa.ascensionlogs.gg/api/reports/100?difficulty=a",
             ),
-            control_code="baseline",
+            control_code="difficulty",
         ),
         _window(
-            "difficulty-1",
+            "difficulty-2",
             "2026-08-19T00:00:03Z",
             _observation(
                 2,
@@ -147,42 +215,18 @@ def test_repetition_review_requires_repeat_and_checks_negative_controls() -> Non
             control_code="difficulty",
         ),
         _window(
-            "difficulty-2",
+            "tab-1",
             "2026-08-19T00:00:05Z",
             _observation(
                 3,
                 "2026-08-19T00:00:06Z",
-                "https://coa.ascensionlogs.gg/api/reports/100?difficulty=a",
-            ),
-            control_code="difficulty",
-        ),
-    )
-
-    review = build_repetition_review(build_transition_deltas(windows))
-    difficulty = next(
-        group for group in review["groups"] if group["group_code"] == "difficulty:change"
-    )
-
-    assert len(difficulty["repeated_signatures"]) == 1
-    repeated = difficulty["repeated_signatures"][0]
-    assert repeated["occurrence_count"] == 2
-    assert repeated["exclusive_to_group"] is True
-    assert repeated["negative_control_group_codes"] == []
-    assert review["exclusive_repeated_signature_count"] == 1
-
-    with_negative_control = windows + (
-        _window(
-            "tab-1",
-            "2026-08-19T00:00:07Z",
-            _observation(
-                4,
-                "2026-08-19T00:00:08Z",
-                "https://coa.ascensionlogs.gg/api/reports/100?difficulty=b",
+                "https://coa.ascensionlogs.gg/api/reports/100?difficulty=c",
             ),
             control_code="tab",
         ),
     )
-    review = build_repetition_review(build_transition_deltas(with_negative_control))
+
+    review = build_repetition_review(windows)
     difficulty = next(
         group for group in review["groups"] if group["group_code"] == "difficulty:change"
     )
@@ -191,3 +235,4 @@ def test_repetition_review_requires_repeat_and_checks_negative_controls() -> Non
     assert repeated["exclusive_to_group"] is False
     assert repeated["negative_control_group_codes"] == ["tab:change"]
     assert review["exclusive_repeated_signature_count"] == 0
+    assert review["exclusive_repeated_signature_with_scalar_variation_count"] == 0

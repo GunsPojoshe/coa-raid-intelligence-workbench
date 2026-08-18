@@ -6,7 +6,7 @@ from typing import Iterable
 
 from coa_workbench.collector.network_observation import NetworkObservation
 
-INTERACTION_SESSION_VERSION = "interaction-session-v2"
+INTERACTION_SESSION_VERSION = "interaction-session-v3"
 
 
 def _timestamp(value: str) -> datetime:
@@ -117,7 +117,7 @@ def build_public_interaction_review(
         "network_silent_action_count": sum(window.network_silent for window in windows),
         "windows": [window.public_summary() for window in windows],
         "transitions": [delta.public_summary() for delta in deltas],
-        "repetition_review": build_repetition_review(deltas),
+        "repetition_review": build_repetition_review(windows),
         "baseline_traffic_included": False,
         "semantic_promotion_performed": False,
         "privacy": {
