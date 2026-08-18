@@ -1,6 +1,12 @@
 # Фактическое состояние проекта
 
-Дата актуализации: **2026-08-17**.
+Дата актуализации: **2026-08-19**.
+
+Каноничный restart/handoff для нового чата:
+
+```text
+docs/NEXT_CHAT_HANDOFF.md
+```
 
 ## GitHub
 
@@ -14,7 +20,16 @@ e3/real-log-capture
 
 PR #7 remains Draft: `e3/real-log-capture -> e2/log-evidence-refactor`.
 
-Live HEAD and exact-head CI must always be checked before extending or merging the branch.
+Implementation checkpoint immediately before the handoff documentation snapshot:
+
+```text
+ac4e15b2fb4c879b2010c12dae1aeb50df3fd745
+Record real equivalence blocker and add structure review
+```
+
+Exact-head CI #835 is green on Ubuntu, Windows and `public-release-audit`.
+
+Always verify live HEAD and exact-head CI before extending or merging the branch.
 
 ## Product target
 
@@ -64,6 +79,20 @@ GET /api/reports/{reportId}/character_spell_healing?...
 
 Historical encounter-detail/combatants-info routes remain evidence only and do not override the
 current browser runtime.
+
+Important active algorithm/data versions:
+
+```text
+network-source-cycle-v9
+scope-schema-cycle-v1
+current-report-derived-persistence-v1
+current-report-analytics-v1
+current-report-analytics-persistence-v1
+current-report-comparison-read-model-v1
+cross-report-structural-benchmark-v1
+cross-report-equivalence-review-v1
+cross-report-source-structure-v1
+```
 
 The current `/combatants-roster` payload supplies observation-only roster/build evidence including
 specialization, mutually checked talent structures, gear/resolved-item information and BisBeard
@@ -172,6 +201,7 @@ Still explicitly unverified:
 ```text
 difficulty equivalence:        false
 cross-report player identity:  false
+fight-duration comparison:    false
 numeric cross-report scoring:  false
 mechanic semantics:            false
 planner scoring:               false
@@ -229,11 +259,75 @@ Public-safe receipt:
 evidence/real-data/coa-scope-schema-cycle-real.json
 ```
 
+## Difficulty + encounter equivalence: current real result
+
+`cross-report-equivalence-review-v1` is implemented as a fail-closed promotion gate. Its first rule tried
+to corroborate one stable difficulty value for each report across two independently observed surfaces:
+
+```text
+/api/reports/{reportId} -> report.difficulty
+/api/reports/public     -> reports[].highest_difficulty
+```
+
+Real two-report result:
+
+```text
+status: insufficient_evidence
+report count: 2
+
+report-detail difficulty observed: 0
+public highest difficulty observed: 0
+cross-surface matches:             0
+cross-surface mismatches:          0
+ambiguous reports:                 0
+verified reports:                  0
+
+eligible structural cohorts:       3
+difficulty-verified cohorts:       0
+encounter-equivalence cohorts:     0
+encounter non-unique cohorts:      0
+```
+
+This is an evidence gap, not evidence that the reports use different difficulties. Encounter-name
+uniqueness is not the blocker.
+
+Public-safe receipt:
+
+```text
+evidence/real-data/coa-cross-report-equivalence-real.json
+```
+
+Earlier private structural review had observed `reportDifficulty` at encounter-catalog top level and
+`difficulty` on encounter rows. Those field names remain unpromoted until corroboration is proven.
+
+## Current source-structure probe
+
+`cross-report-source-structure-v1` was added at implementation checkpoint `ac4e15b...`:
+
+```text
+src/coa_workbench/analytics/cross_report_source_structure.py
+scripts/review_cross_report_source_structure.py
+tests/unit/test_cross_report_source_structure.py
+```
+
+It is read-only and scalar-safe. It reports field names and JSON types from existing persisted
+report-detail, encounter-row and public-report evidence without publishing IDs, names, difficulty
+values, raw payloads/paths or private hashes.
+
+The real source-structure receipt is **not yet produced** at this snapshot. No new HAR is required.
+
+The previously generated operator helper:
+
+```text
+review-cross-report-source-structure.ps1
+SHA-256 a1ccea59cf111430e7a90542569203189e24d6aa9dc5e1d9dbde973769007d5b
+```
+
 ## Public/private boundary
 
 Git/public evidence excludes HAR/raw bodies, report/encounter/player/guild IDs and names, query values,
-dynamic group keys, source-capture IDs, private scope/profile values or hashes, and private
-input/output fingerprints.
+dynamic group keys, source-capture IDs, private scope/profile values or hashes, difficulty scalar values,
+and private input/output fingerprints.
 
 Local comparison/API payloads may contain those private local identifiers and are marked
 `public_release_safe=false`.
@@ -253,27 +347,48 @@ structural cross-report peer cohorts: real proven
 scope-aware schema cycles: implemented + real proven
 cross-report schema-noise cleanup: 645 -> 22 real proven
 new scoped schema changes on replay: 0
+difficulty/encounter equivalence reviewer: implemented + real run complete
+real difficulty evidence: insufficient (0 verified reports)
+encounter-name uniqueness blocker: absent
+source-structure reviewer: implemented, real run pending
 numeric cross-report scoring: blocked
 planner scoring promoted automatically: false
 ```
 
-## Next product work
+## Exact next work
 
-The transport, persistence, multi-report generalization and schema-peer boundaries are sufficiently
-proven for the current source surface. Do not capture another HAR merely to re-prove them.
-
-Next promotion sequence:
+Do **not** capture another HAR yet. First use the existing local DuckDB/raw archive:
 
 ```text
-establish defensible difficulty + encounter equivalence for structural peer cohorts
--> establish fight-duration/comparison-unit semantics
--> permit guarded numeric cross-report benchmark only if those gates pass
--> define explicit cross-report character identity only where a stable source identity supports it
+run cross-report-source-structure-v1
+-> inspect only difficulty-like field names + JSON types
+-> decide whether existing report/encounter/public surfaces can provide two independently bound,
+   stable scalar difficulty observations for each target report
+```
+
+Important: an earlier private structural review observed encounter-catalog top-level `reportDifficulty`.
+The current v1 structure probe inspects encounter rows, not that top-level field. If row evidence is
+insufficient, extend the reviewer to inspect encounter-catalog top-level structure before requesting a
+new browser capture.
+
+Promotion sequence after that:
+
+```text
+prove difficulty + encounter equivalence on the real 3 structural peer cohorts
+-> establish fight-duration/comparison-unit semantics from exact encounter-linked timing evidence
+-> only then permit guarded numeric cross-report comparison
+-> prove explicit cross-report character identity from stable source evidence
 -> rankings/statistics/character history
 -> Armory/talent-grid enrichment
 -> BisBeard planning evidence
 -> planner scoring only from corroborated/confirmed mechanics
 ```
 
-A new browser capture is required only for a genuinely new source surface, a changed contract, or a
-deliberate later generalization observation.
+A new browser capture is required only if the persisted source surfaces truly cannot provide the needed
+independent difficulty evidence, or when a genuinely new/changed source contract is being investigated.
+
+For exact restart instructions, known non-obvious source facts and operator workflow rules, read:
+
+```text
+docs/NEXT_CHAT_HANDOFF.md
+```
