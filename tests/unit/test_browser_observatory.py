@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import signal
 from pathlib import Path
 
 from coa_workbench.collector.browser_observatory import (
@@ -166,8 +167,21 @@ def test_browser_observatory_config_requires_https_exact_host(tmp_path: Path) ->
             raise AssertionError("expected ValueError")
 
 
-def test_browser_event_pump_uses_playwright_wait_until_keyboard_interrupt() -> None:
+def test_browser_event_pump_converts_sigint_to_graceful_stop(monkeypatch) -> None:
     from coa_workbench.collector.browser_observatory import _pump_browser_events
+
+    active_handler = signal.default_int_handler
+    installed_handlers: list[object] = []
+
+    def fake_signal(signum: int, handler: object) -> object:
+        nonlocal active_handler
+        assert signum == signal.SIGINT
+        previous = active_handler
+        active_handler = handler
+        installed_handlers.append(handler)
+        return previous
+
+    monkeypatch.setattr(signal, "signal", fake_signal)
 
     class _FakePage:
         def __init__(self) -> None:
@@ -176,12 +190,25 @@ def test_browser_event_pump_uses_playwright_wait_until_keyboard_interrupt() -> N
         def wait_for_timeout(self, timeout: float) -> None:
             self.calls.append(timeout)
             if len(self.calls) == 3:
-                raise KeyboardInterrupt
+                assert callable(active_handler)
+                active_handler(signal.SIGINT, None)
 
     page = _FakePage()
     _pump_browser_events(page, interval_ms=125)
 
     assert page.calls == [125, 125, 125]
+    assert installed_handlers[0] is not signal.default_int_handler
+    assert installed_handlers[-1] is signal.default_int_handler
+
+
+def test_browser_event_pump_keeps_keyboard_interrupt_fallback() -> None:
+    from coa_workbench.collector.browser_observatory import _pump_browser_events
+
+    class _FakePage:
+        def wait_for_timeout(self, _timeout: float) -> None:
+            raise KeyboardInterrupt
+
+    _pump_browser_events(_FakePage(), interval_ms=125)
 
 
 def test_browser_observatory_config_rejects_non_public_scenario_code(tmp_path: Path) -> None:

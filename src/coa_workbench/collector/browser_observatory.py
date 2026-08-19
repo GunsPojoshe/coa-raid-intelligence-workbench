@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import signal
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -293,19 +294,46 @@ def _load_sync_playwright() -> Any:
         from playwright.sync_api import sync_playwright
     except ModuleNotFoundError as exc:
         raise PlaywrightUnavailableError(
-            "Browser Observatory requires Playwright. Install the local runtime with "
-            f"uv pip install '{BROWSER_RUNTIME_REQUIREMENT}' and then run "
-            "uv run playwright install chromium."
+            "Browser Observatory requires Playwright. Use the ephemeral runtime with "
+            f"uv run --with '{BROWSER_RUNTIME_REQUIREMENT}' and install Chromium with "
+            f"uv run --with '{BROWSER_RUNTIME_REQUIREMENT}' playwright install chromium."
         ) from exc
     return sync_playwright
 
 
 def _pump_browser_events(page: Any, *, interval_ms: float = 250) -> None:
+    """Keep the sync Playwright event loop responsive until the operator requests stop.
+
+    SIGINT is converted into a stop flag rather than allowing ``KeyboardInterrupt`` to unwind an
+    active Playwright sync call. This lets the current short wait finish before trace/HAR/context
+    cleanup starts and avoids leaving Playwright cancellation tasks pending.
+    """
+
+    stop_requested = False
+    previous_sigint_handler: Any = None
+    sigint_handler_installed = False
+
+    def request_stop(_signum: int, _frame: Any) -> None:
+        nonlocal stop_requested
+        stop_requested = True
+
     try:
-        while True:
+        previous_sigint_handler = signal.signal(signal.SIGINT, request_stop)
+        sigint_handler_installed = True
+    except ValueError:
+        # Python only permits signal handlers on the main thread. Browser Observatory currently
+        # runs there, but retain a defensive fallback for direct/unit use from worker threads.
+        pass
+
+    try:
+        while not stop_requested:
             page.wait_for_timeout(interval_ms)
     except KeyboardInterrupt:
+        # Defensive fallback for environments where the SIGINT handler could not be installed.
         return
+    finally:
+        if sigint_handler_installed:
+            signal.signal(signal.SIGINT, previous_sigint_handler)
 
 
 def _write_json(path: Path, payload: object) -> None:
