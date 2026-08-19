@@ -17,7 +17,9 @@ def build_parser() -> argparse.ArgumentParser:
             "The command performs no network requests and does not infer gameplay semantics."
         )
     )
-    parser.add_argument("source_root", type=Path, help="Local root of the pinned upstream source tree")
+    parser.add_argument(
+        "source_root", type=Path, help="Local root of the pinned upstream source tree"
+    )
     parser.add_argument("--source-code", required=True, help="Public-safe source code")
     parser.add_argument("--revision", required=True, help="Pinned hexadecimal upstream revision")
     parser.add_argument("--output", type=Path, help="Optional JSON output path")

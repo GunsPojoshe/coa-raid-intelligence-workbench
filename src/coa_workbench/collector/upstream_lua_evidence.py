@@ -187,11 +187,17 @@ def extract_lua_file_evidence(
     identifiers_only = _strip_lua_strings(uncommented)
 
     api_namespaces = _sorted_unique(_API_NAMESPACE_RE.findall(identifiers_only))
+    namespace_matches = list(_NAMESPACE_CALL_RE.finditer(identifiers_only))
     namespace_calls = (
-        f"{namespace}.{function}"
-        for namespace, function in _NAMESPACE_CALL_RE.findall(identifiers_only)
+        f"{match.group(1)}.{match.group(2)}"
+        for match in namespace_matches
     )
-    global_calls = _GLOBAL_CALL_RE.findall(identifiers_only)
+
+    bare_call_source = list(identifiers_only)
+    for match in namespace_matches:
+        for index in range(match.start(2), match.end(2)):
+            bare_call_source[index] = " "
+    global_calls = _GLOBAL_CALL_RE.findall("".join(bare_call_source))
     api_calls = _sorted_unique((*namespace_calls, *global_calls))
 
     registered_events = _sorted_unique(
