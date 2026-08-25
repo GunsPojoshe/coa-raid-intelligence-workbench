@@ -50,9 +50,9 @@ def _git(repo_root: Path, *args: str) -> str:
     return completed.stdout.strip()
 
 
-def _tracked_paths(repo_root: Path) -> set[str]:
+def _git_path_set(repo_root: Path, *args: str) -> set[str]:
     completed = subprocess.run(
-        ["git", "-C", str(repo_root), "ls-files", "-z"],
+        ["git", "-C", str(repo_root), *args],
         check=True,
         capture_output=True,
     )
@@ -74,8 +74,13 @@ def _classify(relative_path: str, *, tracked: bool) -> str:
     return "untracked_other"
 
 
-def _iter_workspace_files(repo_root: Path) -> tuple[list[dict[str, Any]], Counter[str]]:
-    tracked = _tracked_paths(repo_root)
+def _iter_workspace_files(
+    repo_root: Path,
+    *,
+    tracked: set[str],
+    modified_tracked: set[str],
+    git_untracked: set[str],
+) -> tuple[list[dict[str, Any]], Counter[str]]:
     rows: list[dict[str, Any]] = []
     skipped_dirs: Counter[str] = Counter()
 
@@ -102,6 +107,8 @@ def _iter_workspace_files(repo_root: Path) -> tuple[list[dict[str, Any]], Counte
                     "mtime_ns": stat.st_mtime_ns,
                     "suffix": path.suffix.casefold(),
                     "is_tracked": is_tracked,
+                    "is_modified_tracked": relative_text in modified_tracked,
+                    "is_git_visible_untracked": relative_text in git_untracked,
                     "workspace_class": _classify(relative_text, tracked=is_tracked),
                 }
             )
@@ -111,20 +118,45 @@ def _iter_workspace_files(repo_root: Path) -> tuple[list[dict[str, Any]], Counte
 
 
 def _private_manifest(repo_root: Path) -> dict[str, Any]:
-    rows, skipped_dirs = _iter_workspace_files(repo_root)
+    tracked = _git_path_set(repo_root, "ls-files", "-z")
+    modified_tracked = _git_path_set(repo_root, "diff", "--name-only", "-z")
+    modified_tracked.update(
+        _git_path_set(repo_root, "diff", "--cached", "--name-only", "-z")
+    )
+    git_untracked = _git_path_set(
+        repo_root, "ls-files", "--others", "--exclude-standard", "-z"
+    )
+    missing_tracked = sorted(
+        relative_path
+        for relative_path in tracked
+        if not (repo_root / relative_path).exists()
+    )
+
+    rows, skipped_dirs = _iter_workspace_files(
+        repo_root,
+        tracked=tracked,
+        modified_tracked=modified_tracked,
+        git_untracked=git_untracked,
+    )
     classes = Counter(str(row["workspace_class"]) for row in rows)
     suffixes = Counter(str(row["suffix"]) or "<none>" for row in rows)
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "git": {
             "branch": _git(repo_root, "branch", "--show-current"),
             "head": _git(repo_root, "rev-parse", "HEAD"),
+            "modified_tracked_paths": sorted(modified_tracked),
+            "git_visible_untracked_paths": sorted(git_untracked),
+            "missing_tracked_paths": missing_tracked,
         },
         "inventory": {
             "file_count": len(rows),
-            "tracked_file_count": sum(bool(row["is_tracked"]) for row in rows),
-            "untracked_file_count": sum(not bool(row["is_tracked"]) for row in rows),
+            "tracked_existing_file_count": sum(bool(row["is_tracked"]) for row in rows),
+            "nontracked_existing_file_count": sum(not bool(row["is_tracked"]) for row in rows),
+            "modified_tracked_file_count": len(modified_tracked),
+            "git_visible_untracked_file_count": len(git_untracked),
+            "missing_tracked_file_count": len(missing_tracked),
             "workspace_class_counts": dict(sorted(classes.items())),
             "suffix_counts": dict(sorted(suffixes.items())),
             "skipped_tooling_directory_counts": dict(sorted(skipped_dirs.items())),
@@ -134,6 +166,7 @@ def _private_manifest(repo_root: Path) -> dict[str, Any]:
             "file_contents_read": False,
             "secret_values_read": False,
             "content_hashes_computed": False,
+            "diff_contents_read": False,
             "destructive_git_commands_used": False,
             "private_manifest": True,
         },
@@ -143,11 +176,14 @@ def _private_manifest(repo_root: Path) -> dict[str, Any]:
 def _public_summary(manifest: dict[str, Any]) -> dict[str, Any]:
     inventory = manifest["inventory"]
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "inventory": {
             "file_count": inventory["file_count"],
-            "tracked_file_count": inventory["tracked_file_count"],
-            "untracked_file_count": inventory["untracked_file_count"],
+            "tracked_existing_file_count": inventory["tracked_existing_file_count"],
+            "nontracked_existing_file_count": inventory["nontracked_existing_file_count"],
+            "modified_tracked_file_count": inventory["modified_tracked_file_count"],
+            "git_visible_untracked_file_count": inventory["git_visible_untracked_file_count"],
+            "missing_tracked_file_count": inventory["missing_tracked_file_count"],
             "workspace_class_counts": inventory["workspace_class_counts"],
             "suffix_counts": inventory["suffix_counts"],
             "skipped_tooling_directory_counts": inventory["skipped_tooling_directory_counts"],
@@ -157,6 +193,7 @@ def _public_summary(manifest: dict[str, Any]) -> dict[str, Any]:
             "contains_secret_values": False,
             "contains_file_contents": False,
             "contains_content_hashes": False,
+            "contains_diff_contents": False,
             "destructive_git_commands_used": False,
         },
         "public_release_safe": True,
