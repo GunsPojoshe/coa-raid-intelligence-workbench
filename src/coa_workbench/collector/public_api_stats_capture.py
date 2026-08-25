@@ -8,7 +8,7 @@ from urllib.parse import urlencode, urljoin
 
 from .http_profile import HttpRequestProfile, SameOriginHttpSession
 from .http_read import read_response_resilient
-from .raw_archive import RawArchive, RawCapture, request_key_from_url, sanitize_url
+from .raw_archive import RawArchive, RawCapture, request_key_from_url
 from .source_registry import SourceRegistry
 
 OpenUrl = Callable[..., Any]
