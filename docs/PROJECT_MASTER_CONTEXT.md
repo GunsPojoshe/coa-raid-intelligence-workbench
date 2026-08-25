@@ -94,12 +94,13 @@ Reusable provider-neutral fallback for undocumented gaps. It is not the default 
 ```text
 localhost FastAPI application
 DuckDB persistence
-forward-only migrations 0001-0011
+forward-only migrations 0001-0012
 immutable RawArchive
 retrieval/acquisition observations
 reviewed mappings and parsers
 Source Observatory + change/reanalysis graph
 source_dimension_index
+source_profile_schema_cycle
 Source & Analysis Health
 report/encounter/actor/participant/aura normalization
 current-report derived analytics/read models/API
