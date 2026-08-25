@@ -1,0 +1,193 @@
+schema_version: 1
+source_code: coa_ascension_logs_public_api
+base_url: https://coa.ascensionlogs.gg/api/public/v1
+status: documented_public_api
+truth_role: official_documented_aggregate_and_event_source
+
+principles:
+  - the official OpenAPI contract is preferred over frontend reverse engineering for overlapping surfaces
+  - API keys are supplied only through request headers and are never accepted from query strings
+  - stats:read is the self-serve aggregate-data scope
+  - events:read is an on-request experimental event-level scope and is not production-ready by default
+  - public display of API-derived data requires visible attribution linking back to Ascension Logs
+  - bulk redistribution of the dataset is not permitted by the published API access terms
+  - raw responses are archived locally before interpretation
+  - event observations do not automatically prove general gameplay mechanics
+
+routes:
+  - endpoint_code: public_api_openapi
+    route_template: /openapi.json
+    method: GET
+    auth_mode: public
+    status: verified
+    use: official_api_contract
+    parameter_keys: []
+    dimension_keys: []
+    discovery_source: official_openapi_1_0_0_2026_08_25
+    review_state: verified
+    empty_params_observed: true
+
+  - endpoint_code: public_api_health
+    route_template: /health
+    method: GET
+    auth_mode: public
+    status: verified
+    use: official_api_health
+    parameter_keys: []
+    dimension_keys: []
+    discovery_source: official_openapi_1_0_0_2026_08_25
+    review_state: verified
+    empty_params_observed: true
+
+  - endpoint_code: public_api_phases
+    route_template: /phases
+    method: GET
+    auth_mode: bearer_api_key
+    status: verified
+    use: official_phase_catalog
+    parameter_keys:
+      - realm
+    dimension_keys:
+      - phase_number
+      - realm
+    discovery_source: official_openapi_1_0_0_2026_08_25
+    review_state: verified
+    empty_params_observed: true
+    access_scope: stats:read
+
+  - endpoint_code: public_api_bosses
+    route_template: /bosses
+    method: GET
+    auth_mode: bearer_api_key
+    status: verified
+    use: official_boss_catalog
+    parameter_keys: []
+    dimension_keys:
+      - boss_id
+      - location
+      - instance_type
+    discovery_source: official_openapi_1_0_0_2026_08_25
+    review_state: verified
+    empty_params_observed: true
+    access_scope: stats:read
+
+  - endpoint_code: public_api_statistics
+    route_template: /statistics
+    method: GET
+    auth_mode: bearer_api_key
+    status: verified
+    use: official_class_and_spec_aggregate_statistics
+    parameter_keys:
+      - phase
+      - difficulty
+      - metric
+      - bracket
+      - location
+      - bossId
+      - damageMode
+      - role
+      - class
+      - spec
+      - weekNumber
+      - realm
+    dimension_keys:
+      - phase
+      - difficulty
+      - metric
+      - bracket
+      - location
+      - bossId
+      - damageMode
+      - role
+      - class
+      - spec
+      - weekNumber
+      - realm
+    discovery_source: official_openapi_1_0_0_2026_08_25
+    review_state: verified
+    empty_params_observed: false
+    access_scope: stats:read
+
+  - endpoint_code: public_api_reports
+    route_template: /reports
+    method: GET
+    auth_mode: bearer_api_key_events_read_on_request
+    status: reviewed
+    use: official_public_report_discovery_for_event_research
+    parameter_keys:
+      - limit
+      - offset
+      - since
+    dimension_keys: []
+    discovery_source: official_openapi_1_0_0_2026_08_25
+    review_state: verified
+    empty_params_observed: true
+    access_scope: events:read
+    experimental: true
+
+  - endpoint_code: public_api_report
+    route_template: /reports/{reportId}
+    method: GET
+    auth_mode: bearer_api_key_events_read_on_request
+    status: reviewed
+    use: official_public_report_and_encounter_catalog_for_event_research
+    parameter_keys: []
+    dimension_keys: []
+    scope_path_keys:
+      - reportId
+    discovery_source: official_openapi_1_0_0_2026_08_25
+    review_state: verified
+    empty_params_observed: true
+    access_scope: events:read
+    experimental: true
+
+  - endpoint_code: public_api_encounter_events
+    route_template: /reports/{reportId}/encounters/{encounterId}/events
+    method: GET
+    auth_mode: bearer_api_key_events_read_on_request
+    status: reviewed
+    use: official_single_encounter_combat_event_stream
+    parameter_keys:
+      - groups
+      - event_types
+      - melee_only
+      - source_ids
+      - target_ids
+      - spell_ids
+      - start_ms
+      - end_ms
+      - limit
+      - cursor
+    dimension_keys: []
+    scope_path_keys:
+      - reportId
+      - encounterId
+    discovery_source: official_openapi_1_0_0_2026_08_25
+    review_state: verified
+    empty_params_observed: true
+    access_scope: events:read
+    experimental: true
+
+  - endpoint_code: public_api_encounter_actors
+    route_template: /reports/{reportId}/encounters/{encounterId}/actors
+    method: GET
+    auth_mode: bearer_api_key_events_read_on_request
+    status: reviewed
+    use: official_single_encounter_actor_dictionary
+    parameter_keys: []
+    dimension_keys: []
+    scope_path_keys:
+      - reportId
+      - encounterId
+    discovery_source: official_openapi_1_0_0_2026_08_25
+    review_state: verified
+    empty_params_observed: true
+    access_scope: events:read
+    experimental: true
+
+prohibited_assumptions:
+  - statistics total_parses is identical to the site's tier-list popularity algorithm
+  - the public statistics API exposes builds talents gear enchants armory or guild progression
+  - event rows alone prove a mechanic applies universally outside the observed encounter
+  - null glancing or crushing flags prove the mechanic was absent
+  - event-level access is self-serve or available to every API key

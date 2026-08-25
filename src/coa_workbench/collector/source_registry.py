@@ -30,6 +30,8 @@ class SourceRoute:
     discovery_source: str = "registry"
     review_state: str = "unreviewed"
     empty_params_observed: bool = False
+    access_scope: str | None = None
+    experimental: bool = False
 
     @property
     def production_ready(self) -> bool:
@@ -37,6 +39,7 @@ class SourceRoute:
             bool(self.route_template)
             and self.status in {"active", "verified"}
             and self.auth_mode != "unknown"
+            and not self.experimental
         )
 
     @property
@@ -76,6 +79,11 @@ class SourceRegistry:
 
 
 def _source_route(payload: dict[str, Any]) -> SourceRoute:
+    raw_scope = payload.get("access_scope")
+    access_scope = str(raw_scope).strip() if raw_scope is not None else None
+    if access_scope == "":
+        raise ValueError("source route access_scope cannot be empty")
+
     route = SourceRoute(
         endpoint_code=str(payload["endpoint_code"]),
         route_template=(
@@ -94,6 +102,8 @@ def _source_route(payload: dict[str, Any]) -> SourceRoute:
         discovery_source=str(payload.get("discovery_source", "registry")),
         review_state=str(payload.get("review_state", "unreviewed")),
         empty_params_observed=bool(payload.get("empty_params_observed", False)),
+        access_scope=access_scope,
+        experimental=bool(payload.get("experimental", False)),
     )
     unknown_profile_keys = sorted(set(route.schema_profile_keys) - set(route.parameter_keys))
     if unknown_profile_keys:
