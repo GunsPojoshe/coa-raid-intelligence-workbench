@@ -195,28 +195,30 @@ Do not add stealth/fingerprint/challenge-bypass behavior.
 
 ## Local workspace integrity
 
-Tracked Git tree has been audited against the new paradigm. Exact ignored/untracked workstation state cannot be remotely enumerated.
+The real Windows metadata inventory has now been reviewed for the current E4 checkout.
 
-New read-only inventory:
-
-```powershell
-uv run --no-sync python scripts/inventory_local_workspace.py
-```
-
-Private exact manifest:
+Observed local Git state at the audit checkpoint:
 
 ```text
-data/private/local-workspace-inventory.json
+modified tracked files: 0
+missing tracked files: 0
+Git-visible untracked files: 1
 ```
 
-Until that manifest is reviewed, project integrity is:
+The only Git-visible untracked implementation/documentation candidate is a `.patch` savepoint. Its content review is still pending. Therefore current integrity status is:
 
 ```text
 tracked repository audit: complete
-local-only exact file audit: pending operator manifest
+local metadata/file-state inventory: complete
+untracked patch content review: pending
+raw private evidence bulk-content review: intentionally not required
 ```
 
-Unknown/untracked files must not be deleted.
+The private corpus contains expected RawArchive/DuckDB/API-key/Browser Observatory/HAR families. `data/exchange/out/` is local ignored staging, not automatically publication-safe; the audit detected one historical raw HAR there and the inventory now flags raw-transport candidates in that location.
+
+Schema v3 of `scripts/inventory_local_workspace.py` skips generated `.venv-capture` and `*.egg-info` state so they are not misclassified as unknown source files.
+
+Unknown/untracked files must not be deleted merely to make Git clean.
 
 ## Current boundary
 
