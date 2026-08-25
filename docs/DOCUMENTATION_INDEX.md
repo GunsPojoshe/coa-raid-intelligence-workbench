@@ -139,7 +139,7 @@ tests/                          deterministic coverage
 evidence/real-data/             public-safe real receipts only
 ```
 
-The current tracked migration series reaches `0011_source_dimension_index.sql`. Older README references to `0001–0008` are obsolete.
+The current tracked migration series reaches `0012_profile_schema_cycle.sql`. Older README references to earlier migration ceilings are obsolete.
 
 ## Real-evidence rule
 
