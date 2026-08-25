@@ -1,60 +1,58 @@
-# Interactive HAR discovery — legacy/fallback E4 path
+# Interactive HAR discovery — historical/fallback protocol
 
-Status date: **2026-08-19**.
+Status: **fallback/historical**, updated classification **2026-08-26**.
 
-The original E4 experiment used a manually exported continuous HAR plus an ordered action list. That method remains supported for forensic replay and fallback analysis, but it is **no longer the primary E4 operator workflow**.
+This document no longer defines the active E4 roadmap. The current source order is in `docs/CURRENT_PARADIGM.md`.
 
-Current E4 operating document:
+## When to use
 
-```text
-docs/BROWSER_OBSERVATORY.md
-```
-
-Concept-change savepoint:
+Use manual browser HAR only when:
 
 ```text
-docs/DEVELOPMENT_CONCEPT_PIVOT_2026-08-19.md
+the official API does not cover the needed surface
+AND pinned executable source does not answer it
+AND existing RawArchive/report evidence is insufficient
+AND a browser observation is permitted/appropriate
 ```
 
-Local/private workspace boundary:
+Do not use HAR merely to repeat a contract already documented elsewhere.
+
+## Safe interaction protocol
+
+When an exact UI→Network relation genuinely must be tested:
 
 ```text
-docs/LOCAL_WORKSPACE_BOUNDARY.md
+clear Network log
+preserve log
+change one UI factor at a time
+include at least one neighbouring negative control
+repeat the same physical control when practical
+save one bounded HAR with content
 ```
 
-## When manual HAR remains useful
+Treat the HAR as private. Feed it into the existing provider-neutral observation/review tooling rather than writing report-specific parsing helpers.
 
-Use the manual path only when:
+## Evidence rule
 
 ```text
-live browser automation cannot run locally
-an old HAR must be replayed
-Browser Observatory itself needs forensic verification
-an already-captured private HAR contains the only relevant evidence
+ordered action window
+-> request burst structure
+-> repeated structural correlation
+-> negative-control comparison
+-> candidate relation
+-> separate semantic review
 ```
 
-Reusable fallback command:
+A UI label is not a contract. A correlation is not a gameplay mechanic.
 
-```powershell
-uv run --no-sync python scripts/review_interaction_session.py `
-  "<PRIVATE_HAR>" `
-  "<PRIVATE_ACTION_MANIFEST>" `
-  --output "data/exchange/out/coa-interaction-review.json"
-```
+## Privacy
 
-The same provider-neutral `NetworkObservation`, interaction-window and differential code is used. HAR is therefore an adapter, not a competing analysis architecture.
+Never commit raw HAR, source scalar values, report/encounter/player/guild identities, cookies, headers, tokens, query/body values or screenshots containing private state.
 
-## Trust boundary
+## No evasion
 
-Manual HAR evidence does not bypass Browser Observatory/E3 rules:
+Do not use stealth/fingerprint/challenge-bypass techniques. If ordinary access is unavailable or the source is unstable, stop the browser experiment and use another evidence lane.
 
-```text
-raw HAR remains private
-scalar values stay private
-network-silent is a valid result
-UI labels do not prove semantics
-reviewed deterministic contracts are required before promotion
-planner/mechanic trust remains fail-closed
-```
+## Current project status
 
-The historical controlled sequence and one-factor-at-a-time method remain useful experimental guidance, but new E4 work should start from `docs/BROWSER_OBSERVATORY.md`.
+The active population-statistics gate uses the official `/statistics` API and requires no HAR. Historical difficulty interaction work remains an unresolved evidence branch, not the current next step.

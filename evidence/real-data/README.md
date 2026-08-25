@@ -1,103 +1,74 @@
 # Real-data evidence checkpoint
 
-Дата актуализации: **2026-08-14**.
+Updated: **2026-08-26**.
 
-Каталог содержит versioned scalar-free receipts и explicit trust boundaries. Private payloads, source
-rows, queries, raw JavaScript contexts, browser HAR, cookies, headers, private IDs and DuckDB remain
-local-only unless an explicit reviewed publication contract says otherwise.
+This directory contains **public-safe real receipts only**. Raw payloads, source rows, query values, dynamic keys, private IDs, HAR, browser state, API credentials and DuckDB stay local unless an explicit reviewed publication contract permits the exact field.
 
-## Current canonical Network-first receipts
+Receipts are evidence of a scoped real run, not permanent source configuration.
 
-```text
-coa-guild-phase-progression-browser-network.json
-source-observatory-network-baseline-2026-08-14.json
-source-observatory-derived-baseline-2026-08-14.json
-```
-
-Current runtime progression evidence:
+## Official public API receipts
 
 ```text
-GET /api/phases                                      -> 200 JSON
-GET /api/guilds/phase-progression?phase=...&difficulty=... -> 200 JSON
+coa-public-api-catalog-real.json
+coa-public-api-statistics-capture-real.json
+coa-public-api-statistics-shape-real.json
 ```
 
-Current real local Observatory state recorded structurally by the derived receipt:
+Current scalar-safe facts:
 
 ```text
-observed endpoints: 2
-active dependencies: 2
-dimension names represented: 5
-dimension values represented: 19
-completed source_dimension_index runs: 1
-same existing HAR replayed: true
-new change events from replay: 0
-new reanalysis requests from replay: 0
+phase records: 3
+active/current phase candidate: 1
+boss records: 285
+unique stable boss_id values: 285
+/statistics: HTTP 200, archived
+statistics top-level entries: 21
+statistics max depth: 5
+objects with documented metric fields: 83
+statistics_normalization_ready: true
 ```
 
-The actual dimension values are not published.
+No API key, query values, class/spec names, difficulty values, metric values or percentile scalar values are published.
 
-## Current progression correction
+## Report/Source Observatory receipts
 
-The historical guessed direct `POST /api/guilds/progression` helper/owner path is superseded.
+The directory also retains the real E3 evidence chain, including current-report persistence/analytics, second-report generalization, cross-report structural review, scope-schema-cycle repair and the historical equivalence blocker.
 
-Archived SPA evidence still contains alternate GET contracts:
+Key retained status:
 
 ```text
-GET /api/guilds/progression/rankings
-GET /api/guilds/progression/full-clears
-GET /api/guilds/progression/rankings/{bossId}
+two independent reports passed generic persistence/analytics
+scope-aware schema repair superseded 623 invalid/legacy events
+historical difficulty equivalence: insufficient_evidence
+numeric historical cross-report scoring: blocked
 ```
 
-They remain reviewed alternate contracts, not proof of current runtime use.
+## Historical guild/progression receipts
 
-Older helper/call-site/owner receipts remain audit history and must not override the real browser
-Network evidence.
+Older guild/progression/network receipts remain provenance/history. They do not override newer official API/source-priority rules or current browser/runtime evidence.
 
-## Guild/report baseline retained from earlier evidence
+## Publication boundary
+
+Public-safe receipts may contain:
 
 ```text
-public reports: 6454
-unique report IDs: 6454
-exact Argentum label reports: 17
-guild identity verified: true
-private selected baseline: 17 unique reports
-full-crawl collection contract reviewed: true
+endpoint codes
+route templates
+static field names
+types/scalar-free shapes
+counts
+booleans
+review/algorithm versions
 ```
 
-Private source guild ID and report IDs remain local.
-
-## Source Observatory trust boundary
-
-Current chain:
+They must not contain:
 
 ```text
-browser/network observation
--> reviewed contract
--> immutable capture
--> schema/dimension snapshot
--> source change event
--> artifact dependency
--> scoped reanalysis request
--> deterministic derived analysis
+secrets/tokens/cookies
+raw payloads/HAR
+report/encounter/player/guild identities
+query values
+dynamic class/spec/group keys
+private scope/profile values
+private scalar hashes used as disguised identifiers
 ```
-
-The first real derived artifact is `source_dimension_index`.
-
-A repeated identical HAR does not create fake change/reanalysis work. A genuinely later source change is
-still required to prove the real end-to-end changed-input path.
-
-## Local-only artifacts
-
-```text
-data/raw/
-data/warehouse/
-data/normalized/
-data/reconstructed/
-data/extracted/
-data/exchange/in/
-data/exchange/out/
-```
-
-Never commit credentials, cookies, tokens, Authorization headers, browser profiles, `.env`,
-unsanitized HAR, private source identifiers, report IDs, private query values, raw JavaScript contexts
-or raw private receipts.
