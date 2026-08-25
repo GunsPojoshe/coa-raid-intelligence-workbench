@@ -52,7 +52,7 @@ data/private/coa-logs-api-key.txt
 fallback environment variable: COA_LOGS_API_KEY
 ```
 
-The value must never enter Git, request URLs, RawArchive metadata, public receipts, logs or screenshots.
+The key value must never enter Git, request URLs, RawArchive metadata, public receipts, logs or screenshots.
 
 Published access text also requires visible attribution when API-derived data is displayed publicly and disallows bulk dataset redistribution. Raw API payloads are therefore treated as local evidence.
 
@@ -217,6 +217,107 @@ Shape receipt:
 evidence/real-data/coa-public-api-statistics-shape-real.json
 ```
 
+## Request-scope provenance rule
+
+Exact aggregate interpretation requires the actual request dimension values, not only the response body.
+
+The historical real capture predates this rule. It records these request keys:
+
+```text
+phase
+difficulty
+metric
+bracket
+damageMode
+role
+```
+
+The response echoes the first five relevant dimensions in reviewed fields, but it does **not** echo the requested `role`. Therefore the historical capture cannot prove its exact role scope. Reusing the CLI's current default (`dps`) would be an unsupported reconstruction and is forbidden.
+
+The collector now stores exact prepared query values in **private RawArchive observation metadata** under request provenance. This is local evidence only:
+
+```text
+private RawArchive metadata: exact query values allowed/required for provenance
+public capture receipt: query values excluded
+public persistence receipt: query values excluded
+```
+
+The API key remains excluded from RawArchive metadata entirely.
+
+## Exact statistics normalization and persistence
+
+Implemented components:
+
+```text
+src/coa_workbench/normalizer/public_api_statistics.py
+src/coa_workbench/collector/public_api_archive.py
+src/coa_workbench/storage/public_api_statistics.py
+src/coa_workbench/analytics/public_api_population_priors.py
+migrations/0013_public_api_statistics.sql
+scripts/persist_public_api_statistics.py
+```
+
+The normalizer:
+
+```text
+requires success=true
+validates documented request enums
+validates exact documented metric-object fields
+requires finite numeric metrics and nonnegative total_parses
+resolves request scope only from private provenance or response-echoed dimensions
+rejects query/response conflicts
+fails closed when a requested non-echoed dimension is missing
+requires one unambiguous spec-to-metric container per observed class object
+preserves dynamic class/spec values only in private local persistence
+```
+
+It does not infer combat mechanics or Tier List semantics from names.
+
+Migration `0013_public_api_statistics.sql` adds:
+
+```text
+public_api_statistics_batch
+public_api_statistics_class
+public_api_statistics_spec
+public_api_population_prior_v1
+```
+
+Persistence uses deterministic insert-or-match replay keyed to the source RawArchive object and normalizer version. It also registers:
+
+```text
+analysis_run: official_public_api_population_statistics
+artifact_dependency: public_api_population_statistics -> raw_object
+```
+
+The population-prior view exposes the documented aggregate metrics and one workbench-derived descriptive feature:
+
+```text
+local_parse_share = spec total_parses / sum(spec total_parses within the same batch)
+```
+
+`local_parse_share` is not the site's Tier List score, a gameplay-capability score or a planner recommendation.
+
+Unit/integration tests prove deterministic fixture normalization, migration, persistence and second-pass matching. Real-source persistence remains pending a new provenance-aware bounded capture.
+
+## Operator path for the real proof
+
+After syncing the implementation:
+
+```powershell
+uv run --no-sync python scripts/capture_current_public_api_statistics.py
+uv run --no-sync python scripts/persist_public_api_statistics.py
+```
+
+The first command performs one bounded self-service `stats:read` request using the existing local key file and archives both the raw payload and private request-scope provenance.
+
+The second command loads the latest private capture, normalizes it, persists it twice and emits only a scalar-safe review receipt to:
+
+```text
+data/exchange/out/coa-public-api-statistics-persistence-review.json
+```
+
+Do not upload the raw capture, query values, API key or DuckDB. Review/promote only the scalar-safe receipt.
+
 ## Event-level semantics documented by the API
 
 The experimental schema documents useful units/types, including:
@@ -264,42 +365,18 @@ Historical two-report difficulty equivalence remains `insufficient_evidence` and
 
 It does **not** block official aggregate population analytics because `/statistics` exposes explicit documented dimensions within its own contract.
 
-## Implementation
-
-```text
-config/coa_public_api_sources.yaml
-src/coa_workbench/collector/public_api_contract.py
-src/coa_workbench/collector/public_api_catalog.py
-src/coa_workbench/collector/public_api_statistics_review.py
-scripts/review_public_api_contract.py
-scripts/capture_public_api_stats.py
-scripts/capture_current_public_api_statistics.py
-scripts/review_public_api_catalog.py
-scripts/review_public_api_statistics.py
-```
-
-Current real capture path is bounded and credential-safe:
-
-```text
-private key file/environment
--> reviewed endpoint registry
--> HTTPS request with header credential
--> immutable RawArchive payload
--> scalar-safe capture receipt
--> scalar-safe structural review
-```
-
 ## Current next gate
 
-Discovery is complete enough for the first aggregate model. Next:
+The implementation gate is complete in code and deterministic tests. The remaining real-evidence gate is:
 
 ```text
-exact parser for the observed documented StatisticsResponse
--> normalized aggregate representation
--> forward-only DuckDB migration/persistence
--> idempotent replay of the existing archived capture
--> read model for population priors by explicit documented dimensions
--> Source & Analysis Health integration
+one bounded provenance-aware /statistics recapture
+-> exact parser on the new archived payload
+-> DuckDB persistence twice
+-> prove real insert-or-match idempotence
+-> inspect scalar-safe population-prior receipt
+-> promote only that reviewed public-safe receipt
+-> integrate/review Source & Analysis Health for this aggregate artifact
 ```
 
 Do not request `events:read`, capture a new HAR or run Playwright for this gate.

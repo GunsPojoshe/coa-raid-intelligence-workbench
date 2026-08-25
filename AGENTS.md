@@ -72,9 +72,11 @@ Default local credential file:
 data/private/coa-logs-api-key.txt
 ```
 
-The key must never enter Git, RawArchive metadata, query strings, CLI values, logs, screenshots, receipts or hashes intended for publication.
+The API key must never enter Git, RawArchive metadata, query strings, CLI values, logs, screenshots, receipts or hashes intended for publication.
 
-Current official-API gate is **statistics normalization + persistence**, not another discovery probe.
+Exact request dimensions are different from credentials. For provenance-aware aggregate captures, exact prepared `/statistics` query values may be stored only in **private ignored RawArchive observation metadata**. They must never be copied to public receipts, Git evidence, screenshots or low-entropy public hashes.
+
+The exact StatisticsResponse parser, migration 0013 persistence and population-prior read model are implemented. The current official-API gate is **one new bounded provenance-aware `/statistics` capture + real two-pass persistence/idempotence proof**. Do not infer a missing historical request dimension from CLI defaults.
 
 ## Report / Source Observatory lane
 
@@ -155,7 +157,7 @@ main
         └── e4/interactive-har-discovery  Draft PR #9
 ```
 
-Always inspect live mergeability before assuming the chain is clean. As of the 2026-08-26 documentation audit, the lower E2→main integration has merge conflict debt while E3→E2 and E4→E3 are independently mergeable. Resolve lower-chain debt deliberately; do not merge Draft PRs merely because CI is green.
+Always inspect live mergeability before assuming the chain is clean. Resolve lower-chain debt deliberately; do not merge Draft PRs merely because CI is green.
 
 Never rewrite published migrations.
 

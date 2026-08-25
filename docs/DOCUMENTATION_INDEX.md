@@ -56,7 +56,7 @@ docs/CONTINUATION_PROMPT.md
 
 ## Integrity / audit documents
 
-- `docs/PROJECT_INTEGRITY_AUDIT_2026-08-26.md` — findings from the tracked-tree documentation/project audit and the explicit local-only limitation.
+- `docs/PROJECT_INTEGRITY_AUDIT_2026-08-26.md` — findings from the tracked-tree documentation/project audit and explicit local-only limitations.
 - `docs/DOCS_OVERHAUL_PLAN.md` — scope record for the 2026-08-26 documentation overhaul.
 - `scripts/audit_project_integrity.py` — machine-enforced canonical-document/migration/private-path integrity gate.
 - `scripts/inventory_local_workspace.py` — read-only metadata inventory for ignored/untracked workstation state.
@@ -79,7 +79,7 @@ Historical product baselines retained for provenance, not current state:
 
 ## Active source/acquisition contracts
 
-- `docs/OFFICIAL_PUBLIC_API.md` — preferred source for documented public API surfaces.
+- `docs/OFFICIAL_PUBLIC_API.md` — preferred source for documented public API surfaces and the current aggregate statistics normalization/persistence contract.
 - `docs/UPSTREAM_ASCENSION_LOGS_EVIDENCE.md` — pinned Companion/source evidence for client-state gaps.
 - `docs/SOURCE_OBSERVABILITY_AND_REANALYSIS.md` — source schema/change/dependency architecture.
 - `docs/SOURCE_OBSERVATORY_BASELINE.md`
@@ -139,13 +139,26 @@ tests/                          deterministic coverage
 evidence/real-data/             public-safe real receipts only
 ```
 
-The current tracked migration series reaches `0012_profile_schema_cycle.sql`. Older README references to earlier migration ceilings are obsolete.
+The current tracked migration series reaches `0013_public_api_statistics.sql`.
+
+Current aggregate-statistics implementation families:
+
+```text
+src/coa_workbench/normalizer/public_api_statistics.py
+src/coa_workbench/collector/public_api_archive.py
+src/coa_workbench/storage/public_api_statistics.py
+src/coa_workbench/analytics/public_api_population_priors.py
+scripts/persist_public_api_statistics.py
+migrations/0013_public_api_statistics.sql
+```
 
 ## Real-evidence rule
 
 `evidence/real-data/*.json` is a public-safe evidence ledger, not configuration. Counts from one receipt must not be hardcoded as universal source contracts.
 
-Current official-API evidence includes catalog, capture and statistics-shape receipts. Historical E3 report/difficulty receipts remain useful for their exact scope.
+Current official-API real evidence includes catalog, capture and statistics-shape receipts. The aggregate parser/persistence/read model is implemented and deterministic-test verified, but a real persistence receipt is intentionally absent until one new provenance-aware bounded `/statistics` capture is replayed twice.
+
+Historical E3 report/difficulty receipts remain useful for their exact scope.
 
 ## Documentation maintenance rule
 

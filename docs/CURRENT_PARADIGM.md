@@ -91,6 +91,8 @@ real StatisticsResponse shape reviewed
 statistics normalization ready
 ```
 
+The exact statistics normalization, migration-0013 persistence and population-prior read model are now implemented and deterministic-test verified. The remaining real gate is one new bounded capture with complete private request-scope provenance followed by two-pass persistence replay.
+
 ### B. First-party report evidence — private report-specific lane
 
 The existing E3 report pipeline remains valid for report-specific evidence, deterministic analytics and source-observability work. Historical two-report difficulty equivalence is still `insufficient_evidence`; do not use those two reports for numeric cross-report scoring until that independent gate is proven.
@@ -115,7 +117,7 @@ Local credential default:
 data/private/coa-logs-api-key.txt
 ```
 
-`data/private/**` is ignored by Git. The key must never enter:
+`data/private/**` is ignored by Git. The API key must never enter:
 
 ```text
 Git
@@ -125,6 +127,8 @@ CLI value
 public receipt
 logs/screenshots
 ```
+
+Exact request **dimension values** are not credentials but are still private source scalars. For provenance-aware `/statistics` captures they may be stored in ignored/private RawArchive observation metadata so the later analysis scope can be proven. They remain forbidden from public receipts and Git evidence.
 
 API-derived raw payloads remain local. Public display of API-derived data must respect the published visible-attribution requirement; bulk dataset redistribution is not part of the project.
 
@@ -150,7 +154,23 @@ total_parses
 percentiles
 ```
 
-Dynamic class/spec keys remain private runtime values and must be iterated, not hardcoded. The next implementation gate is an exact parser + persistence model, not another discovery probe.
+Dynamic class/spec keys remain private runtime values and must be iterated, not hardcoded.
+
+The historical real observation does not retain its requested `role` scalar even though `role` is one of its query keys and is not echoed by the response. Therefore that observation proves shape but cannot prove a complete request-scoped normalized batch. The correct response is a bounded recapture, not default-value reconstruction.
+
+Implemented aggregate path:
+
+```text
+reviewed StatisticsResponse + private request scope
+-> fail-closed exact parser
+-> normalized batch/class/spec model
+-> migration 0013 DuckDB persistence
+-> analysis_run + raw-object dependency
+-> population-prior read model
+-> scalar-safe persistence/replay receipt
+```
+
+The read model may derive `local_parse_share` from `total_parses` within one batch. This is descriptive population evidence only, not the site's Tier List score and not a planner score.
 
 ## Planner trust states
 
@@ -158,11 +178,12 @@ Current state:
 
 ```text
 population aggregate collection: allowed
-population aggregate normalization: next gate
-population priors: not yet production/persistence proven
+population aggregate normalization: implemented, real replay pending
+population aggregate persistence/read model: implemented, real replay pending
 historical two-report numeric comparison: blocked
 cross-report player identity: blocked
 mechanic semantics: evidence-specific / not globally proven
+site Tier List semantics: undocumented
 planner scoring: blocked
 ```
 
@@ -194,17 +215,17 @@ e4/interactive-har-discovery
   Draft PR #9 -> e3/real-log-capture
 ```
 
-Despite its historical branch name, E4 is now **official-API + upstream-source-first**. Browser/HAR work is only one fallback component.
+Despite its historical branch name, E4 is **official-API + upstream-source-first**. Browser/HAR work is only one fallback component.
 
-## Current next implementation sequence
+## Current next sequence
 
 ```text
-real /statistics shape review complete
--> exact StatisticsResponse parser
--> normalized population-statistics model
--> DuckDB persistence + idempotence proof
--> population prior read model by explicit documented dimensions
--> source/analysis health integration
+statistics normalization/persistence implementation complete
+-> one bounded provenance-aware /statistics recapture
+-> exact normalization on real archived payload
+-> persist the same capture twice and prove idempotence
+-> review/promote scalar-safe real persistence receipt
+-> review Source & Analysis Health for aggregate artifact
 -> only then evaluate how population priors contribute to planner reasoning
 ```
 

@@ -73,7 +73,7 @@ GET /bosses
 GET /statistics
 ```
 
-Real current-phase capture and scalar-safe shape review are complete. Exact statistics normalization/persistence is the next implementation gate.
+Real current-phase capture and scalar-safe shape review are complete. The exact parser, migration, deterministic persistence and population-prior read model are implemented and fixture-verified. Real replay is intentionally pending one new bounded capture because the historical capture predates private request-value provenance and its requested `role` value cannot be reconstructed from the response.
 
 ### First-party report corpus
 
@@ -94,19 +94,22 @@ Reusable provider-neutral fallback for undocumented gaps. It is not the default 
 ```text
 localhost FastAPI application
 DuckDB persistence
-forward-only migrations 0001-0012
+forward-only migrations 0001-0013
 immutable RawArchive
 retrieval/acquisition observations
 reviewed mappings and parsers
 Source Observatory + change/reanalysis graph
 source_dimension_index
 source_profile_schema_cycle
+official public statistics normalization/persistence/read model
 Source & Analysis Health
 report/encounter/actor/participant/aura normalization
 current-report derived analytics/read models/API
 privacy/public-release audit
 Ubuntu + Windows CI
 ```
+
+Migration `0013_public_api_statistics` adds normalized aggregate batch/class/spec persistence and the local population-prior read view.
 
 ## 8. Important real E3 milestones retained
 
@@ -170,7 +173,20 @@ objects with documented metric fields: 83
 statistics_normalization_ready: true
 ```
 
-The public API does not document the site Tier List algorithm, Meta Builds/talents/gear, Armory or guild progression.
+Implementation checkpoint:
+
+```text
+StatisticsResponse parser: implemented, fail-closed
+request-scope private provenance: implemented for new captures
+DuckDB migration 0013: implemented
+aggregate persistence: implemented, deterministic insert-or-match
+analysis_run/raw-object dependency: implemented
+population-prior read model: implemented
+fixture replay/idempotence: verified by tests
+real capture replay/idempotence: pending new bounded capture
+```
+
+The public API does not document the site Tier List algorithm, Meta Builds/talents/gear, Armory or guild progression. `total_parses` and workbench-derived local parse share therefore remain descriptive aggregate evidence only.
 
 ## 10. Privacy/publication boundary
 
@@ -183,6 +199,8 @@ API key default:
 ```text
 data/private/coa-logs-api-key.txt
 ```
+
+The API key never enters RawArchive metadata. Exact prepared `/statistics` query values may be retained in **private RawArchive observation metadata** as request-scope provenance; they remain excluded from Git and public receipts.
 
 ## 11. Local workspace boundary
 
@@ -212,12 +230,11 @@ The lower E2→main PR currently has integration conflict debt. Do not resolve i
 ## 13. Current product path
 
 ```text
-exact StatisticsResponse parser
--> normalized population-statistics model
--> DuckDB persistence + idempotence proof
--> population-prior read model by documented dimensions
--> source/analysis health integration
--> combine with verified report/player/build evidence
+one bounded provenance-aware /statistics recapture
+-> exact normalization + DuckDB persistence against real archived payload
+-> second-pass idempotence proof + scalar-safe real receipt
+-> source/analysis health review for aggregate artifact
+-> combine population priors with verified report/player/build evidence
 -> separately prove identity, timing and mechanic semantics
 -> encounter requirement/capability model
 -> attendance-aware explainable roster recommendations

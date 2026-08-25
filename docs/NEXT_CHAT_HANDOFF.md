@@ -31,7 +31,7 @@ official public API first
 -> inference last
 ```
 
-## Real API evidence complete
+## Real API evidence
 
 ```text
 /phases + /bosses archived/reviewed
@@ -45,21 +45,43 @@ statistics shape reviewed
 normalization_ready = true
 ```
 
-Public receipt:
+Existing public shape receipt:
 
 ```text
 evidence/real-data/coa-public-api-statistics-shape-real.json
 ```
 
-## Next code gate
+## Statistics code gate — implemented
 
 ```text
-StatisticsResponse exact parser
--> normalized population-statistics model
--> DuckDB persistence migration
--> real replay/idempotence proof
--> population prior read model
+exact fail-closed StatisticsResponse parser
+private request-scope provenance for new captures
+migration 0013_public_api_statistics
+normalized aggregate persistence
+analysis_run + raw_object dependency
+insert-or-match replay
+population-prior read model
+scalar-safe persistence receipt CLI
 ```
+
+Deterministic tests prove the code path, but the old real capture cannot prove its exact request scope: it records `role` as a query key while the response does not echo the role value. Do not infer it from CLI defaults.
+
+## Next real gate
+
+After syncing exact E4 HEAD:
+
+```powershell
+uv run --no-sync python scripts/capture_current_public_api_statistics.py
+uv run --no-sync python scripts/persist_public_api_statistics.py
+```
+
+Review/share only:
+
+```text
+data/exchange/out/coa-public-api-statistics-persistence-review.json
+```
+
+Do not upload raw payloads, exact query values, API key or DuckDB. If the safe receipt proves second-pass matching, promote it to `evidence/real-data/` and mark real aggregate persistence/idempotence proven.
 
 No HAR/Playwright/new historical difficulty heuristic is needed for this gate.
 
@@ -76,26 +98,9 @@ planner scoring: blocked
 
 ## Local audit — completed
 
-The real Windows workspace metadata manifest and its sole Git-visible untracked implementation candidate were reviewed.
+The real Windows workspace metadata manifest and its sole Git-visible untracked implementation candidate were reviewed. The candidate was a valuable but incomplete historical helper-analysis patch depending on absent `coa_workbench.collector.guild_progression_js_lexical`.
 
-Checkpoint:
-
-```text
-modified tracked files: 0
-missing tracked files: 0
-Git-visible untracked files: 1
-local-only exact file audit: complete/classified
-```
-
-The sole candidate was a historical helper-analysis patch. It is valuable but incomplete and must not be applied as-is: three modified modules import a missing shared `coa_workbench.collector.guild_progression_js_lexical` module that is absent from both the patch and tracked Git history.
-
-Preserve the patch privately. If helper discovery becomes active again, reconstruct/review the lexical scanner as a separate task and port the useful behavior/tests deliberately. Do not restart that lane before the current official-API statistics gate merely because the patch exists.
-
-Do not request the same local inventory/patch again on chat restart. Re-inventory only after material workspace changes or a new unknown modified/untracked implementation candidate appears.
-
-Do not request or bulk-upload RawArchive, DuckDB, API-key, Browser Observatory profile/session state or HAR inputs for repository integrity.
-
-Inventory schema v3 skips `.venv-capture` and `*.egg-info` tooling noise and flags raw-transport candidates under local `data/exchange/out/`. `data/exchange/out/` is local staging, not automatically publication-safe.
+Preserve that patch privately and do not apply it as-is. Do not request the same inventory/patch again merely because a chat restarted.
 
 ## Branch chain note
 
@@ -103,4 +108,4 @@ Inventory schema v3 skips `.venv-capture` and `*.egg-info` tooling noise and fla
 main <- e2 (#3) <- e3 (#7) <- e4 (#9)
 ```
 
-At audit time #9 and #7 were mergeable; lower PR #3 had conflict/integration debt. Do not resolve by blindly accepting an old documentation side.
+Resolve staged integration deliberately; do not blindly accept an older documentation side.

@@ -23,14 +23,6 @@ main
         └── e4/interactive-har-discovery  Draft PR #9 -> e3
 ```
 
-During the documentation-integrity audit, live checks showed:
-
-```text
-PR #9 E4 -> E3: mergeable
-PR #7 E3 -> E2: mergeable
-PR #3 E2 -> main: integration conflict debt
-```
-
 The lower staged integration debt is separate from the active E4 workstream. Do not merge Draft PRs merely to clear UI warnings and do not blindly choose an older canonical-document side during conflict resolution.
 
 Always re-check live state; stored SHAs/run numbers are checkpoints only.
@@ -58,7 +50,7 @@ official documented public API
 
 This supersedes the old Browser-first/difficulty-first operating priority.
 
-## Official API — real proven
+## Official API — real evidence + implemented normalization path
 
 Contract:
 
@@ -82,7 +74,7 @@ objects with documented metric fields: 83
 statistics normalization ready: true
 ```
 
-Canonical receipts:
+Canonical real receipts currently present:
 
 ```text
 evidence/real-data/coa-public-api-catalog-real.json
@@ -90,17 +82,48 @@ evidence/real-data/coa-public-api-statistics-capture-real.json
 evidence/real-data/coa-public-api-statistics-shape-real.json
 ```
 
-Current next gate:
+Implementation now present and deterministic-test verified:
 
 ```text
-exact StatisticsResponse parser
--> normalized aggregate model
--> DuckDB persistence
--> replay/idempotence proof
--> population-prior read model by documented dimensions
+src/coa_workbench/normalizer/public_api_statistics.py
+src/coa_workbench/collector/public_api_archive.py
+src/coa_workbench/storage/public_api_statistics.py
+src/coa_workbench/analytics/public_api_population_priors.py
+migrations/0013_public_api_statistics.sql
+scripts/persist_public_api_statistics.py
 ```
 
-No new HAR/Playwright/difficulty heuristic is required for this gate.
+It provides:
+
+```text
+exact fail-closed parser for the reviewed aggregate shape
+private request-scope provenance for new captures
+normalized batch/class/spec persistence
+analysis_run + raw_object artifact dependency
+insert-or-match replay semantics
+population-prior read model by documented dimensions
+scalar-safe persistence/replay receipt generation
+```
+
+### Real replay gate: why a new capture is required
+
+The historical real `/statistics` observation stored query **keys** only. Its request included `role`, but the response does not echo `role`; therefore the exact requested role value cannot be reconstructed from archived provenance.
+
+Do not infer it from the capture CLI default. The parser fails closed and requires a bounded recapture instead.
+
+New captures now keep exact prepared query values only in **private RawArchive observation metadata**. Public receipts still contain no query values or source scalar values.
+
+Current real-evidence gate:
+
+```text
+one new bounded /statistics capture
+-> parse/persist against the new private request provenance
+-> persist the same archived capture twice
+-> prove insert-or-match idempotence
+-> emit/review scalar-safe persistence receipt
+```
+
+The old capture remains valid structural evidence; only full scope-aware persistence proof needs recapture.
 
 ## Official API credential boundary
 
@@ -111,6 +134,8 @@ data/private/coa-logs-api-key.txt
 ```
 
 The key is local/private only and must never be copied into Git, query strings, CLI values, RawArchive metadata, public receipts, logs or screenshots.
+
+Private query-dimension provenance is not a credential and is intentionally stored only in ignored RawArchive observation metadata for new aggregate captures. It must not be promoted to public receipts.
 
 ## Report-specific E3 runtime — retained proven state
 
@@ -173,7 +198,7 @@ numeric historical cross-report scoring: blocked
 
 This is an evidence gap, not proof of different difficulties. No v4 heuristic is planned simply to force equivalence.
 
-The aggregate public `/statistics` lane is independent and may progress because it has explicit documented dimensions.
+The aggregate public `/statistics` lane is independent because its dimensions are explicit in the documented API contract.
 
 ## Upstream executable source
 
@@ -216,13 +241,13 @@ baseline: directly matches the current tracked helper-analysis files
 status: valuable incomplete WIP; preserve privately; do not apply as-is
 ```
 
-The patch improves structural JavaScript helper analysis: it introduces fail-closed multi-candidate definition selection, distinguishes code references from literal/comment text, and adds tests for ambiguous definitions and template-literal behavior. However, three modified modules import a new shared module:
+The patch improves structural JavaScript helper analysis but depends on absent shared module:
 
 ```text
 coa_workbench.collector.guild_progression_js_lexical
 ```
 
-with expected API:
+Expected API:
 
 ```text
 StructuralIndex
@@ -231,7 +256,7 @@ in_excluded_intervals
 scan_javascript_structure
 ```
 
-That module is absent from the patch and absent from tracked Git history. Therefore the patch is not self-contained and cannot be safely replayed. Reconstructing the missing lexical scanner would be a separate reviewed engineering task if the guild-progression helper-discovery lane becomes active again. Do not fabricate it merely to make the historical patch apply.
+That module is absent from both the patch and tracked Git history. Reconstructing it would be a separate reviewed task if that lane becomes active again.
 
 Current integrity status:
 
@@ -243,10 +268,6 @@ historical helper patch: preserved private, intentionally not integrated
 raw private evidence bulk-content review: intentionally outside repository-integrity scope
 ```
 
-The private corpus contains expected RawArchive/DuckDB/API-key/Browser Observatory/HAR families. `data/exchange/out/` is local ignored staging, not automatically publication-safe; the inventory flags raw-transport candidates in that location.
-
-Schema v3 of `scripts/inventory_local_workspace.py` skips generated `.venv-capture` and `*.egg-info` state so they are not misclassified as unknown source files.
-
 Unknown/untracked files must not be deleted merely to make Git clean.
 
 ## Current boundary
@@ -256,8 +277,10 @@ official API contract: reviewed
 real phase/boss catalog: proven
 real current statistics capture: proven
 real statistics structural review: proven
-statistics normalization: next gate
-statistics persistence/idempotence: not yet proven
+statistics parser/model: implemented + deterministic-test verified
+migration 0013 aggregate persistence: implemented + deterministic-test verified
+population-prior read model: implemented + deterministic-test verified
+real statistics persistence/idempotence: pending one provenance-aware recapture
 report pipeline generalization: proven on two reports
 report analytics persistence: proven + idempotent
 scope-aware source schema repair: proven

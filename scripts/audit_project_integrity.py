@@ -28,6 +28,8 @@ _REQUIRED_PATHS = (
     "evidence/real-data/coa-public-api-statistics-capture-real.json",
     "evidence/real-data/coa-public-api-statistics-shape-real.json",
     "scripts/inventory_local_workspace.py",
+    "scripts/persist_public_api_statistics.py",
+    "migrations/0013_public_api_statistics.sql",
 )
 
 _CANONICAL_DOCS = (
@@ -47,6 +49,9 @@ _STALE_MARKERS = (
     "migrations `0001`–`0008`",
     "0001-0011",
     "0001–0011",
+    "currently 0001-0012",
+    "forward-only migrations 0001-0012",
+    "The current tracked migration series reaches `0012_profile_schema_cycle.sql`",
     "Current helper-definition stage",
     "first real Browser Observatory session",
     "First real E4 scenario",
@@ -116,18 +121,25 @@ def _check_current_paradigm_markers() -> dict[str, Any]:
         ),
         "docs/PROJECT_STATE.md": (
             "statistics normalization ready: true",
+            "statistics parser/model: implemented",
             "historical difficulty equivalence",
             "local metadata/file-state inventory",
         ),
         "docs/PROJECT_MASTER_CONTEXT.md": (
-            "forward-only migrations 0001-0012",
-            "source_profile_schema_cycle",
+            "forward-only migrations 0001-0013",
+            "public_api_population_prior_v1",
         ),
-        "docs/DOCUMENTATION_INDEX.md": ("0012_profile_schema_cycle.sql",),
+        "docs/DOCUMENTATION_INDEX.md": ("0013_public_api_statistics.sql",),
         "README.md": (
             "official-API + upstream-source first",
             "scripts/inventory_local_workspace.py",
-            "currently 0001-0012",
+            "currently 0001-0013",
+            "scripts/persist_public_api_statistics.py",
+        ),
+        "docs/OFFICIAL_PUBLIC_API.md": (
+            "Request-scope provenance rule",
+            "0013_public_api_statistics.sql",
+            "scripts/persist_public_api_statistics.py",
         ),
     }
     missing: dict[str, list[str]] = {}
@@ -160,7 +172,7 @@ def _check_migrations() -> dict[str, Any]:
         rows.append((int(match.group(1)), path.name))
     numbers = [number for number, _ in rows]
     expected = list(range(1, max(numbers, default=0) + 1))
-    passed = not invalid and numbers == expected and bool(numbers) and numbers[-1] >= 12
+    passed = not invalid and numbers == expected and bool(numbers) and numbers[-1] >= 13
     return {
         "name": "migration_sequence",
         "passed": passed,

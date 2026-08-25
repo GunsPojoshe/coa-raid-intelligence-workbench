@@ -15,11 +15,11 @@ e3/real-log-capture
   stable/canonical report-evidence baseline
 
 e4/interactive-har-discovery
-  current isolated source-discovery branch
+  current isolated source-discovery / official-API branch
   Draft PR #9 -> e3/real-log-capture
 ```
 
-The E4 branch name is historical. The active E4 paradigm is now **official-API + upstream-source first**; Browser Observatory/HAR is a fallback tool.
+The E4 branch name is historical. The active E4 paradigm is **official-API + upstream-source first**; Browser Observatory/HAR is a fallback tool.
 
 ## Source priority
 
@@ -70,15 +70,30 @@ statistics normalization ready:   true
 
 The real statistics shape receipt does not publish class/spec names, difficulty values, query values or numeric source metrics.
 
-## Local API key
+The repository now also contains the deterministic aggregate implementation:
 
-Default private file:
+```text
+exact fail-closed StatisticsResponse parser
+migration 0013_public_api_statistics
+DuckDB insert-or-match persistence
+analysis_run + raw-object dependency provenance
+population-prior read model over documented dimensions
+scalar-safe replay receipt generator
+```
+
+Unit/integration verification proves the implementation path on deterministic fixtures. **Real archived-capture replay is not yet proven.** The historical real `/statistics` capture predates private request-value provenance and does not retain the requested non-echoed `role` value, so the parser intentionally refuses to guess it from CLI defaults.
+
+## Local API key and request provenance
+
+Default private key file:
 
 ```text
 data/private/coa-logs-api-key.txt
 ```
 
-`data/private/**` is Git-ignored. The capture CLI prefers this file and may fall back to `COA_LOGS_API_KEY`. Never place the key in a CLI argument, query string, Git artifact, RawArchive metadata, screenshot or public receipt.
+`data/private/**` is Git-ignored. The capture CLI prefers this file and may fall back to `COA_LOGS_API_KEY`. Never place the API key in a CLI argument, query string, Git artifact, RawArchive metadata, screenshot or public receipt.
+
+New `/statistics` captures retain their exact prepared query values only in **private RawArchive observation metadata** so later normalization can prove the analytical scope. Public capture/replay receipts still expose query keys/counts/booleans only and never publish those scalar values.
 
 ## Quick verification
 
@@ -105,7 +120,7 @@ Catalog review from already archived `/phases` + `/bosses`:
 uv run --no-sync python scripts/review_public_api_catalog.py
 ```
 
-Current-phase aggregate capture:
+Bounded current-phase aggregate capture:
 
 ```powershell
 uv run --no-sync python scripts/capture_current_public_api_statistics.py
@@ -117,7 +132,13 @@ Scalar-safe statistics shape review:
 uv run --no-sync python scripts/review_public_api_statistics.py
 ```
 
-The next implementation gate is **exact `StatisticsResponse` normalization + DuckDB persistence + idempotence**, not another browser probe.
+Exact normalization + persistence + second-pass idempotence review of the latest private capture:
+
+```powershell
+uv run --no-sync python scripts/persist_public_api_statistics.py
+```
+
+The next **real-evidence** gate is one new bounded `/statistics` capture using the provenance-aware collector followed by the persistence command above. Do not upload the raw payload, query values, API key or DuckDB; only the generated scalar-safe review receipt is eligible for publication after review.
 
 ## Historical report lane
 
@@ -148,7 +169,7 @@ src/coa_workbench/storage/      DuckDB persistence/read models
 src/coa_workbench/web/          localhost API/UI
 scripts/                        durable project/operator commands
 config/                         reviewed source/mapping configuration
-migrations/                     forward-only DuckDB migrations (currently 0001-0012)
+migrations/                     forward-only DuckDB migrations (currently 0001-0013)
 tests/                          deterministic coverage
 evidence/real-data/             scalar-safe real receipts only
 docs/                           current + historical documentation
@@ -176,7 +197,7 @@ The inventory reads metadata only, not file contents or secret values. See `docs
 
 Do not infer mechanics from field names, UI labels, talent names, item metadata or one combat result. Do not equate character name with identity. Do not expose private IDs/names/query values/dynamic keys through public receipts or low-entropy hashes.
 
-Population aggregates can be collected now; **planner scoring remains blocked** until the required normalization, identity, mechanic and composition reasoning gates are separately proven.
+Population aggregates can be normalized and persisted, but **planner scoring remains blocked** until identity, mechanic, composition and interpretation gates are separately proven. The workbench-derived `local_parse_share` is descriptive participation within one persisted aggregate batch, not the site's Tier List score and not a roster score.
 
 ## Documentation
 
