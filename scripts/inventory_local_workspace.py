@@ -1,0 +1,196 @@
+from __future__ import annotations
+
+import argparse
+import json
+import subprocess
+from collections import Counter
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+_TOOLING_DIRS = {
+    ".git",
+    ".venv",
+    "__pycache__",
+    ".pytest_cache",
+    "playwright-report",
+    "test-results",
+}
+
+_PRIVATE_PREFIXES = (
+    "data/private/",
+    "data/raw/",
+    "data/warehouse/",
+    "data/parquet/",
+    "data/normalized/",
+    "data/reconstructed/",
+    "data/extracted/",
+    "data/exchange/in/",
+    "data/backups/",
+    "data/logs/",
+    "exports/",
+    "artifacts/",
+    "workbook/working/",
+)
+
+_GENERATED_PREFIXES = (
+    "data/exchange/out/",
+)
+
+
+def _git(repo_root: Path, *args: str) -> str:
+    completed = subprocess.run(
+        ["git", "-C", str(repo_root), *args],
+        check=True,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
+    return completed.stdout.strip()
+
+
+def _tracked_paths(repo_root: Path) -> set[str]:
+    completed = subprocess.run(
+        ["git", "-C", str(repo_root), "ls-files", "-z"],
+        check=True,
+        capture_output=True,
+    )
+    return {
+        part.decode("utf-8", errors="surrogateescape")
+        for part in completed.stdout.split(b"\0")
+        if part
+    }
+
+
+def _classify(relative_path: str, *, tracked: bool) -> str:
+    normalized = relative_path.replace("\\", "/")
+    if tracked:
+        return "tracked"
+    if normalized.startswith(_PRIVATE_PREFIXES):
+        return "private_or_authoritative_local"
+    if normalized.startswith(_GENERATED_PREFIXES):
+        return "generated_exchange_output"
+    return "untracked_other"
+
+
+def _iter_workspace_files(repo_root: Path) -> tuple[list[dict[str, Any]], Counter[str]]:
+    tracked = _tracked_paths(repo_root)
+    rows: list[dict[str, Any]] = []
+    skipped_dirs: Counter[str] = Counter()
+
+    for path in sorted(repo_root.rglob("*")):
+        try:
+            relative = path.relative_to(repo_root)
+        except ValueError:
+            continue
+        if any(part in _TOOLING_DIRS for part in relative.parts):
+            for part in relative.parts:
+                if part in _TOOLING_DIRS:
+                    skipped_dirs[part] += 1
+                    break
+            continue
+        if not path.is_file():
+            continue
+
+        stat = path.stat()
+        relative_text = relative.as_posix()
+        is_tracked = relative_text in tracked
+        rows.append(
+            {
+                "path": relative_text,
+                "size_bytes": stat.st_size,
+                "mtime_ns": stat.st_mtime_ns,
+                "suffix": path.suffix.casefold(),
+                "is_tracked": is_tracked,
+                "workspace_class": _classify(relative_text, tracked=is_tracked),
+            }
+        )
+
+    return rows, skipped_dirs
+
+
+def _private_manifest(repo_root: Path) -> dict[str, Any]:
+    rows, skipped_dirs = _iter_workspace_files(repo_root)
+    classes = Counter(str(row["workspace_class"]) for row in rows)
+    return {
+        "schema_version": 1,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "git": {
+            "branch": _git(repo_root, "branch", "--show-current"),
+            "head": _git(repo_root, "rev-parse", "HEAD"),
+        },
+        "inventory": {
+            "file_count": len(rows),
+            "tracked_file_count": sum(bool(row["is_tracked"]) for row in rows),
+            "untracked_file_count": sum(not bool(row["is_tracked"]) for row in rows),
+            "workspace_class_counts": dict(sorted(classes.items())),
+            "skipped_tooling_entry_counts": dict(sorted(skipped_dirs.items())),
+            "files": rows,
+        },
+        "safety": {
+            "file_contents_read": False,
+            "secret_values_read": False,
+            "destructive_git_commands_used": False,
+            "private_manifest": True,
+        },
+    }
+
+
+def _public_summary(manifest: dict[str, Any]) -> dict[str, Any]:
+    inventory = manifest["inventory"]
+    return {
+        "schema_version": 1,
+        "inventory": {
+            "file_count": inventory["file_count"],
+            "tracked_file_count": inventory["tracked_file_count"],
+            "untracked_file_count": inventory["untracked_file_count"],
+            "workspace_class_counts": inventory["workspace_class_counts"],
+            "skipped_tooling_entry_counts": inventory["skipped_tooling_entry_counts"],
+        },
+        "safety": {
+            "contains_file_paths": False,
+            "contains_secret_values": False,
+            "contains_file_contents": False,
+            "destructive_git_commands_used": False,
+        },
+        "public_release_safe": True,
+    }
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Inventory local project files without reading file contents or modifying state."
+    )
+    parser.add_argument("--repo-root", type=Path, default=Path("."))
+    parser.add_argument(
+        "--private-output",
+        type=Path,
+        default=Path("data/private/local-workspace-inventory.json"),
+    )
+    parser.add_argument(
+        "--public-output",
+        type=Path,
+        default=Path("data/exchange/out/local-workspace-inventory-summary.json"),
+    )
+    args = parser.parse_args()
+
+    repo_root = args.repo_root.resolve()
+    manifest = _private_manifest(repo_root)
+    summary = _public_summary(manifest)
+
+    args.private_output.parent.mkdir(parents=True, exist_ok=True)
+    args.private_output.write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    args.public_output.parent.mkdir(parents=True, exist_ok=True)
+    args.public_output.write_text(
+        json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    print(json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
