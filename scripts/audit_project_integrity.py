@@ -45,6 +45,8 @@ _CANONICAL_DOCS = (
 _STALE_MARKERS = (
     "migrations: 0001–0008",
     "migrations `0001`–`0008`",
+    "0001-0011",
+    "0001–0011",
     "Current helper-definition stage",
     "first real Browser Observatory session",
     "First real E4 scenario",
@@ -117,9 +119,15 @@ def _check_current_paradigm_markers() -> dict[str, Any]:
             "historical difficulty equivalence",
             "local-only exact file audit",
         ),
+        "docs/PROJECT_MASTER_CONTEXT.md": (
+            "forward-only migrations 0001-0012",
+            "source_profile_schema_cycle",
+        ),
+        "docs/DOCUMENTATION_INDEX.md": ("0012_profile_schema_cycle.sql",),
         "README.md": (
             "official-API + upstream-source first",
             "scripts/inventory_local_workspace.py",
+            "currently 0001-0012",
         ),
     }
     missing: dict[str, list[str]] = {}
