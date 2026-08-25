@@ -1,239 +1,225 @@
-# CoA Raid Intelligence Workbench — канонический контекст проекта
+# CoA Raid Intelligence Workbench — canonical project context
 
-Дата актуализации: **2026-08-14**.
+Updated: **2026-08-26**.
 
-## 1. Цель
+## 1. Product goal
 
-Создать localhost-first evidence-first платформу рейдовой аналитики для **Conquest of Azeroth**,
-которая связывает фактическую явку, проверенные build/performance observations и encounter
-requirements и объясняет конкретные решения по составу.
+Build a localhost-first, evidence-first raid intelligence platform for **Conquest of Azeroth** that combines real attendance, verified player/build observations, encounter evidence and population context to explain composition decisions.
 
-Главный вопрос:
+Primary question:
 
-> Почему конкретный игрок нужен именно этому текущему составу?
+> **Почему конкретный человек нужен именно текущему составу?**
 
-Не использовать Bronzebeard/Classless/Mystic/Hero Architect/shared Ascension сведения как CoA-факты
-без exact CoA evidence.
+The product is not a permanent “optimal 25” list and not a raw DPS leaderboard. It must adapt to actual attendance and explain alternatives/tradeoffs.
 
-## 2. Truth model
+## 2. Domain boundary
+
+CoA-only. Bronzebeard/Classless/Mystic/Hero Architect/shared Ascension material is not a CoA fact without exact supporting evidence. See `docs/COA_DOMAIN_BOUNDARY.md` and `docs/COA_TARGET_PRODUCT_DEFINITION.md`.
+
+## 3. Truth model
 
 ```text
-combat-log event = observation
-combat-log event != automatic mechanic proof
-class/spec presence != verified capability coverage
-timestamped source response != permanent source semantics
+observation != universal mechanic
+field name != semantic proof
+UI label != backend contract
+character name != cross-report identity
+one combat result != stable capability
+population aggregate != planner recommendation
 ```
 
-Only `corroborated` and `confirmed` mechanics may enter canonical planner scoring.
+Planner trust is fail-closed.
 
-## 3. Canonical evidence/change architecture
+## 4. Current evidence architecture
 
 ```text
-browser/network/source discovery
--> reviewed request contract
--> immutable raw payload
+strongest available source
+-> reviewed source/request contract
+-> immutable raw capture
 -> acquisition observation
--> schema/dimension snapshot
--> source-change events
--> artifact dependency
--> scoped reanalysis request
--> deterministic derived analysis
--> supporting / contradicting evidence
--> trust decision
--> explainable recommendation
+-> schema/profile/scope/dimension observation
+-> deterministic normalization
+-> provenance + artifact dependency
+-> source-change detection
+-> scoped reanalysis
+-> reproducible analytics
+-> Source & Analysis Health
+-> planner reasoning only after explicit trust gates
 ```
 
-Upstream change is normal: new bosses, phases, reports, fields, routes and meta must not require
-hardcoded product rewrites.
+Upstream change is normal. New phases, bosses, fields, routes and source shapes must not require report-specific parser forks.
 
-## 4. Implemented foundation
-
-- localhost FastAPI planner;
-- DuckDB migrations `0001`–`0011`;
-- immutable raw archive;
-- retrieval/acquisition observations;
-- privacy-safe JSON/HAR tooling;
-- Source Observatory contract/schema/change/reanalysis foundation;
-- `source_dimension_index` derived artifact;
-- Source & Analysis Health UI/API;
-- report/encounter/actor/participant/aura normalization;
-- hypothesis/evidence/trust layers;
-- repository verifier;
-- Ubuntu/Windows CI and public-release audit.
-
-## 5. Verified guild/report baseline
+## 5. Current source hierarchy
 
 ```text
-public reports: 6454
-unique public report IDs: 6454
-exact Argentum label reports: 17
-guild identity verified: true
-private selected baseline: 17 unique reports
-full-crawl collection contract reviewed: true
+1. official documented CoA Ascension Logs public API
+2. official documented site semantics
+3. pinned executable AscensionLogsCompanion source
+4. persisted first-party report/API responses
+5. narrow browser/network observation for undocumented gaps
+6. structural inference only after stronger sources are exhausted
 ```
 
-Private report/guild identifiers are not publication material.
+This is a priority order, not a single-source architecture.
 
-## 6. Network-first source discovery
+## 6. Evidence lanes
 
-Preferred evidence path:
+### Official aggregate API
+
+Preferred for documented population dimensions/priors:
 
 ```text
-real browser Fetch/XHR
--> scalar-free HAR inventory
--> reviewed route contract
--> Source Observatory capture
+GET /phases
+GET /bosses
+GET /statistics
 ```
 
-SPA JavaScript is supporting evidence when Network does not expose enough request construction detail.
+Real current-phase capture and scalar-safe shape review are complete. Exact statistics normalization/persistence is the next implementation gate.
 
-Generic inventory:
+### First-party report corpus
+
+E3 has a generic report-specific pipeline with immutable capture, scope-aware schema cycles, deterministic derived persistence, combat analytics and local read models. Two independent reports passed the same generic path.
+
+Historical cross-report difficulty/equivalence for that pair is still unresolved, so numeric comparison of those historical reports remains blocked.
+
+### Pinned Companion source
+
+Strong evidence for client-observed/build/gear/capture/telemetry structures. Executable code establishes client behavior; backend comments require corroboration.
+
+### Browser/HAR
+
+Reusable provider-neutral fallback for undocumented gaps. It is not the default Ascension Logs acquisition path and must not be used for anti-bot evasion.
+
+## 7. Implemented platform foundation
 
 ```text
-scripts/inventory_network_har.py
+localhost FastAPI application
+DuckDB persistence
+forward-only migrations 0001-0011
+immutable RawArchive
+retrieval/acquisition observations
+reviewed mappings and parsers
+Source Observatory + change/reanalysis graph
+source_dimension_index
+Source & Analysis Health
+report/encounter/actor/participant/aura normalization
+current-report derived analytics/read models/API
+privacy/public-release audit
+Ubuntu + Windows CI
 ```
 
-It does not publish query values, headers, cookies, response bodies or response record scalars.
+## 8. Important real E3 milestones retained
 
-## 7. Guild progression — current runtime evidence
-
-Historical helper/owner work and the guessed exact `POST /api/guilds/progression` path are superseded.
-
-The current browser capture actually exercised:
+First report:
 
 ```text
-GET /api/phases
-GET /api/guilds/phase-progression?phase=<value>&difficulty=<value>
+derived observations: 2031, replay idempotent
+analytics observations: 19660, replay idempotent
+throughput points: 13244
 ```
 
-Both returned `200 application/json`.
-
-The phase-progression response structurally exposes:
+Second independent report:
 
 ```text
-phase
-board
-totalBosses
-bossList
-perBossRankings
-guilds
+derived inserted: 2920
+analytics inserted: 28213
+throughput points: 16907
 ```
 
-Current SPA request construction supports:
+Structural cross-report benchmark:
 
 ```text
-phase      always mapped
-board      optional
-difficulty optional
+reports: 2
+input profiles: 45
+eligible peer cohorts: 3
+eligible profiles: 6
+eligible ranked rows: 133
 ```
 
-Archived SPA still contains alternate reviewed contracts:
+Scope-aware schema repair:
 
 ```text
-GET /api/guilds/progression/rankings
-GET /api/guilds/progression/full-clears
-GET /api/guilds/progression/rankings/{bossId}
-```
-
-Their static presence is not evidence that the captured current page used them.
-
-## 8. Persisted real Source Observatory baseline
-
-The user's local immutable corpus already contains the browser-origin observations for:
-
-```text
-phases_api
-guild_phase_progression_api
-```
-
-Current structural observation counts:
-
-```text
-observed endpoints: 2
-dimension names represented: 5
-dimension values represented: 19
-active dependencies: 2
-completed source_dimension_index analysis runs: 1
-```
-
-Canonical public receipts:
-
-```text
-evidence/real-data/source-observatory-network-baseline-2026-08-14.json
-evidence/real-data/source-observatory-derived-baseline-2026-08-14.json
-```
-
-The original HAR, raw JSON, headers, cookies, query values and dimension values remain private/local.
-
-## 9. Dynamic reanalysis
-
-`source_dimension_index` is the first real deterministic derived Source Observatory artifact.
-
-```text
-source change event
--> matching active source_endpoint dependency
--> pending reanalysis_request
--> source_dimension_index rebuild
--> completed analysis_run
--> matching reanalysis_request completed
-```
-
-A synthetic test proves the scoped-change path.
-
-The same real HAR was also replayed against the persisted baseline:
-
-```text
-open change events: 2 -> 2
+false/legacy events superseded: 623
+open source-change events: 645 -> 22
+new scoped schema changes on replay: 0
 pending reanalysis: 0 -> 0
-new change events: 0
-new reanalysis requests: 0
-Source Health before/after: identical
-network requests performed by replay: false
 ```
 
-So same-input idempotence is proven on real local data. A genuinely later upstream change is not yet
-proven end-to-end.
+These receipts prove exactly their scoped statements; they are not permanent source configuration.
 
-## 10. Current decision boundary
+## 9. Official public API current state
+
+Reviewed OpenAPI:
 
 ```text
-Network-first discovery implemented: true
-current progression runtime requests observed: true
-real browser baseline persisted: true
-schema/dimension baseline persisted: true
-real derived source_dimension_index initialized: true
-same-input/no-change replay proven: true
-synthetic source-change -> scoped reanalysis proven: true
-real later source-change -> scoped reanalysis proven: false
-ready for autonomous full source coverage: false
-planner scoring allowed from progression evidence alone: false
+OpenAPI 3.1.0
+API version 1.0.0
 ```
 
-No source field automatically becomes mechanic truth or planner scoring input.
-
-## 11. Next product path
+Real scalar-safe evidence:
 
 ```text
-obtain a genuinely later browser/network observation when needed
--> prove real source-change/no-change handling
--> minimize recurring browser-capture work
--> expand Network-first discovery to reports/encounters/rankings/statistics/characters
--> Armory/talent-grid/BisBeard adapters
--> multi-report character identity
--> verified build/capability observations
--> encounter requirement models
--> dynamic attendance-aware roster completion
+phase records: 3
+active/current phase candidate: 1
+boss records: 285
+unique stable boss_id values: 285
+/statistics: HTTP 200 and archived
+statistics top-level entries: 21
+max observed nested depth: 5
+objects with documented metric fields: 83
+statistics_normalization_ready: true
 ```
 
-Do not rerun the same historical helper/owner investigation or the same baseline initialization unless
-a concrete regression requires it.
+The public API does not document the site Tier List algorithm, Meta Builds/talents/gear, Armory or guild progression.
 
-## 12. Development model
+## 10. Privacy/publication boundary
 
-The agent performs GitHub/PR/CI/repository work directly whenever tools permit it. The user is involved
-only for Windows/local/private/browser boundaries the agent cannot access directly.
+Raw/private data is local by default. Public-safe receipts may expose static field names, endpoint codes, route templates, scalar-free structures, counts, booleans and algorithm versions.
 
-Private/raw files may be inspected for analysis. Publication/versioning remains separately controlled.
+Do not publish private report/encounter/player/guild identities, query values, dynamic class/spec keys, difficulty scalars, browser/session secrets, raw payloads or low-entropy hashes of private scalars.
 
-Use focused tests while iterating, one aggregate `scripts/verify_repo.py` before a meaningful push,
-then exact-head CI.
+API key default:
+
+```text
+data/private/coa-logs-api-key.txt
+```
+
+## 11. Local workspace boundary
+
+GitHub cannot see ignored/untracked operator state. Unknown local files must be preserved and inspected rather than cleaned.
+
+Exact read-only inventory:
+
+```powershell
+uv run --no-sync python scripts/inventory_local_workspace.py
+```
+
+See `docs/LOCAL_WORKSPACE_AUDIT.md`.
+
+## 12. Branch/integration model
+
+```text
+main
+└── e2/log-evidence-refactor        Draft PR #3
+    └── e3/real-log-capture         Draft PR #7
+        └── e4/interactive-har-discovery  Draft PR #9
+```
+
+E3 is the stable report-evidence baseline. E4 is the current source-discovery/official-API workstream. Its branch name is historical; Browser Observatory is only one fallback component.
+
+The lower E2→main PR currently has integration conflict debt. Do not resolve it by blindly choosing one historical document version; preserve the newest canonical docs when the staged branch chain is eventually folded down.
+
+## 13. Current product path
+
+```text
+exact StatisticsResponse parser
+-> normalized population-statistics model
+-> DuckDB persistence + idempotence proof
+-> population-prior read model by documented dimensions
+-> source/analysis health integration
+-> combine with verified report/player/build evidence
+-> separately prove identity, timing and mechanic semantics
+-> encounter requirement/capability model
+-> attendance-aware explainable roster recommendations
+```
+
+No HAR, Playwright session, difficulty-v4 heuristic or `events:read` scope is required for the current statistics gate.

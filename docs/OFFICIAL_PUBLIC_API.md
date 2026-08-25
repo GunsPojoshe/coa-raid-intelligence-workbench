@@ -1,6 +1,6 @@
 # Official CoA Ascension Logs Public API
 
-Status date: **2026-08-25**.
+Status date: **2026-08-26**.
 
 Reviewed source:
 
@@ -11,48 +11,44 @@ API title: Conquest of Azeroth Logs External API
 API version: 1.0.0
 ```
 
-This source is now preferred over frontend reverse engineering whenever the documented public API
-covers the same information.
+This is the preferred Ascension Logs source whenever it documents the required information.
 
 ## Access model
 
-The published contract separates two scopes:
+Published scopes:
 
 ```text
 stats:read
-  availability: self-serve
-  purpose: aggregate class/spec statistics, phases, bosses
+  self-service
+  aggregate statistics, phases, bosses
 
 events:read
-  availability: on-request
-  experimental: true
-  purpose: one-encounter-at-a-time combat events and actor dictionaries
+  on-request
+  experimental
+  encounter events/actors/report surfaces
 ```
 
-Published tiers include:
-
-```text
-free:     30 requests/minute, 5,000/day, stats:read
-partner: 120 requests/minute, 50,000/day, stats:read
-research: 60 requests/minute, 10,000/day, stats:read + events:read
-```
-
-API keys are documented for request headers only:
+Published key headers:
 
 ```text
 Authorization: Bearer <key>
 X-API-Key: <key>
 ```
 
-The contract explicitly says keys are not accepted in the query string. The workbench must never
-persist a key value in RawArchive metadata, receipts, request URLs, Git, logs, or screenshots.
+Keys are not accepted in query strings.
 
-The published access text also requires visible attribution linking back to Ascension Logs when API
-data is displayed publicly and says bulk redistribution of the dataset is not permitted. The
-workbench therefore treats API-derived raw data as local evidence and does not publish bulk source
-payloads.
+Local project key boundary:
 
-## Documented route inventory
+```text
+data/private/coa-logs-api-key.txt
+fallback environment variable: COA_LOGS_API_KEY
+```
+
+The value must never enter Git, request URLs, RawArchive metadata, public receipts, logs or screenshots.
+
+Published access text also requires visible attribution when API-derived data is displayed publicly and disallows bulk dataset redistribution. Raw API payloads are therefore treated as local evidence.
+
+## Route inventory
 
 Unauthenticated:
 
@@ -61,7 +57,7 @@ GET /health
 GET /openapi.json
 ```
 
-Self-serve `stats:read`:
+Self-service `stats:read`:
 
 ```text
 GET /phases
@@ -78,7 +74,7 @@ GET /reports/{reportId}/encounters/{encounterId}/events
 GET /reports/{reportId}/encounters/{encounterId}/actors
 ```
 
-The local reviewed registry is:
+Reviewed registry:
 
 ```text
 config/coa_public_api_sources.yaml
@@ -86,13 +82,9 @@ source_code = coa_ascension_logs_public_api
 base_url = https://coa.ascensionlogs.gg/api/public/v1
 ```
 
-`stats:read` routes are marked production-ready at the contract level. `events:read` routes remain
-reviewed/experimental and are not production-ready by default even though the route shapes are
-officially documented.
+## Aggregate statistics contract
 
-## High-value aggregate statistics contract
-
-`GET /statistics` requires `phase` and documents these optional query dimensions:
+`GET /statistics` requires `phase` and documents optional dimensions including:
 
 ```text
 difficulty
@@ -108,16 +100,6 @@ weekNumber
 realm
 ```
 
-Documented difficulty values:
-
-```text
-normal
-heroic
-mythic
-ascended
-all
-```
-
 Documented metrics:
 
 ```text
@@ -126,24 +108,7 @@ avg_hps
 avg_dtps
 ```
 
-Documented damage attribution modes:
-
-```text
-standard
-boss-only
-trash
-```
-
-Documented role filter values:
-
-```text
-tank
-dps
-tanks-and-dps
-support
-```
-
-The response contains class-level aggregates and per-spec:
+Documented metric-object fields:
 
 ```text
 avg
@@ -154,45 +119,85 @@ total_parses
 percentiles
 ```
 
-This makes the public API the preferred source for population performance priors. `total_parses`
-can support a workbench-derived participation/popularity signal, but it is **not** promoted as the
-site's Meta Tier List popularity algorithm. The OpenAPI contract does not document that algorithm.
+`total_parses` can support a workbench-derived participation/popularity feature, but it is **not** evidence of the site's private Tier List algorithm.
+
+## Real catalog evidence
+
+The bounded real `/phases` + `/bosses` capture/review proved:
+
+```text
+phase records: 3
+active phases: 1
+current-by-null-end-date: 1
+active + current candidate: 1
+boss records: 285
+unique stable boss_id values: 285
+duplicate stable boss_id values: 0
+```
+
+Public-safe receipt:
+
+```text
+evidence/real-data/coa-public-api-catalog-real.json
+```
+
+## Real current `/statistics` evidence
+
+The current-phase selector used the unique `is_active=true` + `end_date=null` phase without publishing its scalar value.
+
+Capture result:
+
+```text
+HTTP 200
+application/json
+archived: true
+query values published: false
+source scalar values published: false
+```
+
+Capture receipt:
+
+```text
+evidence/real-data/coa-public-api-statistics-capture-real.json
+```
+
+Deterministic scalar-safe shape review of the archived real payload proved:
+
+```text
+statistics kind: object
+statistics top-level entries: 21
+max observed nested depth: 5
+objects with documented metric fields: 83
+documented metric field occurrences: 393
+statistics_normalization_ready: true
+```
+
+The review publishes no dynamic class/spec keys, query values, difficulty/phase values, metric values or percentile values.
+
+Shape receipt:
+
+```text
+evidence/real-data/coa-public-api-statistics-shape-real.json
+```
 
 ## Event-level semantics documented by the API
 
-The experimental event schema is unusually valuable because it publishes several semantics that
-were previously uncertain:
+The experimental schema documents useful units/types, including:
 
 ```text
-Event.id
-  64-bit id serialized as a string; treat as opaque
-
-Event.timestamp_ms
-  integer milliseconds from encounter combat start, not wall clock
-
-Event.amount
-  64-bit value serialized as a string; meaning depends on event_type
-
-Event.spell_id
-  -1 is the published melee sentinel
-
-is_glancing / is_crushing
-  nullable; null can mean not recorded and is not evidence of mechanic absence
-
-EncounterSummary.duration_seconds
-  integer-or-null duration field explicitly named in seconds
+Event.id: 64-bit id serialized as string; opaque
+Event.timestamp_ms: milliseconds from encounter combat start
+Event.amount: 64-bit value serialized as string; event-type dependent
+Event.spell_id: -1 documented melee sentinel
+is_glancing / is_crushing: nullable
+EncounterSummary.duration_seconds: explicitly seconds
 ```
 
-The event endpoint also documents raw event groups, melee-only filtering, actor source/target
-filters, spell filters, start/end millisecond offsets, and keyset pagination. Actor IDs are resolved
-through the separate `/actors` dictionary.
+These are strong contract semantics but do not make one observed event a universal gameplay mechanic.
 
-This is strong source-contract evidence. It still does not make one encounter observation proof of
-a universal gameplay mechanic.
+## Gaps in API v1.0.0
 
-## Important gaps in public API v1.0.0
-
-The reviewed OpenAPI path inventory contains **no documented endpoint** for:
+No documented endpoint was found for:
 
 ```text
 Meta Builds / talents / gear / enchants
@@ -201,76 +206,39 @@ Guild progression
 site Tier List algorithm
 ```
 
-Therefore the public API does not replace the pinned Companion source, current report observations,
-or selected frontend/source discovery for those surfaces.
+Those surfaces require pinned client source, first-party persisted evidence or narrow fallback discovery.
 
-Current source priority becomes:
+## Relationship to historical report difficulty work
 
-```text
-1. official documented public API
-2. official documented site semantics
-3. pinned executable AscensionLogsCompanion source
-4. persisted first-party report responses
-5. narrow browser/network observation for undocumented gaps
-6. structural inference only after the stronger sources are exhausted
-```
+Historical two-report difficulty equivalence remains `insufficient_evidence` and still blocks numeric comparison of that specific pair.
 
-## Relationship to the old difficulty blocker
+It does **not** block official aggregate population analytics because `/statistics` exposes explicit documented dimensions within its own contract.
 
-The real `difficulty-sequence-binding-v3` receipt over the existing two-report corpus produced:
+## Implementation
 
 ```text
-unique full sequence alignments:    0
-ambiguous full sequence alignments: 1
-no full sequence alignment:         1
-sequence-linked pulls:              0
-status: insufficient_evidence
-```
-
-That line of investigation remains valid evidence but is no longer the highest-value next step.
-The official `/statistics` endpoint already exposes an explicit documented `difficulty` dimension
-for aggregate cohorts, so population analytics no longer needs to wait for cross-report difficulty
-equivalence of the two historical reports.
-
-The historical two-report corpus remains useful for local raw/report-specific analytics and for
-corroborating source behavior. Numeric comparison between those two reports remains blocked until
-its own equivalence gate is proven.
-
-## Deterministic contract review
-
-Implementation:
-
-```text
-src/coa_workbench/collector/public_api_contract.py
-scripts/review_public_api_contract.py
-tests/unit/test_public_api_contract.py
 config/coa_public_api_sources.yaml
+src/coa_workbench/collector/public_api_contract.py
+src/coa_workbench/collector/public_api_catalog.py
+src/coa_workbench/collector/public_api_statistics_review.py
+scripts/review_public_api_contract.py
+scripts/capture_public_api_stats.py
+scripts/capture_current_public_api_statistics.py
+scripts/review_public_api_catalog.py
+scripts/review_public_api_statistics.py
 ```
 
-The reviewer consumes a local copy of the official OpenAPI JSON and produces only public contract
-metadata: route templates, parameter names, enums, scope counts, documented units/types, access
-rules, and registry consistency. It does not require an API key and does not make a network request.
+## Current next gate
 
-Example:
-
-```powershell
-uv run --no-sync python scripts/review_public_api_contract.py `
-  --input data/exchange/in/coa-public-api-openapi.json `
-  --output data/exchange/out/coa-public-api-contract.json
-```
-
-## Next implementation gate
-
-After the contract layer is green:
+Discovery is complete enough for the first aggregate model. Next:
 
 ```text
-self-serve API key stored only in local environment
--> capture /phases + /bosses through RawArchive
--> one bounded /statistics slice
--> parser/schema verification
--> aggregate statistics persistence
--> derive population priors by explicit phase/difficulty/content/role/metric dimensions
+exact parser for the observed documented StatisticsResponse
+-> normalized aggregate representation
+-> forward-only DuckDB migration/persistence
+-> idempotent replay of the existing archived capture
+-> read model for population priors by explicit documented dimensions
+-> Source & Analysis Health integration
 ```
 
-No `events:read` request is required for this next gate. Event-level access can be considered later
-for mechanics research if the project receives that scope explicitly.
+Do not request `events:read`, capture a new HAR or run Playwright for this gate.

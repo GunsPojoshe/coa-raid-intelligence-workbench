@@ -1,72 +1,120 @@
 # Фактическое состояние проекта
 
-Дата актуализации: **2026-08-19**.
+Дата актуализации: **2026-08-26**.
 
-Каноничный restart/handoff для нового чата:
+Canonical restart order:
 
 ```text
-docs/NEXT_CHAT_HANDOFF.md
+AGENTS.md
+docs/DOCUMENTATION_INDEX.md
+docs/CURRENT_PARADIGM.md
+docs/PROJECT_MASTER_CONTEXT.md
+docs/PROJECT_STATE.md
+docs/OFFICIAL_PUBLIC_API.md
+docs/CONTINUATION_PROMPT.md
 ```
 
-## GitHub
-
-Active branches:
+## GitHub / workstreams
 
 ```text
 main
-e2/log-evidence-refactor
-e3/real-log-capture
+└── e2/log-evidence-refactor        Draft PR #3 -> main
+    └── e3/real-log-capture         Draft PR #7 -> e2
+        └── e4/interactive-har-discovery  Draft PR #9 -> e3
 ```
 
-PR #7 remains Draft: `e3/real-log-capture -> e2/log-evidence-refactor`.
-
-Implementation checkpoint immediately before the handoff documentation snapshot:
+During the documentation-integrity audit, live checks showed:
 
 ```text
-ac4e15b2fb4c879b2010c12dae1aeb50df3fd745
-Record real equivalence blocker and add structure review
+PR #9 E4 -> E3: mergeable
+PR #7 E3 -> E2: mergeable
+PR #3 E2 -> main: integration conflict debt
 ```
 
-Exact-head CI #835 is green on Ubuntu, Windows and `public-release-audit`.
+The screenshot-reported conflict therefore belongs to the lower staged integration chain, not to the active E4→E3 workstream. Do not merge Draft PRs merely to clear UI warnings.
 
-Always verify live HEAD and exact-head CI before extending or merging the branch.
+Always re-check live state; stored SHAs/run numbers are checkpoints only.
 
-## Product target
+## Product state
 
-CoA-only localhost-first evidence-first raid intelligence platform.
+CoA-only localhost-first evidence-first raid intelligence.
 
-Main product question:
+Primary question:
 
-> Почему конкретный человек нужен именно текущему составу?
+> **Почему конкретный человек нужен именно текущему составу?**
 
-The platform must adapt to new reports, bosses, phases, fields and source contracts without turning
-sample-specific observations into permanent assumptions. Source changes are observed, registered and
-reprocessed only for affected artifacts with preserved provenance.
+Planner scoring remains blocked until its required semantics are independently proven.
 
-Planner scoring remains fail-closed. Schema names, field names, class/spec labels and one observed
-combat result do not establish mechanic semantics.
-
-## Canonical source path
+## Current paradigm
 
 ```text
-browser/network observation
--> reviewed request contract
--> immutable RawArchive
--> acquisition observation
--> schema/dimension observation
--> source change event
--> artifact dependency
--> scoped reanalysis
--> deterministic derived analysis
--> Source & Analysis Health
+official documented public API
+-> official documented site semantics
+-> pinned executable Companion source
+-> persisted first-party report/API evidence
+-> narrow browser/network fallback
+-> structural inference last
 ```
 
-Generic dynamic-template HAR ingestion is disabled. Dynamic browser paths are accepted only through
-correlated resolution with known static-route exclusion. Private path/query values are not published.
+This supersedes the old Browser-first/difficulty-first operating priority.
 
-## Current report runtime
+## Official API — real proven
 
-Six current-report dynamic source families are real browser-observed, reviewed and persisted:
+Contract:
+
+```text
+OpenAPI 3.1.0
+API version 1.0.0
+stats:read: /phases, /bosses, /statistics
+```
+
+Real public-safe evidence:
+
+```text
+phase records: 3
+active/current candidate: 1
+boss records: 285
+unique stable boss_id values: 285
+/statistics capture: HTTP 200, archived
+statistics top-level entries: 21
+statistics max depth: 5
+objects with documented metric fields: 83
+statistics normalization ready: true
+```
+
+Canonical receipts:
+
+```text
+evidence/real-data/coa-public-api-catalog-real.json
+evidence/real-data/coa-public-api-statistics-capture-real.json
+evidence/real-data/coa-public-api-statistics-shape-real.json
+```
+
+Current next gate:
+
+```text
+exact StatisticsResponse parser
+-> normalized aggregate model
+-> DuckDB persistence
+-> replay/idempotence proof
+-> population-prior read model by documented dimensions
+```
+
+No new HAR/Playwright/difficulty heuristic is required for this gate.
+
+## Official API credential boundary
+
+Default local key file:
+
+```text
+data/private/coa-logs-api-key.txt
+```
+
+The key is local/private only and must never be copied into Git, query strings, CLI values, RawArchive metadata, public receipts, logs or screenshots.
+
+## Report-specific E3 runtime — retained proven state
+
+Six current-report source families remain real-observed/reviewed:
 
 ```text
 GET /api/reports/{reportId}
@@ -77,318 +125,114 @@ GET /api/reports/{reportId}/character_damage_taken_abilities?...
 GET /api/reports/{reportId}/character_spell_healing?...
 ```
 
-Historical encounter-detail/combatants-info routes remain evidence only and do not override the
-current browser runtime.
-
-Important active algorithm/data versions:
-
-```text
-network-source-cycle-v9
-scope-schema-cycle-v1
-current-report-derived-persistence-v1
-current-report-analytics-v1
-current-report-analytics-persistence-v1
-current-report-comparison-read-model-v1
-cross-report-structural-benchmark-v1
-cross-report-equivalence-review-v1
-cross-report-source-structure-v1
-```
-
-The current `/combatants-roster` payload supplies observation-only roster/build evidence including
-specialization, mutually checked talent structures, gear/resolved-item information and BisBeard
-metadata. These observations are not mechanic truth by themselves.
-
-## First-report persistence and analytics
-
-The generic report/roster/build path is proven real and idempotent:
+First-report generic persistence:
 
 ```text
 derived observations: 2031
-first run: inserted 2031 / matched 0
-replay:    inserted 0    / matched 2031
-```
-
-The first real combat-analytics persistence produced:
-
-```text
+replay matched all 2031
 analytics observations: 19660
-throughput requests:       12
-throughput characters:    299
-throughput points:      13244
-damage-taken rows:        852
-healing spell rows:       178
-healing source rows:     1624
-healing target rows:     3451
+replay matched all 19660
 ```
 
-Immediate replay inserted zero new observations and matched all 19660 existing observations.
-
-Report/analytics artifacts use private `reportId`-scoped Source Observatory dependencies.
-
-## Local comparison/API layer
-
-`current-report-comparison-read-model-v1` is proven on the real local DuckDB.
-
-Typed localhost/private API:
+Second independent report:
 
 ```text
-GET /api/current-report-analytics/reports
-GET /api/current-report-analytics/latest
-GET /api/current-report-analytics/reports/{report_id}
-```
-
-The read model/API are explicitly local/private. They perform no collection and do not promote
-mechanic semantics or planner scoring.
-
-## Second independent report
-
-A second independent report has passed the same generic current-report pipeline.
-
-Real proof:
-
-```text
-catalog reports: 1 -> 2
-dynamic routes resolved: 6
-
 derived inserted: 2920
 analytics inserted: 28213
-
-encounters:             55
-roster characters:      27
-throughput profiles:    33
-throughput characters: 867
-throughput points:   16907
+throughput points: 16907
 ```
 
-Public-safe receipt:
+Structural benchmark:
 
 ```text
-evidence/real-data/coa-second-report-generalization-real.json
+reports: 2
+input profiles: 45
+eligible peer cohorts: 3
+eligible profiles: 6
+eligible ranked rows: 133
 ```
 
-This establishes multi-report ingestion/generalization without creating report-specific parser forks.
-
-## Structural cross-report benchmark
-
-`cross-report-structural-benchmark-v1` groups only exact observed structural peers:
+Scope-aware repair:
 
 ```text
-exact report.zone
-+ exact encounter_name
-+ exact throughput metric
-+ exact throughput perspective
-```
-
-Real two-report result:
-
-```text
-reports:                         2
-input profiles:                 45
-candidate peer cohorts:          3
-eligible peer cohorts:           3
-ambiguous peer cohorts:          0
-eligible profiles:               6
-eligible ranked player rows:   133
-single-report profile groups:   33
-```
-
-A repeated matching profile within one report makes that cohort ambiguous and excludes it from numeric
-comparison. The current three real candidate cohorts are eligible structurally and deterministic on
-requery.
-
-Still explicitly unverified:
-
-```text
-difficulty equivalence:        false
-cross-report player identity:  false
-fight-duration comparison:    false
-numeric cross-report scoring:  false
-mechanic semantics:            false
-planner scoring:               false
-```
-
-Public-safe receipt:
-
-```text
-evidence/real-data/coa-cross-report-structural-real.json
-```
-
-## Scope-aware schema baselines
-
-The second report exposed a Source Observatory comparison defect: schemas from different `reportId`
-scopes were being compared as sequential versions of one source object.
-
-Before repair:
-
-```text
-open source-change events: 645
-report_combatants_roster_api: 614
-report_encounter_throughput_timeline_api: 16
+623 false/legacy events superseded
+open events: 645 -> 22
+new scoped schema changes on replay: 0
 pending reanalysis: 0
 ```
 
-`scope-schema-cycle-v1` and `network-source-cycle-v9` make the reviewed path scope part of the schema
-peer boundary. For current report routes that scope is private `reportId`; throughput additionally uses
-its reviewed `metric + perspective` response profile.
+## Historical difficulty/equivalence gate
 
-Real replay of the already captured second-report corpus proved:
-
-```text
-scope-schema endpoints processed:        6
-member events superseded:              619
-legacy profile events superseded:        4
-total events superseded:               623
-new aggregate scoped schema changes:     0
-
-open source-change events:          645 -> 22
-pending reanalysis requests:          0 -> 0
-active dependencies:                 21 -> 21
-completed analysis runs:              6 -> 6
-```
-
-Raw objects, raw fetch observations, source captures and exact source-schema snapshots were preserved.
-The same replay left the cross-report benchmark at three eligible / zero ambiguous cohorts.
-
-The remaining 22 open Source Observatory signals are not automatically interpreted as genuine upstream
-changes. This replay only proves that the 623 cross-report/member/legacy events were invalid schema
-peers and that no new scope-cycle aggregate change was created.
-
-Public-safe receipt:
-
-```text
-evidence/real-data/coa-scope-schema-cycle-real.json
-```
-
-## Difficulty + encounter equivalence: current real result
-
-`cross-report-equivalence-review-v1` is implemented as a fail-closed promotion gate. Its first rule tried
-to corroborate one stable difficulty value for each report across two independently observed surfaces:
-
-```text
-/api/reports/{reportId} -> report.difficulty
-/api/reports/public     -> reports[].highest_difficulty
-```
-
-Real two-report result:
+Still:
 
 ```text
 status: insufficient_evidence
-report count: 2
-
-report-detail difficulty observed: 0
-public highest difficulty observed: 0
-cross-surface matches:             0
-cross-surface mismatches:          0
-ambiguous reports:                 0
-verified reports:                  0
-
-eligible structural cohorts:       3
-difficulty-verified cohorts:       0
-encounter-equivalence cohorts:     0
-encounter non-unique cohorts:      0
+verified difficulty reports: 0
+numeric historical cross-report scoring: blocked
 ```
 
-This is an evidence gap, not evidence that the reports use different difficulties. Encounter-name
-uniqueness is not the blocker.
+This is an evidence gap, not proof of different difficulties. No v4 heuristic is planned simply to force equivalence.
 
-Public-safe receipt:
+The aggregate public `/statistics` lane is independent and may progress because it has explicit documented dimensions.
+
+## Upstream executable source
+
+Pinned evidence provider:
 
 ```text
-evidence/real-data/coa-cross-report-equivalence-real.json
+FangYuanWoW/AscensionLogsCompanion
+main @ 0f63fe9c50b470402e3a29fba2e0322095856fd4
+version 0.67.2
 ```
 
-Earlier private structural review had observed `reportDifficulty` at encounter-catalog top level and
-`difficulty` on encounter rows. Those field names remain unpromoted until corroboration is proven.
+Use for client-state/capture/build/gear/telemetry evidence. Backend comments remain hypotheses until corroborated.
 
-## Current source-structure probe
+## Browser Observatory / HAR
 
-`cross-report-source-structure-v1` was added at implementation checkpoint `ac4e15b...`:
+Retained as fallback for undocumented gaps only. It is not the current default Ascension Logs path.
+
+Do not add stealth/fingerprint/challenge-bypass behavior.
+
+## Local workspace integrity
+
+Tracked Git tree has been audited against the new paradigm. Exact ignored/untracked workstation state cannot be remotely enumerated.
+
+New read-only inventory:
+
+```powershell
+uv run --no-sync python scripts/inventory_local_workspace.py
+```
+
+Private exact manifest:
 
 ```text
-src/coa_workbench/analytics/cross_report_source_structure.py
-scripts/review_cross_report_source_structure.py
-tests/unit/test_cross_report_source_structure.py
+data/private/local-workspace-inventory.json
 ```
 
-It is read-only and scalar-safe. It reports field names and JSON types from existing persisted
-report-detail, encounter-row and public-report evidence without publishing IDs, names, difficulty
-values, raw payloads/paths or private hashes.
-
-The real source-structure receipt is **not yet produced** at this snapshot. No new HAR is required.
-
-The previously generated operator helper:
+Until that manifest is reviewed, project integrity is:
 
 ```text
-review-cross-report-source-structure.ps1
-SHA-256 a1ccea59cf111430e7a90542569203189e24d6aa9dc5e1d9dbde973769007d5b
+tracked repository audit: complete
+local-only exact file audit: pending operator manifest
 ```
 
-## Public/private boundary
-
-Git/public evidence excludes HAR/raw bodies, report/encounter/player/guild IDs and names, query values,
-dynamic group keys, source-capture IDs, private scope/profile values or hashes, difficulty scalar values,
-and private input/output fingerprints.
-
-Local comparison/API payloads may contain those private local identifiers and are marked
-`public_release_safe=false`.
+Unknown/untracked files must not be deleted.
 
 ## Current boundary
 
 ```text
-Network-first Source Observatory: implemented
-current report runtime persistence: real proven
-current roster/build parser: real proven
-combat analytics persistence: real proven + idempotent
-report-scoped dependencies: real proven
-current-report comparison model: real proven
-typed localhost analytics API: implemented
-second independent report ingestion: real proven
-structural cross-report peer cohorts: real proven
-scope-aware schema cycles: implemented + real proven
-cross-report schema-noise cleanup: 645 -> 22 real proven
-new scoped schema changes on replay: 0
-difficulty/encounter equivalence reviewer: implemented + real run complete
-real difficulty evidence: insufficient (0 verified reports)
-encounter-name uniqueness blocker: absent
-source-structure reviewer: implemented, real run pending
-numeric cross-report scoring: blocked
-planner scoring promoted automatically: false
-```
-
-## Exact next work
-
-Do **not** capture another HAR yet. First use the existing local DuckDB/raw archive:
-
-```text
-run cross-report-source-structure-v1
--> inspect only difficulty-like field names + JSON types
--> decide whether existing report/encounter/public surfaces can provide two independently bound,
-   stable scalar difficulty observations for each target report
-```
-
-Important: an earlier private structural review observed encounter-catalog top-level `reportDifficulty`.
-The current v1 structure probe inspects encounter rows, not that top-level field. If row evidence is
-insufficient, extend the reviewer to inspect encounter-catalog top-level structure before requesting a
-new browser capture.
-
-Promotion sequence after that:
-
-```text
-prove difficulty + encounter equivalence on the real 3 structural peer cohorts
--> establish fight-duration/comparison-unit semantics from exact encounter-linked timing evidence
--> only then permit guarded numeric cross-report comparison
--> prove explicit cross-report character identity from stable source evidence
--> rankings/statistics/character history
--> Armory/talent-grid enrichment
--> BisBeard planning evidence
--> planner scoring only from corroborated/confirmed mechanics
-```
-
-A new browser capture is required only if the persisted source surfaces truly cannot provide the needed
-independent difficulty evidence, or when a genuinely new/changed source contract is being investigated.
-
-For exact restart instructions, known non-obvious source facts and operator workflow rules, read:
-
-```text
-docs/NEXT_CHAT_HANDOFF.md
+official API contract: reviewed
+real phase/boss catalog: proven
+real current statistics capture: proven
+real statistics structural review: proven
+statistics normalization: next gate
+statistics persistence/idempotence: not yet proven
+report pipeline generalization: proven on two reports
+report analytics persistence: proven + idempotent
+scope-aware source schema repair: proven
+historical difficulty equivalence: insufficient evidence
+cross-report identity: unproven
+fight-duration comparison semantics: unproven
+site Tier List algorithm: undocumented
+planner scoring: blocked
 ```

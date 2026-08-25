@@ -1,10 +1,10 @@
-# Upstream Ascension Logs evidence — E4 source-first discovery
+# Upstream Ascension Logs evidence
 
-Status date: **2026-08-19**.
+Status date: **2026-08-26**.
 
-This document records a new high-leverage E4 evidence source discovered after the Browser Observatory pivot.
+This document defines the pinned executable-client evidence lane. It is subordinate to the official public API where that API documents the same information, and stronger than speculative frontend inference for client-side behavior.
 
-## Pinned upstream sources
+## Pinned sources
 
 Primary executable reference:
 
@@ -24,201 +24,135 @@ branch: master
 revision: 52e25780ade0c0b3ea954d649a875ea2f7d8c9bd
 ```
 
-The Companion revision was current on 2026-08-19 and was committed upstream on 2026-08-18. Always re-check the live upstream revision before treating this pin as current.
+Pins provide reproducible provenance. Re-check live upstream before calling a pin “current”.
 
-The source pin is provenance, not automatic truth promotion. Executable code, inline comments, upstream README claims and our own captured observations have different evidence strength.
+## Evidence strength
 
-## Why this source changes E4 priority
+### Executable Lua
 
-The Companion is not merely a UI addon. It is an executable description of a large part of the data-acquisition contract that feeds Ascension Logs:
-
-```text
-WoW client APIs / combat events
--> per-player and per-encounter capture
--> structured records
--> serialization / compression / frame transport
--> WoWCombatLog.txt
--> uploader
--> server-side ingest / parsing
--> report UI
-```
-
-The public uploader README independently describes the desktop application as a thin transport that tails `WoWCombatLog.txt`, uses a durable outbox, and sends fresh lines over HTTPS while parsing, fight detection and rankings occur server-side.
-
-This means browser/network reverse engineering is no longer the default first step for facts that can be obtained from the executable Companion source.
-
-## Evidence classes
-
-### A. Strong executable client-side evidence
-
-These facts are directly represented by executable Lua and may be promoted after source review plus version pinning:
+Strong evidence for:
 
 ```text
-which client API is called
-which event triggers a capture
-record field names and structural nesting
-client-side scope and gating rules
-per-pull / per-session cache scope
-transport record type and envelope construction
-which observations are direct versus fallback-derived inside the addon
+client API calls
+event triggers
+record field names/nesting
+client-side gating/scope
+capture lifecycle
+serialization/frame construction
+direct vs fallback-derived client observations
 ```
 
-Examples already identified:
+### Inline comments/backend notes
 
-- server/profile detection includes Conquest of Azeroth realms as Ascension-family clients;
-- local Combatant Info contains player identity, guild, specialization/build data, gear, arena teams, pet, instance information and optional Ascension enrichments;
-- inspected peers can contribute gear, guild/race, vanilla talents, Character Advancement data and mystic enchants when the relevant inspect paths succeed;
-- Character Advancement capture uses `C_CharacterAdvancement`, including inspected build/rank APIs rather than guessed globals;
-- gear capture parses itemstrings into item/enchant/gem/suffix identity and contains explicit vanity/transmog handling;
-- `GetInstanceInfo()` is captured structurally as instance name/type, difficulty index/name, max players, player difficulty, dynamic flag and map id;
-- encounter tracking is per pull and boss-aware;
-- telemetry captures encounter/map context, roster dynamics, positions, targets, vitals and hostile NPC identity/state at a low cadence;
-- controlled pets and slot-less guardians have explicit owner-attribution pipelines;
-- Mythic+ has direct lifecycle/progress capture through `C_MythicPlus`, including level, dungeon id, affixes, time budget/remaining, encounter/trash/champion progress, timed/depleted outcome and durable per-run SavedVariables;
-- CoA Manastorm has an explicit `C_Manastorm` event-driven lifecycle capture;
-- the current frame transport includes typed CI/PP/TS records, CI keyframes and keyframe references, with KS intentionally isolated from the shared frame fate.
+Useful hypotheses only when they describe server/parser/ranking behavior. Promote them only after independent corroboration.
 
-### B. High-value upstream claims requiring corroboration
+### Uploader documentation
 
-Inline comments contain unusually rich operational findings, including live probes, backend behavior, historic report examples and parser expectations. They are extremely useful hypotheses, but they are not equivalent to the executable code that surrounds them.
-
-Examples include claims about:
-
-```text
-friendly difficulty interpretation of raw indices
-backend difficulty fallback behavior
-specific historical report failures
-backend creatures-table synchronization
-server-side demux/reassembly behavior
-server-side keyframe resolution
-rankings/parser behavior
-```
-
-Promotion rule:
-
-```text
-upstream comment
-+ matching executable field/event path where applicable
-+ independent local/site/raw evidence when the claim is backend-semantic
-= reviewed canonical evidence candidate
-```
-
-Do not promote a backend mechanic merely because an upstream comment describes it confidently.
-
-### C. Public uploader documentation
-
-The public `ascension-logs-uploader` repository contains documentation rather than the closed desktop client source.
-
-It is useful evidence for the high-level ingestion boundary:
+Supports the high-level boundary:
 
 ```text
 WoWCombatLog.txt
--> tail/batch
--> durable outbox
+-> tail/batch/outbox
 -> HTTPS transport
--> server-side ingest/parser
+-> server-side ingest/parser/ranking
 ```
 
-It also explicitly lists a Conquest of Azeroth site and states that the heavy parsing/fight-detection/ranking logic is server-side.
+It does not expose closed server parser logic.
 
-It does **not** expose the uploader's concrete HTTP implementation or the server parser code, so it cannot replace network/source observation for those contracts.
+## High-value executable areas already identified
 
-## What this can replace
-
-Before probing the report UI, first consult the pinned Companion source for:
+The pinned Companion contains client-side evidence for:
 
 ```text
-client-side difficulty observations
-encounter and pull boundaries
-boss registry / zone identity
-character build structure
-gear and enchant structure
-pet / guardian ownership
-position and target telemetry
+CoA/Ascension server profile detection
+Combatant Info identity/spec/build/gear structures
+Character Advancement capture
+gear item/enchant/gem/suffix parsing
+GetInstanceInfo structural capture
+per-pull encounter tracking
+position/target/vitals/NPC telemetry
+pet/guardian ownership
 Mythic+ lifecycle/progress
-Manastorm lifecycle
-capture reliability and fallback rules
+CoA Manastorm lifecycle
+CI/PP/TS frame transport and keyframe relationships
+```
+
+These are observation/capture structures, not automatic mechanic semantics.
+
+## Deterministic project tooling
+
+The repository already contains durable upstream-source tooling, including:
+
+```text
+config/upstream_evidence_sources.yaml
+scripts/review_upstream_lua_source.py
+scripts/review_upstream_lua_lineage.py
+```
+
+Use these instead of copying unreviewed source facts manually into product logic.
+
+## What the official API now replaces
+
+Do not use Companion/browser work to rediscover API-v1 facts already documented for:
+
+```text
+phases
+boss catalog
+aggregate statistics dimensions/metric fields
+event units/types when experimental schema documentation alone is sufficient
+```
+
+## What Companion remains best for
+
+Use the pinned source for gaps such as:
+
+```text
+client-side build/talent/gear observation
+capture lifecycle and reliability
+client event/source provenance
+telemetry fields
+pet/guardian ownership
+client difficulty/instance raw observations
 wire/frame record structure
 ```
 
-Do not spend Browser Observatory cycles rediscovering these from field names in website JSON when the upstream executable code already defines the source-side observation.
+## What it does not solve
 
-## What this does not solve by itself
-
-The Companion does not establish all product semantics. Remaining independent evidence domains include:
+Independent evidence is still required for:
 
 ```text
-report website API route contracts and query semantics
-server parser / aggregation implementation
-server-side damage/healing attribution details not visible from capture code
-rankings algorithms and percentile semantics
-guild progression data contracts
-cross-report encounter equivalence rules
-static item/spell/talent effect semantics beyond captured ids/ranks
-planner semantics: why a particular player is needed by a particular composition
-UI-only state and presentation rules
+server parser/aggregation implementation
+site Tier List algorithm
+rankings percentile implementation beyond published contract
+Guild progression contracts
+cross-report identity/equivalence
+static spell/item/talent gameplay effects
+why one player is needed by one composition
 ```
 
-Browser/network discovery remains useful for these unresolved server/UI surfaces.
-
-## Revised E4 discovery order
-
-Use the following order for a question that may touch Ascension Logs:
+## Current source order
 
 ```text
-1. Check pinned upstream executable Companion source.
-2. Classify the finding: executable fact vs inline claim vs inferred behavior.
-3. Compare with already persisted RawArchive / observations / report evidence.
-4. If server/UI semantics remain unresolved, acquire the narrowest manual-browser HAR or reviewed browser observation needed.
-5. Promote only the corroborated relation into source contracts / analytics.
+official public API
+-> official site semantics
+-> pinned executable Companion
+-> persisted first-party report/API evidence
+-> narrow browser/network fallback
+-> inference last
 ```
 
-This is source-first, not source-only.
+## Difficulty history
 
-## Difficulty gate revision
+The Companion's `GetInstanceInfo()` observations are useful independent client-side evidence, but they have not resolved the historical two-report semantic equivalence gate. Backend-friendly-label/fallback comments remain hypotheses.
 
-The current cross-report blocker should no longer begin with "find the Difficulty UI request".
+Do not resume difficulty work merely because a field exists. Reopen it only when a concrete product decision requires cross-report equivalence and the exact independent binding evidence is available.
 
-The upstream client source already shows a direct instance observation boundary around `GetInstanceInfo()` and persists the raw difficulty-related fields into Combatant Info and telemetry. Therefore the next difficulty investigation should be:
+## Network/browser relationship
 
-```text
-upstream client instance fields
-+ existing persisted report evidence
-+ one known report/encounter where client-side difficulty capture landed
--> determine whether the site exposes or transforms the same signal
--> prove mapping/equivalence only when independently corroborated
-```
+Browser/network acquisition remains useful only for server/UI contracts not covered by official API, executable source or existing persisted evidence.
 
-The upstream comments about friendly labels or backend fallback are hypotheses until matched against real local/report evidence.
+Do not use stealth or anti-bot bypass. If a permitted browser observation is needed, capture the narrowest evidence necessary and preserve the public/private boundary.
 
-## Network-environment boundary
+## Current direction
 
-Site reachability is environment-dependent. A report route may succeed through one operator network path while another route yields only a shell document or stalls.
-
-Do not commit proxy/VPN credentials, host details or operator network configuration.
-
-For private acquisition, the preferred fallback is the operator's already-working normal browser plus manual DevTools HAR. That HAR can feed the existing provider-neutral `HARObservationSource` and interaction differential pipeline without requiring the site to be navigated by Playwright.
-
-Browser Observatory remains reusable infrastructure for sources/environments where live automated acquisition is appropriate and reliable; it is no longer a prerequisite for Ascension Logs evidence discovery.
-
-## Immediate implementation direction
-
-Next E4 code should treat upstream source as a first-class evidence provider rather than copying facts into prose by hand.
-
-Target shape:
-
-```text
-pinned upstream source manifest
--> reviewed source-file inventory
--> extracted evidence candidates
-   - client API names
-   - emitted field paths
-   - event names
-   - record/stream types
-   - source-code locations
--> evidence-strength classification
--> comparison against local Source Observatory facts
--> scalar-safe review receipt
-```
-
-The extractor must not infer gameplay mechanics from Lua identifiers or comments. It should automate inventory and provenance; semantic promotion remains reviewed and corroborated.
+The immediate active E4 gate is official `/statistics` normalization/persistence. Companion source work proceeds in parallel only for unresolved client-state/build/capture surfaces; it is not the blocker for population-statistics implementation.
