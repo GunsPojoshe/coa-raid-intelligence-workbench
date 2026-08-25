@@ -76,11 +76,17 @@ planner scoring: blocked
 
 ## Local audit
 
-Tracked Git state has been audited. Exact ignored/untracked workstation files are still pending one read-only manifest:
+The real Windows workspace metadata manifest has been reviewed. At that checkpoint:
 
-```powershell
-uv run --no-sync python scripts/inventory_local_workspace.py
+```text
+modified tracked files: 0
+missing tracked files: 0
+Git-visible untracked implementation/documentation candidates: 1
 ```
+
+The only remaining local-integrity item is content review of the identified `.patch` savepoint. Do not request or bulk-upload RawArchive, DuckDB, API-key, Browser Observatory profile/session state or HAR inputs for repository integrity.
+
+The inventory is now schema v3: `.venv-capture` and `*.egg-info` tooling noise are skipped, and raw-transport candidates under local `data/exchange/out/` are flagged. `data/exchange/out/` is local staging, not automatically publication-safe.
 
 Do not delete unknown local files.
 
