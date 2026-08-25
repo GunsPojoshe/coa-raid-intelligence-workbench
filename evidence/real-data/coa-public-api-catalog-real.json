@@ -1,0 +1,45 @@
+{
+  "boss_catalog": {
+    "boss_count": 285,
+    "boss_with_display_order_count": 13,
+    "boss_with_instance_type_count": 285,
+    "boss_with_location_count": 285,
+    "duplicate_stable_boss_id_count": 0,
+    "unique_stable_boss_id_count": 285
+  },
+  "phase_catalog": {
+    "active_current_candidate_count": 1,
+    "active_current_candidate_has_locations": true,
+    "active_phase_count": 1,
+    "current_by_null_end_date_count": 1,
+    "duplicate_phase_number_count": 0,
+    "phase_count": 3,
+    "phase_with_main_location_count": 3,
+    "phase_with_progression_location_count": 2,
+    "phase_with_world_boss_location_count": 3,
+    "unique_phase_number_count": 3
+  },
+  "privacy": {
+    "boss_ids_included": false,
+    "boss_names_included": false,
+    "location_names_included": false,
+    "phase_names_included": false,
+    "phase_numbers_included": false,
+    "raw_paths_included": false,
+    "raw_payloads_included": false
+  },
+  "public_release_safe": true,
+  "review_version": "public-api-catalog-v1",
+  "selection": {
+    "current_phase_selectable": true,
+    "phase_value_included": false,
+    "selector": "unique_is_active_true_and_end_date_null"
+  },
+  "verification": {
+    "boss_id_stable_index_semantics_used": true,
+    "openapi_end_date_current_semantics_used": true,
+    "planner_scoring_allowed": false,
+    "real_payload_shapes_reviewed": true,
+    "statistics_payload_reviewed": false
+  }
+}
