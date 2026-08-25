@@ -22,9 +22,10 @@ Git-visible untracked path state
 missing/deleted tracked paths
 known privacy/generated class
 file suffix
+raw-transport candidates placed under data/exchange/out/
 ```
 
-It skips Git internals and disposable tooling caches such as `.git/`, `.venv/`, `__pycache__/`, `.pytest_cache/`, `.ruff_cache/`, `.mypy_cache/`, `playwright-report/` and `test-results/`.
+It skips Git internals and disposable tooling/build directories such as `.git/`, `.venv/`, `.venv-capture/`, `*.egg-info/`, `__pycache__/`, `.pytest_cache/`, `.ruff_cache/`, `.mypy_cache/`, `playwright-report/` and `test-results/`.
 
 It does **not**:
 
@@ -46,7 +47,7 @@ Private exact manifest:
 data/private/local-workspace-inventory.json
 ```
 
-Schema v2 contains exact local paths plus modified/untracked/missing tracked path lists. It stays ignored/local. It may be shared privately for analysis when an exact local audit is requested; sharing it does not make it publishable.
+Schema v3 contains exact local paths plus modified/untracked/missing tracked path lists and exact local paths for raw-transport candidates under `data/exchange/out/`. It stays ignored/local. It may be shared privately for analysis when an exact local audit is requested; sharing it does not make it publishable.
 
 Public-safe summary:
 
@@ -63,12 +64,15 @@ nontracked existing files
 modified tracked files
 Git-visible untracked files
 missing tracked files
+raw-transport candidate count under data/exchange/out/
 workspace-class counts
 suffix counts
 skipped tooling-directory counts
 ```
 
 No local paths or file contents are included in the public summary.
+
+`data/exchange/out/` itself is **not** a blanket publication-safe directory. It is ignored local exchange/staging state and may contain historical/private generated material. Only an individually reviewed scalar-safe artifact may be promoted to `evidence/real-data/` or otherwise published.
 
 ## Run
 
@@ -96,4 +100,22 @@ Unknown untracked files and local modifications are evidence to inspect, not cle
 
 The manifest intentionally inventories content **existence/state**, not all private file bodies. After it is reviewed, only untracked/modified implementation or documentation files relevant to project integrity need content inspection. Raw private evidence remains a separate evidence corpus and does not need to be bulk-published to prove repository integrity.
 
-A GitHub-only review may be complete for tracked files while the local-workspace audit remains pending. The documentation must state that distinction explicitly rather than claiming all local files were inspected remotely.
+## Real workstation review — 2026-08-26
+
+The first real schema-v2 manifest was reviewed against exact branch/HEAD state. It established:
+
+```text
+modified tracked files: 0
+missing tracked files: 0
+Git-visible untracked files: 1
+```
+
+The sole Git-visible untracked item is a `.patch` savepoint and therefore still requires content review before the workstation audit can be called fully complete.
+
+The large `untracked_other` count in schema v2 was dominated by a dedicated `.venv-capture` environment plus ignored `*.egg-info` build metadata, not by thousands of unknown project source files. Schema v3 now skips those generated tooling directories.
+
+The same manifest also exposed one historical `.har` under `data/exchange/out/`. It is preserved as local ignored state, but a HAR is raw transport evidence and must not be treated as automatically publication-safe. Schema v3 flags such placement explicitly.
+
+The API-key file, local DuckDB, RawArchive corpus, Browser Observatory private profile/session state and HAR inputs were all present as expected private/local project families. Their contents were not read by the inventory.
+
+A GitHub-only review may be complete for tracked files while the local-workspace audit remains pending only the explicitly identified untracked implementation/documentation candidates. The documentation must state that distinction rather than claiming raw private file bodies were remotely inspected.
