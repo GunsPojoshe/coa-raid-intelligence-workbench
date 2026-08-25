@@ -1,6 +1,6 @@
 # Project integrity audit — 2026-08-26
 
-Status: **tracked-repository audit complete; exact local-only audit pending operator manifest**.
+Status: **tracked-repository audit complete; local metadata inventory complete; one Git-visible untracked patch pending content review**.
 
 ## Scope completed remotely
 
@@ -68,18 +68,25 @@ Older README/docs referred to earlier migration ceilings. Exact CI verification 
 
 The canonical documentation now records `0001-0012`, including `source_profile_schema_cycle`, and the machine integrity audit checks continuity through at least migration 12.
 
-### 6. Local workspace could not be claimed as remotely inspected
+### 6. Local workspace required a real workstation inventory
 
-Ignored/untracked files are legitimate project state and are invisible to GitHub-only tooling. Existing docs already recognized this boundary but no standard manifest existed.
+Ignored/untracked files are legitimate project state and are invisible to GitHub-only tooling. The new read-only inventory was run on the actual Windows checkout and the private schema-v2 manifest was reviewed.
 
-Resolution:
+Observed workstation state:
 
 ```text
-scripts/inventory_local_workspace.py
-docs/LOCAL_WORKSPACE_AUDIT.md
+modified tracked files: 0
+missing tracked files: 0
+Git-visible untracked files: 1
 ```
 
-provide one read-only local inventory. Until that manifest is supplied, the exact local-only portion of this audit remains intentionally marked pending.
+The sole Git-visible untracked candidate is a `.patch` savepoint. Its contents have not yet been reviewed, so it remains the only local implementation/documentation blocker to a fully complete workstation-integrity statement.
+
+The schema-v2 `untracked_other` count was inflated by generated tooling state: a dedicated `.venv-capture` environment plus ignored `*.egg-info` metadata. The inventory has been refined to schema v3 so those directories are skipped instead of appearing as unknown project files.
+
+The private corpus contains expected local project families: RawArchive data, DuckDB, API credential file, Browser Observatory profile/session state, HAR inputs and generated exchange outputs. Their bodies were intentionally not bulk-read by the metadata inventory.
+
+One historical raw `.har` was also detected under ignored `data/exchange/out/`. This does not mean the file is public: `data/exchange/out/` is local staging and is not a blanket publication-safe boundary. Schema v3 now flags raw-transport candidates in that location explicitly.
 
 ### 7. Integrity rules were prose-only
 
@@ -95,7 +102,7 @@ scripts/verify_repo.py
 
 The machine audit now checks required canonical files/receipts, documentation authority markers, stale operating markers, migration continuity, tracked private paths and temporary staging files on Ubuntu and Windows verification paths.
 
-The first CI run of this new gate also caught two code-quality issues in the new audit tooling itself: one unused import and Ruff formatting differences. Those were fixed before final exact-head verification.
+The first CI run of this new gate also caught code-quality issues in the new audit tooling itself; those were corrected before the exact-head green verification checkpoint.
 
 ## Current coherent architecture
 
@@ -165,16 +172,6 @@ Therefore a conflict warning in the staged chain must not be “fixed” by blin
 
 ## Local audit completion condition
 
-After the local checkout contains the new inventory script, run:
+The metadata inventory condition has been satisfied for the current workstation. Full local project-integrity review now requires only the content review of the single Git-visible untracked `.patch` savepoint.
 
-```powershell
-uv run --no-sync python scripts/inventory_local_workspace.py
-```
-
-Then review the private manifest:
-
-```text
-data/private/local-workspace-inventory.json
-```
-
-Only after that manifest is inspected can the project state honestly say that tracked **and** local-only files have both been inventoried for the current workstation.
+Do not upload or publish the RawArchive, DuckDB, API-key file, Browser Observatory profile or HAR corpus merely to complete this audit. Their metadata presence/classification is sufficient for repository/workspace integrity; their contents remain private evidence unless a separate analysis specifically requires them.
