@@ -36,9 +36,7 @@ _PRIVATE_PREFIXES = (
     "workbook/working/",
 )
 
-_GENERATED_PREFIXES = (
-    "data/exchange/out/",
-)
+_GENERATED_PREFIXES = ("data/exchange/out/",)
 
 
 def _git(repo_root: Path, *args: str) -> str:
@@ -152,9 +150,7 @@ def _public_summary(manifest: dict[str, Any]) -> dict[str, Any]:
             "untracked_file_count": inventory["untracked_file_count"],
             "workspace_class_counts": inventory["workspace_class_counts"],
             "suffix_counts": inventory["suffix_counts"],
-            "skipped_tooling_directory_counts": inventory[
-                "skipped_tooling_directory_counts"
-            ],
+            "skipped_tooling_directory_counts": inventory["skipped_tooling_directory_counts"],
         },
         "safety": {
             "contains_file_paths": False,
