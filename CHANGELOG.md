@@ -9,7 +9,8 @@
 - Documented four acquisition lanes: official aggregate API, report-specific evidence, pinned Companion source, browser/HAR fallback.
 - Reclassified Browser Observatory and interactive HAR as fallback tools rather than the active Ascension Logs roadmap.
 - Added a read-only local workspace inventory and documented the distinction between tracked-repository audit and local-only audit.
-- Updated migration documentation to the tracked `0001-0011` series.
+- Updated migration documentation to the tracked `0001-0012` series, including `source_profile_schema_cycle`.
+- Added a machine repository-integrity audit to normal verification/CI.
 - Recorded lower staged-branch integration conflict debt separately from the active E4→E3 workstream.
 - Preserved fail-closed planner/mechanic/identity semantics; documentation changes do not promote previously blocked evidence.
 
