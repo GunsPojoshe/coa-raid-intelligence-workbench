@@ -111,15 +111,11 @@ Fallback only for an exact undocumented gap after stronger sources are exhausted
 
 ## Local workspace
 
-Remote GitHub tooling cannot inspect ignored/untracked files. Preserve unknown local state.
+The real Windows metadata inventory has already been reviewed for the current audit checkpoint. It showed no modified or missing tracked files and exactly one Git-visible untracked implementation/documentation candidate: a `.patch` savepoint.
 
-If an exact local inventory has not yet been reviewed, ask for exactly one action:
+Do not ask for broad directory listings or for the raw private corpus. If the patch has not yet been reviewed, ask only for that patch file. RawArchive, DuckDB, API-key, Browser Observatory state and HAR inputs remain private/local evidence and do not require bulk upload for repository integrity.
 
-```powershell
-uv run --no-sync python scripts/inventory_local_workspace.py
-```
-
-Then use `data/private/local-workspace-inventory.json` as the private handoff. Do not ask for broad manual directory listings.
+The inventory is now schema v3 and skips `.venv-capture`/`*.egg-info` tooling noise while flagging raw-transport candidates placed under `data/exchange/out/`. Remember that `data/exchange/out/` is local staging, not a blanket publication-safe directory.
 
 ## Branch/integration debt
 
