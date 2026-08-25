@@ -196,6 +196,7 @@ def capture_public_api_stats(
             "capture_mode": "official_public_api_stats",
             "access_scope": "stats:read",
             "query_keys": [key for key, _value in prepared_query],
+            "private_query_values": {key: value for key, value in prepared_query},
             "credential_header_name": "Authorization",
             **active_session.safe_request_metadata(request),
         },

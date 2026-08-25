@@ -24,6 +24,7 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         "0010_source_acquisition_observation",
         "0011_source_dimension_index",
         "0012_profile_schema_cycle",
+        "0013_public_api_statistics",
     ]
     assert apply_migrations(database, root / "migrations") == []
     with duckdb.connect(str(database)) as connection:
@@ -48,6 +49,18 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
             for row in connection.execute(
                 "DESCRIBE source_profile_schema_cycle"
             ).fetchall()
+        }
+        public_statistics_batch_columns = {
+            row[0]
+            for row in connection.execute("DESCRIBE public_api_statistics_batch").fetchall()
+        }
+        public_statistics_spec_columns = {
+            row[0]
+            for row in connection.execute("DESCRIBE public_api_statistics_spec").fetchall()
+        }
+        population_prior_columns = {
+            row[0]
+            for row in connection.execute("DESCRIBE public_api_population_prior_v1").fetchall()
         }
         raid_plan_columns = {
             row[0] for row in connection.execute("DESCRIBE raid_plan").fetchall()
@@ -125,6 +138,10 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         "source_acquisition_observation",
         "source_dimension_index_value",
         "source_profile_schema_cycle",
+        "public_api_statistics_batch",
+        "public_api_statistics_class",
+        "public_api_statistics_spec",
+        "public_api_population_prior_v1",
     } <= tables
     assert {
         "source_code",
@@ -176,6 +193,53 @@ def test_migrations_apply_idempotently(tmp_path: Path) -> None:
         "scan_truncated",
         "metadata_json",
     } <= source_profile_schema_cycle_columns
+    assert {
+        "batch_id",
+        "raw_id",
+        "source_code",
+        "endpoint_code",
+        "normalizer_version",
+        "phase_number",
+        "difficulty",
+        "metric",
+        "bracket",
+        "location",
+        "boss_id",
+        "damage_mode",
+        "role",
+        "class_filter",
+        "spec_filter",
+        "week_number",
+        "realm",
+        "day_number",
+        "class_count",
+        "spec_record_count",
+        "percentile_value_count",
+        "output_fingerprint",
+        "metadata_json",
+    } <= public_statistics_batch_columns
+    assert {
+        "batch_id",
+        "class_name",
+        "spec_name",
+        "avg",
+        "median",
+        "max",
+        "min",
+        "total_parses",
+        "percentiles_json",
+    } <= public_statistics_spec_columns
+    assert {
+        "phase_number",
+        "difficulty",
+        "metric",
+        "damage_mode",
+        "role",
+        "class_name",
+        "spec_name",
+        "total_parses",
+        "local_parse_share",
+    } <= population_prior_columns
     assert "plan_name" in raid_plan_columns
     assert {"player_name", "class_code", "spec_code", "role"} <= raid_slot_columns
     assert {"trust_status", "source_kind"} <= effect_columns
