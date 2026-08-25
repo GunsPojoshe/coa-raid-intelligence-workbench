@@ -39,7 +39,7 @@ now define authority/supersession and source priority.
 
 ### 2. README / project state / handoffs lagged behind E4
 
-Several canonical entry points still described the project primarily as an E3 six-report-family/browser-network effort and did not include the official public API, Companion evidence, local key boundary or the completed real `/statistics` capture.
+Several canonical entry points still described the project primarily as an E3 browser/network effort and did not include the official public API, Companion evidence, local key boundary or the completed real `/statistics` capture.
 
 Resolution: canonical state/handoff documents are rewritten around the new paradigm.
 
@@ -57,7 +57,16 @@ Resolution: real catalog, capture and statistics-shape evidence are now part of 
 
 ### 5. Migration/version summaries were stale
 
-Older README text referred to migrations only through `0008`. The tracked migration series now reaches `0011_source_dimension_index.sql`.
+Older README/docs referred to earlier migration ceilings. Exact CI verification exposed the current tracked sequence as:
+
+```text
+0001_initial.sql
+...
+0011_source_dimension_index.sql
+0012_profile_schema_cycle.sql
+```
+
+The canonical documentation now records `0001-0012`, including `source_profile_schema_cycle`, and the machine integrity audit checks continuity through at least migration 12.
 
 ### 6. Local workspace could not be claimed as remotely inspected
 
@@ -71,6 +80,22 @@ docs/LOCAL_WORKSPACE_AUDIT.md
 ```
 
 provide one read-only local inventory. Until that manifest is supplied, the exact local-only portion of this audit remains intentionally marked pending.
+
+### 7. Integrity rules were prose-only
+
+Documentation drift could recur without failing normal verification.
+
+Resolution:
+
+```text
+scripts/audit_project_integrity.py
+scripts/verify_repo.py
+.github/workflows/verify.yml
+```
+
+The machine audit now checks required canonical files/receipts, documentation authority markers, stale operating markers, migration continuity, tracked private paths and temporary staging files on Ubuntu and Windows verification paths.
+
+The first CI run of this new gate also caught two code-quality issues in the new audit tooling itself: one unused import and Ruff formatting differences. Those were fixed before final exact-head verification.
 
 ## Current coherent architecture
 
@@ -126,9 +151,21 @@ planner scoring: blocked
 universal gameplay mechanic semantics: evidence-specific only
 ```
 
+## Branch integration finding
+
+Live PR checks during the audit showed:
+
+```text
+PR #9 E4 -> E3: mergeable
+PR #7 E3 -> E2: mergeable
+PR #3 E2 -> main: lower-chain integration conflict debt
+```
+
+Therefore a conflict warning in the staged chain must not be “fixed” by blindly selecting an older copy of the canonical docs. Draft integration remains a separate task from this documentation overhaul.
+
 ## Local audit completion condition
 
-After pulling this documentation overhaul, run:
+After the local checkout contains the new inventory script, run:
 
 ```powershell
 uv run --no-sync python scripts/inventory_local_workspace.py
