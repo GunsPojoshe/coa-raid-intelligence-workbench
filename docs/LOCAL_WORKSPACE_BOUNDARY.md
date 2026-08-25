@@ -31,6 +31,7 @@ evidence/real-data/ public-safe real receipts only
 The current `.gitignore` excludes project-local state under:
 
 ```text
+.venv-capture/
 data/raw/
 data/parquet/
 data/warehouse/
@@ -47,7 +48,9 @@ artifacts/
 workbook/working/
 ```
 
-These may contain authoritative observations and are not disposable build clutter.
+These may contain authoritative observations and are not disposable build clutter merely because they are ignored.
+
+`data/exchange/out/` is local exchange/staging, **not** a blanket publication-safe directory. Historical generated outputs may still contain raw/private material. Publication requires an individually reviewed scalar-safe artifact, normally promoted to `evidence/real-data/`.
 
 ## Official API credential
 
@@ -103,11 +106,17 @@ data/private/local-workspace-inventory.json
 data/exchange/out/local-workspace-inventory-summary.json
 ```
 
-The private manifest contains exact local paths/metadata and stays local. The public summary contains counts/booleans only.
+The private manifest contains exact local paths/metadata and stays local. The public summary contains counts/booleans only. Schema v3 skips disposable `.venv-capture`/`*.egg-info` directories and separately flags raw-transport candidates placed under `data/exchange/out/`.
 
 The inventory does not read file bodies or secret values and performs no destructive Git operations.
 
 See `docs/LOCAL_WORKSPACE_AUDIT.md`.
+
+## 2026-08-26 workstation checkpoint
+
+The first real local manifest matched the expected E4 branch/HEAD and showed no modified or missing tracked files. One Git-visible untracked `.patch` savepoint remains the only local implementation/documentation candidate requiring content review.
+
+The private local corpus also contains the expected API-key file, DuckDB/RawArchive state, Browser Observatory state and historical HAR inputs. A historical HAR was detected under ignored `data/exchange/out/`; it is preserved but is not publication-safe merely because it sits in an `out` directory.
 
 ## Remote-tool boundary
 
@@ -115,7 +124,8 @@ GitHub tooling can inspect/update versioned state and CI. It cannot enumerate th
 
 ```text
 tracked repository audit
-local-only workspace audit
+local metadata/workspace audit
+private evidence-content review
 ```
 
-As of the 2026-08-26 documentation overhaul, the tracked audit is complete and the exact local-only audit is pending the generated private manifest.
+As of the 2026-08-26 review, the tracked audit and local metadata inventory are complete. Full workstation integrity remains pending only the content review of the identified Git-visible untracked `.patch`; raw private evidence bodies are intentionally outside bulk repository-integrity inspection.
