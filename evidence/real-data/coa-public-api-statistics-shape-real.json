@@ -1,0 +1,119 @@
+{
+  "privacy": {
+    "boss_ids_included": false,
+    "class_names_included": false,
+    "difficulty_values_included": false,
+    "dynamic_keys_included": false,
+    "location_values_included": false,
+    "metric_scalar_values_included": false,
+    "percentile_scalar_values_included": false,
+    "phase_values_included": false,
+    "query_values_included": false,
+    "raw_paths_included": false,
+    "raw_payloads_included": false,
+    "spec_names_included": false
+  },
+  "public_release_safe": true,
+  "response": {
+    "depth_profile": [
+      {
+        "array_length_max": null,
+        "array_length_min": null,
+        "depth": 0,
+        "kind_counts": {"object": 1},
+        "node_count": 1,
+        "object_child_count_max": 21,
+        "object_child_count_min": 21,
+        "objects_with_documented_metric_fields": 0
+      },
+      {
+        "array_length_max": null,
+        "array_length_min": null,
+        "depth": 1,
+        "kind_counts": {"object": 21},
+        "node_count": 21,
+        "object_child_count_max": 5,
+        "object_child_count_min": 5,
+        "objects_with_documented_metric_fields": 21
+      },
+      {
+        "array_length_max": null,
+        "array_length_min": null,
+        "depth": 2,
+        "kind_counts": {"integer": 23, "number": 61, "object": 21},
+        "node_count": 105,
+        "object_child_count_max": 4,
+        "object_child_count_min": 2,
+        "objects_with_documented_metric_fields": 0
+      },
+      {
+        "array_length_max": null,
+        "array_length_min": null,
+        "depth": 3,
+        "kind_counts": {"object": 62},
+        "node_count": 62,
+        "object_child_count_max": 6,
+        "object_child_count_min": 6,
+        "objects_with_documented_metric_fields": 62
+      },
+      {
+        "array_length_max": null,
+        "array_length_min": null,
+        "depth": 4,
+        "kind_counts": {"integer": 65, "number": 245, "object": 62},
+        "node_count": 372,
+        "object_child_count_max": 13,
+        "object_child_count_min": 13,
+        "objects_with_documented_metric_fields": 0
+      },
+      {
+        "array_length_max": null,
+        "array_length_min": null,
+        "depth": 5,
+        "kind_counts": {"integer": 4, "number": 802},
+        "node_count": 806,
+        "object_child_count_max": null,
+        "object_child_count_min": null,
+        "objects_with_documented_metric_fields": 0
+      }
+    ],
+    "documented_metric_field_occurrence_count": 393,
+    "documented_metric_fields": {
+      "avg": {"kind_counts": {"integer": 1, "number": 61}, "occurrence_count": 62},
+      "max": {"kind_counts": {"integer": 1, "number": 61}, "occurrence_count": 62},
+      "median": {"kind_counts": {"integer": 1, "number": 61}, "occurrence_count": 62},
+      "min": {"kind_counts": {"number": 62}, "occurrence_count": 62},
+      "percentiles": {"kind_counts": {"object": 62}, "occurrence_count": 62},
+      "total_parses": {"kind_counts": {"integer": 83}, "occurrence_count": 83}
+    },
+    "objects_with_documented_metric_fields": 83,
+    "statistics_kind": "object",
+    "statistics_max_observed_depth": 5,
+    "statistics_top_level_entry_count": 21,
+    "top_level_keys": [
+      "board",
+      "boss_id",
+      "bosses",
+      "bracket",
+      "damage_mode",
+      "day_number",
+      "difficulty",
+      "location",
+      "metric",
+      "phase",
+      "phase_name",
+      "statistics",
+      "success",
+      "week_number"
+    ],
+    "top_level_kind": "object"
+  },
+  "review_version": "public-api-statistics-shape-v1",
+  "verification": {
+    "documented_metric_field_names_used_only_as_static_contract": true,
+    "dynamic_class_spec_keys_interpreted": false,
+    "planner_scoring_allowed": false,
+    "real_statistics_payload_shape_reviewed": true,
+    "statistics_normalization_ready": true
+  }
+}
