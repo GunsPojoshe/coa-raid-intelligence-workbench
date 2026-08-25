@@ -117,7 +117,7 @@ def _check_current_paradigm_markers() -> dict[str, Any]:
         "docs/PROJECT_STATE.md": (
             "statistics normalization ready: true",
             "historical difficulty equivalence",
-            "local-only exact file audit",
+            "local metadata/file-state inventory",
         ),
         "docs/PROJECT_MASTER_CONTEXT.md": (
             "forward-only migrations 0001-0012",
