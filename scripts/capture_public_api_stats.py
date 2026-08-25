@@ -2,9 +2,13 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 from pathlib import Path
 
+from coa_workbench.collector.public_api_credentials import (
+    DEFAULT_PUBLIC_API_KEY_ENV,
+    DEFAULT_PUBLIC_API_KEY_FILE,
+    load_public_api_key,
+)
 from coa_workbench.collector.public_api_stats_capture import (
     capture_public_api_stats,
     public_api_stats_capture_to_dict,
@@ -48,8 +52,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Capture one official self-serve stats:read API endpoint into RawArchive. "
-            "The API key is read from a local environment variable and is never accepted "
-            "as a command-line argument or query parameter."
+            "The API key is loaded from an ignored local file or environment variable and is "
+            "never accepted as a command-line value or query parameter."
         )
     )
     parser.add_argument("--endpoint", choices=tuple(_ENDPOINT_CODES), required=True)
@@ -66,9 +70,18 @@ def main() -> int:
     parser.add_argument("--week-number", type=int)
     parser.add_argument("--realm")
     parser.add_argument(
+        "--api-key-file",
+        type=Path,
+        default=DEFAULT_PUBLIC_API_KEY_FILE,
+        help=(
+            "Ignored local file containing the API key. The file value is preferred over the "
+            "environment fallback."
+        ),
+    )
+    parser.add_argument(
         "--api-key-env",
-        default="COA_LOGS_API_KEY",
-        help="Environment variable containing the API key. The value is never printed.",
+        default=DEFAULT_PUBLIC_API_KEY_ENV,
+        help="Fallback environment variable containing the API key. The value is never printed.",
     )
     parser.add_argument(
         "--registry",
@@ -91,13 +104,10 @@ def main() -> int:
     parser.add_argument("--retry-count", type=int, choices=(0, 1), default=0)
     args = parser.parse_args()
 
-    api_key = os.environ.get(args.api_key_env, "")
-    if not api_key.strip():
-        raise SystemExit(
-            f"Missing API key environment variable {args.api_key_env}. "
-            "Create a self-serve key in Ascension Logs Profile Settings and set it only in the "
-            "current shell environment."
-        )
+    try:
+        api_key = load_public_api_key(key_file=args.api_key_file, env_name=args.api_key_env)
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
 
     registry = load_source_registry(args.registry)
     archive = RawArchive(
