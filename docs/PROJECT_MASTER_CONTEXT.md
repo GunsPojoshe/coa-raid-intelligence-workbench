@@ -109,7 +109,7 @@ privacy/public-release audit
 Ubuntu + Windows CI
 ```
 
-Migration `0013_public_api_statistics` adds normalized aggregate batch/class/spec persistence and the local population-prior read view.
+Migration `0013_public_api_statistics` adds normalized aggregate batch/class/spec persistence and the local `public_api_population_prior_v1` read view.
 
 ## 8. Important real E3 milestones retained
 
