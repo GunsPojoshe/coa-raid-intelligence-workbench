@@ -120,16 +120,10 @@ def _iter_workspace_files(
 def _private_manifest(repo_root: Path) -> dict[str, Any]:
     tracked = _git_path_set(repo_root, "ls-files", "-z")
     modified_tracked = _git_path_set(repo_root, "diff", "--name-only", "-z")
-    modified_tracked.update(
-        _git_path_set(repo_root, "diff", "--cached", "--name-only", "-z")
-    )
-    git_untracked = _git_path_set(
-        repo_root, "ls-files", "--others", "--exclude-standard", "-z"
-    )
+    modified_tracked.update(_git_path_set(repo_root, "diff", "--cached", "--name-only", "-z"))
+    git_untracked = _git_path_set(repo_root, "ls-files", "--others", "--exclude-standard", "-z")
     missing_tracked = sorted(
-        relative_path
-        for relative_path in tracked
-        if not (repo_root / relative_path).exists()
+        relative_path for relative_path in tracked if not (repo_root / relative_path).exists()
     )
 
     rows, skipped_dirs = _iter_workspace_files(
