@@ -28,6 +28,14 @@ events:read
   encounter events/actors/report surfaces
 ```
 
+Published tiers in the reviewed contract:
+
+```text
+free:      30 requests/minute,   5,000/day, stats:read
+partner:  120 requests/minute,  50,000/day, stats:read
+research:  60 requests/minute,  10,000/day, stats:read + events:read
+```
+
 Published key headers:
 
 ```text
@@ -100,12 +108,39 @@ weekNumber
 realm
 ```
 
+Documented difficulty values:
+
+```text
+normal
+heroic
+mythic
+ascended
+all
+```
+
 Documented metrics:
 
 ```text
 avg_dps
 avg_hps
 avg_dtps
+```
+
+Documented damage attribution modes:
+
+```text
+standard
+boss-only
+trash
+```
+
+Documented role values:
+
+```text
+tank
+dps
+tanks-and-dps
+support
 ```
 
 Documented metric-object fields:
@@ -140,6 +175,8 @@ Public-safe receipt:
 ```text
 evidence/real-data/coa-public-api-catalog-real.json
 ```
+
+The project selects the current phase only when the observed payload has one unambiguous candidate satisfying the reviewed current-phase rule. The scalar phase value remains private.
 
 ## Real current `/statistics` evidence
 
@@ -185,13 +222,26 @@ evidence/real-data/coa-public-api-statistics-shape-real.json
 The experimental schema documents useful units/types, including:
 
 ```text
-Event.id: 64-bit id serialized as string; opaque
-Event.timestamp_ms: milliseconds from encounter combat start
-Event.amount: 64-bit value serialized as string; event-type dependent
-Event.spell_id: -1 documented melee sentinel
-is_glancing / is_crushing: nullable
-EncounterSummary.duration_seconds: explicitly seconds
+Event.id
+  64-bit id serialized as string; treat as opaque
+
+Event.timestamp_ms
+  integer milliseconds from encounter combat start, not wall clock
+
+Event.amount
+  64-bit value serialized as string; event-type dependent
+
+Event.spell_id
+  -1 is the documented melee sentinel
+
+is_glancing / is_crushing
+  nullable; null is not evidence of mechanic absence
+
+EncounterSummary.duration_seconds
+  explicitly named in seconds
 ```
+
+The event endpoint also documents actor source/target filters, spell filters, start/end millisecond offsets and keyset pagination. Actor IDs are resolved through the separate `/actors` dictionary.
 
 These are strong contract semantics but do not make one observed event a universal gameplay mechanic.
 
@@ -226,6 +276,17 @@ scripts/capture_public_api_stats.py
 scripts/capture_current_public_api_statistics.py
 scripts/review_public_api_catalog.py
 scripts/review_public_api_statistics.py
+```
+
+Current real capture path is bounded and credential-safe:
+
+```text
+private key file/environment
+-> reviewed endpoint registry
+-> HTTPS request with header credential
+-> immutable RawArchive payload
+-> scalar-safe capture receipt
+-> scalar-safe structural review
 ```
 
 ## Current next gate
