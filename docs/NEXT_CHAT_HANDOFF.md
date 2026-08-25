@@ -45,7 +45,7 @@ statistics shape reviewed
 normalization_ready = true
 ```
 
-Public receipt added:
+Public receipt:
 
 ```text
 evidence/real-data/coa-public-api-statistics-shape-real.json
@@ -74,21 +74,28 @@ site Tier List algorithm: undocumented
 planner scoring: blocked
 ```
 
-## Local audit
+## Local audit — completed
 
-The real Windows workspace metadata manifest has been reviewed. At that checkpoint:
+The real Windows workspace metadata manifest and its sole Git-visible untracked implementation candidate were reviewed.
+
+Checkpoint:
 
 ```text
 modified tracked files: 0
 missing tracked files: 0
-Git-visible untracked implementation/documentation candidates: 1
+Git-visible untracked files: 1
+local-only exact file audit: complete/classified
 ```
 
-The only remaining local-integrity item is content review of the identified `.patch` savepoint. Do not request or bulk-upload RawArchive, DuckDB, API-key, Browser Observatory profile/session state or HAR inputs for repository integrity.
+The sole candidate was a historical helper-analysis patch. It is valuable but incomplete and must not be applied as-is: three modified modules import a missing shared `coa_workbench.collector.guild_progression_js_lexical` module that is absent from both the patch and tracked Git history.
 
-The inventory is now schema v3: `.venv-capture` and `*.egg-info` tooling noise are skipped, and raw-transport candidates under local `data/exchange/out/` are flagged. `data/exchange/out/` is local staging, not automatically publication-safe.
+Preserve the patch privately. If helper discovery becomes active again, reconstruct/review the lexical scanner as a separate task and port the useful behavior/tests deliberately. Do not restart that lane before the current official-API statistics gate merely because the patch exists.
 
-Do not delete unknown local files.
+Do not request the same local inventory/patch again on chat restart. Re-inventory only after material workspace changes or a new unknown modified/untracked implementation candidate appears.
+
+Do not request or bulk-upload RawArchive, DuckDB, API-key, Browser Observatory profile/session state or HAR inputs for repository integrity.
+
+Inventory schema v3 skips `.venv-capture` and `*.egg-info` tooling noise and flags raw-transport candidates under local `data/exchange/out/`. `data/exchange/out/` is local staging, not automatically publication-safe.
 
 ## Branch chain note
 
@@ -96,4 +103,4 @@ Do not delete unknown local files.
 main <- e2 (#3) <- e3 (#7) <- e4 (#9)
 ```
 
-At audit time #9 and #7 are mergeable; lower PR #3 has conflict/integration debt. Do not resolve by blindly accepting an old documentation side.
+At audit time #9 and #7 were mergeable; lower PR #3 had conflict/integration debt. Do not resolve by blindly accepting an old documentation side.

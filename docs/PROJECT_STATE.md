@@ -31,7 +31,7 @@ PR #7 E3 -> E2: mergeable
 PR #3 E2 -> main: integration conflict debt
 ```
 
-The screenshot-reported conflict therefore belongs to the lower staged integration chain, not to the active E4→E3 workstream. Do not merge Draft PRs merely to clear UI warnings.
+The lower staged integration debt is separate from the active E4 workstream. Do not merge Draft PRs merely to clear UI warnings and do not blindly choose an older canonical-document side during conflict resolution.
 
 Always re-check live state; stored SHAs/run numbers are checkpoints only.
 
@@ -195,9 +195,9 @@ Do not add stealth/fingerprint/challenge-bypass behavior.
 
 ## Local workspace integrity
 
-The real Windows metadata inventory has now been reviewed for the current E4 checkout.
+The real Windows metadata inventory and the only Git-visible untracked implementation candidate have both been reviewed.
 
-Observed local Git state at the audit checkpoint:
+Observed local Git state at the inventory checkpoint:
 
 ```text
 modified tracked files: 0
@@ -205,16 +205,45 @@ missing tracked files: 0
 Git-visible untracked files: 1
 ```
 
-The only Git-visible untracked implementation/documentation candidate is a `.patch` savepoint. Its content review is still pending. Therefore current integrity status is:
+The single untracked candidate was a historical E3 helper-analysis patch. Content review established:
+
+```text
+patch lines: 2668
+tracked files changed by patch: 10
+insertions/deletions reported by git apply --stat: +690 / -349
+obvious added credentials/URLs/secrets: none found
+baseline: directly matches the current tracked helper-analysis files
+status: valuable incomplete WIP; preserve privately; do not apply as-is
+```
+
+The patch improves structural JavaScript helper analysis: it introduces fail-closed multi-candidate definition selection, distinguishes code references from literal/comment text, and adds tests for ambiguous definitions and template-literal behavior. However, three modified modules import a new shared module:
+
+```text
+coa_workbench.collector.guild_progression_js_lexical
+```
+
+with expected API:
+
+```text
+StructuralIndex
+exact_symbol_positions
+in_excluded_intervals
+scan_javascript_structure
+```
+
+That module is absent from the patch and absent from tracked Git history. Therefore the patch is not self-contained and cannot be safely replayed. Reconstructing the missing lexical scanner would be a separate reviewed engineering task if the guild-progression helper-discovery lane becomes active again. Do not fabricate it merely to make the historical patch apply.
+
+Current integrity status:
 
 ```text
 tracked repository audit: complete
 local metadata/file-state inventory: complete
-untracked patch content review: pending
-raw private evidence bulk-content review: intentionally not required
+local-only exact file audit: complete/classified
+historical helper patch: preserved private, intentionally not integrated
+raw private evidence bulk-content review: intentionally outside repository-integrity scope
 ```
 
-The private corpus contains expected RawArchive/DuckDB/API-key/Browser Observatory/HAR families. `data/exchange/out/` is local ignored staging, not automatically publication-safe; the audit detected one historical raw HAR there and the inventory now flags raw-transport candidates in that location.
+The private corpus contains expected RawArchive/DuckDB/API-key/Browser Observatory/HAR families. `data/exchange/out/` is local ignored staging, not automatically publication-safe; the inventory flags raw-transport candidates in that location.
 
 Schema v3 of `scripts/inventory_local_workspace.py` skips generated `.venv-capture` and `*.egg-info` state so they are not misclassified as unknown source files.
 
@@ -236,5 +265,6 @@ historical difficulty equivalence: insufficient evidence
 cross-report identity: unproven
 fight-duration comparison semantics: unproven
 site Tier List algorithm: undocumented
+guild-progression helper historical lexical refactor: incomplete private WIP, not integrated
 planner scoring: blocked
 ```

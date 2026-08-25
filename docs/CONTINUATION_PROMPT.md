@@ -80,7 +80,7 @@ Never request/paste the key unless a local execution genuinely cannot proceed wi
 
 ## Exact next development gate
 
-Do **not** start with HAR, Playwright, a new difficulty heuristic or `events:read`.
+Do **not** start with HAR, Playwright, a new difficulty heuristic, `events:read` or the historical helper patch.
 
 Implement:
 
@@ -109,13 +109,28 @@ Pinned Companion source remains a first-class client-state evidence provider. Us
 
 Fallback only for an exact undocumented gap after stronger sources are exhausted. No anti-bot evasion.
 
-## Local workspace
+## Local workspace audit — completed checkpoint
 
-The real Windows metadata inventory has already been reviewed for the current audit checkpoint. It showed no modified or missing tracked files and exactly one Git-visible untracked implementation/documentation candidate: a `.patch` savepoint.
+The real Windows metadata inventory and its sole Git-visible untracked implementation candidate have already been reviewed for the 2026-08-26 checkpoint.
 
-Do not ask for broad directory listings or for the raw private corpus. If the patch has not yet been reviewed, ask only for that patch file. RawArchive, DuckDB, API-key, Browser Observatory state and HAR inputs remain private/local evidence and do not require bulk upload for repository integrity.
+Checkpoint state:
 
-The inventory is now schema v3 and skips `.venv-capture`/`*.egg-info` tooling noise while flagging raw-transport candidates placed under `data/exchange/out/`. Remember that `data/exchange/out/` is local staging, not a blanket publication-safe directory.
+```text
+modified tracked files: 0
+missing tracked files: 0
+Git-visible untracked files: 1
+local-only exact file audit: complete/classified
+```
+
+The single candidate was a historical E3 helper-analysis patch. It is valuable but incomplete: it modifies 10 current-lineage source/test files and introduces stronger lexical/structural helper analysis, but depends on an absent shared module `coa_workbench.collector.guild_progression_js_lexical`. That module is neither in the patch nor tracked Git history. The patch must be preserved privately and **not applied as-is**.
+
+If the guild-progression helper lane is resumed later, treat reconstruction of the shared JavaScript lexical scanner as a new reviewed task and port the useful behavior/tests deliberately. Do not recreate missing code from assumptions merely to make the patch apply.
+
+Do **not** ask the operator to re-upload the same workspace inventory or historical patch just because a chat restarted. Re-run the inventory only after material local changes or if a new unknown modified/untracked implementation candidate appears.
+
+Do not request broad directory listings or the raw private corpus. RawArchive, DuckDB, API-key, Browser Observatory state and HAR inputs remain private/local evidence and do not require bulk upload for repository integrity.
+
+Inventory schema v3 skips `.venv-capture`/`*.egg-info` tooling noise while flagging raw-transport candidates placed under `data/exchange/out/`. `data/exchange/out/` is local staging, not a blanket publication-safe directory.
 
 ## Branch/integration debt
 

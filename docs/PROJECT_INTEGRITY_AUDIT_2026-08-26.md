@@ -1,6 +1,6 @@
 # Project integrity audit — 2026-08-26
 
-Status: **tracked-repository audit complete; local metadata inventory complete; one Git-visible untracked patch pending content review**.
+Status: **tracked repository and local-workspace integrity audit complete for the current workstation checkpoint**.
 
 ## Scope completed remotely
 
@@ -70,9 +70,9 @@ The canonical documentation now records `0001-0012`, including `source_profile_s
 
 ### 6. Local workspace required a real workstation inventory
 
-Ignored/untracked files are legitimate project state and are invisible to GitHub-only tooling. The new read-only inventory was run on the actual Windows checkout and the private schema-v2 manifest was reviewed.
+Ignored/untracked files are legitimate project state and are invisible to GitHub-only tooling. The read-only inventory was run on the actual Windows checkout and its private manifest was reviewed.
 
-Observed workstation state:
+Observed workstation state at the checkpoint:
 
 ```text
 modified tracked files: 0
@@ -80,15 +80,56 @@ missing tracked files: 0
 Git-visible untracked files: 1
 ```
 
-The sole Git-visible untracked candidate is a `.patch` savepoint. Its contents have not yet been reviewed, so it remains the only local implementation/documentation blocker to a fully complete workstation-integrity statement.
+The large initial nontracked count was dominated by generated/private state, including a dedicated `.venv-capture` environment and ignored build metadata. Inventory schema v3 skips this tooling noise and flags raw-transport candidates placed under local `data/exchange/out/`.
 
-The schema-v2 `untracked_other` count was inflated by generated tooling state: a dedicated `.venv-capture` environment plus ignored `*.egg-info` metadata. The inventory has been refined to schema v3 so those directories are skipped instead of appearing as unknown project files.
+The private corpus contains expected local project families: RawArchive data, DuckDB, API credential file, Browser Observatory profile/session state, HAR inputs and generated exchange outputs. Their bodies were intentionally not bulk-read merely to prove workspace integrity.
 
-The private corpus contains expected local project families: RawArchive data, DuckDB, API credential file, Browser Observatory profile/session state, HAR inputs and generated exchange outputs. Their bodies were intentionally not bulk-read by the metadata inventory.
+One historical raw `.har` was detected under ignored `data/exchange/out/`. This does not make it public: `data/exchange/out/` is local staging, not a publication boundary.
 
-One historical raw `.har` was also detected under ignored `data/exchange/out/`. This does not mean the file is public: `data/exchange/out/` is local staging and is not a blanket publication-safe boundary. Schema v3 now flags raw-transport candidates in that location explicitly.
+### 7. The one Git-visible untracked patch was genuine but incomplete WIP
 
-### 7. Integrity rules were prose-only
+The sole untracked implementation candidate was reviewed directly after the metadata inventory.
+
+Structural facts:
+
+```text
+patch lines: 2668
+existing tracked files modified: 10
+git apply --stat: +690 / -349
+baseline blob IDs: match the current tracked helper-analysis lineage
+obvious added credential/URL markers: none found
+```
+
+The patch contains valuable helper-analysis improvements: fail-closed multi-candidate definition selection, stronger structural selection evidence, executable-code versus literal/comment reference separation, template-interpolation handling and new ambiguity/lexical tests.
+
+However, it makes three modules import a new shared scanner:
+
+```text
+coa_workbench.collector.guild_progression_js_lexical
+```
+
+Expected API:
+
+```text
+StructuralIndex
+exact_symbol_positions
+in_excluded_intervals
+scan_javascript_structure
+```
+
+The shared module is absent from the patch and absent from tracked Git history. Therefore the savepoint is not self-contained and cannot be safely applied. The correct classification is:
+
+```text
+valuable incomplete historical WIP
+preserve privately
+not integrated into E4
+not a blocker for the current official-API workstream
+reconstruct only as a separate reviewed helper-analysis task if that lane resumes
+```
+
+Blindly recreating the missing scanner merely to satisfy imports would be contrary to the project's fail-closed evidence discipline.
+
+### 8. Integrity rules were prose-only
 
 Documentation drift could recur without failing normal verification.
 
@@ -101,8 +142,6 @@ scripts/verify_repo.py
 ```
 
 The machine audit now checks required canonical files/receipts, documentation authority markers, stale operating markers, migration continuity, tracked private paths and temporary staging files on Ubuntu and Windows verification paths.
-
-The first CI run of this new gate also caught code-quality issues in the new audit tooling itself; those were corrected before the exact-head green verification checkpoint.
 
 ## Current coherent architecture
 
@@ -127,6 +166,8 @@ report corpus  -> private report-specific analytics
 Companion      -> client-state/source lineage
 Browser/HAR    -> narrow fallback for undocumented gaps
 ```
+
+Historical helper-analysis lexical WIP is preserved outside this active chain and does not redefine current source priority.
 
 ## Proven real API state at audit time
 
@@ -170,8 +211,16 @@ PR #3 E2 -> main: lower-chain integration conflict debt
 
 Therefore a conflict warning in the staged chain must not be “fixed” by blindly selecting an older copy of the canonical docs. Draft integration remains a separate task from this documentation overhaul.
 
-## Local audit completion condition
+## Completion condition
 
-The metadata inventory condition has been satisfied for the current workstation. Full local project-integrity review now requires only the content review of the single Git-visible untracked `.patch` savepoint.
+The 2026-08-26 repository/workspace integrity audit is complete for the captured workstation checkpoint:
 
-Do not upload or publish the RawArchive, DuckDB, API-key file, Browser Observatory profile or HAR corpus merely to complete this audit. Their metadata presence/classification is sufficient for repository/workspace integrity; their contents remain private evidence unless a separate analysis specifically requires them.
+```text
+tracked repository: audited
+modified/missing tracked state: audited
+Git-visible untracked implementation candidates: audited/classified
+known ignored/private families: metadata-classified
+raw private evidence bodies: intentionally outside bulk integrity inspection
+```
+
+No additional RawArchive, DuckDB, API-key, Browser Observatory or HAR upload is required to close this audit. A new local inventory is warranted only after material workspace changes or when a new unknown modified/untracked implementation candidate appears.

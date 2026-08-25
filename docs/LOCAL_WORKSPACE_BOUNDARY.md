@@ -112,15 +112,29 @@ The inventory does not read file bodies or secret values and performs no destruc
 
 See `docs/LOCAL_WORKSPACE_AUDIT.md`.
 
-## 2026-08-26 workstation checkpoint
+## 2026-08-26 workstation checkpoint — classified
 
-The first real local manifest matched the expected E4 branch/HEAD and showed no modified or missing tracked files. One Git-visible untracked `.patch` savepoint remains the only local implementation/documentation candidate requiring content review.
+The real local manifest matched the expected E4 checkout and showed no modified or missing tracked files. Its sole Git-visible untracked implementation candidate was a historical helper-analysis patch.
+
+Direct patch review classified it as valuable but incomplete WIP:
+
+```text
+10 current-lineage source/test files modified
+2668 patch lines
++690 / -349 by git apply --stat
+no obvious added credential/URL markers found
+missing dependency: coa_workbench.collector.guild_progression_js_lexical
+```
+
+The missing lexical module is not present in the patch and no tracked Git history for it was found. The patch is therefore not self-contained and must not be applied as-is. Preserve it privately as historical work. If that helper-discovery lane resumes, rebuild/review the lexical scanner as an explicit new task and port the useful behavior/tests deliberately.
+
+A classified historical patch is not a reason to weaken the normal unknown-file rule. New untracked patches/helpers must still be inspected before being moved, ignored or deleted.
 
 The private local corpus also contains the expected API-key file, DuckDB/RawArchive state, Browser Observatory state and historical HAR inputs. A historical HAR was detected under ignored `data/exchange/out/`; it is preserved but is not publication-safe merely because it sits in an `out` directory.
 
 ## Remote-tool boundary
 
-GitHub tooling can inspect/update versioned state and CI. It cannot enumerate the operator's ignored/untracked filesystem. Therefore a full integrity statement must distinguish:
+GitHub tooling can inspect/update versioned state and CI. It cannot enumerate the operator's ignored/untracked filesystem. Therefore a full integrity statement distinguishes:
 
 ```text
 tracked repository audit
@@ -128,4 +142,6 @@ local metadata/workspace audit
 private evidence-content review
 ```
 
-As of the 2026-08-26 review, the tracked audit and local metadata inventory are complete. Full workstation integrity remains pending only the content review of the identified Git-visible untracked `.patch`; raw private evidence bodies are intentionally outside bulk repository-integrity inspection.
+For the 2026-08-26 workstation checkpoint, the tracked audit, local metadata inventory and Git-visible untracked implementation-candidate review are complete. Raw private evidence bodies remain intentionally outside bulk repository-integrity inspection.
+
+Do not request the same local manifest or classified historical patch again solely because a new chat starts. Re-run local inventory only after material workspace changes or a newly unknown modified/untracked implementation candidate appears.
