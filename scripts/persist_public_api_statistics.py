@@ -40,9 +40,7 @@ def main() -> int:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path(
-            "data/exchange/out/coa-public-api-statistics-persistence-review.json"
-        ),
+        default=Path("data/exchange/out/coa-public-api-statistics-persistence-review.json"),
     )
     args = parser.parse_args()
 
