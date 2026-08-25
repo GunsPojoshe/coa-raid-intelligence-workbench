@@ -148,7 +148,7 @@ src/coa_workbench/storage/      DuckDB persistence/read models
 src/coa_workbench/web/          localhost API/UI
 scripts/                        durable project/operator commands
 config/                         reviewed source/mapping configuration
-migrations/                     forward-only DuckDB migrations (currently 0001-0011)
+migrations/                     forward-only DuckDB migrations (currently 0001-0012)
 tests/                          deterministic coverage
 evidence/real-data/             scalar-safe real receipts only
 docs/                           current + historical documentation
