@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 import re
 import subprocess
-import sys
 from pathlib import Path
 from typing import Any
 
@@ -153,7 +152,7 @@ def _check_migrations() -> dict[str, Any]:
         rows.append((int(match.group(1)), path.name))
     numbers = [number for number, _ in rows]
     expected = list(range(1, max(numbers, default=0) + 1))
-    passed = not invalid and numbers == expected and bool(numbers) and numbers[-1] >= 11
+    passed = not invalid and numbers == expected and bool(numbers) and numbers[-1] >= 12
     return {
         "name": "migration_sequence",
         "passed": passed,
