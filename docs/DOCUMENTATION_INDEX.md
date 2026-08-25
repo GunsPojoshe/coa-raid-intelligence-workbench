@@ -54,6 +54,13 @@ docs/CONTINUATION_PROMPT.md
 - `docs/CI_OPERATIONS.md` — verification and exact-head CI policy.
 - `docs/WINDOWS_DEVELOPMENT_ENVIRONMENT.md` — supported operator workflow.
 
+## Integrity / audit documents
+
+- `docs/PROJECT_INTEGRITY_AUDIT_2026-08-26.md` — findings from the tracked-tree documentation/project audit and the explicit local-only limitation.
+- `docs/DOCS_OVERHAUL_PLAN.md` — scope record for the 2026-08-26 documentation overhaul.
+- `scripts/audit_project_integrity.py` — machine-enforced canonical-document/migration/private-path integrity gate.
+- `scripts/inventory_local_workspace.py` — read-only metadata inventory for ignored/untracked workstation state.
+
 ## Stable product/domain documents
 
 These remain authoritative for product intent/domain boundaries unless explicitly superseded by a later canonical document:
