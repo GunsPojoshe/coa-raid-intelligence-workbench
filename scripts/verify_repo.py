@@ -58,6 +58,11 @@ def main() -> int:
             [python, "-m", "ruff", "format", "--diff", "."],
             None,
         ),
+        (
+            "Project integrity audit",
+            [python, "scripts/audit_project_integrity.py"],
+            clean_env,
+        ),
         ("Full pytest", [python, "-m", "pytest"], clean_env),
         (
             "Doctor",
