@@ -137,11 +137,11 @@ def test_archived_statistics_integrates_with_source_health_without_public_scalar
     assert health["verification"]["source_observatory_integrated"] is True
     assert health["verification"]["attention_required"] is False
     assert health["verification"]["planner_scoring_allowed"] is False
+    assert health["privacy"]["request_fingerprints_included"] is False
+    assert health["privacy"]["schema_fingerprints_included"] is False
 
     rendered = json.dumps(health, ensure_ascii=False, sort_keys=True)
     assert "PrivatePhase" not in rendered
     assert "PrivateClass" not in rendered
     assert "PrivateSpec" not in rendered
     assert '"phase": "12"' not in rendered
-    assert "request_fingerprint" not in rendered
-    assert "schema_fingerprint" not in rendered
