@@ -25,6 +25,17 @@ SENSITIVE_QUERY_KEYS = {
     "token",
 }
 
+_CONTENT_MANIFEST_STABLE_FIELDS = (
+    "source_code",
+    "endpoint_code",
+    "payload_hash",
+    "payload_path",
+    "compression",
+    "bytes_uncompressed",
+    "content_type",
+    "schema_fingerprint",
+)
+
 
 def _utc(value: datetime | None = None) -> datetime:
     current = value or datetime.now(timezone.utc)
@@ -93,6 +104,28 @@ def schema_fingerprint(payload: bytes, content_type: str | None) -> str | None:
 
     encoded = json.dumps(shape(value), ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+
+
+def _content_manifest_compatible(existing: dict[str, Any], expected: dict[str, Any]) -> bool:
+    """Compare content identity while tolerating legacy request-specific manifest fields.
+
+    Schema-v1 content manifests incorrectly included ``raw_id`` and ``request_key`` even though the
+    gzip payload is content-addressed. Those legacy fields are intentionally ignored here so one
+    immutable payload may be referenced by multiple request observations without rewriting history.
+    """
+    return all(existing.get(field) == expected.get(field) for field in _CONTENT_MANIFEST_STABLE_FIELDS)
+
+
+def _observation_manifest_compatible(existing: dict[str, Any], expected: dict[str, Any]) -> bool:
+    if existing == expected:
+        return True
+    # Existing local observations predate request_key-in-observation. Accept an exact legacy
+    # observation rather than rewriting it; readers fall back to the legacy content manifest.
+    if "request_key" not in existing:
+        legacy_expected = dict(expected)
+        legacy_expected.pop("request_key", None)
+        return existing == legacy_expected
+    return False
 
 
 @dataclass(frozen=True, slots=True)
@@ -180,12 +213,12 @@ class RawArchive:
                 with gzip.GzipFile(fileobj=stream, mode="wb", mtime=0) as compressed:
                     compressed.write(payload)
         fingerprint = schema_fingerprint(payload, content_type)
+        # Content manifests describe the content-addressed payload only. Request identity belongs to
+        # the observation manifest because identical bytes may legitimately serve different scopes.
         content_manifest = {
-            "schema_version": 1,
-            "raw_id": raw_id,
+            "schema_version": 2,
             "source_code": source_code,
             "endpoint_code": endpoint_code,
-            "request_key": request_key,
             "payload_hash": payload_hash,
             "payload_path": payload_path.relative_to(self.root).as_posix(),
             "compression": "gzip",
@@ -195,7 +228,7 @@ class RawArchive:
         }
         if content_manifest_path.exists():
             existing = json.loads(content_manifest_path.read_text(encoding="utf-8"))
-            if existing != content_manifest:
+            if not _content_manifest_compatible(existing, content_manifest):
                 raise RuntimeError(f"raw content manifest collision: {content_manifest_path}")
         else:
             content_manifest_path.write_text(
@@ -206,6 +239,7 @@ class RawArchive:
             "schema_version": 1,
             "observation_id": observation_id,
             "raw_id": raw_id,
+            "request_key": request_key,
             "fetched_at": observed_at_text,
             "http_status": http_status,
             "request_url": sanitized_url,
@@ -214,7 +248,7 @@ class RawArchive:
         }
         if observation_path.exists():
             existing = json.loads(observation_path.read_text(encoding="utf-8"))
-            if existing != observation_manifest:
+            if not _observation_manifest_compatible(existing, observation_manifest):
                 raise RuntimeError(f"raw observation manifest collision: {observation_path}")
         else:
             observation_path.write_text(
