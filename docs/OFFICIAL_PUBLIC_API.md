@@ -238,7 +238,28 @@ Receipt:
 evidence/real-data/coa-public-api-statistics-persistence-real.json
 ```
 
-No receipt publishes dynamic class/spec names, request values, difficulty/phase values, metric values, raw IDs, fingerprints or credentials.
+The later local no-network replay proved the source-health/profile dependency layer:
+
+```text
+archived capture replayed: true
+Source Observatory integrated: true
+source_endpoint_profile dependency registered: true
+legacy unscoped source_endpoint dependency active: false
+profile dependency count: 1
+eligible old events after registration: 0
+created reanalysis requests: 0
+pending reanalysis requests: 0
+actionable open source changes: 0
+health attention required: false
+```
+
+Receipt:
+
+```text
+evidence/real-data/coa-public-api-statistics-profile-reanalysis-real.json
+```
+
+No receipt publishes dynamic class/spec names, request values, difficulty/phase values, metric values, raw IDs, profile fingerprints or credentials.
 
 ## Request-scope provenance rule
 
@@ -249,7 +270,7 @@ New captures store prepared query values only in private RawArchive observation 
 ```text
 private RawArchive: exact query values allowed/required for reproducibility
 public capture receipt: values excluded
-public persistence/health receipts: values excluded
+public persistence/health/coverage receipts: values excluded
 ```
 
 The API key remains excluded from RawArchive metadata entirely.
@@ -292,13 +313,14 @@ This is a local descriptive aggregate only.
 
 ## Source Observatory / Source & Analysis Health
 
-The aggregate artifact now has a dedicated adapter:
+The aggregate artifact uses:
 
 ```text
 src/coa_workbench/collector/public_api_source_health.py
+src/coa_workbench/collector/source_profile_reanalysis.py
 ```
 
-It replays the latest already archived statistics response into the generic observability layer without network I/O:
+Archived statistics responses can be replayed into the generic observability layer without network I/O:
 
 ```text
 private archived request provenance
@@ -307,24 +329,76 @@ private archived request provenance
 -> source_schema_snapshot
 -> source_acquisition_observation
 -> source_change_event when applicable
+-> profile-scoped artifact dependency
 -> Source & Analysis Health
 ```
 
 All documented `/statistics` request-shaping query dimensions are configured as private `schema_profile_keys`. Different phase/difficulty/metric/role/filter scopes therefore have separate schema baselines.
 
-Persistence registers two artifact dependency types:
+Persistence registers:
 
 ```text
 raw_object
   exact payload provenance
 
-source_endpoint = public_api_statistics
-  logical source-change/reanalysis dependency
+source_endpoint_profile
+  private reviewed query-profile dependency for source-change reanalysis
 ```
 
-The first Source Observatory registration may emit informational `endpoint_added`. Dedicated aggregate health distinguishes informational baseline events from actionable warning/error changes.
+The legacy broad aggregate `source_endpoint` dependency is deactivated when an existing batch is replayed through current persistence.
 
-The next real proof requires only a local replay of the already archived successful capture through `scripts/persist_public_api_statistics.py`; no API request is needed.
+Profile-local changes match only dependencies with the same private `observation_profile_key`. `request_contract_changed` remains endpoint-global and intentionally fans out to every active profile dependency. Events older than dependency registration cannot back-trigger the new artifact.
+
+The first Source Observatory registration may leave an informational `endpoint_added`. Dedicated aggregate health distinguishes informational baseline events from actionable warning/error changes.
+
+## Bounded population coverage v1
+
+Implementation:
+
+```text
+src/coa_workbench/analytics/public_api_population_coverage.py
+scripts/capture_public_api_population_coverage.py
+```
+
+V1 is deliberately not a bulk crawl. It defines a small current-phase set:
+
+```text
+required slices: 4
+metric families represented: 3
+role-qualified slices: 3
+role-omitted slices: 1
+broader population dimensions: held stable
+boss/location/week/realm/class/spec expansion: not included
+```
+
+Operator properties:
+
+```text
+select current phase privately from archived /phases
+review DuckDB before network access
+reuse already persisted matching slices
+capture only missing slices
+stop on the first incomplete response
+archive before interpretation
+observe + normalize + persist each successful slice
+perform deterministic second replay locally
+reconcile profile-scoped reanalysis
+emit scalar-safe counts/booleans only
+```
+
+The command is resumable:
+
+```powershell
+uv run --no-sync python scripts/capture_public_api_population_coverage.py
+```
+
+Default public-safe receipt:
+
+```text
+data/exchange/out/coa-public-api-population-coverage-review.json
+```
+
+Real multi-profile coverage execution remains pending until the operator runs this bounded workflow on the local RawArchive/DuckDB.
 
 ## Event-level semantics documented by the API
 
@@ -373,10 +447,12 @@ Historical two-report difficulty equivalence remains `insufficient_evidence` and
 
 ```text
 real normalization/persistence/idempotence: proven
--> replay existing private capture into Source Observatory
--> verify scalar-safe aggregate Source & Analysis Health
--> verify logical source_endpoint dependency/reanalysis behavior
--> design bounded population-prior coverage across documented dimensions
+real Source Observatory/Health: proven
+real profile-scoped dependency migration: proven
+-> run bounded population coverage v1
+-> prove missing-only capture + multi-profile persistence + health on real local data
+-> store one scalar-safe real coverage receipt
+-> decide any next dimension expansion from product need rather than cartesian completeness
 ```
 
 Do not request `events:read`, capture a HAR or run Playwright for this gate.
