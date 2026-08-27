@@ -64,7 +64,7 @@ GET /bosses
 GET /statistics
 ```
 
-Real evidence now proves the full first aggregate vertical slice:
+The first aggregate vertical slice is fully real-proven:
 
 ```text
 phase/boss catalog: proven
@@ -74,6 +74,11 @@ exact StatisticsResponse normalization: proven
 DuckDB persistence: proven
 second-pass replay idempotence: proven
 population-prior read model: proven
+Source Observatory replay: proven
+Source & Analysis Health: proven
+profile-scoped source dependency migration: proven
+legacy broad aggregate dependency: inactive
+pending reanalysis after migration: zero
 ```
 
 Real normalized checkpoint:
@@ -86,7 +91,7 @@ Real normalized checkpoint:
 62 records with local_parse_share
 ```
 
-The aggregate artifact is now being integrated with Source Observatory / Source & Analysis Health. That integration replays the already archived response; it does not require another network request.
+The current gate is no longer Source Observatory plumbing. It is bounded multi-profile population coverage over documented `/statistics` dimensions.
 
 ### B. First-party report evidence — private report-specific lane
 
@@ -118,7 +123,7 @@ Exact request dimension values are not credentials but remain private source sca
 
 ## Aggregate model and Source Observatory
 
-The official `/statistics` path is:
+The official `/statistics` path is now:
 
 ```text
 reviewed OpenAPI contract
@@ -128,25 +133,28 @@ reviewed OpenAPI contract
 -> normalized batch/class/spec persistence
 -> analysis_run
 -> raw_object dependency
--> source_endpoint dependency
+-> source_endpoint_profile dependency
 -> population-prior read model
 -> Source Observatory replay
+-> profile-scoped reanalysis resolver
 -> Source & Analysis Health
 ```
 
 Request-shaping `/statistics` dimensions are private schema-profile keys. This prevents different phase/difficulty/metric/role/filter scopes from being compared as if they were one schema baseline.
 
-The artifact declares both:
+The artifact declares:
 
 ```text
 raw_object dependency
   exact source payload provenance
 
-source_endpoint = public_api_statistics dependency
-  logical source-change / scoped-reanalysis provenance
+source_endpoint_profile dependency
+  private query-profile source-change / reanalysis provenance
 ```
 
-The initial Source Observatory registration may create an informational `endpoint_added` event. A baseline informational event is not treated as an actionable source problem; warning/error changes remain actionable.
+Profile-local schema changes target only artifacts built from the same private reviewed query profile. `request_contract_changed` remains endpoint-global and intentionally fans out to every active profile dependency.
+
+Old source events cannot back-trigger a dependency registered later. The real local migration replay proved this on the existing informational baseline event.
 
 ## Population-prior semantics
 
@@ -158,14 +166,39 @@ local_parse_share = spec total_parses / sum(spec total_parses within the same pe
 
 This is descriptive participation within one explicit API scope. It is not evidence of the site's Tier List algorithm and not planner scoring.
 
+## Bounded coverage v1
+
+`public-api-population-coverage-v1` deliberately avoids a cartesian crawl.
+
+It defines a small current-phase profile set that:
+
+```text
+contains 4 required slices
+represents 3 documented metric families
+uses 3 role-qualified slices and 1 role-omitted slice
+holds broader dimensions stable
+reuses already persisted matching profiles
+requests only missing slices
+stops after the first incomplete network capture
+persists every successful slice with deterministic replay
+reconciles profile-scoped reanalysis after collection
+keeps boss/location/week/realm/class/spec expansion out of v1
+```
+
+The coverage receipt publishes counts/booleans only. It does not publish selected profile values, query values, class/spec names, raw IDs or profile fingerprints.
+
+This is evidence collection, not bulk dataset redistribution and not Tier List reconstruction.
+
 ## Planner trust states
 
 ```text
-population aggregate collection: proven
+population aggregate collection: proven for first slice
 population aggregate normalization: proven
 population aggregate persistence/idempotence: proven
 population-prior read model: proven
-aggregate Source Observatory/Health: implementation current gate
+aggregate Source Observatory/Health: proven
+profile-scoped aggregate invalidation: proven
+bounded multi-profile population coverage: implementation ready; real run pending
 historical two-report numeric comparison: blocked
 cross-report player identity: blocked
 mechanic semantics: evidence-specific / not globally proven
@@ -191,11 +224,13 @@ The E4 branch name is historical.
 ## Current next sequence
 
 ```text
-real aggregate normalization/persistence/idempotence: complete
--> replay the existing private statistics capture into Source Observatory
--> prove scalar-safe Source & Analysis Health for the aggregate artifact
--> verify source_endpoint dependency/reanalysis wiring
--> then design bounded population-prior coverage across documented dimensions
+real aggregate capture/normalization/persistence/idempotence: complete
+real Source Observatory/Health: complete
+real profile-scoped dependency migration: complete
+-> run bounded population coverage v1
+-> verify missing-only acquisition + multi-profile persistence + health
+-> record scalar-safe real coverage receipt
+-> then decide whether a second bounded dimension expansion is product-necessary
 -> combine population context with separately verified player/build/encounter evidence
 ```
 
