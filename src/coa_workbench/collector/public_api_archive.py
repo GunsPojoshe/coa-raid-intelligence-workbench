@@ -78,6 +78,38 @@ def _optional_string(value: Any, label: str) -> str | None:
     return value
 
 
+def _request_identity(
+    manifest: Mapping[str, Any],
+    content_manifest: Mapping[str, Any],
+) -> tuple[str, str]:
+    """Resolve request identity from the observation, with strict schema-v1 fallback.
+
+    RawArchive schema-v2 content manifests are content-scoped and intentionally contain no
+    request-specific values. Existing local schema-v1 content manifests remain readable: when the
+    observation predates ``request_key`` storage, both legacy ``raw_id`` and ``request_key`` must
+    agree with that same observation before the fallback is accepted.
+    """
+    raw_id = _required_string(manifest.get("raw_id"), "raw observation manifest raw_id")
+    observation_request_key = manifest.get("request_key")
+    if observation_request_key is not None:
+        return raw_id, _required_string(
+            observation_request_key,
+            "raw observation manifest request_key",
+        )
+
+    legacy_raw_id = content_manifest.get("raw_id")
+    legacy_request_key = content_manifest.get("request_key")
+    if legacy_raw_id != raw_id:
+        raise ValueError(
+            "legacy raw content manifest raw_id does not match observation; request identity "
+            "cannot be reconstructed safely"
+        )
+    return raw_id, _required_string(
+        legacy_request_key,
+        "legacy raw content manifest request_key",
+    )
+
+
 def load_latest_public_api_capture(
     raw_root: Path,
     *,
@@ -85,12 +117,8 @@ def load_latest_public_api_capture(
     endpoint_code: str,
 ) -> ArchivedPublicApiCapture:
     """Load one private archived capture together with request and raw-object provenance."""
-    pattern = (
-        f"source={source_code}/year=*/month=*/endpoint={endpoint_code}/observations/*.json"
-    )
-    candidates: list[
-        tuple[str, str, Path, Path, Mapping[str, Any]]
-    ] = []
+    pattern = f"source={source_code}/year=*/month=*/endpoint={endpoint_code}/observations/*.json"
+    candidates: list[tuple[str, str, Path, Path, Mapping[str, Any]]] = []
     for manifest_path in raw_root.glob(pattern):
         manifest = _mapping(
             json.loads(manifest_path.read_text(encoding="utf-8")),
@@ -116,21 +144,15 @@ def load_latest_public_api_capture(
             f"no archived observation for source={source_code!r}, endpoint={endpoint_code!r}"
         )
 
-    fetched_at, _manifest_name, manifest_path, content_manifest_relative, manifest = max(
-        candidates
-    )
+    fetched_at, _manifest_name, manifest_path, content_manifest_relative, manifest = max(candidates)
     content_manifest = _mapping(
         json.loads((raw_root / content_manifest_relative).read_text(encoding="utf-8")),
         "raw content manifest",
     )
-    raw_id = _required_string(content_manifest.get("raw_id"), "raw content manifest raw_id")
+    raw_id, request_key = _request_identity(manifest, content_manifest)
     payload_path = _required_string(
         content_manifest.get("payload_path"),
         "raw content manifest payload_path",
-    )
-    request_key = _required_string(
-        content_manifest.get("request_key"),
-        "raw content manifest request_key",
     )
     payload_hash = _required_string(
         content_manifest.get("payload_hash"),
@@ -157,8 +179,6 @@ def load_latest_public_api_capture(
         manifest.get("observation_id"),
         "raw observation manifest observation_id",
     )
-    if manifest.get("raw_id") != raw_id:
-        raise ValueError("raw observation manifest raw_id does not match content manifest")
     http_status = manifest.get("http_status")
     if http_status is not None and (
         not isinstance(http_status, int) or isinstance(http_status, bool)
