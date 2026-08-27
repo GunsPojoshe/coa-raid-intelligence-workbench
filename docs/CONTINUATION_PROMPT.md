@@ -50,9 +50,9 @@ narrow browser/network fallback
 structural inference last
 ```
 
-## Official aggregate API — completed real gate
+## Official aggregate API — completed real gates
 
-The first aggregate vertical slice is now real-proven:
+The first aggregate vertical slice and its source-health/dependency layer are real-proven:
 
 ```text
 /phases + /bosses: archived/reviewed
@@ -64,65 +64,95 @@ second persistence: 21 class + 62 spec rows matched, zero inserts
 idempotent: true
 population-prior records: 62
 records with local_parse_share: 62
-analysis_run registered: true
-raw source dependency registered: true
+Source Observatory integrated: true
+raw dependency registered: true
+source_endpoint_profile dependency registered: true
+legacy broad source_endpoint dependency active: false
+profile dependency count: 1
+old eligible events after dependency registration: 0
+created reanalysis requests: 0
+pending reanalysis: 0
+actionable open source changes: 0
+source health attention required: false
 planner scoring: false
 site Tier List algorithm: unverified
 ```
 
-Canonical new real receipts:
+Canonical real receipts:
 
 ```text
 evidence/real-data/coa-public-api-statistics-provenance-capture-real.json
 evidence/real-data/coa-public-api-statistics-persistence-real.json
+evidence/real-data/coa-public-api-statistics-profile-reanalysis-real.json
 ```
 
-Do **not** repeat this capture/persistence proof on restart.
+Do **not** repeat these single-slice capture/persistence/profile-migration proofs on restart.
 
-## Current exact gate
+## Current exact gate — bounded population coverage v1
 
-Integrate the already proven aggregate artifact with Source Observatory / Source & Analysis Health.
-
-Implementation provides:
+Implementation:
 
 ```text
-private archived capture replay -> reviewed request reconstruction
-/statistics request dimensions -> private schema profile
-source_capture + source_schema_snapshot + acquisition observation
-source_endpoint=public_api_statistics artifact dependency
-scalar-safe aggregate health review
+src/coa_workbench/analytics/public_api_population_coverage.py
+scripts/capture_public_api_population_coverage.py
 ```
 
-The real health proof requires only replaying the already archived successful response. It must not perform another network request.
+V1 deliberately defines a small set rather than a cartesian crawl:
 
-Expected operator command after syncing the current E4 implementation:
+```text
+required slices: 4
+metric families represented: 3
+role-qualified slices: 3
+role-omitted slices: 1
+boss/location/week/realm/class/spec expansion: excluded
+bulk dataset mode: false
+```
+
+The workflow selects the current phase privately from the archived `/phases` catalog, reviews the local DuckDB first, reuses any already persisted matching profiles and makes network requests only for missing slices.
+
+For every new successful slice:
+
+```text
+capture -> RawArchive -> Source Observatory -> exact normalization
+-> persistence -> deterministic second replay -> source_endpoint_profile dependency
+```
+
+Then it reconciles profile-scoped reanalysis and Source & Analysis Health.
+
+Operator command after syncing canonical E4:
 
 ```powershell
-uv run --no-sync python scripts/persist_public_api_statistics.py
+uv run --no-sync python scripts/capture_public_api_population_coverage.py
 ```
+
+The command is resumable. It stops on the first incomplete network response; a later rerun intentionally skips already completed matching slices.
 
 Review only the generated scalar-safe receipt:
 
 ```text
-data/exchange/out/coa-public-api-statistics-persistence-review.json
+data/exchange/out/coa-public-api-population-coverage-review.json
 ```
 
-Do not ask for RawArchive, DuckDB, API key, query values or raw response.
+Do not ask for RawArchive, DuckDB, API key, query values, profile fingerprints or raw response.
+
+Success gate:
+
+```text
+coverage_after.complete = true
+missing_slice_count = 0
+profile-scoped dependency count >= required covered batches
+legacy broad dependency count = 0
+pending reanalysis = 0
+actionable source changes = 0
+attention_required = false
+planner_scoring_allowed = false
+```
 
 ## Source-health semantics
 
-First Source Observatory registration may leave one informational `endpoint_added` event open. That is baseline provenance, not by itself an actionable problem.
+Informational `endpoint_added` / `observation_profile_added` events are retained as provenance and are not automatically attention-required. Warning/error changes or pending reanalysis do require attention.
 
-Aggregate dedicated health should distinguish:
-
-```text
-informational baseline event -> retained, not attention-required
-actionable warning/error source change -> attention-required
-pending reanalysis -> attention-required
-healthy acquisition/schema/dependencies/analysis -> integrated
-```
-
-Future source changes matter because the aggregate artifact now declares both exact `raw_object` and logical `source_endpoint=public_api_statistics` dependencies.
+Profile-local schema events invalidate only matching private query profiles. `request_contract_changed` remains endpoint-global. Events older than dependency registration cannot back-trigger newer artifacts.
 
 ## Historical report evidence
 
