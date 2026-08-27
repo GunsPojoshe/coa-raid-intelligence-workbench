@@ -43,8 +43,12 @@ second persistence matched 21/62 with zero inserts
 idempotent = true
 62 population-prior records
 62 records with local_parse_share
-analysis_run registered
-raw dependency registered
+Source Observatory integrated = true
+source_endpoint_profile dependency = registered
+legacy broad source_endpoint dependency = inactive
+pending reanalysis = 0
+actionable source changes = 0
+health attention_required = false
 planner scoring = false
 site Tier List algorithm = unverified
 ```
@@ -54,38 +58,64 @@ Real receipts:
 ```text
 evidence/real-data/coa-public-api-statistics-provenance-capture-real.json
 evidence/real-data/coa-public-api-statistics-persistence-real.json
+evidence/real-data/coa-public-api-statistics-profile-reanalysis-real.json
 ```
 
-Do not repeat that real capture/persistence proof.
+Do not repeat those real proofs.
 
-## Current gate
+## Current gate — bounded multi-profile population coverage
+
+Implementation:
 
 ```text
-existing RawArchive statistics response
--> Source Observatory replay
--> request-scope schema profile
--> source capture/schema/acquisition registration
--> source_endpoint=public_api_statistics dependency
--> scalar-safe Source & Analysis Health
+src/coa_workbench/analytics/public_api_population_coverage.py
+scripts/capture_public_api_population_coverage.py
 ```
 
-No network call is needed for this gate. After the implementation is on canonical E4, the only local operator command is:
+Coverage v1:
+
+```text
+4 required slices
+3 documented metric families
+3 role-qualified slices
+1 role-omitted slice
+boss/location/week/realm/class/spec expansion excluded
+bulk mode false
+```
+
+The command checks DuckDB first and only calls the API for missing slices. It stops on the first incomplete response and is safe to rerun because completed matching profiles are reused.
+
+Operator command:
 
 ```powershell
-uv run --no-sync python scripts/persist_public_api_statistics.py
+uv run --no-sync python scripts/capture_public_api_population_coverage.py
 ```
 
 Review only:
 
 ```text
-data/exchange/out/coa-public-api-statistics-persistence-review.json
+data/exchange/out/coa-public-api-population-coverage-review.json
 ```
 
-Do not request RawArchive, DuckDB, API key or private query values.
+Do not request RawArchive, DuckDB, API key, private query values or profile fingerprints.
 
-## Important health detail
+Expected success shape:
 
-The first endpoint observation can create one informational open `endpoint_added` event. Dedicated aggregate health does not treat this baseline info event as actionable. Warning/error changes or pending reanalysis do require attention.
+```text
+coverage_after.complete = true
+missing_slice_count = 0
+legacy unscoped dependency count = 0
+pending reanalysis = 0
+actionable source changes = 0
+attention_required = false
+planner_scoring_allowed = false
+```
+
+## Profile reanalysis semantics
+
+Profile-local schema changes target only matching private query profiles. `request_contract_changed` is endpoint-global. Events older than dependency registration do not back-trigger newer aggregate artifacts.
+
+The real migration replay already proved the historical baseline event did not create a reanalysis request.
 
 ## Retained blockers
 
