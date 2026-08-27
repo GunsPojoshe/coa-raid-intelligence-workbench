@@ -71,9 +71,12 @@ evidence/real-data/coa-public-api-statistics-provenance-capture-real.json
 
 evidence/real-data/coa-public-api-statistics-persistence-real.json
   real exact normalization + DuckDB persistence + second-pass idempotence proof
+
+evidence/real-data/coa-public-api-statistics-profile-reanalysis-real.json
+  real no-network Source Observatory + source_endpoint_profile migration/reanalysis proof
 ```
 
-The last two receipts close the former “real persistence pending” gate. Current next gate is Source Observatory/Health replay of the already archived aggregate response.
+The first aggregate slice is now proven through capture, normalization, persistence, source health and profile-scoped invalidation. Current next gate is bounded multi-profile population coverage.
 
 `evidence/real-data/*.json` is an evidence ledger, not permanent configuration. Do not hardcode observed counts as universal contracts.
 
@@ -171,13 +174,28 @@ config/coa_public_api_sources.yaml
 src/coa_workbench/collector/public_api_stats_capture.py
 src/coa_workbench/collector/public_api_archive.py
 src/coa_workbench/collector/public_api_source_health.py
+src/coa_workbench/collector/source_profile_reanalysis.py
 src/coa_workbench/normalizer/public_api_statistics.py
 src/coa_workbench/storage/public_api_statistics.py
 src/coa_workbench/analytics/public_api_population_priors.py
+src/coa_workbench/analytics/public_api_population_coverage.py
 migrations/0013_public_api_statistics.sql
 scripts/capture_current_public_api_statistics.py
 scripts/persist_public_api_statistics.py
+scripts/capture_public_api_population_coverage.py
 ```
+
+## Current aggregate operating state
+
+```text
+single-slice real capture/persistence: proven
+aggregate Source Observatory/Health: proven
+source_endpoint_profile migration: proven
+legacy broad aggregate source_endpoint dependency: inactive
+bounded population coverage v1: implemented/tested; real operator run pending
+```
+
+Coverage v1 intentionally uses a small fixed profile set and does not crawl boss/location/week/realm/class/spec combinations merely for completeness.
 
 ## Documentation maintenance rule
 
