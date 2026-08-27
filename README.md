@@ -59,9 +59,15 @@ percentile scalar values normalized: 806
 second-pass replay:            idempotent
 population-prior records:              62
 records with local_parse_share:        62
+Source Observatory integration:    proven
+profile-scoped dependency:         proven
+legacy broad endpoint dependency: inactive
+pending reanalysis after migration:    0
 ```
 
 The real two-pass persistence proof inserted 21 class rows and 62 spec rows on the first pass, then matched all 21/62 with zero new rows on the second pass.
+
+The later no-network replay also proved that the aggregate artifact can migrate from the old broad endpoint dependency to a private query-profile dependency without back-triggering the historical informational baseline event.
 
 Canonical real receipts:
 
@@ -71,9 +77,10 @@ evidence/real-data/coa-public-api-statistics-capture-real.json
 evidence/real-data/coa-public-api-statistics-shape-real.json
 evidence/real-data/coa-public-api-statistics-provenance-capture-real.json
 evidence/real-data/coa-public-api-statistics-persistence-real.json
+evidence/real-data/coa-public-api-statistics-profile-reanalysis-real.json
 ```
 
-They do not publish query values, class/spec names, difficulty/phase scalars, metric values, raw IDs or API credentials.
+They do not publish query values, class/spec names, difficulty/phase scalars, metric values, raw IDs, profile fingerprints or API credentials.
 
 ## Aggregate implementation
 
@@ -83,13 +90,15 @@ private request-scope provenance for new captures
 migration 0013_public_api_statistics
 DuckDB batch/class/spec persistence
 analysis_run provenance
-raw-object + source-endpoint artifact dependencies
+raw-object artifact dependency
+private source-endpoint-profile artifact dependency
+profile-scoped reanalysis resolver
 population-prior read model over documented dimensions
 Source Observatory replay from the existing RawArchive
 scalar-safe Source & Analysis Health review
 ```
 
-The Source Observatory integration is deliberately replayable from the already archived response: it does **not** require another API request. Request dimensions partition schema baselines through private schema-profile keys so different `/statistics` scopes are not compared as if they were the same contract instance.
+Request dimensions partition schema baselines through private schema-profile keys so different `/statistics` scopes are not compared as if they were the same contract instance. Profile-local source changes target only matching artifacts. A `request_contract_changed` event remains endpoint-global by design.
 
 ## Population-prior boundary
 
@@ -102,6 +111,35 @@ local_parse_share = spec total_parses / sum(spec total_parses in the same batch)
 This is descriptive participation within one explicit API scope. It is **not** the site's Tier List score, a gameplay capability score or a planner score.
 
 Planner scoring remains blocked.
+
+## Bounded population coverage v1
+
+The next operator gate expands the proven single aggregate profile into a deliberately small multi-profile population context.
+
+Implementation:
+
+```text
+src/coa_workbench/analytics/public_api_population_coverage.py
+scripts/capture_public_api_population_coverage.py
+```
+
+Properties:
+
+```text
+4 required bounded slices
+3 documented metric families represented
+3 role-qualified slices + 1 role-omitted slice
+current phase selected privately from archived /phases
+existing matching persisted slices are reused
+network requests are made only for missing slices
+first incomplete capture stops the run
+successful slices are archived, observed, normalized and persisted twice
+profile-scoped reanalysis is reconciled after the run
+boss/location/week/realm/class/spec expansion is excluded from v1
+bulk dataset mode = false
+```
+
+The public coverage receipt contains only counts/booleans and never the selected phase, difficulty, metric, role, class/spec names, profile fingerprints or source metric values.
 
 ## Local API key and private request provenance
 
@@ -117,22 +155,24 @@ Exact prepared `/statistics` query values are different from credentials. They a
 
 ## Current operator workflow
 
-Capture a new bounded current-phase aggregate only when fresh source evidence is actually needed:
-
-```powershell
-uv run --no-sync python scripts/capture_current_public_api_statistics.py
-```
-
-Replay the latest already archived response through Source Observatory, exact normalization, persistence and two-pass idempotence:
+The completed single-profile replay remains available and requires no network:
 
 ```powershell
 uv run --no-sync python scripts/persist_public_api_statistics.py
 ```
 
-The second command performs no network request and writes a scalar-safe receipt to:
+For the current bounded multi-profile gate use:
+
+```powershell
+uv run --no-sync python scripts/capture_public_api_population_coverage.py
+```
+
+This command is resumable: already persisted matching slices are skipped, so rerunning it after a transport failure does not intentionally recapture completed coverage profiles.
+
+It writes a scalar-safe receipt to:
 
 ```text
-data/exchange/out/coa-public-api-statistics-persistence-review.json
+data/exchange/out/coa-public-api-population-coverage-review.json
 ```
 
 ## Verification
@@ -201,7 +241,7 @@ The historical local helper patch has already been reviewed: preserve it private
 
 Do not infer mechanics from field names, UI labels, talent/item names or one combat result. Do not equate character name with cross-report identity. Do not expose private source scalars through public receipts or low-entropy hashes.
 
-Population aggregates are now real-proven through normalization/persistence/idempotence. That does **not** unlock planner scoring; identity, mechanic, encounter-requirement and composition reasoning remain separate evidence gates.
+Population aggregates are now real-proven through capture, normalization, persistence, source health and profile-scoped invalidation. That still does **not** unlock planner scoring; identity, mechanic, encounter-requirement and composition reasoning remain separate evidence gates.
 
 ## Documentation
 
