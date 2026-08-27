@@ -78,11 +78,14 @@ exact normalization: proven
 DuckDB persistence: proven
 second-pass idempotence: proven
 population-prior read model: proven
-Source Observatory/Health integration: current gate
+Source Observatory/Health replay: proven
+profile-scoped source dependency migration: proven
+legacy broad aggregate source dependency: inactive
+pending reanalysis after migration: zero
 planner scoring: blocked
 ```
 
-Do not repeat the already completed capture/persistence proof merely because a session restarted.
+Do not repeat the already completed single-slice capture/persistence or profile-migration proofs merely because a session restarted.
 
 ## Source Observatory lane
 
@@ -100,9 +103,42 @@ reviewed contract
 -> Source & Analysis Health
 ```
 
-For official `/statistics`, request dimensions are schema-profile keys: source-shape comparison must occur only within a compatible private request scope. The aggregate artifact depends on both the exact `raw_object` and logical `source_endpoint=public_api_statistics`, so future compatible endpoint changes can target it for reanalysis.
+For official `/statistics`, request dimensions are schema-profile keys: source-shape comparison occurs only within a compatible private request scope.
+
+Aggregate artifacts declare:
+
+```text
+raw_object
+  exact payload provenance
+
+source_endpoint_profile
+  private reviewed query-profile dependency for schema/profile-local changes
+```
+
+`request_contract_changed` remains endpoint-global and intentionally fans out across active profile dependencies. Old source events must not back-trigger dependencies registered later.
+
+Profile fingerprints and query values are local-only and must never appear in public receipts.
 
 Generic dynamic-template ingestion is prohibited. Unknown semantics stay unknown.
+
+## Bounded population coverage lane
+
+`public-api-population-coverage-v1` is intentionally small. It expands the proven single aggregate profile across a fixed set of reviewed metric/role profiles while holding broader dimensions stable.
+
+Rules:
+
+```text
+reuse already persisted matching profiles
+network I/O only for missing coverage slices
+stop on the first incomplete capture
+archive before interpretation
+normalize and persist every successful slice deterministically
+reconcile profile-scoped reanalysis after persistence
+never turn coverage collection into bulk dataset redistribution
+never expose dimension/profile values in public receipts
+```
+
+Boss/location/week/realm/class/spec cartesian expansion is **not** part of v1. Expand only when a product question requires it and the source contract/evidence boundary is explicit.
 
 ## Historical report lane
 
