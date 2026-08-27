@@ -30,9 +30,13 @@ _REQUIRED_PATHS = (
     "evidence/real-data/coa-public-api-statistics-shape-real.json",
     "evidence/real-data/coa-public-api-statistics-provenance-capture-real.json",
     "evidence/real-data/coa-public-api-statistics-persistence-real.json",
+    "evidence/real-data/coa-public-api-statistics-profile-reanalysis-real.json",
     "src/coa_workbench/collector/public_api_source_health.py",
+    "src/coa_workbench/collector/source_profile_reanalysis.py",
+    "src/coa_workbench/analytics/public_api_population_coverage.py",
     "scripts/inventory_local_workspace.py",
     "scripts/persist_public_api_statistics.py",
+    "scripts/capture_public_api_population_coverage.py",
     "migrations/0013_public_api_statistics.sql",
 )
 
@@ -67,6 +71,9 @@ _STALE_MARKERS = (
     "real capture replay/idempotence: pending",
     "real statistics persistence/idempotence: pending",
     "one bounded provenance-aware /statistics recapture",
+    "aggregate Source Observatory/Health integration: implemented/tested; real local replay pending",
+    "Source Observatory/Health integration: current gate",
+    "Current next gate is Source Observatory/Health replay",
 )
 
 _FORBIDDEN_TRACKED_PREFIXES = (
@@ -128,41 +135,53 @@ def _check_current_paradigm_markers() -> dict[str, Any]:
             "official documented CoA Ascension Logs public API",
             "Browser/HAR",
             "population aggregate persistence/idempotence: proven",
-            "Source Observatory/Health",
+            "aggregate Source Observatory/Health: proven",
+            "profile-scoped aggregate invalidation: proven",
+            "bounded multi-profile population coverage",
         ),
         "docs/PROJECT_STATE.md": (
             "real statistics normalization: proven",
             "real DuckDB persistence/idempotence: proven",
-            "aggregate Source Observatory/Health integration",
+            "aggregate Source Observatory/Health integration: proven real",
+            "profile-scoped aggregate invalidation: proven real",
+            "bounded multi-profile population coverage v1",
             "historical difficulty equivalence",
         ),
         "docs/PROJECT_MASTER_CONTEXT.md": (
             "forward-only migrations 0001-0013",
             "public_api_population_prior_v1",
-            "source_endpoint dependency",
+            "source_endpoint_profile dependency",
+            "bounded public population coverage model/workflow",
         ),
         "docs/DOCUMENTATION_INDEX.md": (
             "0013_public_api_statistics.sql",
             "coa-public-api-statistics-persistence-real.json",
+            "coa-public-api-statistics-profile-reanalysis-real.json",
             "Source Observatory/Health",
+            "capture_public_api_population_coverage.py",
         ),
         "README.md": (
             "active official-API / upstream-evidence workstream",
             "scripts/inventory_local_workspace.py",
             "forward-only migrations 0001-0013",
             "scripts/persist_public_api_statistics.py",
+            "scripts/capture_public_api_population_coverage.py",
             "second-pass replay:            idempotent",
+            "legacy broad endpoint dependency: inactive",
         ),
         "docs/OFFICIAL_PUBLIC_API.md": (
             "Request-scope provenance rule",
             "0013_public_api_statistics.sql",
             "src/coa_workbench/collector/public_api_source_health.py",
-            "coa-public-api-statistics-persistence-real.json",
+            "coa-public-api-statistics-profile-reanalysis-real.json",
+            "capture_public_api_population_coverage.py",
         ),
         "docs/SOURCE_OBSERVABILITY_AND_REANALYSIS.md": (
             "official documented public API",
             "schema_profile_keys",
-            "source_endpoint = public_api_statistics",
+            "source_endpoint_profile",
+            "Real aggregate profile migration proof",
+            "Bounded population coverage v1",
         ),
     }
     missing: dict[str, list[str]] = {}
