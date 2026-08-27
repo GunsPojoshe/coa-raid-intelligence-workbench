@@ -19,6 +19,7 @@ _REQUIRED_PATHS = (
     "docs/CONTINUATION_PROMPT.md",
     "docs/NEXT_CHAT_HANDOFF.md",
     "docs/OFFICIAL_PUBLIC_API.md",
+    "docs/SOURCE_OBSERVABILITY_AND_REANALYSIS.md",
     "docs/UPSTREAM_ASCENSION_LOGS_EVIDENCE.md",
     "docs/LOCAL_WORKSPACE_BOUNDARY.md",
     "docs/LOCAL_WORKSPACE_AUDIT.md",
@@ -27,6 +28,9 @@ _REQUIRED_PATHS = (
     "evidence/real-data/coa-public-api-catalog-real.json",
     "evidence/real-data/coa-public-api-statistics-capture-real.json",
     "evidence/real-data/coa-public-api-statistics-shape-real.json",
+    "evidence/real-data/coa-public-api-statistics-provenance-capture-real.json",
+    "evidence/real-data/coa-public-api-statistics-persistence-real.json",
+    "src/coa_workbench/collector/public_api_source_health.py",
     "scripts/inventory_local_workspace.py",
     "scripts/persist_public_api_statistics.py",
     "migrations/0013_public_api_statistics.sql",
@@ -41,6 +45,7 @@ _CANONICAL_DOCS = (
     "docs/CONTINUATION_PROMPT.md",
     "docs/NEXT_CHAT_HANDOFF.md",
     "docs/OFFICIAL_PUBLIC_API.md",
+    "docs/SOURCE_OBSERVABILITY_AND_REANALYSIS.md",
     "docs/BROWSER_OBSERVATORY.md",
 )
 
@@ -57,6 +62,11 @@ _STALE_MARKERS = (
     "First real E4 scenario",
     "source-structure reviewer: implemented, real run pending",
     "report.difficulty Browser Observatory session",
+    "Real archived-capture replay is not yet proven",
+    "Real-source persistence remains pending",
+    "real capture replay/idempotence: pending",
+    "real statistics persistence/idempotence: pending",
+    "one bounded provenance-aware /statistics recapture",
 )
 
 _FORBIDDEN_TRACKED_PREFIXES = (
@@ -117,29 +127,42 @@ def _check_current_paradigm_markers() -> dict[str, Any]:
         "docs/CURRENT_PARADIGM.md": (
             "official documented CoA Ascension Logs public API",
             "Browser/HAR",
-            "statistics normalization",
+            "population aggregate persistence/idempotence: proven",
+            "Source Observatory/Health",
         ),
         "docs/PROJECT_STATE.md": (
-            "statistics normalization ready: true",
-            "statistics parser/model: implemented",
+            "real statistics normalization: proven",
+            "real DuckDB persistence/idempotence: proven",
+            "aggregate Source Observatory/Health integration",
             "historical difficulty equivalence",
-            "local metadata/file-state inventory",
         ),
         "docs/PROJECT_MASTER_CONTEXT.md": (
             "forward-only migrations 0001-0013",
             "public_api_population_prior_v1",
+            "source_endpoint dependency",
         ),
-        "docs/DOCUMENTATION_INDEX.md": ("0013_public_api_statistics.sql",),
+        "docs/DOCUMENTATION_INDEX.md": (
+            "0013_public_api_statistics.sql",
+            "coa-public-api-statistics-persistence-real.json",
+            "Source Observatory/Health",
+        ),
         "README.md": (
-            "official-API + upstream-source first",
+            "active official-API / upstream-evidence workstream",
             "scripts/inventory_local_workspace.py",
-            "currently 0001-0013",
+            "forward-only migrations 0001-0013",
             "scripts/persist_public_api_statistics.py",
+            "second-pass replay:            idempotent",
         ),
         "docs/OFFICIAL_PUBLIC_API.md": (
             "Request-scope provenance rule",
             "0013_public_api_statistics.sql",
-            "scripts/persist_public_api_statistics.py",
+            "src/coa_workbench/collector/public_api_source_health.py",
+            "coa-public-api-statistics-persistence-real.json",
+        ),
+        "docs/SOURCE_OBSERVABILITY_AND_REANALYSIS.md": (
+            "official documented public API",
+            "schema_profile_keys",
+            "source_endpoint = public_api_statistics",
         ),
     }
     missing: dict[str, list[str]] = {}
