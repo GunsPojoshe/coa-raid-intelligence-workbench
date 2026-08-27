@@ -90,17 +90,24 @@ second pass:
   idempotent: true
 ```
 
-Also proven by the real receipt:
+Real Source Observatory / profile-reanalysis proof:
 
 ```text
-request context complete: true
-analysis_run registered: true
-raw source dependency registered: true
-documented dimensions persisted: true
-population-prior read model available: true
-site Tier List algorithm verified: false
-planner scoring allowed: false
+archived capture replayed: true
+source acquisition outcome: schema_candidate
+source observatory integrated: true
+raw dependency registered: true
+source_endpoint_profile dependency registered: true
+legacy unscoped source_endpoint dependency active: false
+profile dependency count: 1
+eligible historical events after dependency registration: 0
+created reanalysis requests: 0
+pending reanalysis requests: 0
+actionable open source changes: 0
+source health attention required: false
 ```
+
+The one remaining open baseline source-change event is informational provenance, not an actionable health failure.
 
 Canonical real receipts:
 
@@ -110,9 +117,10 @@ evidence/real-data/coa-public-api-statistics-capture-real.json
 evidence/real-data/coa-public-api-statistics-shape-real.json
 evidence/real-data/coa-public-api-statistics-provenance-capture-real.json
 evidence/real-data/coa-public-api-statistics-persistence-real.json
+evidence/real-data/coa-public-api-statistics-profile-reanalysis-real.json
 ```
 
-The last two are the real provenance-aware capture and real persistence/idempotence proof. They contain no query values, class/spec names, private dimensions, raw IDs/fingerprints or API credentials.
+All receipts remain scalar-safe: no query values, class/spec names, private dimensions, raw IDs/paths/fingerprints or API credentials.
 
 ## Aggregate implementation
 
@@ -122,10 +130,13 @@ Implemented:
 src/coa_workbench/normalizer/public_api_statistics.py
 src/coa_workbench/collector/public_api_archive.py
 src/coa_workbench/collector/public_api_source_health.py
+src/coa_workbench/collector/source_profile_reanalysis.py
 src/coa_workbench/storage/public_api_statistics.py
 src/coa_workbench/analytics/public_api_population_priors.py
+src/coa_workbench/analytics/public_api_population_coverage.py
 migrations/0013_public_api_statistics.sql
 scripts/persist_public_api_statistics.py
+scripts/capture_public_api_population_coverage.py
 ```
 
 Capabilities:
@@ -137,28 +148,46 @@ normalized batch/class/spec persistence
 deterministic insert-or-match replay
 analysis_run provenance
 raw_object artifact dependency
-source_endpoint=public_api_statistics artifact dependency
+source_endpoint_profile artifact dependency
+profile-scoped reanalysis resolver
 population-prior read model
 Source Observatory replay from existing RawArchive
 scalar-safe aggregate Source & Analysis Health receipt
+bounded missing-only population coverage workflow
 ```
 
-The `source_endpoint` dependency is important: future compatible changes observed on `/statistics` can target the aggregate artifact for scoped reanalysis. Request-shaping dimensions are schema-profile keys so unrelated API scopes do not share one schema baseline.
+`request_contract_changed` remains endpoint-global, while schema/profile-local changes target only matching private query profiles. Source events older than a dependency registration cannot back-trigger the new artifact.
 
 ### Current real gate
 
-The aggregate data itself no longer needs recapture. Remaining proof is local replay of the **already archived** successful response through the new Source Observatory integration:
+The former Source Observatory and dependency-migration gates are closed.
+
+Current gate:
 
 ```text
-existing RawArchive statistics response
--> reviewed request reconstruction from private provenance
--> source capture/schema/acquisition observation
--> endpoint dependency registration
--> existing normalized batch matched idempotently
--> scalar-safe Source & Analysis Health receipt
+existing real population batch
+-> bounded coverage-v1 review
+-> reuse any already persisted matching profile
+-> capture only missing reviewed profiles
+-> RawArchive + exact normalization/persistence for each successful slice
+-> deterministic second replay for each new slice
+-> profile-scoped reanalysis reconciliation
+-> Source & Analysis Health
+-> scalar-safe coverage receipt
 ```
 
-No network request is required for this gate.
+Coverage v1 is intentionally small:
+
+```text
+required slices: 4
+documented metric families represented: 3
+role-qualified slices: 3
+role-omitted slices: 1
+boss/location/week/realm/class/spec expansion: excluded from v1
+bulk dataset mode: false
+```
+
+Real multi-profile coverage execution is pending.
 
 ## Official API credential boundary
 
@@ -257,7 +286,10 @@ real provenance-aware statistics capture: proven
 real statistics normalization: proven
 real DuckDB persistence/idempotence: proven
 population-prior read model: proven
-aggregate Source Observatory/Health integration: implemented/tested; real local replay pending
+aggregate Source Observatory/Health integration: proven real
+profile-scoped aggregate invalidation: proven real
+legacy broad aggregate dependency: inactive
+bounded multi-profile population coverage v1: implemented/tested; real run pending
 report pipeline generalization: proven on two reports
 report analytics persistence: proven + idempotent
 historical difficulty equivalence: insufficient evidence
