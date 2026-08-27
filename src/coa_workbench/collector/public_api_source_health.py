@@ -13,6 +13,7 @@ from coa_workbench.collector.source_health import build_source_health
 from coa_workbench.collector.source_observatory import (
     ReviewedGetContract,
     build_get_url,
+    observation_profile_key,
     observe_raw_capture,
 )
 from coa_workbench.collector.source_registry import SourceRegistry
@@ -57,6 +58,35 @@ def reviewed_public_api_contract(
     )
 
 
+def _private_statistics_request_context(
+    registry: SourceRegistry,
+    capture: ArchivedPublicApiCapture,
+) -> tuple[ReviewedGetContract, str, str]:
+    query_values = capture.query_value_mapping()
+    missing_query_values = sorted(set(capture.query_keys) - set(query_values))
+    if missing_query_values:
+        raise ValueError(
+            "archived public API observation lacks private values for request keys: "
+            + ", ".join(missing_query_values)
+        )
+
+    contract = reviewed_public_api_contract(registry)
+    request_url = build_get_url(contract, query_params=query_values)
+    profile_key = observation_profile_key(contract, request_url)
+    if profile_key is None:
+        raise ValueError("public API statistics route has no reviewed query-profile contract")
+    return contract, request_url, profile_key
+
+
+def private_public_api_statistics_profile_key(
+    registry: SourceRegistry,
+    capture: ArchivedPublicApiCapture,
+) -> str:
+    """Return the local-only reviewed query-profile fingerprint for one archived capture."""
+    _contract, _request_url, profile_key = _private_statistics_request_context(registry, capture)
+    return profile_key
+
+
 def observe_archived_public_api_statistics(
     *,
     database_path: Path,
@@ -71,16 +101,7 @@ def observe_archived_public_api_statistics(
     if capture.source_code != registry.source_code:
         raise ValueError("archived public API capture source does not match registry")
 
-    query_values = capture.query_value_mapping()
-    missing_query_values = sorted(set(capture.query_keys) - set(query_values))
-    if missing_query_values:
-        raise ValueError(
-            "archived public API observation lacks private values for request keys: "
-            + ", ".join(missing_query_values)
-        )
-
-    contract = reviewed_public_api_contract(registry)
-    request_url = build_get_url(contract, query_params=query_values)
+    contract, request_url, _profile_key = _private_statistics_request_context(registry, capture)
     raw_capture = capture.as_raw_capture(raw_root)
     classification = classify_acquisition(
         status=capture.http_status,
@@ -135,7 +156,20 @@ def review_public_api_statistics_health(database_path: Path) -> dict[str, Any]:
     import duckdb
 
     with duckdb.connect(str(database_path), read_only=True) as connection:
-        source_endpoint_dependency_count = int(
+        source_endpoint_profile_dependency_count = int(
+            connection.execute(
+                """
+                SELECT COUNT(*)
+                FROM artifact_dependency
+                WHERE artifact_type = 'public_api_population_statistics'
+                  AND dependency_type = 'source_endpoint_profile'
+                  AND dependency_key = ?
+                  AND active = TRUE
+                """,
+                [PUBLIC_API_STATISTICS_ENDPOINT_CODE],
+            ).fetchone()[0]
+        )
+        legacy_unscoped_source_endpoint_dependency_count = int(
             connection.execute(
                 """
                 SELECT COUNT(*)
@@ -203,7 +237,8 @@ def review_public_api_statistics_health(database_path: Path) -> dict[str, Any]:
     endpoint_registered = endpoint is not None
     capture_observed = bool(endpoint and int(endpoint["capture_count"]) > 0)
     schema_observed = bool(endpoint and endpoint["latest_schema"] is not None)
-    source_endpoint_dependency_registered = source_endpoint_dependency_count > 0
+    source_endpoint_profile_dependency_registered = source_endpoint_profile_dependency_count > 0
+    no_legacy_unscoped_source_dependency = legacy_unscoped_source_endpoint_dependency_count == 0
     raw_dependency_registered = raw_dependency_count > 0
     analysis_run_registered = completed_analysis_run_count > 0
     no_pending_reanalysis = pending_reanalysis_count == 0
@@ -214,7 +249,8 @@ def review_public_api_statistics_health(database_path: Path) -> dict[str, Any]:
             capture_observed,
             schema_observed,
             acquisition_healthy,
-            source_endpoint_dependency_registered,
+            source_endpoint_profile_dependency_registered,
+            no_legacy_unscoped_source_dependency,
             raw_dependency_registered,
             analysis_run_registered,
         )
@@ -228,7 +264,7 @@ def review_public_api_statistics_health(database_path: Path) -> dict[str, Any]:
     )
 
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "review_kind": "official_public_api_statistics_source_health",
         "source_observatory": {
             "endpoint_registered": endpoint_registered,
@@ -243,14 +279,20 @@ def review_public_api_statistics_health(database_path: Path) -> dict[str, Any]:
             "generic_health_state": endpoint.get("health_state") if endpoint else None,
         },
         "analysis": {
-            "source_endpoint_dependency_count": source_endpoint_dependency_count,
+            "source_endpoint_profile_dependency_count": source_endpoint_profile_dependency_count,
+            "legacy_unscoped_source_endpoint_dependency_count": (
+                legacy_unscoped_source_endpoint_dependency_count
+            ),
             "raw_dependency_count": raw_dependency_count,
             "completed_analysis_run_count": completed_analysis_run_count,
             "pending_reanalysis_request_count": pending_reanalysis_count,
         },
         "verification": {
             "source_observatory_integrated": source_observatory_integrated,
-            "source_endpoint_dependency_registered": source_endpoint_dependency_registered,
+            "source_endpoint_profile_dependency_registered": (
+                source_endpoint_profile_dependency_registered
+            ),
+            "no_legacy_unscoped_source_dependency": no_legacy_unscoped_source_dependency,
             "raw_dependency_registered": raw_dependency_registered,
             "analysis_run_registered": analysis_run_registered,
             "no_pending_reanalysis": no_pending_reanalysis,
@@ -261,6 +303,8 @@ def review_public_api_statistics_health(database_path: Path) -> dict[str, Any]:
         "privacy": {
             "query_values_included": False,
             "dimension_values_included": False,
+            "profile_values_included": False,
+            "profile_fingerprints_included": False,
             "raw_ids_included": False,
             "request_fingerprints_included": False,
             "schema_fingerprints_included": False,
@@ -275,6 +319,7 @@ def review_public_api_statistics_health(database_path: Path) -> dict[str, Any]:
 __all__ = [
     "PUBLIC_API_STATISTICS_ENDPOINT_CODE",
     "observe_archived_public_api_statistics",
+    "private_public_api_statistics_profile_key",
     "review_public_api_statistics_health",
     "reviewed_public_api_contract",
 ]

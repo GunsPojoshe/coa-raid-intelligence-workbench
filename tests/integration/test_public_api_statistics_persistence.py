@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -8,9 +9,17 @@ from coa_workbench.analytics.public_api_population_priors import (
     population_prior_public_summary,
     read_public_api_population_priors,
 )
-from coa_workbench.normalizer.public_api_statistics import parse_public_api_statistics
+from coa_workbench.collector.source_observatory import register_artifact_dependency
+from coa_workbench.normalizer.canonical import stable_id
+from coa_workbench.normalizer.public_api_statistics import (
+    PUBLIC_API_STATISTICS_NORMALIZER_VERSION,
+    parse_public_api_statistics,
+)
 from coa_workbench.storage.migrations import apply_migrations
-from coa_workbench.storage.public_api_statistics import persist_public_api_statistics
+from coa_workbench.storage.public_api_statistics import (
+    PUBLIC_API_STATISTICS_PERSISTENCE_VERSION,
+    persist_public_api_statistics,
+)
 
 
 duckdb = pytest.importorskip("duckdb")
@@ -73,6 +82,7 @@ def test_public_api_statistics_persistence_replays_idempotently_and_reads_priors
     migrations = root / "migrations"
     apply_migrations(database, migrations)
     raw_id = "private-raw-id"
+    profile_key = "private-profile-fingerprint"
     with duckdb.connect(str(database)) as connection:
         connection.execute(
             """
@@ -83,11 +93,30 @@ def test_public_api_statistics_persistence_replays_idempotently_and_reads_priors
             [raw_id, "private-request", "private-payload-hash", "private/path.json.gz"],
         )
 
+    batch_id = stable_id(
+        "public_api_statistics_batch",
+        raw_id,
+        PUBLIC_API_STATISTICS_NORMALIZER_VERSION,
+    )
+    register_artifact_dependency(
+        database,
+        migrations,
+        artifact_type="public_api_population_statistics",
+        artifact_key=batch_id,
+        analysis_type="official_public_api_population_statistics",
+        analysis_version=PUBLIC_API_STATISTICS_PERSISTENCE_VERSION,
+        dependency_type="source_endpoint",
+        dependency_key="public_api_statistics",
+        dependency_version=PUBLIC_API_STATISTICS_NORMALIZER_VERSION,
+        metadata={"legacy_unscoped": True},
+    )
+
     first = persist_public_api_statistics(
         database_path=database,
         migrations_path=migrations,
         source_raw_id=raw_id,
         source_code="private_source",
+        source_profile_key=profile_key,
         batch=_batch(),
     )
     second = persist_public_api_statistics(
@@ -95,6 +124,7 @@ def test_public_api_statistics_persistence_replays_idempotently_and_reads_priors
         migrations_path=migrations,
         source_raw_id=raw_id,
         source_code="private_source",
+        source_profile_key=profile_key,
         batch=_batch(),
     )
 
@@ -107,9 +137,11 @@ def test_public_api_statistics_persistence_replays_idempotently_and_reads_priors
     assert second["spec_rows_inserted"] == 0
     assert second["spec_rows_matched"] == 2
     assert second["raw_dependency_registered"] is True
-    assert second["source_endpoint_dependency_registered"] is True
+    assert second["source_endpoint_profile_dependency_registered"] is True
+    assert second["legacy_unscoped_source_endpoint_dependency_active"] is False
     assert second["contains_source_scalar_values"] is False
     assert second["contains_source_raw_id"] is False
+    assert second["contains_source_profile_key"] is False
 
     snapshot = read_public_api_population_priors(
         database,
@@ -146,6 +178,7 @@ def test_public_api_statistics_persistence_replays_idempotently_and_reads_priors
             SELECT COUNT(*) FROM artifact_dependency
             WHERE dependency_type = 'raw_object'
               AND artifact_type = 'public_api_population_statistics'
+              AND active = TRUE
             """
         ).fetchone()[0] == 1
         assert connection.execute(
@@ -154,5 +187,22 @@ def test_public_api_statistics_persistence_replays_idempotently_and_reads_priors
             WHERE dependency_type = 'source_endpoint'
               AND dependency_key = 'public_api_statistics'
               AND artifact_type = 'public_api_population_statistics'
+              AND active = TRUE
             """
-        ).fetchone()[0] == 1
+        ).fetchone()[0] == 0
+        profile_row = connection.execute(
+            """
+            SELECT dependency_version, metadata_json
+            FROM artifact_dependency
+            WHERE dependency_type = 'source_endpoint_profile'
+              AND dependency_key = 'public_api_statistics'
+              AND artifact_type = 'public_api_population_statistics'
+              AND active = TRUE
+            """
+        ).fetchone()
+    assert profile_row is not None
+    assert str(profile_row[0]) == profile_key
+    metadata = json.loads(str(profile_row[1]))
+    assert metadata["profile_scoped"] is True
+    assert metadata["profile_fingerprint_public"] is False
+    assert profile_key not in str(profile_row[1])

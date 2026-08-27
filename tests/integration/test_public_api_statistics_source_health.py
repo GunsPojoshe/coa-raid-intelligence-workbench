@@ -8,6 +8,7 @@ import pytest
 from coa_workbench.collector.public_api_archive import load_latest_public_api_capture
 from coa_workbench.collector.public_api_source_health import (
     observe_archived_public_api_statistics,
+    private_public_api_statistics_profile_key,
     review_public_api_statistics_health,
 )
 from coa_workbench.collector.raw_archive import RawArchive, request_key_from_url
@@ -107,6 +108,7 @@ def test_archived_statistics_integrates_with_source_health_without_public_scalar
         registry=registry,
         capture=capture,
     )
+    profile_key = private_public_api_statistics_profile_key(registry, capture)
     batch = parse_public_api_statistics(
         capture.payload,
         query_keys=capture.query_keys,
@@ -117,6 +119,7 @@ def test_archived_statistics_integrates_with_source_health_without_public_scalar
         migrations_path=migrations,
         source_raw_id=capture.raw_id,
         source_code=registry.source_code,
+        source_profile_key=profile_key,
         batch=batch,
     )
 
@@ -130,13 +133,17 @@ def test_archived_statistics_integrates_with_source_health_without_public_scalar
     assert health["source_observatory"]["latest_acquisition_outcome"] == "schema_candidate"
     assert health["source_observatory"]["open_change_event_count"] == 1
     assert health["source_observatory"]["actionable_open_change_event_count"] == 0
-    assert health["analysis"]["source_endpoint_dependency_count"] == 1
+    assert health["analysis"]["source_endpoint_profile_dependency_count"] == 1
+    assert health["analysis"]["legacy_unscoped_source_endpoint_dependency_count"] == 0
     assert health["analysis"]["raw_dependency_count"] == 1
     assert health["analysis"]["completed_analysis_run_count"] == 1
     assert health["analysis"]["pending_reanalysis_request_count"] == 0
     assert health["verification"]["source_observatory_integrated"] is True
+    assert health["verification"]["source_endpoint_profile_dependency_registered"] is True
+    assert health["verification"]["no_legacy_unscoped_source_dependency"] is True
     assert health["verification"]["attention_required"] is False
     assert health["verification"]["planner_scoring_allowed"] is False
+    assert health["privacy"]["profile_fingerprints_included"] is False
     assert health["privacy"]["request_fingerprints_included"] is False
     assert health["privacy"]["schema_fingerprints_included"] is False
 
@@ -145,3 +152,4 @@ def test_archived_statistics_integrates_with_source_health_without_public_scalar
     assert "PrivateClass" not in rendered
     assert "PrivateSpec" not in rendered
     assert '"phase": "12"' not in rendered
+    assert profile_key not in rendered

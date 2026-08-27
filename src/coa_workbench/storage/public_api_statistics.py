@@ -14,6 +14,7 @@ from coa_workbench.normalizer.public_api_statistics import (
 from .migrations import apply_migrations
 
 PUBLIC_API_STATISTICS_PERSISTENCE_VERSION = "public-api-statistics-persistence-v1"
+PUBLIC_API_STATISTICS_PROFILE_DEPENDENCY_VERSION = "public-api-statistics-profile-dependency-v1"
 _ANALYSIS_TYPE = "official_public_api_population_statistics"
 _ARTIFACT_TYPE = "public_api_population_statistics"
 _ENDPOINT_CODE = "public_api_statistics"
@@ -98,13 +99,20 @@ def persist_public_api_statistics(
     migrations_path: Path,
     source_raw_id: str,
     source_code: str,
+    source_profile_key: str,
     batch: PublicApiStatisticsBatch,
 ) -> dict[str, Any]:
-    """Persist one exact normalized public statistics batch with deterministic replay semantics."""
+    """Persist one exact normalized public statistics batch with deterministic replay semantics.
+
+    The private source_profile_key binds later source-change reanalysis to the exact reviewed query
+    profile without exposing query values or the low-entropy-derived fingerprint in public receipts.
+    """
     if not source_raw_id:
         raise ValueError("source_raw_id cannot be empty")
     if not source_code:
         raise ValueError("source_code cannot be empty")
+    if not source_profile_key:
+        raise ValueError("source_profile_key cannot be empty")
 
     apply_migrations(database_path, migrations_path)
     try:
@@ -133,13 +141,14 @@ def persist_public_api_statistics(
         source_raw_id,
         PUBLIC_API_STATISTICS_NORMALIZER_VERSION,
     )
-    endpoint_dependency_id = stable_id(
+    profile_dependency_id = stable_id(
         "artifact_dependency",
         _ARTIFACT_TYPE,
         batch_id,
-        "source_endpoint",
+        "source_endpoint_profile",
         _ENDPOINT_CODE,
-        PUBLIC_API_STATISTICS_NORMALIZER_VERSION,
+        source_profile_key,
+        PUBLIC_API_STATISTICS_PROFILE_DEPENDENCY_VERSION,
     )
 
     batch_values = {
@@ -288,29 +297,66 @@ def persist_public_api_statistics(
                     ),
                 },
             )
+
+            connection.execute(
+                """
+                UPDATE artifact_dependency
+                SET active = FALSE
+                WHERE artifact_type = ?
+                  AND artifact_key = ?
+                  AND analysis_type = ?
+                  AND dependency_type = 'source_endpoint'
+                  AND dependency_key = ?
+                  AND active = TRUE
+                """,
+                [_ARTIFACT_TYPE, batch_id, _ANALYSIS_TYPE, _ENDPOINT_CODE],
+            )
             _insert_or_match(
                 connection,
                 table="artifact_dependency",
                 key_fields=("dependency_id",),
                 values={
-                    "dependency_id": endpoint_dependency_id,
+                    "dependency_id": profile_dependency_id,
                     "artifact_type": _ARTIFACT_TYPE,
                     "artifact_key": batch_id,
                     "analysis_type": _ANALYSIS_TYPE,
                     "analysis_version": PUBLIC_API_STATISTICS_PERSISTENCE_VERSION,
-                    "dependency_type": "source_endpoint",
+                    "dependency_type": "source_endpoint_profile",
                     "dependency_key": _ENDPOINT_CODE,
-                    "dependency_version": PUBLIC_API_STATISTICS_NORMALIZER_VERSION,
+                    "dependency_version": source_profile_key,
                     "active": True,
                     "metadata_json": _json(
                         {
                             "source_code": source_code,
                             "endpoint_code": _ENDPOINT_CODE,
                             "reanalysis_on_source_change": True,
+                            "profile_scoped": True,
+                            "profile_dependency_version": (
+                                PUBLIC_API_STATISTICS_PROFILE_DEPENDENCY_VERSION
+                            ),
+                            "profile_fingerprint_public": False,
                         }
                     ),
                 },
             )
+            legacy_unscoped_count = int(
+                connection.execute(
+                    """
+                    SELECT COUNT(*)
+                    FROM artifact_dependency
+                    WHERE artifact_type = ?
+                      AND artifact_key = ?
+                      AND analysis_type = ?
+                      AND dependency_type = 'source_endpoint'
+                      AND dependency_key = ?
+                      AND active = TRUE
+                    """,
+                    [_ARTIFACT_TYPE, batch_id, _ANALYSIS_TYPE, _ENDPOINT_CODE],
+                ).fetchone()[0]
+            )
+            if legacy_unscoped_count:
+                raise RuntimeError("legacy unscoped public statistics dependency remains active")
+
             connection.execute(
                 """
                 UPDATE analysis_run
@@ -326,6 +372,7 @@ def persist_public_api_statistics(
 
     return {
         "persistence_version": PUBLIC_API_STATISTICS_PERSISTENCE_VERSION,
+        "profile_dependency_version": PUBLIC_API_STATISTICS_PROFILE_DEPENDENCY_VERSION,
         "normalizer_version": PUBLIC_API_STATISTICS_NORMALIZER_VERSION,
         "status": "completed",
         "class_count": len(batch.class_summaries),
@@ -340,9 +387,11 @@ def persist_public_api_statistics(
         "analysis_run_registered": True,
         "source_dependency_registered": True,
         "raw_dependency_registered": True,
-        "source_endpoint_dependency_registered": True,
+        "source_endpoint_profile_dependency_registered": True,
+        "legacy_unscoped_source_endpoint_dependency_active": False,
         "contains_source_scalar_values": False,
         "contains_source_raw_id": False,
+        "contains_source_profile_key": False,
         "contains_output_fingerprint": False,
         "mechanic_semantics_verified": False,
         "site_tier_list_algorithm_verified": False,
@@ -352,5 +401,6 @@ def persist_public_api_statistics(
 
 __all__ = [
     "PUBLIC_API_STATISTICS_PERSISTENCE_VERSION",
+    "PUBLIC_API_STATISTICS_PROFILE_DEPENDENCY_VERSION",
     "persist_public_api_statistics",
 ]

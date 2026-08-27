@@ -10,8 +10,13 @@ from coa_workbench.analytics.public_api_population_priors import (
 )
 from coa_workbench.collector.public_api_archive import load_latest_public_api_capture
 from coa_workbench.collector.public_api_source_health import (
+    PUBLIC_API_STATISTICS_ENDPOINT_CODE,
     observe_archived_public_api_statistics,
+    private_public_api_statistics_profile_key,
     review_public_api_statistics_health,
+)
+from coa_workbench.collector.source_profile_reanalysis import (
+    resolve_profile_reanalysis_requests,
 )
 from coa_workbench.collector.source_registry import load_source_registry
 from coa_workbench.normalizer.canonical import stable_id
@@ -26,7 +31,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Replay the latest private official /statistics capture through Source Observatory, "
-            "normalize and persist it twice, and emit a scalar-safe idempotence/health receipt."
+            "normalize/persist it twice, reconcile profile-scoped reanalysis, and emit a "
+            "scalar-safe idempotence/health receipt."
         )
     )
     parser.add_argument(
@@ -52,7 +58,7 @@ def main() -> int:
     capture = load_latest_public_api_capture(
         args.raw_root,
         source_code=registry.source_code,
-        endpoint_code="public_api_statistics",
+        endpoint_code=PUBLIC_API_STATISTICS_ENDPOINT_CODE,
     )
     try:
         source_acquisition = observe_archived_public_api_statistics(
@@ -62,6 +68,7 @@ def main() -> int:
             registry=registry,
             capture=capture,
         )
+        source_profile_key = private_public_api_statistics_profile_key(registry, capture)
         batch = parse_public_api_statistics(
             capture.payload,
             query_keys=capture.query_keys,
@@ -77,6 +84,7 @@ def main() -> int:
         migrations_path=args.migrations,
         source_raw_id=capture.raw_id,
         source_code=registry.source_code,
+        source_profile_key=source_profile_key,
         batch=batch,
     )
     second = persist_public_api_statistics(
@@ -84,7 +92,13 @@ def main() -> int:
         migrations_path=args.migrations,
         source_raw_id=capture.raw_id,
         source_code=registry.source_code,
+        source_profile_key=source_profile_key,
         batch=batch,
+    )
+    profile_reanalysis = resolve_profile_reanalysis_requests(
+        args.database,
+        args.migrations,
+        endpoint_codes=(PUBLIC_API_STATISTICS_ENDPOINT_CODE,),
     )
 
     batch_id = stable_id(
@@ -105,7 +119,7 @@ def main() -> int:
     acquisition_summary = source_acquisition.public_summary()
 
     receipt = {
-        "schema_version": 2,
+        "schema_version": 3,
         "review_kind": "official_public_api_statistics_persistence",
         "normalization": {
             "normalizer_version": second["normalizer_version"],
@@ -137,7 +151,10 @@ def main() -> int:
             "raw_body_archived": acquisition_summary["raw_body_archived"],
             "schema_observation_recorded": acquisition_summary["schema_observation_recorded"],
             "change_event_count_this_replay": acquisition_summary["change_event_count"],
-            "reanalysis_request_count_this_replay": acquisition_summary["reanalysis_request_count"],
+            "reanalysis_request_count_this_replay": acquisition_summary[
+                "reanalysis_request_count"
+            ],
+            "profile_reanalysis": profile_reanalysis.public_summary(),
             "health": source_health,
         },
         "verification": {
@@ -146,13 +163,18 @@ def main() -> int:
             "documented_dimensions_persisted": True,
             "analysis_run_registered": second["analysis_run_registered"],
             "raw_dependency_registered": second["raw_dependency_registered"],
-            "source_endpoint_dependency_registered": second[
-                "source_endpoint_dependency_registered"
+            "source_endpoint_profile_dependency_registered": second[
+                "source_endpoint_profile_dependency_registered"
+            ],
+            "legacy_unscoped_source_endpoint_dependency_active": second[
+                "legacy_unscoped_source_endpoint_dependency_active"
             ],
             "source_observatory_integrated": source_health["verification"][
                 "source_observatory_integrated"
             ],
-            "source_health_attention_required": source_health["verification"]["attention_required"],
+            "source_health_attention_required": source_health["verification"][
+                "attention_required"
+            ],
             "site_tier_list_algorithm_verified": False,
             "planner_scoring_allowed": False,
         },
@@ -167,6 +189,7 @@ def main() -> int:
             "percentile_scalar_values_included": False,
             "raw_ids_included": False,
             "fingerprints_included": False,
+            "profile_fingerprints_included": False,
             "raw_paths_included": False,
         },
         "public_release_safe": True,
