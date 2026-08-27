@@ -1,19 +1,17 @@
 # Continuation prompt — current project state
 
-Updated: **2026-08-26**.
-
-Use this to continue development in a fresh session.
+Updated: **2026-08-27**.
 
 ## Repository
 
 ```text
 GunsPojoshe/coa-raid-intelligence-workbench
 local: C:\Users\Simpa\source\repos\coa-raid-intelligence-workbench
-active workstream: e4/interactive-har-discovery
+active canonical workstream: e4/interactive-har-discovery
 Draft PR #9 -> e3/real-log-capture
 ```
 
-Do not trust stored HEAD/CI values. Perform live GitHub checks first.
+Perform live GitHub HEAD/PR/CI checks first. Stored SHAs/run numbers are checkpoints only.
 
 ## Read in order
 
@@ -26,21 +24,22 @@ docs/COA_TARGET_PRODUCT_DEFINITION.md
 docs/PROJECT_MASTER_CONTEXT.md
 docs/PROJECT_STATE.md
 docs/OFFICIAL_PUBLIC_API.md
+docs/SOURCE_OBSERVABILITY_AND_REANALYSIS.md
 docs/UPSTREAM_ASCENSION_LOGS_EVIDENCE.md
 docs/LOCAL_WORKSPACE_BOUNDARY.md
 docs/CI_OPERATIONS.md
 docs/WINDOWS_DEVELOPMENT_ENVIRONMENT.md
 ```
 
-Historical dated handoffs/experiments do not override this list.
+Historical handoffs/experiments do not override this order.
 
 ## Product question
 
 > **Почему конкретный человек нужен именно текущему составу?**
 
-Maintain fail-closed semantics: observation/field/UI labels are not automatic mechanic proof.
+Maintain fail-closed semantics: observation/field/UI label/population metric is not automatic mechanic or planner proof.
 
-## Current source order
+## Source order
 
 ```text
 official documented public API
@@ -51,139 +50,109 @@ narrow browser/network fallback
 structural inference last
 ```
 
-## Current real API checkpoint
+## Official aggregate API — completed real gate
 
-Self-service `stats:read` is reviewed and real-tested:
-
-```text
-/phases: archived and reviewed
-/bosses: archived and reviewed
-/statistics: current-phase HTTP 200, archived and shape-reviewed
-```
-
-Public-safe shape:
+The first aggregate vertical slice is now real-proven:
 
 ```text
-statistics top-level entries: 21
-max depth: 5
-objects with documented metric fields: 83
-statistics_normalization_ready: true
+/phases + /bosses: archived/reviewed
+provenance-aware /statistics: HTTP 200, archived
+request context complete: true
+exact normalization: 21 classes / 62 specs / 806 percentile values
+first persistence: 21 class + 62 spec rows inserted
+second persistence: 21 class + 62 spec rows matched, zero inserts
+idempotent: true
+population-prior records: 62
+records with local_parse_share: 62
+analysis_run registered: true
+raw source dependency registered: true
+planner scoring: false
+site Tier List algorithm: unverified
 ```
 
-Default key file:
+Canonical new real receipts:
 
 ```text
-data/private/coa-logs-api-key.txt
+evidence/real-data/coa-public-api-statistics-provenance-capture-real.json
+evidence/real-data/coa-public-api-statistics-persistence-real.json
 ```
 
-Never request/paste the key unless a local execution genuinely cannot proceed without operator action; the capture CLI reads the existing file itself.
+Do **not** repeat this capture/persistence proof on restart.
 
-## Statistics implementation checkpoint
+## Current exact gate
 
-Implemented and deterministic-test verified:
+Integrate the already proven aggregate artifact with Source Observatory / Source & Analysis Health.
+
+Implementation provides:
 
 ```text
-exact fail-closed StatisticsResponse parser
-private request-scope provenance for new captures
-migration 0013_public_api_statistics
-normalized aggregate batch/class/spec persistence
-analysis_run + raw_object dependency registration
-insert-or-match replay semantics
-population-prior read model
-scalar-safe persistence-review CLI
+private archived capture replay -> reviewed request reconstruction
+/statistics request dimensions -> private schema profile
+source_capture + source_schema_snapshot + acquisition observation
+source_endpoint=public_api_statistics artifact dependency
+scalar-safe aggregate health review
 ```
 
-The implementation is not yet claimed real-proven because the existing archived real capture predates private request-value provenance.
+The real health proof requires only replaying the already archived successful response. It must not perform another network request.
 
-Historical capture request keys include:
-
-```text
-phase
-difficulty
-metric
-bracket
-damageMode
-role
-```
-
-The response does not echo `role`. Therefore the exact requested role value is irrecoverable from that archived observation. Do **not** infer `role=dps` from current CLI defaults. The parser intentionally fails closed.
-
-New captures retain exact prepared query values only in ignored/private RawArchive observation metadata. Public receipts continue to omit query values and source scalars.
-
-## Exact next operator gate
-
-Do **not** start with HAR, Playwright, a new difficulty heuristic, `events:read` or the historical helper patch.
-
-After syncing the exact E4 HEAD, run:
+Expected operator command after syncing the current E4 implementation:
 
 ```powershell
-uv run --no-sync python scripts/capture_current_public_api_statistics.py
 uv run --no-sync python scripts/persist_public_api_statistics.py
 ```
 
-Expected semantics, not expected source counts:
-
-```text
-capture: one bounded official stats:read /statistics request
-persistence first pass: normalized rows inserted or matched if already present
-persistence second pass: zero new normalized rows and all expected rows matched
-receipt: scalar-safe counts/booleans only
-```
-
-The review output is:
+Review only the generated scalar-safe receipt:
 
 ```text
 data/exchange/out/coa-public-api-statistics-persistence-review.json
 ```
 
-Request/share only that scalar-safe output for review. Do not request the raw capture, exact query values, API key or DuckDB.
+Do not ask for RawArchive, DuckDB, API key, query values or raw response.
 
-If the real receipt proves replay/idempotence, promote a reviewed copy to `evidence/real-data/` and update the canonical state from “implementation verified” to “real persistence/idempotence proven”. Then review Source & Analysis Health integration for the aggregate artifact.
+## Source-health semantics
 
-Dynamic class/spec keys are runtime values; do not hardcode current names or publish them in scalar-safe receipts.
+First Source Observatory registration may leave one informational `endpoint_added` event open. That is baseline provenance, not by itself an actionable problem.
 
-## Retained report evidence
+Aggregate dedicated health should distinguish:
 
-E3 report persistence/analytics/generalization remains valid. Two reports passed the generic pipeline. Structural cross-report cohorts exist, but historical difficulty equivalence is still `insufficient_evidence`; numeric comparison for that pair remains blocked.
+```text
+informational baseline event -> retained, not attention-required
+actionable warning/error source change -> attention-required
+pending reanalysis -> attention-required
+healthy acquisition/schema/dependencies/analysis -> integrated
+```
 
-Do not confuse the independent official aggregate statistics lane with that historical blocker.
+Future source changes matter because the aggregate artifact now declares both exact `raw_object` and logical `source_endpoint=public_api_statistics` dependencies.
+
+## Historical report evidence
+
+E3 report persistence/analytics/generalization remains valid on two reports. Historical difficulty equivalence remains `insufficient_evidence`; numeric comparison for that pair remains blocked. Do not resume a difficulty-v4 heuristic.
 
 ## Upstream source
 
-Pinned Companion source remains a first-class client-state evidence provider. Use executable code for client behavior; treat comments/backend claims as hypotheses.
+```text
+FangYuanWoW/AscensionLogsCompanion
+main @ 0f63fe9c50b470402e3a29fba2e0322095856fd4
+version 0.67.2
+```
+
+Use executable code for client behavior; treat comments/backend claims as hypotheses.
 
 ## Browser/HAR
 
-Fallback only for an exact undocumented gap after stronger sources are exhausted. No anti-bot evasion.
+Fallback only for an exact undocumented gap. No anti-bot evasion.
 
-## Local workspace audit — completed checkpoint
+## Local workspace audit
 
-The real Windows metadata inventory and its sole Git-visible untracked implementation candidate have already been reviewed for the 2026-08-26 checkpoint.
-
-Checkpoint state:
-
-```text
-modified tracked files: 0
-missing tracked files: 0
-Git-visible untracked files: 1
-local-only exact file audit: complete/classified
-```
-
-The single candidate was a historical E3 helper-analysis patch. It is valuable but incomplete: it modifies current-lineage source/test files but depends on absent shared module `coa_workbench.collector.guild_progression_js_lexical`. The patch must be preserved privately and **not applied as-is**.
-
-Do **not** ask the operator to re-upload the same workspace inventory or historical patch just because a chat restarted. Re-run inventory only after material local changes or if a new unknown modified/untracked implementation candidate appears.
-
-Do not request broad directory listings or the raw private corpus. RawArchive, DuckDB, API-key, Browser Observatory state and HAR inputs remain private/local evidence.
+Already completed. The historical helper patch is valuable but incomplete because it depends on missing `coa_workbench.collector.guild_progression_js_lexical`. Preserve privately; do not apply as-is and do not re-request the same patch/inventory on restart.
 
 ## Branch/integration debt
-
-Staged chain:
 
 ```text
 main <- e2 (#3) <- e3 (#7) <- e4 (#9)
 ```
 
-Resolve branch integration deliberately after current work is coherent; do not blindly choose old document versions or merge Draft PRs just to clear a warning.
+Resolve lower-chain integration debt deliberately; do not blindly choose older canonical document versions.
 
 ## Verification
 

@@ -6,20 +6,20 @@ Primary product question:
 
 > **Почему конкретный человек нужен именно текущему составу?**
 
-The project is not a DPS-ranking scraper. Its trust model requires every important conclusion to preserve provenance from source observation through reviewed transformation to the final analytical claim.
+The project is not a DPS-ranking scraper. Every important conclusion must preserve provenance from source observation through reviewed transformation to the analytical claim.
 
-## Current workstreams
+## Current workstream
 
 ```text
 e3/real-log-capture
-  stable/canonical report-evidence baseline
+  stable report-evidence baseline
 
 e4/interactive-har-discovery
-  current isolated source-discovery / official-API branch
+  active official-API / upstream-evidence workstream
   Draft PR #9 -> e3/real-log-capture
 ```
 
-The E4 branch name is historical. The active E4 paradigm is **official-API + upstream-source first**; Browser Observatory/HAR is a fallback tool.
+The E4 branch name is historical. Browser Observatory/HAR is now a fallback tool.
 
 ## Source priority
 
@@ -34,17 +34,9 @@ The E4 branch name is historical. The active E4 paradigm is **official-API + ups
 
 See `docs/CURRENT_PARADIGM.md` and `docs/DOCUMENTATION_INDEX.md`.
 
-## Current official API lane
+## Official aggregate API — real proven state
 
-Reviewed contract:
-
-```text
-https://coa.ascensionlogs.gg/api/public/v1/openapi.json
-OpenAPI 3.1.0
-API version 1.0.0
-```
-
-Self-service `stats:read`:
+Reviewed self-service `stats:read` routes:
 
 ```text
 GET /phases
@@ -52,38 +44,66 @@ GET /bosses
 GET /statistics
 ```
 
-Experimental/on-request `events:read` is a separate future research lane and is not used by the current aggregate collector.
-
-Real evidence currently proves:
+Real scalar-safe evidence proves:
 
 ```text
-phases:                              3
-active/current phase candidates:     1
-bosses:                            285
-unique stable boss_id values:      285
-first current-phase /statistics: HTTP 200, archived
-statistics top-level entries:       21
-statistics max observed depth:       5
-objects with documented metrics:    83
-statistics normalization ready:   true
+phase records:                         3
+active/current phase candidates:       1
+boss records:                         285
+unique stable boss_id values:         285
+provenance-aware /statistics:    HTTP 200, archived
+response bytes:                     21306
+normalized classes:                   21
+normalized specs:                     62
+percentile scalar values normalized: 806
+second-pass replay:            idempotent
+population-prior records:              62
+records with local_parse_share:        62
 ```
 
-The real statistics shape receipt does not publish class/spec names, difficulty values, query values or numeric source metrics.
+The real two-pass persistence proof inserted 21 class rows and 62 spec rows on the first pass, then matched all 21/62 with zero new rows on the second pass.
 
-The repository now also contains the deterministic aggregate implementation:
+Canonical real receipts:
+
+```text
+evidence/real-data/coa-public-api-catalog-real.json
+evidence/real-data/coa-public-api-statistics-capture-real.json
+evidence/real-data/coa-public-api-statistics-shape-real.json
+evidence/real-data/coa-public-api-statistics-provenance-capture-real.json
+evidence/real-data/coa-public-api-statistics-persistence-real.json
+```
+
+They do not publish query values, class/spec names, difficulty/phase scalars, metric values, raw IDs or API credentials.
+
+## Aggregate implementation
 
 ```text
 exact fail-closed StatisticsResponse parser
+private request-scope provenance for new captures
 migration 0013_public_api_statistics
-DuckDB insert-or-match persistence
-analysis_run + raw-object dependency provenance
+DuckDB batch/class/spec persistence
+analysis_run provenance
+raw-object + source-endpoint artifact dependencies
 population-prior read model over documented dimensions
-scalar-safe replay receipt generator
+Source Observatory replay from the existing RawArchive
+scalar-safe Source & Analysis Health review
 ```
 
-Unit/integration verification proves the implementation path on deterministic fixtures. **Real archived-capture replay is not yet proven.** The historical real `/statistics` capture predates private request-value provenance and does not retain the requested non-echoed `role` value, so the parser intentionally refuses to guess it from CLI defaults.
+The Source Observatory integration is deliberately replayable from the already archived response: it does **not** require another API request. Request dimensions partition schema baselines through private schema-profile keys so different `/statistics` scopes are not compared as if they were the same contract instance.
 
-## Local API key and request provenance
+## Population-prior boundary
+
+`public_api_population_prior_v1` preserves the documented aggregates and derives:
+
+```text
+local_parse_share = spec total_parses / sum(spec total_parses in the same batch)
+```
+
+This is descriptive participation within one explicit API scope. It is **not** the site's Tier List score, a gameplay capability score or a planner score.
+
+Planner scoring remains blocked.
+
+## Local API key and private request provenance
 
 Default private key file:
 
@@ -91,11 +111,31 @@ Default private key file:
 data/private/coa-logs-api-key.txt
 ```
 
-`data/private/**` is Git-ignored. The capture CLI prefers this file and may fall back to `COA_LOGS_API_KEY`. Never place the API key in a CLI argument, query string, Git artifact, RawArchive metadata, screenshot or public receipt.
+The key must never enter Git, request URLs, RawArchive metadata, CLI values, logs, screenshots or public receipts.
 
-New `/statistics` captures retain their exact prepared query values only in **private RawArchive observation metadata** so later normalization can prove the analytical scope. Public capture/replay receipts still expose query keys/counts/booleans only and never publish those scalar values.
+Exact prepared `/statistics` query values are different from credentials. They are retained only in ignored/private RawArchive observation metadata because exact request scope is required for reproducible normalization. They are excluded from public receipts and Git evidence.
 
-## Quick verification
+## Current operator workflow
+
+Capture a new bounded current-phase aggregate only when fresh source evidence is actually needed:
+
+```powershell
+uv run --no-sync python scripts/capture_current_public_api_statistics.py
+```
+
+Replay the latest already archived response through Source Observatory, exact normalization, persistence and two-pass idempotence:
+
+```powershell
+uv run --no-sync python scripts/persist_public_api_statistics.py
+```
+
+The second command performs no network request and writes a scalar-safe receipt to:
+
+```text
+data/exchange/out/coa-public-api-statistics-persistence-review.json
+```
+
+## Verification
 
 Python requirement: **3.12+**.
 
@@ -104,7 +144,7 @@ uv sync --frozen --extra dev --no-build-package ruff
 uv run --no-sync python scripts/verify_repo.py
 ```
 
-GitHub CI must pass for the exact pushed HEAD:
+Required exact-head CI jobs:
 
 ```text
 public-release-audit
@@ -112,43 +152,15 @@ ubuntu
 windows
 ```
 
-## Current API workflow
-
-Catalog review from already archived `/phases` + `/bosses`:
-
-```powershell
-uv run --no-sync python scripts/review_public_api_catalog.py
-```
-
-Bounded current-phase aggregate capture:
-
-```powershell
-uv run --no-sync python scripts/capture_current_public_api_statistics.py
-```
-
-Scalar-safe statistics shape review:
-
-```powershell
-uv run --no-sync python scripts/review_public_api_statistics.py
-```
-
-Exact normalization + persistence + second-pass idempotence review of the latest private capture:
-
-```powershell
-uv run --no-sync python scripts/persist_public_api_statistics.py
-```
-
-The next **real-evidence** gate is one new bounded `/statistics` capture using the provenance-aware collector followed by the persistence command above. Do not upload the raw payload, query values, API key or DuckDB; only the generated scalar-safe review receipt is eligible for publication after review.
-
 ## Historical report lane
 
-The E3 report pipeline remains valuable for private report-specific analytics, source observability and corroboration. The existing two-report difficulty/equivalence investigation remains `insufficient_evidence`; numeric cross-report scoring for that historical pair stays blocked.
+The E3 report pipeline remains the report-specific evidence path. Two reports passed the generic persistence/analytics pipeline. Historical two-report difficulty equivalence remains `insufficient_evidence`, therefore numeric comparison of that historical pair remains blocked.
 
 No difficulty-v4 heuristic is planned simply to force an answer.
 
 ## Client-source lane
 
-Pinned source evidence:
+Pinned executable evidence:
 
 ```text
 FangYuanWoW/AscensionLogsCompanion
@@ -156,7 +168,7 @@ main @ 0f63fe9c50b470402e3a29fba2e0322095856fd4
 version 0.67.2
 ```
 
-The repository contains deterministic Lua source inventory/lineage tools. Executable upstream code is strong evidence of client behavior; comments/backend notes are hypotheses until corroborated.
+Executable upstream code is strong evidence of client behavior. Comments/backend notes remain hypotheses until corroborated.
 
 ## Repository layout
 
@@ -166,38 +178,30 @@ src/coa_workbench/collector/    source contracts/acquisition/observability
 src/coa_workbench/normalizer/   normalization
 src/coa_workbench/planner/      planner layer, trust-gated
 src/coa_workbench/storage/      DuckDB persistence/read models
-src/coa_workbench/web/          localhost API/UI
-scripts/                        durable project/operator commands
+src/coa_workbench/web/          localhost application/API
+scripts/                        durable operator/review commands
 config/                         reviewed source/mapping configuration
-migrations/                     forward-only DuckDB migrations (currently 0001-0013)
+migrations/                     forward-only migrations 0001-0013
 tests/                          deterministic coverage
 evidence/real-data/             scalar-safe real receipts only
 docs/                           current + historical documentation
 ```
 
-## Private/local workspace
+## Local workspace safety
 
-Git is not the whole operational corpus. Ignored/untracked raw data, DuckDB, API captures and helper artifacts can be authoritative local inputs and must not be destroyed as “cleanup”.
-
-For an exact workstation integrity audit:
+Ignored/untracked RawArchive, DuckDB, API captures and helper artifacts may be authoritative local state. Do not clean or reset them merely to make Git look clean.
 
 ```powershell
 uv run --no-sync python scripts/inventory_local_workspace.py
 ```
 
-Private manifest:
-
-```text
-data/private/local-workspace-inventory.json
-```
-
-The inventory reads metadata only, not file contents or secret values. See `docs/LOCAL_WORKSPACE_AUDIT.md`.
+The historical local helper patch has already been reviewed: preserve it privately and do not apply it as-is.
 
 ## Trust boundary
 
-Do not infer mechanics from field names, UI labels, talent names, item metadata or one combat result. Do not equate character name with identity. Do not expose private IDs/names/query values/dynamic keys through public receipts or low-entropy hashes.
+Do not infer mechanics from field names, UI labels, talent/item names or one combat result. Do not equate character name with cross-report identity. Do not expose private source scalars through public receipts or low-entropy hashes.
 
-Population aggregates can be normalized and persisted, but **planner scoring remains blocked** until identity, mechanic, composition and interpretation gates are separately proven. The workbench-derived `local_parse_share` is descriptive participation within one persisted aggregate batch, not the site's Tier List score and not a roster score.
+Population aggregates are now real-proven through normalization/persistence/idempotence. That does **not** unlock planner scoring; identity, mechanic, encounter-requirement and composition reasoning remain separate evidence gates.
 
 ## Documentation
 
@@ -212,4 +216,4 @@ docs/OFFICIAL_PUBLIC_API.md
 docs/CONTINUATION_PROMPT.md
 ```
 
-Dated experiment documents are retained as historical evidence and do not override current state.
+Dated experiments are historical evidence and do not override the canonical documents above.

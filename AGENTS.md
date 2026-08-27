@@ -4,15 +4,15 @@ These instructions apply to the whole repository.
 
 ## Mission
 
-Build a localhost-first, evidence-first raid intelligence system **only for Conquest of Azeroth** that can eventually explain:
+Build a localhost-first, evidence-first system **only for Conquest of Azeroth** that can eventually explain:
 
 > Why is this specific player needed by this exact current roster?
 
-Planner scoring is fail-closed. Only separately corroborated/confirmed mechanics and reviewed analytical semantics may enter canonical recommendations.
+Planner scoring is fail-closed. Only separately corroborated mechanics and reviewed analytical semantics may enter canonical recommendations.
 
 ## Documentation authority
 
-Before continuing substantial work, read:
+Before substantial work read:
 
 ```text
 docs/DOCUMENTATION_INDEX.md
@@ -20,19 +20,15 @@ docs/CURRENT_PARADIGM.md
 docs/PROJECT_STATE.md
 ```
 
-Dated milestone/experiment documents are history unless the documentation index explicitly marks them current. Do not restart an old “next gate” from a historical handoff.
+Dated milestone/experiment documents are history unless the documentation index explicitly marks them current.
 
 ## Responsibility split
 
-The agent performs everything available through connected tooling: GitHub repository/branch/PR/CI inspection, source/config/migration/evidence inspection, documentation, and safe repository mutations.
+Use connected tooling for GitHub repository/branch/PR/CI inspection, source/config/migration/evidence review, documentation and safe repository changes. Ask the operator only for the exact local/private Windows boundary that remote tooling cannot see.
 
-The operator is required only for the exact local Windows/private boundary that remote tooling cannot see. When local work is required, prefer one bounded command/script producing one compact handoff.
+Private/raw files are valid analysis inputs. Privacy constrains publication/versioning, not private deterministic processing.
 
-Private/raw files are valid analysis inputs. Privacy constrains **publication/versioning**, not private inspection.
-
-## Current source priority
-
-For Ascension Logs questions, prefer the strongest available source:
+## Source priority
 
 ```text
 1. official documented CoA Ascension Logs public API
@@ -43,13 +39,11 @@ For Ascension Logs questions, prefer the strongest available source:
 6. structural inference only after stronger sources are exhausted
 ```
 
-Do not use Browser Observatory/HAR to rediscover a contract already documented by the official API or executable upstream source.
-
-A timestamped source response is an observation, not permanent source semantics.
+Do not use Browser Observatory/HAR to rediscover an already documented contract.
 
 ## Official public API lane
 
-Reviewed contract:
+Reviewed source:
 
 ```text
 https://coa.ascensionlogs.gg/api/public/v1/openapi.json
@@ -64,43 +58,59 @@ GET /bosses
 GET /statistics
 ```
 
-Experimental/on-request `events:read` is a separate scope and must not be assumed available.
+Experimental/on-request `events:read` is separate and must not be assumed available.
 
-Default local credential file:
+Default credential file:
 
 ```text
 data/private/coa-logs-api-key.txt
 ```
 
-The API key must never enter Git, RawArchive metadata, query strings, CLI values, logs, screenshots, receipts or hashes intended for publication.
+The API key must never enter Git, RawArchive metadata, query strings, CLI values, logs, screenshots, public receipts or public hashes.
 
-Exact request dimensions are different from credentials. For provenance-aware aggregate captures, exact prepared `/statistics` query values may be stored only in **private ignored RawArchive observation metadata**. They must never be copied to public receipts, Git evidence, screenshots or low-entropy public hashes.
+Exact `/statistics` request dimension values may be retained only in ignored/private RawArchive observation metadata because the normalizer must prove its request scope. Never publish those values or low-entropy hashes of them.
 
-The exact StatisticsResponse parser, migration 0013 persistence and population-prior read model are implemented. The current official-API gate is **one new bounded provenance-aware `/statistics` capture + real two-pass persistence/idempotence proof**. Do not infer a missing historical request dimension from CLI defaults.
-
-## Report / Source Observatory lane
-
-The E3 report pipeline remains canonical for report-specific evidence:
+Current real aggregate state:
 
 ```text
-reviewed request contract
+provenance-aware capture: proven
+exact normalization: proven
+DuckDB persistence: proven
+second-pass idempotence: proven
+population-prior read model: proven
+Source Observatory/Health integration: current gate
+planner scoring: blocked
+```
+
+Do not repeat the already completed capture/persistence proof merely because a session restarted.
+
+## Source Observatory lane
+
+The generic evidence loop is:
+
+```text
+reviewed contract
 -> immutable RawArchive
 -> acquisition observation
 -> schema/profile/scope observation
 -> source change event
 -> artifact dependency
 -> scoped reanalysis
--> deterministic analytics
+-> deterministic analysis
 -> Source & Analysis Health
 ```
 
-Generic dynamic-template ingestion is prohibited. Dynamic concrete requests require reviewed/correlated resolution and safe publication boundaries.
+For official `/statistics`, request dimensions are schema-profile keys: source-shape comparison must occur only within a compatible private request scope. The aggregate artifact depends on both the exact `raw_object` and logical `source_endpoint=public_api_statistics`, so future compatible endpoint changes can target it for reanalysis.
 
-The historical two-report difficulty equivalence result remains `insufficient_evidence`. Do not manufacture a v4 heuristic merely to make numeric comparison pass.
+Generic dynamic-template ingestion is prohibited. Unknown semantics stay unknown.
+
+## Historical report lane
+
+The E3 report pipeline remains canonical for report-specific evidence. Historical two-report difficulty equivalence remains `insufficient_evidence`; do not manufacture a v4 heuristic or perform blocked numeric comparison.
 
 ## Upstream source lane
 
-Pinned executable source evidence currently includes:
+Pinned executable source:
 
 ```text
 FangYuanWoW/AscensionLogsCompanion
@@ -108,26 +118,13 @@ main @ 0f63fe9c50b470402e3a29fba2e0322095856fd4
 version 0.67.2
 ```
 
-Executable code can establish client behavior and emitted structure. Comments/backend claims are hypotheses until independently corroborated. Lua identifiers are not gameplay-mechanic proof.
+Executable code can establish client behavior and emitted structure. Comments/backend claims remain hypotheses until independently corroborated.
 
 ## Browser/HAR fallback
 
-Browser Observatory and manual HAR remain provider-neutral forensic/discovery tools for unresolved gaps.
-
-Do not implement or advise:
-
-```text
-stealth/fingerprint spoofing
-challenge solving
-proxy rotation to evade controls
-anti-bot bypass
-```
-
-Do not treat a UI label as a backend contract. Repeated UI/network correlation is structural evidence only.
+Use only for a specific unresolved gap after stronger sources are exhausted. Do not implement or advise stealth, fingerprint spoofing, challenge solving, proxy rotation for evasion or anti-bot bypass.
 
 ## Local workspace safety
-
-Git is not the whole operational corpus. Ignored/untracked files may be authoritative project state.
 
 Never:
 
@@ -138,17 +135,15 @@ recursively delete ignored/private trees
 stage data/private, raw HAR, raw payloads or secrets
 ```
 
-For exact local inventory use:
+For exact local inventory:
 
 ```powershell
 uv run --no-sync python scripts/inventory_local_workspace.py
 ```
 
-The private manifest is `data/private/local-workspace-inventory.json`.
+The historical local helper patch is already classified as valuable incomplete WIP; preserve it privately and do not apply it as-is.
 
 ## Branch topology
-
-Active staged integration chain:
 
 ```text
 main
@@ -157,13 +152,11 @@ main
         └── e4/interactive-har-discovery  Draft PR #9
 ```
 
-Always inspect live mergeability before assuming the chain is clean. Resolve lower-chain debt deliberately; do not merge Draft PRs merely because CI is green.
+Always inspect live mergeability. Resolve lower-chain integration debt deliberately; do not merge Draft PRs merely to clear warnings.
 
 Never rewrite published migrations.
 
 ## Verification
-
-Development cadence:
 
 ```text
 focused tests

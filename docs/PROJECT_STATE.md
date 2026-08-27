@@ -1,6 +1,6 @@
 # Фактическое состояние проекта
 
-Дата актуализации: **2026-08-26**.
+Дата актуализации: **2026-08-27**.
 
 Canonical restart order:
 
@@ -23,9 +23,7 @@ main
         └── e4/interactive-har-discovery  Draft PR #9 -> e3
 ```
 
-The lower staged integration debt is separate from the active E4 workstream. Do not merge Draft PRs merely to clear UI warnings and do not blindly choose an older canonical-document side during conflict resolution.
-
-Always re-check live state; stored SHAs/run numbers are checkpoints only.
+The lower staged integration debt is separate from active E4 work. Always re-check live branch/PR/CI state; stored SHAs are checkpoints only.
 
 ## Product state
 
@@ -35,7 +33,7 @@ Primary question:
 
 > **Почему конкретный человек нужен именно текущему составу?**
 
-Planner scoring remains blocked until its required semantics are independently proven.
+Planner scoring remains blocked until its required identity, mechanic, encounter and composition semantics are separately proven.
 
 ## Current paradigm
 
@@ -48,11 +46,9 @@ official documented public API
 -> structural inference last
 ```
 
-This supersedes the old Browser-first/difficulty-first operating priority.
+## Official API — real-proven aggregate vertical slice
 
-## Official API — real evidence + implemented normalization path
-
-Contract:
+Reviewed contract:
 
 ```text
 OpenAPI 3.1.0
@@ -60,82 +56,119 @@ API version 1.0.0
 stats:read: /phases, /bosses, /statistics
 ```
 
-Real public-safe evidence:
+Real scalar-safe evidence:
 
 ```text
 phase records: 3
 active/current candidate: 1
 boss records: 285
 unique stable boss_id values: 285
-/statistics capture: HTTP 200, archived
+provenance-aware /statistics: HTTP 200, archived
+response bytes: 21306
 statistics top-level entries: 21
-statistics max depth: 5
-objects with documented metric fields: 83
-statistics normalization ready: true
+normalized class summaries: 21
+normalized spec records: 62
+normalized percentile scalar values: 806
+population-prior records: 62
+records with local_parse_share: 62
 ```
 
-Canonical real receipts currently present:
+Real persistence proof:
+
+```text
+first pass:
+  batch inserted: true
+  class rows inserted: 21
+  spec rows inserted: 62
+
+second pass:
+  batch matched: true
+  class rows inserted: 0
+  class rows matched: 21
+  spec rows inserted: 0
+  spec rows matched: 62
+  idempotent: true
+```
+
+Also proven by the real receipt:
+
+```text
+request context complete: true
+analysis_run registered: true
+raw source dependency registered: true
+documented dimensions persisted: true
+population-prior read model available: true
+site Tier List algorithm verified: false
+planner scoring allowed: false
+```
+
+Canonical real receipts:
 
 ```text
 evidence/real-data/coa-public-api-catalog-real.json
 evidence/real-data/coa-public-api-statistics-capture-real.json
 evidence/real-data/coa-public-api-statistics-shape-real.json
+evidence/real-data/coa-public-api-statistics-provenance-capture-real.json
+evidence/real-data/coa-public-api-statistics-persistence-real.json
 ```
 
-Implementation now present and deterministic-test verified:
+The last two are the real provenance-aware capture and real persistence/idempotence proof. They contain no query values, class/spec names, private dimensions, raw IDs/fingerprints or API credentials.
+
+## Aggregate implementation
+
+Implemented:
 
 ```text
 src/coa_workbench/normalizer/public_api_statistics.py
 src/coa_workbench/collector/public_api_archive.py
+src/coa_workbench/collector/public_api_source_health.py
 src/coa_workbench/storage/public_api_statistics.py
 src/coa_workbench/analytics/public_api_population_priors.py
 migrations/0013_public_api_statistics.sql
 scripts/persist_public_api_statistics.py
 ```
 
-It provides:
+Capabilities:
 
 ```text
-exact fail-closed parser for the reviewed aggregate shape
-private request-scope provenance for new captures
+fail-closed exact StatisticsResponse parser
+private request-scope provenance
 normalized batch/class/spec persistence
-analysis_run + raw_object artifact dependency
-insert-or-match replay semantics
-population-prior read model by documented dimensions
-scalar-safe persistence/replay receipt generation
+deterministic insert-or-match replay
+analysis_run provenance
+raw_object artifact dependency
+source_endpoint=public_api_statistics artifact dependency
+population-prior read model
+Source Observatory replay from existing RawArchive
+scalar-safe aggregate Source & Analysis Health receipt
 ```
 
-### Real replay gate: why a new capture is required
+The `source_endpoint` dependency is important: future compatible changes observed on `/statistics` can target the aggregate artifact for scoped reanalysis. Request-shaping dimensions are schema-profile keys so unrelated API scopes do not share one schema baseline.
 
-The historical real `/statistics` observation stored query **keys** only. Its request included `role`, but the response does not echo `role`; therefore the exact requested role value cannot be reconstructed from archived provenance.
+### Current real gate
 
-Do not infer it from the capture CLI default. The parser fails closed and requires a bounded recapture instead.
-
-New captures now keep exact prepared query values only in **private RawArchive observation metadata**. Public receipts still contain no query values or source scalar values.
-
-Current real-evidence gate:
+The aggregate data itself no longer needs recapture. Remaining proof is local replay of the **already archived** successful response through the new Source Observatory integration:
 
 ```text
-one new bounded /statistics capture
--> parse/persist against the new private request provenance
--> persist the same archived capture twice
--> prove insert-or-match idempotence
--> emit/review scalar-safe persistence receipt
+existing RawArchive statistics response
+-> reviewed request reconstruction from private provenance
+-> source capture/schema/acquisition observation
+-> endpoint dependency registration
+-> existing normalized batch matched idempotently
+-> scalar-safe Source & Analysis Health receipt
 ```
 
-The old capture remains valid structural evidence; only full scope-aware persistence proof needs recapture.
+No network request is required for this gate.
 
 ## Official API credential boundary
-
-Default local key file:
 
 ```text
 data/private/coa-logs-api-key.txt
 ```
 
-The key is local/private only and must never be copied into Git, query strings, CLI values, RawArchive metadata, public receipts, logs or screenshots.
+The API key is local/private and must never enter Git, RawArchive metadata, query strings, CLI values, public receipts, logs or screenshots.
 
-Private query-dimension provenance is not a credential and is intentionally stored only in ignored RawArchive observation metadata for new aggregate captures. It must not be promoted to public receipts.
+Exact request dimension values are retained only in ignored/private RawArchive observation metadata because they are analytical provenance. They are never public evidence.
 
 ## Report-specific E3 runtime — retained proven state
 
@@ -150,16 +183,14 @@ GET /api/reports/{reportId}/character_damage_taken_abilities?...
 GET /api/reports/{reportId}/character_spell_healing?...
 ```
 
-First-report generic persistence:
+First report:
 
 ```text
-derived observations: 2031
-replay matched all 2031
-analytics observations: 19660
-replay matched all 19660
+derived observations: 2031, replay idempotent
+analytics observations: 19660, replay idempotent
 ```
 
-Second independent report:
+Second report:
 
 ```text
 derived inserted: 2920
@@ -188,21 +219,15 @@ pending reanalysis: 0
 
 ## Historical difficulty/equivalence gate
 
-Still:
-
 ```text
 status: insufficient_evidence
 verified difficulty reports: 0
 numeric historical cross-report scoring: blocked
 ```
 
-This is an evidence gap, not proof of different difficulties. No v4 heuristic is planned simply to force equivalence.
-
-The aggregate public `/statistics` lane is independent because its dimensions are explicit in the documented API contract.
+This does not block official aggregate analytics because `/statistics` has explicit documented dimensions.
 
 ## Upstream executable source
-
-Pinned evidence provider:
 
 ```text
 FangYuanWoW/AscensionLogsCompanion
@@ -210,84 +235,35 @@ main @ 0f63fe9c50b470402e3a29fba2e0322095856fd4
 version 0.67.2
 ```
 
-Use for client-state/capture/build/gear/telemetry evidence. Backend comments remain hypotheses until corroborated.
+Use executable code for client-state/capture/build/gear/telemetry evidence. Backend comments remain hypotheses until corroborated.
 
 ## Browser Observatory / HAR
 
-Retained as fallback for undocumented gaps only. It is not the current default Ascension Logs path.
-
-Do not add stealth/fingerprint/challenge-bypass behavior.
+Fallback for exact undocumented gaps only. No stealth/fingerprint/challenge-bypass behavior.
 
 ## Local workspace integrity
 
-The real Windows metadata inventory and the only Git-visible untracked implementation candidate have both been reviewed.
+The Windows metadata inventory and the sole Git-visible untracked implementation candidate were reviewed. The historical helper patch is valuable incomplete WIP, depends on absent `coa_workbench.collector.guild_progression_js_lexical`, is preserved privately and must not be applied as-is.
 
-Observed local Git state at the inventory checkpoint:
-
-```text
-modified tracked files: 0
-missing tracked files: 0
-Git-visible untracked files: 1
-```
-
-The single untracked candidate was a historical E3 helper-analysis patch. Content review established:
-
-```text
-patch lines: 2668
-tracked files changed by patch: 10
-insertions/deletions reported by git apply --stat: +690 / -349
-obvious added credentials/URLs/secrets: none found
-baseline: directly matches the current tracked helper-analysis files
-status: valuable incomplete WIP; preserve privately; do not apply as-is
-```
-
-The patch improves structural JavaScript helper analysis but depends on absent shared module:
-
-```text
-coa_workbench.collector.guild_progression_js_lexical
-```
-
-Expected API:
-
-```text
-StructuralIndex
-exact_symbol_positions
-in_excluded_intervals
-scan_javascript_structure
-```
-
-That module is absent from both the patch and tracked Git history. Reconstructing it would be a separate reviewed task if that lane becomes active again.
-
-Current integrity status:
-
-```text
-tracked repository audit: complete
-local metadata/file-state inventory: complete
-local-only exact file audit: complete/classified
-historical helper patch: preserved private, intentionally not integrated
-raw private evidence bulk-content review: intentionally outside repository-integrity scope
-```
-
-Unknown/untracked files must not be deleted merely to make Git clean.
+Do not re-request the same inventory/patch unless material local state changes.
 
 ## Current boundary
 
 ```text
 official API contract: reviewed
 real phase/boss catalog: proven
-real current statistics capture: proven
-real statistics structural review: proven
-statistics parser/model: implemented + deterministic-test verified
-migration 0013 aggregate persistence: implemented + deterministic-test verified
-population-prior read model: implemented + deterministic-test verified
-real statistics persistence/idempotence: pending one provenance-aware recapture
+real statistics capture/shape: proven
+real provenance-aware statistics capture: proven
+real statistics normalization: proven
+real DuckDB persistence/idempotence: proven
+population-prior read model: proven
+aggregate Source Observatory/Health integration: implemented/tested; real local replay pending
 report pipeline generalization: proven on two reports
 report analytics persistence: proven + idempotent
-scope-aware source schema repair: proven
 historical difficulty equivalence: insufficient evidence
 cross-report identity: unproven
 fight-duration comparison semantics: unproven
 site Tier List algorithm: undocumented
-guild-progression helper historical lexical refactor: incomplete private WIP, not integrated
+historical helper lexical refactor: incomplete private WIP, not integrated
 planner scoring: blocked
 ```

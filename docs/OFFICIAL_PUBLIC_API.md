@@ -1,6 +1,6 @@
 # Official CoA Ascension Logs Public API
 
-Status date: **2026-08-26**.
+Status date: **2026-08-27**.
 
 Reviewed source:
 
@@ -25,7 +25,7 @@ stats:read
 events:read
   on-request
   experimental
-  encounter events/actors/report surfaces
+  report/encounter event and actor surfaces
 ```
 
 Published tiers in the reviewed contract:
@@ -45,16 +45,16 @@ X-API-Key: <key>
 
 Keys are not accepted in query strings.
 
-Local project key boundary:
+Local key boundary:
 
 ```text
 data/private/coa-logs-api-key.txt
-fallback environment variable: COA_LOGS_API_KEY
+fallback: COA_LOGS_API_KEY
 ```
 
-The key value must never enter Git, request URLs, RawArchive metadata, public receipts, logs or screenshots.
+The key never enters Git, request URLs, RawArchive metadata, public receipts, logs or screenshots.
 
-Published access text also requires visible attribution when API-derived data is displayed publicly and disallows bulk dataset redistribution. Raw API payloads are therefore treated as local evidence.
+Published access text requires visible attribution for public display of API-derived data and disallows bulk dataset redistribution. Raw payloads remain local evidence.
 
 ## Route inventory
 
@@ -90,9 +90,15 @@ source_code = coa_ascension_logs_public_api
 base_url = https://coa.ascensionlogs.gg/api/public/v1
 ```
 
-## Aggregate statistics contract
+## `/statistics` contract
 
-`GET /statistics` requires `phase` and documents optional dimensions including:
+Required:
+
+```text
+phase
+```
+
+Documented optional dimensions include:
 
 ```text
 difficulty
@@ -126,7 +132,7 @@ avg_hps
 avg_dtps
 ```
 
-Documented damage attribution modes:
+Documented damage modes:
 
 ```text
 standard
@@ -143,6 +149,8 @@ tanks-and-dps
 support
 ```
 
+For healing metric requests the collector omits `role` per the reviewed API contract.
+
 Documented metric-object fields:
 
 ```text
@@ -154,11 +162,9 @@ total_parses
 percentiles
 ```
 
-`total_parses` can support a workbench-derived participation/popularity feature, but it is **not** evidence of the site's private Tier List algorithm.
+`total_parses` may support a workbench-derived participation feature. It is not evidence of the site's private Tier List algorithm.
 
 ## Real catalog evidence
-
-The bounded real `/phases` + `/bosses` capture/review proved:
 
 ```text
 phase records: 3
@@ -170,83 +176,87 @@ unique stable boss_id values: 285
 duplicate stable boss_id values: 0
 ```
 
-Public-safe receipt:
+Receipt:
 
 ```text
 evidence/real-data/coa-public-api-catalog-real.json
 ```
 
-The project selects the current phase only when the observed payload has one unambiguous candidate satisfying the reviewed current-phase rule. The scalar phase value remains private.
+The current phase is selected only when one unambiguous observed record satisfies the reviewed rule `is_active=true` + `end_date=null`. The scalar phase value stays private.
 
-## Real current `/statistics` evidence
+## Real statistics evidence
 
-The current-phase selector used the unique `is_active=true` + `end_date=null` phase without publishing its scalar value.
+Historical structure receipts:
 
-Capture result:
+```text
+evidence/real-data/coa-public-api-statistics-capture-real.json
+evidence/real-data/coa-public-api-statistics-shape-real.json
+```
+
+They proved a valid response shape but the older capture did not retain the requested non-echoed `role` value, so it could not support fully scoped normalization.
+
+A new bounded provenance-aware capture closed that gap:
 
 ```text
 HTTP 200
 application/json
 archived: true
+bytes: 21306
+request context retained privately: true
 query values published: false
 source scalar values published: false
 ```
 
-Capture receipt:
+Receipt:
 
 ```text
-evidence/real-data/coa-public-api-statistics-capture-real.json
+evidence/real-data/coa-public-api-statistics-provenance-capture-real.json
 ```
 
-Deterministic scalar-safe shape review of the archived real payload proved:
+Real exact normalization/persistence then proved:
 
 ```text
-statistics kind: object
-statistics top-level entries: 21
-max observed nested depth: 5
-objects with documented metric fields: 83
-documented metric field occurrences: 393
-statistics_normalization_ready: true
+class summaries: 21
+spec records: 62
+percentile scalar values: 806
+request context complete: true
+first-pass class inserts: 21
+first-pass spec inserts: 62
+second-pass class matches: 21
+second-pass spec matches: 62
+second-pass new inserts: 0
+idempotent: true
+population-prior records: 62
+records with local_parse_share: 62
+analysis_run registered: true
+raw dependency registered: true
 ```
 
-The review publishes no dynamic class/spec keys, query values, difficulty/phase values, metric values or percentile values.
-
-Shape receipt:
+Receipt:
 
 ```text
-evidence/real-data/coa-public-api-statistics-shape-real.json
+evidence/real-data/coa-public-api-statistics-persistence-real.json
 ```
+
+No receipt publishes dynamic class/spec names, request values, difficulty/phase values, metric values, raw IDs, fingerprints or credentials.
 
 ## Request-scope provenance rule
 
-Exact aggregate interpretation requires the actual request dimension values, not only the response body.
+Exact aggregate interpretation requires the actual request dimension values, not just the response body.
 
-The historical real capture predates this rule. It records these request keys:
-
-```text
-phase
-difficulty
-metric
-bracket
-damageMode
-role
-```
-
-The response echoes the first five relevant dimensions in reviewed fields, but it does **not** echo the requested `role`. Therefore the historical capture cannot prove its exact role scope. Reusing the CLI's current default (`dps`) would be an unsupported reconstruction and is forbidden.
-
-The collector now stores exact prepared query values in **private RawArchive observation metadata** under request provenance. This is local evidence only:
+New captures store prepared query values only in private RawArchive observation metadata:
 
 ```text
-private RawArchive metadata: exact query values allowed/required for provenance
-public capture receipt: query values excluded
-public persistence receipt: query values excluded
+private RawArchive: exact query values allowed/required for reproducibility
+public capture receipt: values excluded
+public persistence/health receipts: values excluded
 ```
 
 The API key remains excluded from RawArchive metadata entirely.
 
-## Exact statistics normalization and persistence
+## Exact normalization and persistence
 
-Implemented components:
+Implemented:
 
 ```text
 src/coa_workbench/normalizer/public_api_statistics.py
@@ -262,87 +272,83 @@ The normalizer:
 ```text
 requires success=true
 validates documented request enums
-validates exact documented metric-object fields
+validates exact metric-object structure
 requires finite numeric metrics and nonnegative total_parses
-resolves request scope only from private provenance or response-echoed dimensions
+resolves request scope from private provenance and response-echoed dimensions
 rejects query/response conflicts
-fails closed when a requested non-echoed dimension is missing
-requires one unambiguous spec-to-metric container per observed class object
-preserves dynamic class/spec values only in private local persistence
+fails closed when a requested non-echoed dimension is unavailable
+iterates dynamic class/spec keys without hardcoding names
 ```
 
-It does not infer combat mechanics or Tier List semantics from names.
+Persistence uses deterministic insert-or-match semantics keyed to the RawArchive object and normalizer version.
 
-Migration `0013_public_api_statistics.sql` adds:
-
-```text
-public_api_statistics_batch
-public_api_statistics_class
-public_api_statistics_spec
-public_api_population_prior_v1
-```
-
-Persistence uses deterministic insert-or-match replay keyed to the source RawArchive object and normalizer version. It also registers:
-
-```text
-analysis_run: official_public_api_population_statistics
-artifact_dependency: public_api_population_statistics -> raw_object
-```
-
-The population-prior view exposes the documented aggregate metrics and one workbench-derived descriptive feature:
+Population prior:
 
 ```text
 local_parse_share = spec total_parses / sum(spec total_parses within the same batch)
 ```
 
-`local_parse_share` is not the site's Tier List score, a gameplay-capability score or a planner recommendation.
+This is a local descriptive aggregate only.
 
-Unit/integration tests prove deterministic fixture normalization, migration, persistence and second-pass matching. Real-source persistence remains pending a new provenance-aware bounded capture.
+## Source Observatory / Source & Analysis Health
 
-## Operator path for the real proof
-
-After syncing the implementation:
-
-```powershell
-uv run --no-sync python scripts/capture_current_public_api_statistics.py
-uv run --no-sync python scripts/persist_public_api_statistics.py
-```
-
-The first command performs one bounded self-service `stats:read` request using the existing local key file and archives both the raw payload and private request-scope provenance.
-
-The second command loads the latest private capture, normalizes it, persists it twice and emits only a scalar-safe review receipt to:
+The aggregate artifact now has a dedicated adapter:
 
 ```text
-data/exchange/out/coa-public-api-statistics-persistence-review.json
+src/coa_workbench/collector/public_api_source_health.py
 ```
 
-Do not upload the raw capture, query values, API key or DuckDB. Review/promote only the scalar-safe receipt.
+It replays the latest already archived statistics response into the generic observability layer without network I/O:
+
+```text
+private archived request provenance
+-> reviewed request reconstruction
+-> source_capture
+-> source_schema_snapshot
+-> source_acquisition_observation
+-> source_change_event when applicable
+-> Source & Analysis Health
+```
+
+All documented `/statistics` request-shaping query dimensions are configured as private `schema_profile_keys`. Different phase/difficulty/metric/role/filter scopes therefore have separate schema baselines.
+
+Persistence registers two artifact dependency types:
+
+```text
+raw_object
+  exact payload provenance
+
+source_endpoint = public_api_statistics
+  logical source-change/reanalysis dependency
+```
+
+The first Source Observatory registration may emit informational `endpoint_added`. Dedicated aggregate health distinguishes informational baseline events from actionable warning/error changes.
+
+The next real proof requires only a local replay of the already archived successful capture through `scripts/persist_public_api_statistics.py`; no API request is needed.
 
 ## Event-level semantics documented by the API
 
-The experimental schema documents useful units/types, including:
+The experimental schema documents, among other things:
 
 ```text
 Event.id
-  64-bit id serialized as string; treat as opaque
+  opaque 64-bit id serialized as string
 
 Event.timestamp_ms
-  integer milliseconds from encounter combat start, not wall clock
+  milliseconds from encounter combat start, not wall clock
 
 Event.amount
-  64-bit value serialized as string; event-type dependent
+  64-bit value serialized as string; meaning depends on event type
 
 Event.spell_id
   -1 is the documented melee sentinel
 
 is_glancing / is_crushing
-  nullable; null is not evidence of mechanic absence
+  nullable; null is not proof of mechanic absence
 
 EncounterSummary.duration_seconds
-  explicitly named in seconds
+  explicitly seconds
 ```
-
-The event endpoint also documents actor source/target filters, spell filters, start/end millisecond offsets and keyset pagination. Actor IDs are resolved through the separate `/actors` dictionary.
 
 These are strong contract semantics but do not make one observed event a universal gameplay mechanic.
 
@@ -357,26 +363,20 @@ Guild progression
 site Tier List algorithm
 ```
 
-Those surfaces require pinned client source, first-party persisted evidence or narrow fallback discovery.
+Those gaps use pinned client source, persisted first-party evidence or narrow fallback discovery.
 
 ## Relationship to historical report difficulty work
 
-Historical two-report difficulty equivalence remains `insufficient_evidence` and still blocks numeric comparison of that specific pair.
-
-It does **not** block official aggregate population analytics because `/statistics` exposes explicit documented dimensions within its own contract.
+Historical two-report difficulty equivalence remains `insufficient_evidence` and blocks numeric comparison of that specific pair. It does not block official aggregate analytics because `/statistics` exposes explicit documented dimensions.
 
 ## Current next gate
 
-The implementation gate is complete in code and deterministic tests. The remaining real-evidence gate is:
-
 ```text
-one bounded provenance-aware /statistics recapture
--> exact parser on the new archived payload
--> DuckDB persistence twice
--> prove real insert-or-match idempotence
--> inspect scalar-safe population-prior receipt
--> promote only that reviewed public-safe receipt
--> integrate/review Source & Analysis Health for this aggregate artifact
+real normalization/persistence/idempotence: proven
+-> replay existing private capture into Source Observatory
+-> verify scalar-safe aggregate Source & Analysis Health
+-> verify logical source_endpoint dependency/reanalysis behavior
+-> design bounded population-prior coverage across documented dimensions
 ```
 
-Do not request `events:read`, capture a new HAR or run Playwright for this gate.
+Do not request `events:read`, capture a HAR or run Playwright for this gate.
