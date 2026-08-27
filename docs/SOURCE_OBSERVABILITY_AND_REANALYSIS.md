@@ -94,7 +94,7 @@ schema_profile_keys
 
 `observation_profile_key()` вычисляет локальный private hash только по значениям этих reviewed keys. Этот hash не публикуется, потому что low-entropy query values могут быть угадываемыми.
 
-Пример: official `/statistics` partitioned by documented request-shaping dimensions:
+Official `/statistics` partitioned by documented request-shaping dimensions:
 
 ```text
 phase
@@ -111,7 +111,7 @@ weekNumber
 realm
 ```
 
-Так schema current-phase DPS request не сравнивается напрямую с healing/boss/week/filter request.
+Так один aggregate profile не сравнивается напрямую с healing/boss/week/filter profile другого request scope.
 
 ## 6. Schema and dimension observation
 
@@ -151,40 +151,74 @@ Change event хранит cause/severity/confidence/provenance. Не каждо�
 
 Derived artifact должен объявлять зависимости на source evidence.
 
-Для official aggregate statistics используются две complementary dependencies:
+Для current official aggregate statistics используются:
 
 ```text
 raw_object
   -> exact payload provenance
 
-source_endpoint = public_api_statistics
-  -> logical source-change/reanalysis dependency
+source_endpoint_profile
+  -> private reviewed query-profile source-change/reanalysis dependency
 ```
 
-Raw dependency отвечает на вопрос “из какого exact capture получен результат”. Endpoint dependency отвечает на вопрос “какой логический source contract может сделать этот artifact stale при будущем изменении”.
+Raw dependency отвечает на вопрос “из какого exact capture получен результат”. Profile dependency отвечает на вопрос “какой совместимый private request profile может сделать этот artifact stale при будущем schema/profile-local изменении”.
 
-Dependency version хранит normalizer/analysis boundary.
-
-## 9. Reanalysis registry
-
-Change events не должны запускать глобальный rebuild.
-
-Схема:
+Историческая broad dependency:
 
 ```text
-source_change_event
--> active source_endpoint dependencies
--> exact affected artifact(s)
--> deduplicated reanalysis_request
--> target scope
--> requested analysis version
+source_endpoint = public_api_statistics
 ```
 
-`reanalysis_request` имеет reason event, dependency, artifact, requested analysis version, target scope и status.
+была допустима как первый integration step, но теперь деактивируется для aggregate artifacts при replay через текущий persistence. Она больше не является active canonical aggregate dependency.
 
-Automatic reanalysis разрешён только для уже reviewed deterministic transformation. Новое неизвестное поле не становится автоматически trusted mechanic input.
+Dependency version хранит private profile fingerprint или другую reviewed version boundary в зависимости от dependency type. Private fingerprints не публикуются.
 
-## 10. Analysis runs
+## 9. Profile-scoped reanalysis
+
+`src/coa_workbench/collector/source_profile_reanalysis.py` реализует query-profile resolver.
+
+Правила:
+
+```text
+schema/profile-local event
+  -> match only source_endpoint_profile dependencies with same private observation_profile_key
+
+request_contract_changed
+  -> endpoint-global fan-out to all active profile dependencies
+
+source event older than dependency registered_at
+  -> cannot back-trigger that newer dependency
+```
+
+Resolver создаёт deduplicated `reanalysis_request` только для подходящих artifacts.
+
+Public summary resolver-а содержит только counts/booleans. Query/profile values и profile fingerprints не публикуются.
+
+## 10. Real aggregate profile migration proof
+
+Локальный no-network replay уже доказал migration старого aggregate artifact:
+
+```text
+source_endpoint_profile dependency count: 1
+legacy unscoped source_endpoint dependency count: 0
+eligible old events: 0
+profile matches: 0
+global matches: 0
+created reanalysis requests: 0
+pending reanalysis requests: 0
+actionable open source changes: 0
+attention required: false
+```
+
+Это ожидаемое поведение: исторический informational baseline event был наблюдён до регистрации новой profile dependency и не должен задним числом инвалидировать artifact.
+
+Scalar-safe receipt:
+
+```text
+evidence/real-data/coa-public-api-statistics-profile-reanalysis-real.json
+```
+
+## 11. Analysis runs
 
 `analysis_run` фиксирует:
 
@@ -207,7 +241,7 @@ analysis_type = official_public_api_population_statistics
 artifact_type = public_api_population_statistics
 ```
 
-## 11. Source & Analysis Health
+## 12. Source & Analysis Health
 
 Generic `build_source_health()` показывает:
 
@@ -226,7 +260,9 @@ recent analyses
 
 Domain-specific reviews may apply stricter or more useful gates while preserving generic provenance. Official aggregate statistics health separately distinguishes informational baseline events from actionable source changes and emits only scalar-safe counts/booleans.
 
-## 12. Current official `/statistics` application
+Real aggregate health is now proven with `attention_required=false` after profile dependency migration.
+
+## 13. Current official `/statistics` application
 
 The aggregate pipeline is now:
 
@@ -239,14 +275,51 @@ official OpenAPI contract
 -> population-prior read model
 -> analysis_run
 -> raw_object dependency
--> source_endpoint dependency
+-> source_endpoint_profile dependency
 -> archived-response replay into Source Observatory
+-> profile-scoped reanalysis resolver
 -> Source & Analysis Health
 ```
 
-Real data already proves capture, normalization, persistence and second-pass idempotence. The current real gate is Source Observatory/Health replay of that **existing** archived response; no additional network request is required.
+Real data proves capture, normalization, persistence, second-pass idempotence, Source Observatory integration and profile-scoped dependency migration.
 
-## 13. Automatic operating loop
+## 14. Bounded population coverage v1
+
+The next use of the same architecture is a deliberately small multi-profile coverage set:
+
+```text
+required slices: 4
+metric families represented: 3
+role-qualified slices: 3
+role-omitted slices: 1
+broader dimensions: held stable
+cartesian boss/location/week/realm/class/spec expansion: excluded
+```
+
+Workflow:
+
+```text
+review current-phase DuckDB coverage
+-> reuse already persisted matching slices
+-> network capture only missing slices
+-> RawArchive
+-> Source Observatory observation
+-> exact normalization
+-> deterministic persistence + second replay
+-> profile-scoped reanalysis reconciliation
+-> Source & Analysis Health
+-> scalar-safe coverage receipt
+```
+
+The operator command is resumable and stops on the first incomplete capture:
+
+```powershell
+uv run --no-sync python scripts/capture_public_api_population_coverage.py
+```
+
+The goal is not “collect everything”. It is to prove a useful bounded population context while respecting API terms and the project's trust/privacy boundaries.
+
+## 15. Automatic operating loop
 
 ```text
 SELECT SOURCE
@@ -274,7 +347,7 @@ REPORT
   Source & Analysis Health + reviewed public-safe receipt
 ```
 
-## 14. Safety and trust
+## 16. Safety and trust
 
 Разрешено автоматически:
 
@@ -286,6 +359,7 @@ register change events
 register dependencies
 queue scoped reanalysis
 replay already approved deterministic transformations
+bounded missing-only aggregate capture
 ```
 
 Нельзя автоматически:
@@ -296,9 +370,10 @@ new API field -> planner feature
 population metric -> roster score
 character name -> identity
 unknown changed source -> trusted semantics
+bulk API crawl merely for completeness
 ```
 
-## 15. Coverage model
+## 17. Coverage model
 
 The same platform is reusable for:
 
