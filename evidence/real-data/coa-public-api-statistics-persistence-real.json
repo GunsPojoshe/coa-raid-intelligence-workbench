@@ -1,0 +1,65 @@
+{
+  "first_persistence": {
+    "batch_inserted": true,
+    "batch_matched": false,
+    "class_rows_inserted": 21,
+    "class_rows_matched": 0,
+    "spec_rows_inserted": 62,
+    "spec_rows_matched": 0
+  },
+  "normalization": {
+    "class_count": 21,
+    "normalizer_version": "public-api-statistics-normalizer-v1",
+    "percentile_value_count": 806,
+    "request_context_complete": true,
+    "spec_record_count": 62
+  },
+  "privacy": {
+    "boss_ids_included": false,
+    "class_names_included": false,
+    "difficulty_values_included": false,
+    "fingerprints_included": false,
+    "metric_scalar_values_included": false,
+    "percentile_scalar_values_included": false,
+    "phase_values_included": false,
+    "query_values_included": false,
+    "raw_ids_included": false,
+    "raw_paths_included": false,
+    "spec_names_included": false
+  },
+  "public_release_safe": true,
+  "read_model": {
+    "contains_class_names": false,
+    "contains_dimension_values": false,
+    "contains_metric_scalar_values": false,
+    "contains_spec_names": false,
+    "derived_local_parse_share_available": true,
+    "documented_dimensions_available": true,
+    "planner_scoring_allowed": false,
+    "public_release_safe": true,
+    "read_model": "public-api-population-prior-v1",
+    "record_count": 62,
+    "records_with_parse_share": 62,
+    "schema_version": 1,
+    "site_tier_list_algorithm_verified": false
+  },
+  "replay": {
+    "batch_matched": true,
+    "class_rows_inserted": 0,
+    "class_rows_matched": 21,
+    "idempotent": true,
+    "spec_rows_inserted": 0,
+    "spec_rows_matched": 62
+  },
+  "review_kind": "official_public_api_statistics_persistence",
+  "schema_version": 1,
+  "verification": {
+    "analysis_run_registered": true,
+    "archived_capture_replayed": true,
+    "documented_dimensions_persisted": true,
+    "official_documented_api_source": true,
+    "planner_scoring_allowed": false,
+    "site_tier_list_algorithm_verified": false,
+    "source_dependency_registered": true
+  }
+}

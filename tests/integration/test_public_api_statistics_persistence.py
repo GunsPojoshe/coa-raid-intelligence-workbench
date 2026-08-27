@@ -106,6 +106,8 @@ def test_public_api_statistics_persistence_replays_idempotently_and_reads_priors
     assert second["class_rows_matched"] == 1
     assert second["spec_rows_inserted"] == 0
     assert second["spec_rows_matched"] == 2
+    assert second["raw_dependency_registered"] is True
+    assert second["source_endpoint_dependency_registered"] is True
     assert second["contains_source_scalar_values"] is False
     assert second["contains_source_raw_id"] is False
 
@@ -140,5 +142,17 @@ def test_public_api_statistics_persistence_replays_idempotently_and_reads_priors
             ["official_public_api_population_statistics"],
         ).fetchone()[0] == 1
         assert connection.execute(
-            "SELECT COUNT(*) FROM artifact_dependency WHERE dependency_type = 'raw_object'"
-        ).fetchone()[0] >= 1
+            """
+            SELECT COUNT(*) FROM artifact_dependency
+            WHERE dependency_type = 'raw_object'
+              AND artifact_type = 'public_api_population_statistics'
+            """
+        ).fetchone()[0] == 1
+        assert connection.execute(
+            """
+            SELECT COUNT(*) FROM artifact_dependency
+            WHERE dependency_type = 'source_endpoint'
+              AND dependency_key = 'public_api_statistics'
+              AND artifact_type = 'public_api_population_statistics'
+            """
+        ).fetchone()[0] == 1

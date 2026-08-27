@@ -103,6 +103,19 @@ routes:
       - spec
       - weekNumber
       - realm
+    schema_profile_keys:
+      - phase
+      - difficulty
+      - metric
+      - bracket
+      - location
+      - bossId
+      - damageMode
+      - role
+      - class
+      - spec
+      - weekNumber
+      - realm
     discovery_source: official_openapi_1_0_0_2026_08_25
     review_state: verified
     empty_params_observed: false

@@ -9,6 +9,10 @@ from coa_workbench.analytics.public_api_population_priors import (
     read_public_api_population_priors,
 )
 from coa_workbench.collector.public_api_archive import load_latest_public_api_capture
+from coa_workbench.collector.public_api_source_health import (
+    observe_archived_public_api_statistics,
+    review_public_api_statistics_health,
+)
 from coa_workbench.collector.source_registry import load_source_registry
 from coa_workbench.normalizer.canonical import stable_id
 from coa_workbench.normalizer.public_api_statistics import (
@@ -21,8 +25,8 @@ from coa_workbench.storage.public_api_statistics import persist_public_api_stati
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
-            "Normalize and persist the latest private official /statistics capture twice, proving "
-            "deterministic DuckDB replay while emitting only scalar-safe counts and trust flags."
+            "Replay the latest private official /statistics capture through Source Observatory, "
+            "normalize and persist it twice, and emit a scalar-safe idempotence/health receipt."
         )
     )
     parser.add_argument(
@@ -51,6 +55,13 @@ def main() -> int:
         endpoint_code="public_api_statistics",
     )
     try:
+        source_acquisition = observe_archived_public_api_statistics(
+            database_path=args.database,
+            migrations_path=args.migrations,
+            raw_root=args.raw_root,
+            registry=registry,
+            capture=capture,
+        )
         batch = parse_public_api_statistics(
             capture.payload,
             query_keys=capture.query_keys,
@@ -58,7 +69,7 @@ def main() -> int:
         )
     except ValueError as exc:
         raise SystemExit(
-            f"Cannot normalize the latest archived /statistics capture: {exc}"
+            f"Cannot normalize/observe the latest archived /statistics capture: {exc}"
         ) from exc
 
     first = persist_public_api_statistics(
@@ -90,8 +101,11 @@ def main() -> int:
         and second["spec_rows_inserted"] == 0
         and second["spec_rows_matched"] == len(batch.records)
     )
+    source_health = review_public_api_statistics_health(args.database)
+    acquisition_summary = source_acquisition.public_summary()
+
     receipt = {
-        "schema_version": 1,
+        "schema_version": 2,
         "review_kind": "official_public_api_statistics_persistence",
         "normalization": {
             "normalizer_version": second["normalizer_version"],
@@ -117,12 +131,34 @@ def main() -> int:
             "idempotent": replay_idempotent,
         },
         "read_model": read_summary,
+        "source_observability": {
+            "acquisition_outcome": acquisition_summary["outcome"],
+            "body_kind": acquisition_summary["body_kind"],
+            "raw_body_archived": acquisition_summary["raw_body_archived"],
+            "schema_observation_recorded": acquisition_summary[
+                "schema_observation_recorded"
+            ],
+            "change_event_count_this_replay": acquisition_summary["change_event_count"],
+            "reanalysis_request_count_this_replay": acquisition_summary[
+                "reanalysis_request_count"
+            ],
+            "health": source_health,
+        },
         "verification": {
             "official_documented_api_source": True,
             "archived_capture_replayed": True,
             "documented_dimensions_persisted": True,
             "analysis_run_registered": second["analysis_run_registered"],
-            "source_dependency_registered": second["source_dependency_registered"],
+            "raw_dependency_registered": second["raw_dependency_registered"],
+            "source_endpoint_dependency_registered": second[
+                "source_endpoint_dependency_registered"
+            ],
+            "source_observatory_integrated": source_health["verification"][
+                "source_observatory_integrated"
+            ],
+            "source_health_attention_required": source_health["verification"][
+                "attention_required"
+            ],
             "site_tier_list_algorithm_verified": False,
             "planner_scoring_allowed": False,
         },
@@ -145,7 +181,8 @@ def main() -> int:
     text = json.dumps(receipt, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
     args.output.write_text(text, encoding="utf-8")
     print(text, end="")
-    return 0 if replay_idempotent else 5
+    healthy = source_health["verification"]["attention_required"] is False
+    return 0 if replay_idempotent and healthy else 5
 
 
 if __name__ == "__main__":

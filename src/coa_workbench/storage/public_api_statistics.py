@@ -125,12 +125,20 @@ def persist_public_api_statistics(
         PUBLIC_API_STATISTICS_PERSISTENCE_VERSION,
         source_raw_id,
     )
-    dependency_id = stable_id(
+    raw_dependency_id = stable_id(
         "artifact_dependency",
         _ARTIFACT_TYPE,
         batch_id,
         "raw_object",
         source_raw_id,
+        PUBLIC_API_STATISTICS_NORMALIZER_VERSION,
+    )
+    endpoint_dependency_id = stable_id(
+        "artifact_dependency",
+        _ARTIFACT_TYPE,
+        batch_id,
+        "source_endpoint",
+        _ENDPOINT_CODE,
         PUBLIC_API_STATISTICS_NORMALIZER_VERSION,
     )
 
@@ -263,7 +271,7 @@ def persist_public_api_statistics(
                 table="artifact_dependency",
                 key_fields=("dependency_id",),
                 values={
-                    "dependency_id": dependency_id,
+                    "dependency_id": raw_dependency_id,
                     "artifact_type": _ARTIFACT_TYPE,
                     "artifact_key": batch_id,
                     "analysis_type": _ANALYSIS_TYPE,
@@ -276,6 +284,29 @@ def persist_public_api_statistics(
                         {
                             "source_code": source_code,
                             "endpoint_code": _ENDPOINT_CODE,
+                        }
+                    ),
+                },
+            )
+            _insert_or_match(
+                connection,
+                table="artifact_dependency",
+                key_fields=("dependency_id",),
+                values={
+                    "dependency_id": endpoint_dependency_id,
+                    "artifact_type": _ARTIFACT_TYPE,
+                    "artifact_key": batch_id,
+                    "analysis_type": _ANALYSIS_TYPE,
+                    "analysis_version": PUBLIC_API_STATISTICS_PERSISTENCE_VERSION,
+                    "dependency_type": "source_endpoint",
+                    "dependency_key": _ENDPOINT_CODE,
+                    "dependency_version": PUBLIC_API_STATISTICS_NORMALIZER_VERSION,
+                    "active": True,
+                    "metadata_json": _json(
+                        {
+                            "source_code": source_code,
+                            "endpoint_code": _ENDPOINT_CODE,
+                            "reanalysis_on_source_change": True,
                         }
                     ),
                 },
@@ -308,6 +339,8 @@ def persist_public_api_statistics(
         "spec_rows_matched": spec_matched,
         "analysis_run_registered": True,
         "source_dependency_registered": True,
+        "raw_dependency_registered": True,
+        "source_endpoint_dependency_registered": True,
         "contains_source_scalar_values": False,
         "contains_source_raw_id": False,
         "contains_output_fingerprint": False,
