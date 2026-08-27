@@ -11,6 +11,8 @@ from coa_workbench.storage.migrations import apply_migrations
 
 PUBLIC_API_POPULATION_COVERAGE_VERSION = "public-api-population-coverage-v1"
 _ENDPOINT_CODE = "public_api_statistics"
+_ARTIFACT_TYPE = "public_api_population_statistics"
+_ANALYSIS_TYPE = "official_public_api_population_statistics"
 
 
 @dataclass(frozen=True, slots=True)
@@ -104,6 +106,7 @@ class PopulationCoverageStatus:
             "complete": self.complete,
             "bounded_capture_plan": True,
             "bulk_dataset_mode": False,
+            "provenance_complete_batches_required": True,
             "phase_values_included": False,
             "difficulty_values_included": False,
             "metric_values_included": False,
@@ -125,19 +128,50 @@ def _matching_batch(
     coverage_slice: PopulationCoverageSlice,
 ) -> tuple[str, int, int, int] | None:
     predicates = [
-        "endpoint_code = ?",
-        "normalizer_version = ?",
-        "phase_number = ?",
-        "difficulty = ?",
-        "metric = ?",
-        "bracket = ?",
-        "damage_mode = ?",
-        "location IS NULL",
-        "boss_id IS NULL",
-        "class_filter IS NULL",
-        "spec_filter IS NULL",
-        "week_number IS NULL",
-        "realm IS NULL",
+        "batch.endpoint_code = ?",
+        "batch.normalizer_version = ?",
+        "batch.phase_number = ?",
+        "batch.difficulty = ?",
+        "batch.metric = ?",
+        "batch.bracket = ?",
+        "batch.damage_mode = ?",
+        "batch.location IS NULL",
+        "batch.boss_id IS NULL",
+        "batch.class_filter IS NULL",
+        "batch.spec_filter IS NULL",
+        "batch.week_number IS NULL",
+        "batch.realm IS NULL",
+        """
+        EXISTS (
+            SELECT 1
+            FROM artifact_dependency AS dep
+            WHERE dep.artifact_type = ?
+              AND dep.artifact_key = batch.batch_id
+              AND dep.dependency_type = 'raw_object'
+              AND dep.active = TRUE
+        )
+        """,
+        """
+        EXISTS (
+            SELECT 1
+            FROM artifact_dependency AS dep
+            WHERE dep.artifact_type = ?
+              AND dep.artifact_key = batch.batch_id
+              AND dep.dependency_type = 'source_endpoint_profile'
+              AND dep.dependency_key = ?
+              AND dep.active = TRUE
+        )
+        """,
+        """
+        EXISTS (
+            SELECT 1
+            FROM analysis_run AS run
+            WHERE run.artifact_type = ?
+              AND run.artifact_key = batch.batch_id
+              AND run.analysis_type = ?
+              AND run.status = 'completed'
+        )
+        """,
     ]
     parameters: list[Any] = [
         _ENDPOINT_CODE,
@@ -147,19 +181,28 @@ def _matching_batch(
         coverage_slice.metric,
         coverage_slice.bracket,
         coverage_slice.damage_mode,
+        _ARTIFACT_TYPE,
+        _ARTIFACT_TYPE,
+        _ENDPOINT_CODE,
+        _ARTIFACT_TYPE,
+        _ANALYSIS_TYPE,
     ]
     if coverage_slice.role is None:
-        predicates.append("role IS NULL")
+        predicates.append("batch.role IS NULL")
     else:
-        predicates.append("role = ?")
+        predicates.append("batch.role = ?")
         parameters.append(coverage_slice.role)
 
     row = connection.execute(
         f"""
-        SELECT batch_id, class_count, spec_record_count, percentile_value_count
-        FROM public_api_statistics_batch
+        SELECT
+            batch.batch_id,
+            batch.class_count,
+            batch.spec_record_count,
+            batch.percentile_value_count
+        FROM public_api_statistics_batch AS batch
         WHERE {' AND '.join(predicates)}
-        ORDER BY created_at DESC, batch_id DESC
+        ORDER BY batch.created_at DESC, batch.batch_id DESC
         LIMIT 1
         """,
         parameters,
