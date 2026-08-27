@@ -1,0 +1,66 @@
+{
+  "normalization": {
+    "class_count": 21,
+    "percentile_value_count": 806,
+    "request_context_complete": true,
+    "spec_record_count": 62
+  },
+  "privacy": {
+    "batch_ids_included": false,
+    "class_names_included": false,
+    "difficulty_values_included": false,
+    "metric_scalar_values_included": false,
+    "metric_values_included": false,
+    "phase_values_included": false,
+    "profile_fingerprints_included": false,
+    "profile_values_included": false,
+    "query_values_included": false,
+    "raw_ids_included": false,
+    "raw_paths_included": false,
+    "role_values_included": false,
+    "spec_names_included": false
+  },
+  "public_release_safe": true,
+  "replay": {
+    "batch_matched": true,
+    "class_rows_inserted": 0,
+    "class_rows_matched": 21,
+    "idempotent": true,
+    "spec_rows_inserted": 0,
+    "spec_rows_matched": 62
+  },
+  "review_kind": "official_public_api_statistics_profile_reanalysis_real",
+  "schema_version": 1,
+  "source_observability": {
+    "acquisition_outcome": "schema_candidate",
+    "actionable_open_change_event_count": 0,
+    "change_event_count_this_replay": 0,
+    "legacy_unscoped_source_endpoint_dependency_count": 0,
+    "pending_reanalysis_request_count": 0,
+    "profile_reanalysis": {
+      "created_request_count": 0,
+      "eligible_event_count": 0,
+      "endpoint_count": 1,
+      "existing_request_count": 0,
+      "global_match_count": 0,
+      "profile_dependency_count": 1,
+      "profile_match_count": 0,
+      "resolver_version": "source-query-profile-reanalysis-v1"
+    },
+    "source_endpoint_profile_dependency_count": 1,
+    "source_health_attention_required": false,
+    "source_observatory_integrated": true
+  },
+  "verification": {
+    "archived_capture_replayed": true,
+    "legacy_unscoped_source_endpoint_dependency_active": false,
+    "no_actionable_open_source_change": true,
+    "no_pending_reanalysis": true,
+    "old_baseline_event_backtriggered": false,
+    "planner_scoring_allowed": false,
+    "site_tier_list_algorithm_verified": false,
+    "source_endpoint_profile_dependency_registered": true,
+    "source_health_attention_required": false,
+    "source_observatory_integrated": true
+  }
+}
