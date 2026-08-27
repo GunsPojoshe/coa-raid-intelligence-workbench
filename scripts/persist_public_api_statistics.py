@@ -151,9 +151,7 @@ def main() -> int:
             "raw_body_archived": acquisition_summary["raw_body_archived"],
             "schema_observation_recorded": acquisition_summary["schema_observation_recorded"],
             "change_event_count_this_replay": acquisition_summary["change_event_count"],
-            "reanalysis_request_count_this_replay": acquisition_summary[
-                "reanalysis_request_count"
-            ],
+            "reanalysis_request_count_this_replay": acquisition_summary["reanalysis_request_count"],
             "profile_reanalysis": profile_reanalysis.public_summary(),
             "health": source_health,
         },
@@ -172,9 +170,7 @@ def main() -> int:
             "source_observatory_integrated": source_health["verification"][
                 "source_observatory_integrated"
             ],
-            "source_health_attention_required": source_health["verification"][
-                "attention_required"
-            ],
+            "source_health_attention_required": source_health["verification"]["attention_required"],
             "site_tier_list_algorithm_verified": False,
             "planner_scoring_allowed": False,
         },
