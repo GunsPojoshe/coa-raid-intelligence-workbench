@@ -35,64 +35,65 @@ report encounter boss/difficulty source correlation v2: proven
 machine-correlated encounter population binding v1: proven
 ```
 
-Real receipts:
+## Persisted report-scoped player/build provenance — proven
+
+Receipt:
 
 ```text
-evidence/real-data/coa-public-api-encounter-comparator-real.json
-evidence/real-data/coa-report-encounter-source-correlation-real.json
-evidence/real-data/coa-report-encounter-population-binding-real.json
+evidence/real-data/coa-current-roster-build-provenance-real.json
 ```
 
-Do not rerun population coverage, encounter context, comparator, source correlation or binding just to reconfirm them.
-
-## Binding checkpoint
+Checkpoint:
 
 ```text
-report catalog source: archived_first_party_encounter_catalog
-archived catalog reused: true
-network requests: 0
-source correlation complete: true
-encounter context: 4/4 complete
-location comparator: 4/4 complete
-differential built: true
-matched records: 148
-encounter-only: 0
-location-only: 2
-exact dimension match: true
-temporal scope match: true
-same private scope inputs reused: true
-machine-correlated encounter population binding complete: true
-player identity verified: false
-mechanic semantics verified: false
+persisted report scopes: 2
+reviewed report scopes: 2
+report-scoped player identity complete: 2/2
+observed build linkage complete: 2/2
+source provenance complete: 2/2
+observed build provenance complete: 2/2
+characters: 52
+snapshots: 70
+talent entries: 3558
+gear observations: 1195
+complete timestamp coverage: 0/2
+selected reference present: false
+selected reference same-report build binding proven: false
+current build freshness verified: false
+latest snapshot semantics verified: false
+cross-report player identity: false
+mechanic semantics: false
 planner scoring: false
-public release safe: true
 ```
 
-## Current gate — player/current-build identity
+The proof was fully offline: existing current-report persistence only, zero network, no Browser/HAR, no `events:read`.
 
-Encounter scope provenance is closed. Next, establish deterministic player identity and current-build provenance.
+## Current gate — selected-report roster/build binding
 
-Trust rules:
+The selected encounter report used by the encounter/population chain is **not** among the two persisted roster/build report scopes.
+
+Do next:
 
 ```text
-name equality alone is not cross-report identity proof
-current-report roster/actor identity is scoped to that report evidence
-cross-report identity needs independent corroboration or remains false
-build/talent/gear evidence requires reviewed source + freshness
-missing/stale build evidence fails closed
-population metrics do not establish individual capability
-mechanic semantics remain a separate later gate
-planner scoring remains blocked
+inspect local persisted/raw first-party evidence for the selected report
+-> reuse/persist existing roster/build source if already archived
+-> otherwise inspect official site semantics + pinned Companion source for narrow acquisition semantics
+-> collect only the exact missing selected-report source if needed
+-> Browser/HAR only for an exact remaining undocumented gap
+-> prove selected report -> roster/build same-report binding
 ```
 
-Prefer persisted first-party report evidence and pinned Companion executable source before Browser/HAR. Do not request new API scope simply to repeat locally available facts.
+After that, separately prove build freshness/latest-snapshot semantics. `0/2` complete timestamp coverage means freshness is currently blocked.
+
+Do not bridge reports by character name, class/spec or build similarity.
 
 ## Retained blockers
 
 ```text
 historical two-report difficulty equivalence: insufficient_evidence
+selected encounter report -> roster/build same-report binding: unproven
 cross-report player identity: unproven
-current-build evidence: unproven
+current/latest build freshness: unproven
 encounter mechanic semantics: unproven
 site Tier List algorithm: undocumented
 planner scoring: blocked

@@ -119,7 +119,7 @@ evidence/real-data/coa-report-encounter-population-binding-real.json
 
 ## Encounter binding trust boundary — real proven
 
-The selected report encounter is now independently machine-correlated and deterministically bound to the exact persisted population context used by the comparator:
+The selected report encounter is independently machine-correlated and deterministically bound to the exact persisted population context used by the comparator:
 
 ```text
 valid report/encounter URL shape: proven
@@ -143,59 +143,74 @@ Binding receipt:
 evidence/real-data/coa-report-encounter-population-binding-real.json
 ```
 
-Real binding result:
+The binding path was offline. It reused the successful archived first-party encounter catalog plus already-persisted official `/statistics` data. No Browser/HAR, `events:read`, historical difficulty heuristic or repeat acquisition was used.
+
+## Persisted report-scoped player/build provenance — real proven
+
+A zero-network catalog review now proves deterministic player identity and observed build provenance for every currently persisted `current_report_observation` scope.
+
+Real receipt:
 
 ```text
-binding version: report-encounter-population-binding-v1
-report catalog source: archived_first_party_encounter_catalog
-archived report catalog reused: true
-report catalog observations: 1
-existing public API persistence reused: true
-network requests: 0
-source correlation complete: true
-encounter context complete: true
-encounter context slices: 4
-location comparator complete: true
-location comparator slices: 4
-differential built: true
-matched records: 148
-encounter-only records: 0
-location-only records: 2
-exact dimension match: true
-temporal scope match: true
-same private scope inputs reused: true
-machine-correlated encounter population binding complete: true
-player identity verified: false
+evidence/real-data/coa-current-roster-build-provenance-real.json
+```
+
+Real checkpoint:
+
+```text
+catalog version: current-roster-build-provenance-catalog-v1
+persisted report scopes: 2
+reviewed report scopes: 2
+report scopes with roster: 2
+report-scoped player identity complete: 2/2
+observed build linkage complete: 2/2
+source provenance complete: 2/2
+observed build provenance complete: 2/2
+characters: 52
+snapshots: 70
+talent entries: 3558
+gear observations: 1195
+complete timestamp coverage: 0/2
+selected encounter reference present: false
+selected reference same-report build binding proven: false
+current build freshness verified: false
+latest snapshot semantics verified: false
+cross-report identity verified: false
+player capability semantics verified: false
 mechanic semantics verified: false
-site Tier List algorithm verified: false
 planner scoring allowed: false
 public release safe: true
 ```
 
-The binding path was offline. It reused the successful archived first-party encounter catalog plus already-persisted official `/statistics` data. No Browser/HAR, `events:read`, historical difficulty heuristic or repeat acquisition was used.
+What is proven is **report-scoped identity plus observed build linkage/provenance for the two persisted report scopes**. This does not prove that those observations belong to the selected encounter report, does not establish cross-report identity, and does not establish which snapshot is current/latest.
 
-## Current next gate — player/current-build identity
+The zero complete timestamp-coverage count is an explicit freshness blocker, not a reason to discard the proven report-scoped identity/build linkage.
 
-Encounter scope provenance is no longer the blocker. The next independent trust lane is to establish who the selected/current player is and what build evidence is current enough to support capability reasoning.
+## Current next gate — selected-report build binding, then freshness semantics
 
-Required semantics:
+The selected encounter report is not among persisted roster/build report scopes. Do not silently substitute another report and do not use name equality to bridge the gap.
+
+Proceed in source-priority order:
 
 ```text
-same concrete player observation can be identified deterministically
-current-report actor/roster identity remains separate from cross-report identity
-build/talent/gear evidence must carry its own source + freshness/provenance
-name equality alone is not cross-report identity proof
-absence of build evidence must fail closed
-no population metric is promoted to player capability
-mechanic semantics remain unproven
-planner scoring remains blocked
+1. inspect existing local persisted/raw first-party evidence for the selected report
+2. if matching roster/build evidence is already archived, normalize/persist it deterministically
+3. otherwise inspect official documented site semantics and pinned executable Companion source for the narrow acquisition contract
+4. use Browser/HAR only if an exact undocumented gap remains
+5. after same-report build binding exists, establish timestamp/source semantics before selecting a latest/current build
 ```
 
-Prefer already persisted first-party report evidence and pinned executable source before Browser/HAR. Do not request new external scope merely to repeat facts already available locally.
+Required fail-closed state:
 
-After player/build identity, independently prove encounter mechanic/requirement semantics. Only then combine capabilities, requirements, actual attendance and descriptive population context.
+```text
+selected encounter report -> roster/build same-report binding: unproven
+current/latest build freshness: unproven
+cross-report identity: unproven
+mechanic semantics: unproven
+planner scoring: blocked
+```
 
-Do not repeat population coverage, encounter-context, comparator, report-correlation or binding proof merely because a session restarted.
+Do not infer `latest snapshot = current build` solely from row order or timestamp syntax. A source must establish what capture time means and what the snapshot is scoped to.
 
 ## Other retained lanes
 
@@ -224,6 +239,9 @@ phase/metric/role values in public receipts
 player identities in public receipts unless separately approved
 class/spec names
 metric/parse-share scalar values
+build/talent/gear values
+snapshot hashes
+source capture ids
 raw IDs/paths
 request/schema/profile fingerprints
 DuckDB/raw payloads

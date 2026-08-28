@@ -34,14 +34,6 @@ The E4 branch name is historical. Browser/HAR is fallback only.
 
 ## Encounter/population evidence — real proven through binding
 
-Self-service `stats:read` routes:
-
-```text
-GET /phases
-GET /bosses
-GET /statistics
-```
-
 Closed real gates:
 
 ```text
@@ -69,28 +61,7 @@ second-pass replay:            idempotent
 legacy broad endpoint dependency: inactive
 ```
 
-Binding checkpoint:
-
-```text
-report catalog source: archived_first_party_encounter_catalog
-network requests: 0
-source correlation complete: true
-encounter context complete: true
-location comparator complete: true
-differential built: true
-matched records: 148
-encounter-only: 0
-location-only: 2
-exact dimension match: true
-temporal scope match: true
-same private scope inputs reused: true
-machine-correlated encounter population binding complete: true
-player identity verified: false
-mechanic semantics verified: false
-planner scoring allowed: false
-```
-
-Scalar-safe evidence:
+Scalar-safe encounter evidence:
 
 ```text
 evidence/real-data/coa-public-api-encounter-comparator-real.json
@@ -98,35 +69,53 @@ evidence/real-data/coa-report-encounter-source-correlation-real.json
 evidence/real-data/coa-report-encounter-population-binding-real.json
 ```
 
-The binding workflow reused the archived first-party report encounter catalog plus already-persisted official `/statistics` data and made zero network requests.
+## Persisted roster/build evidence — real proven
+
+All currently persisted current-report roster/build scopes pass deterministic report-scoped player identity, build linkage and source provenance:
+
+```text
+report scopes reviewed: 2/2
+report-scoped player identity complete: 2/2
+observed build provenance complete: 2/2
+characters: 52
+snapshots: 70
+talent entries: 3558
+gear observations: 1195
+complete timestamp coverage: 0/2
+selected encounter reference present: false
+selected reference same-report build binding proven: false
+```
+
+Receipt:
+
+```text
+evidence/real-data/coa-current-roster-build-provenance-real.json
+```
+
+This proof used existing persistence only and made zero network requests.
 
 ## Current trust boundary
 
 Proven:
 
 ```text
-report/encounter URL shape
-operator-reviewed boss/location/difficulty
-unique official /bosses binding
-exact report + encounter identity from first-party catalog
-report encounter -> boss identity
-report encounter -> difficulty
-encounter-scoped population context 4/4
-same-location matched comparator 4/4
-machine-correlated encounter -> population-context provenance binding
+report encounter -> population-context provenance binding
+persisted report-scoped player identity 2/2
+persisted observed build linkage/provenance 2/2
 ```
 
 Not yet proven:
 
 ```text
+selected encounter report -> roster/build same-report binding
 cross-report player identity
-current player build provenance/freshness
+current/latest build provenance/freshness
 encounter mechanic/requirement semantics
 player capability / composition fit
 planner recommendation
 ```
 
-Current next gate: player/current-build identity. Name equality is not cross-report identity proof, and population metrics are not individual capability evidence.
+Current next gate: establish roster/build evidence for the **selected encounter report itself**, reusing local first-party evidence first. After same-report binding exists, establish freshness/latest-snapshot semantics. Name equality is not cross-report identity proof.
 
 ## Privacy
 
@@ -138,7 +127,9 @@ query/profile values
 report/encounter IDs in public receipts
 boss/location/difficulty values in public receipts
 player names/IDs in public receipts unless separately approved
-private build values
+private build/talent/gear values
+snapshot hashes
+source capture ids
 class/spec names
 metric/parse-share scalars
 raw IDs/paths

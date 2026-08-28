@@ -34,7 +34,7 @@ Primary question:
 
 > **Почему конкретный человек нужен именно текущему составу?**
 
-Planner scoring remains blocked until player/build identity, mechanic requirements and composition semantics are independently proven.
+Planner scoring remains blocked until selected-report player/build evidence, freshness, mechanic requirements and composition semantics are independently proven.
 
 ## Source priority
 
@@ -84,144 +84,81 @@ profile-scoped aggregate invalidation: proven real
 bounded multi-profile population coverage v1: proven 4/4
 ```
 
-Real comparator checkpoint:
+Scalar-safe encounter receipts include:
 
 ```text
-encounter context class summaries: 59
-encounter context spec records: 148
-encounter context percentile values: 1924
-location comparator class summaries: 59
-location comparator spec records: 150
-location comparator percentile values: 1950
-matched records: 148
-encounter-only records: 0
-location-only records: 2
-records with avg delta/ratio: 148
-records with median delta/ratio: 148
-records with parse-share delta/ratio: 148
-exact dimension match verified: true
-temporal day_number match verified: true
-missing spec treated as zero: false
-source_endpoint_profile dependencies: 12
-pending reanalysis: 0
-actionable open source changes: 0
-source health attention required: false
-planner scoring allowed: false
-```
-
-Comparator semantics:
-
-```text
-same phase
-+ same concrete difficulty
-+ same location
-+ same metric
-+ same role
-+ same bracket
-+ same damage mode
-+ same capture day_number
-+ bossId omitted only
-```
-
-Scalar-safe receipts:
-
-```text
-evidence/real-data/coa-public-api-catalog-real.json
-evidence/real-data/coa-public-api-statistics-provenance-capture-real.json
-evidence/real-data/coa-public-api-statistics-persistence-real.json
-evidence/real-data/coa-public-api-statistics-profile-reanalysis-real.json
-evidence/real-data/coa-public-api-population-coverage-real.json
-evidence/real-data/coa-public-api-encounter-context-real.json
 evidence/real-data/coa-public-api-encounter-comparator-real.json
 evidence/real-data/coa-report-encounter-source-correlation-real.json
 evidence/real-data/coa-report-encounter-population-binding-real.json
 ```
 
-All public receipts exclude query values, report/encounter IDs, boss/location/difficulty values, class/spec names, metric scalars, raw IDs/paths/fingerprints and credentials.
+Historical two-report difficulty equivalence remains `insufficient_evidence`.
 
-## Encounter provenance boundary — closed real gate
+## Persisted report-scoped player/build provenance — closed real gate
 
-Proven:
+Real receipt:
 
 ```text
-reference URL shape validated
-operator-reviewed concrete boss/location/difficulty scope
-unique official /bosses binding for reviewed boss+location
-exact report + encounter identity from first-party encounter catalog
-report encounter -> selected boss machine correlation
-report encounter -> selected difficulty machine correlation
-boss encounter flag = true
-encounter-scoped aggregate context 4/4
-same-location matched comparator 4/4
-same private selected scope inputs reused
-exact comparator dimensions
-temporal day_number match
-machine-correlated encounter -> population-context provenance binding
+evidence/real-data/coa-current-roster-build-provenance-real.json
 ```
 
-Real binding receipt:
+Real result:
 
 ```text
-evidence/real-data/coa-report-encounter-population-binding-real.json
-```
-
-Real binding result:
-
-```text
-schema version: 1
-binding version: report-encounter-population-binding-v1
-report catalog source kind: archived_first_party_encounter_catalog
-archived report catalog reused: true
-report catalog observation count: 1
-existing public API persistence reused: true
-network request count: 0
-source correlation complete: true
-exact reference identity verified: true
-report encounter boss source correlated: true
-report encounter difficulty source correlated: true
-encounter context complete: true
-encounter context slices: 4
-location comparator complete: true
-location comparator slices: 4
-differential built: true
-matched records: 148
-encounter-only records: 0
-location-only records: 2
-exact dimension match verified: true
-temporal scope match verified: true
-same private scope inputs reused: true
-machine-correlated encounter population binding complete: true
-player identity verified: false
+catalog version: current-roster-build-provenance-catalog-v1
+persisted report count: 2
+reviewed report scope count: 2
+report scope with roster count: 2
+report-scoped player identity complete count: 2
+observed build linkage complete count: 2
+source provenance complete count: 2
+observed build provenance complete count: 2
+character count: 52
+snapshot count: 70
+talent entry count: 3558
+gear slot observation count: 1195
+observed timestamp coverage complete count: 0
+selected reference present: false
+selected reference report-scoped player identity complete: false
+selected reference observed build provenance complete: false
+selected reference same-report build binding proven: false
+current build freshness verified: false
+latest snapshot semantics verified: false
+cross-report identity verified: false
+player capability semantics verified: false
 mechanic semantics verified: false
-site Tier List algorithm verified: false
 planner scoring allowed: false
 public release safe: true
 ```
 
-The binding was offline and reused already archived/persisted evidence. No Browser/HAR, `events:read`, historical difficulty heuristic or repeat acquisition was used.
-
-## Current implementation gate — player/current-build identity
-
-The encounter-scope provenance blocker is closed. The next independent gate is to establish deterministic player identity and current-build evidence before any player capability claim.
-
-Required trust rules:
+Interpretation:
 
 ```text
-name equality alone is not cross-report identity proof
-current-report actor/roster identity is scoped to its report evidence
-cross-report identity must have explicit corroboration or remain unproven
-build/talent/gear observations require source + freshness/provenance
-missing or stale build evidence fails closed
-population participation/performance does not establish individual capability
-mechanic semantics remain separate
-planner scoring remains blocked
+all persisted report scopes have deterministic report-scoped player identity: proven real
+all persisted report scopes have observed build linkage/provenance: proven real
+selected encounter report is one of those roster/build scopes: false
+same-report selected encounter -> roster/build binding: unproven
+full timestamp coverage for freshness selection: 0/2
 ```
 
-Prefer already persisted first-party report evidence and pinned executable Companion source before Browser/HAR. Do not request new API scope merely to repeat locally available facts.
+No network, Browser/HAR or `events:read` was used for this proof.
 
-After player/build identity closes, proceed independently to encounter mechanics / requirement semantics, then capability model and attendance-aware composition fit.
+## Current implementation gate — selected-report roster/build binding
 
-Do not rerun population coverage, encounter context, comparator, source correlation or binding merely to reconfirm them.
+The immediate gap is not generic roster parsing. The selected encounter report is absent from persisted `current_report_observation` roster/build scopes.
+
+Proceed fail-closed:
+
+```text
+inspect existing local persisted/raw first-party evidence for the selected report
+reuse archived roster/build evidence if present
+if absent, inspect official documented site semantics and pinned Companion executable for the narrow source contract
+acquire only the missing selected-report evidence when genuinely necessary
+Browser/HAR remains fallback only for an exact undocumented gap
+never substitute another report by player/name similarity
+```
+
+After selected-report same-report binding is proven, establish current/latest snapshot semantics. `observed_timestamp_coverage_complete_count = 0` means freshness is still independently blocked.
 
 ## Aggregate implementation
 
@@ -233,11 +170,10 @@ src/coa_workbench/analytics/public_api_encounter_context.py
 src/coa_workbench/analytics/public_api_encounter_comparator.py
 src/coa_workbench/analytics/report_encounter_source_correlation.py
 src/coa_workbench/analytics/report_encounter_population_binding.py
+src/coa_workbench/analytics/current_roster_build_provenance.py
+src/coa_workbench/analytics/current_roster_build_provenance_catalog.py
 scripts/capture_public_api_population_coverage.py
-scripts/capture_public_api_encounter_context.py
-scripts/capture_public_api_encounter_comparator.py
-scripts/capture_report_encounter_source_correlation.py
-scripts/build_report_encounter_population_binding.py
+scripts/review_current_roster_build_provenance.py
 ```
 
 `request_contract_changed` remains endpoint-global; schema/profile-local changes target only matching private query profiles. Events older than dependency registration cannot back-trigger newer artifacts.
@@ -255,7 +191,7 @@ GET /api/reports/{reportId}/character_damage_taken_abilities?...
 GET /api/reports/{reportId}/character_spell_healing?...
 ```
 
-The current encounter catalog real structural review includes `id`, `name`, `boss_id`, `difficulty`, `is_boss_encounter`, `zone` and related fields. Two reports passed the generic persistence/analytics pipeline. Historical two-report difficulty equivalence remains `insufficient_evidence`; numeric comparison of that historical pair stays blocked.
+Two independent reports passed the generic persistence/analytics pipeline.
 
 ## Upstream executable source
 
@@ -279,21 +215,21 @@ The historical helper patch remains valuable incomplete private WIP because `gui
 
 ```text
 official API contract: reviewed
-real phase/boss catalog: proven
-real statistics normalization/persistence/idempotence: proven
+real statistics normalization: proven
+real DuckDB persistence/idempotence: proven
 aggregate Source Observatory/Health: proven
 profile-scoped aggregate invalidation: proven
 bounded population coverage v1: proven 4/4
 bounded encounter context v1: proven 4/4
 matched encounter/location comparator v1: proven 4/4
-exact comparator dimensions: proven
-comparator temporal day match: proven
-missing-spec zero coercion: prohibited/proven false
 report encounter -> selected boss/difficulty machine correlation: proven
 machine-correlated encounter -> population-context provenance binding: proven
-historical difficulty equivalence: insufficient evidence
+persisted report-scoped player identity: proven 2/2
+persisted observed build provenance: proven 2/2
+selected encounter report -> roster/build same-report binding: unproven
+current/latest build freshness: unproven
 cross-report player identity: unproven
-current-build evidence: unproven
+historical difficulty equivalence: insufficient evidence
 encounter mechanic semantics: unproven
 site Tier List algorithm: undocumented
 planner scoring: blocked

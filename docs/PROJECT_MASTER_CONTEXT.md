@@ -90,33 +90,11 @@ Retained implementation anchors:
 ```text
 forward-only migrations 0001-0013
 public_api_population_prior_v1
+source_endpoint_profile dependency
 bounded public population coverage model/workflow
 ```
 
-Current real comparator checkpoint:
-
-```text
-encounter context: 59 class summaries / 148 spec records / 1924 percentile values
-location comparator: 59 class summaries / 150 spec records / 1950 percentile values
-matched records: 148
-encounter-only records: 0
-location-only records: 2
-records with avg delta+ratio: 148
-records with median delta+ratio: 148
-records with parse-share delta+ratio: 148
-exact dimension match: proven
-temporal day_number match: proven
-missing spec zero coercion: false
-source_endpoint_profile dependencies: 12
-pending reanalysis: 0
-actionable source changes: 0
-health attention_required: false
-planner scoring: false
-```
-
-The comparator holds phase, concrete difficulty, location, metric, role, bracket, damage mode and capture day fixed while omitting only `bossId`.
-
-Public receipts:
+Public encounter receipts:
 
 ```text
 evidence/real-data/coa-public-api-encounter-comparator-real.json
@@ -126,52 +104,7 @@ evidence/real-data/coa-report-encounter-population-binding-real.json
 
 ## 7. Encounter provenance boundary — real proven through population binding
 
-The current encounter workflow establishes:
-
-```text
-valid report/encounter reference shape
-operator-reviewed concrete boss/location/difficulty
-unique official boss catalog match by reviewed boss+location
-exact report + encounter identity from first-party encounter catalog
-report encounter -> selected boss identity
-report encounter -> selected difficulty
-boss encounter flag = true
-exact encounter-scoped aggregate context 4/4
-exact matched same-location comparator 4/4
-same private selected scope inputs reused
-exact comparator dimension match
-temporal day_number match
-machine-correlated encounter population binding complete
-```
-
-Real binding checkpoint:
-
-```text
-binding_version: report-encounter-population-binding-v1
-report_catalog_source_kind: archived_first_party_encounter_catalog
-archived_report_catalog_reused: true
-report_catalog_observation_count: 1
-existing_public_api_persistence_reused: true
-network_request_count: 0
-source_correlation_complete: true
-encounter_context_complete: true
-encounter_context_slice_count: 4
-location_comparator_complete: true
-location_comparator_slice_count: 4
-differential_built: true
-matched_record_count: 148
-encounter_only_record_count: 0
-location_only_record_count: 2
-exact_dimension_match_verified: true
-temporal_scope_match_verified: true
-same_private_scope_inputs_reused: true
-machine_correlated_encounter_population_binding_complete: true
-player_identity_verified: false
-mechanic_semantics_verified: false
-site_tier_list_algorithm_verified: false
-planner_scoring_allowed: false
-public_release_safe: true
-```
+The current encounter workflow establishes exact first-party encounter identity, boss/difficulty correlation, bounded aggregate context, matched same-location comparator and machine-correlated encounter/population provenance binding.
 
 The binding reused archived first-party report evidence and persisted official `/statistics` data in one zero-network local operation. No Browser/HAR or `events:read` was required.
 
@@ -192,7 +125,64 @@ GET /api/reports/{reportId}/character_spell_healing?...
 
 The current-report encounter catalog is real-observed, real-correlated and archived for offline replay. Historical cross-report difficulty equivalence remains `insufficient_evidence`; numeric comparison of that historical pair stays blocked.
 
-## 9. Pinned Companion source
+## 9. Persisted report-scoped player/build provenance — real proven
+
+Scalar-safe receipt:
+
+```text
+evidence/real-data/coa-current-roster-build-provenance-real.json
+```
+
+The catalog review reused only persisted `canonical_entity_observation` data and performed zero network I/O.
+
+Real checkpoint:
+
+```text
+persisted reports: 2
+reviewed report scopes: 2
+report scopes with roster: 2
+report-scoped player identity complete: 2/2
+observed build linkage complete: 2/2
+source provenance complete: 2/2
+observed build provenance complete: 2/2
+characters: 52
+snapshots: 70
+talent entries: 3558
+gear observations: 1195
+complete timestamp coverage: 0/2
+selected encounter reference present: false
+selected reference same-report build binding proven: false
+current build freshness verified: false
+latest snapshot semantics verified: false
+cross-report identity verified: false
+player capability semantics verified: false
+mechanic semantics verified: false
+planner scoring allowed: false
+```
+
+This proves deterministic identity and observed build linkage **within each persisted report scope only**. It does not prove cross-report identity or selected-report linkage.
+
+## 10. Current exact gate — selected-report build binding
+
+The selected encounter report used by the encounter/population chain is not one of the two persisted roster/build report scopes.
+
+Required next sequence:
+
+```text
+existing local persisted/raw first-party evidence for selected report
+-> deterministic reuse/persistence if roster/build source already exists
+-> official documented site semantics / pinned executable Companion contract if acquisition semantics are needed
+-> narrow acquisition only for the missing selected-report evidence
+-> Browser/HAR only for an exact remaining undocumented gap
+-> prove same-report selected encounter -> roster/build binding
+-> then establish timestamp/freshness semantics for latest/current build selection
+```
+
+Do not bridge reports by name equality or class/spec/build similarity.
+
+The freshness gate is independently blocked because neither persisted report scope has complete observed timestamp coverage. Do not infer `latest snapshot = current build` from ordering alone.
+
+## 11. Pinned Companion source
 
 ```text
 FangYuanWoW/AscensionLogsCompanion
@@ -202,60 +192,21 @@ version 0.67.2
 
 Executable code can establish client behavior and emitted structure. Comments/backend claims require corroboration.
 
-## 10. Browser/HAR lane
+## 12. Browser/HAR lane
 
 Reusable fallback only for an exact undocumented gap after stronger sources are exhausted. No stealth, challenge bypass or anti-bot evasion.
 
-## 11. Current next gate — player/current-build identity
-
-Encounter scope provenance is no longer the active blocker. The next gate must establish deterministic player identity and current-build evidence before capability reasoning.
-
-Required local checks:
-
-```text
-current-report player/actor observation identified deterministically
-identity evidence carries explicit source provenance
-cross-report identity is corroborated separately or remains unproven
-build/talent/gear evidence carries source + freshness
-missing/stale build evidence fails closed
-no player capability inferred only from population aggregates
-```
-
-Required public output remains scalar/privacy-safe:
-
-```text
-player names/ids excluded unless explicitly approved
-report/encounter ids excluded
-private build values excluded
-counts/booleans/version markers only
-cross-report identity verified only when explicitly proven
-mechanic semantics verified = false
-planner scoring allowed = false
-public release safe = true
-```
-
-Prefer already persisted first-party report evidence and pinned executable source before Browser/HAR. Do not acquire new external scope merely to repeat existing local facts.
-
-After player/build identity:
-
-```text
-separately prove encounter mechanics / requirements
-build player capability model from independently sourced build/behavior evidence
-combine actual attendance + requirements + capabilities + descriptive population context
-only then permit explainable roster recommendations
-```
-
-## 12. Privacy/publication boundary
+## 13. Privacy/publication boundary
 
 Raw/private data is local by default. Public-safe receipts may expose static field names, endpoint codes, route templates, scalar-free structures, counts, booleans and version names.
 
-Do not publish private report/encounter/player identities, query values, dynamic class/spec keys, private build/dimension values, raw payloads, raw IDs/paths or low-entropy hashes of private scalars.
+Do not publish private report/encounter/player identities, query values, dynamic class/spec keys, private build/dimension values, raw payloads, snapshot hashes, source capture ids, raw IDs/paths or low-entropy hashes of private scalars.
 
-## 13. Local workspace boundary
+## 14. Local workspace boundary
 
 Unknown ignored/untracked operator state must be preserved. The historical helper-analysis patch is incomplete private WIP because `guild_progression_js_lexical` is absent. Do not apply it as-is.
 
-## 14. Branch/integration model
+## 15. Branch/integration model
 
 ```text
 main
@@ -266,7 +217,7 @@ main
 
 Resolve lower-chain integration debt deliberately and preserve the newest canonical docs.
 
-## 15. Current product path
+## 16. Current product path
 
 ```text
 aggregate capture/normalization/persistence/idempotence: proven
@@ -277,7 +228,10 @@ encounter-scoped population context: proven
 matched location comparator: proven
 report encounter boss/difficulty source correlation: proven
 machine-correlated encounter + population-context provenance binding: proven
--> player/current-build identity evidence
+persisted report-scoped player identity: proven 2/2
+persisted observed build provenance: proven 2/2
+-> selected encounter report -> roster/build same-report binding
+-> current/latest build freshness semantics
 -> mechanic/requirement semantics
 -> encounter requirement/capability model
 -> attendance-aware explainable roster recommendations

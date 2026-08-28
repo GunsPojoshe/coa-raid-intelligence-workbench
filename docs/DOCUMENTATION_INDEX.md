@@ -46,7 +46,7 @@ docs/NEXT_CHAT_HANDOFF.md
 - `docs/LOCAL_WORKSPACE_BOUNDARY.md` / `docs/LOCAL_WORKSPACE_AUDIT.md` — local/private state rules.
 - `docs/CI_OPERATIONS.md` — verification and exact-head CI policy.
 
-## Current official-API / encounter real evidence ledger
+## Current real evidence ledger
 
 ```text
 evidence/real-data/coa-public-api-catalog-real.json
@@ -75,6 +75,9 @@ evidence/real-data/coa-report-encounter-source-correlation-real.json
 
 evidence/real-data/coa-report-encounter-population-binding-real.json
   zero-network binding of machine-correlated encounter identity to persisted encounter context/comparator
+
+evidence/real-data/coa-current-roster-build-provenance-real.json
+  zero-network catalog proof that all persisted report scopes have report-scoped player identity + observed build provenance; selected encounter report remains absent and freshness remains unproven
 ```
 
 Retained implementation anchors:
@@ -98,13 +101,18 @@ bounded encounter context v1: proven 4/4
 matched encounter/location comparator v1: proven 4/4
 report encounter boss/difficulty source correlation v2: proven
 machine-correlated encounter population binding v1: proven
+persisted report-scoped player identity: proven 2/2
+persisted observed build provenance: proven 2/2
+selected encounter report -> roster/build same-report binding: unproven
+current/latest build freshness: unproven
 planner scoring: blocked
 ```
 
 Current next gate:
 
 ```text
-player/current-build identity + provenance/freshness
+selected encounter report -> roster/build same-report binding
+-> current/latest build freshness semantics
 ```
 
 Do not cartesian-expand population collection and do not rerun already closed proofs merely because a session restarted.

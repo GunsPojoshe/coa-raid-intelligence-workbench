@@ -70,63 +70,63 @@ evidence/real-data/coa-report-encounter-population-binding-real.json
 
 Do not repeat population coverage, encounter-context, comparator, report-correlation or binding proof merely because a session restarted.
 
-## Machine-correlated encounter population binding — proven
+## Persisted roster/build provenance — proven real
 
-Real binding checkpoint:
+Receipt:
 
 ```text
-binding_version: report-encounter-population-binding-v1
-report_catalog_source_kind: archived_first_party_encounter_catalog
-archived_report_catalog_reused: true
-report_catalog_observation_count: 1
-existing_public_api_persistence_reused: true
-network_request_count: 0
-source_correlation_complete: true
-exact_reference_identity_verified: true
-report_encounter_boss_source_correlated: true
-report_encounter_difficulty_source_correlated: true
-encounter_context_complete: true
-encounter_context_slice_count: 4
-location_comparator_complete: true
-location_comparator_slice_count: 4
-differential_built: true
-matched_record_count: 148
-encounter_only_record_count: 0
-location_only_record_count: 2
-exact_dimension_match_verified: true
-temporal_scope_match_verified: true
-same_private_scope_inputs_reused: true
-machine_correlated_encounter_population_binding_complete: true
-player_identity_verified: false
+evidence/real-data/coa-current-roster-build-provenance-real.json
+```
+
+Real checkpoint:
+
+```text
+catalog_version: current-roster-build-provenance-catalog-v1
+persisted_report_count: 2
+reviewed_report_scope_count: 2
+report_scope_with_roster_count: 2
+report_scoped_player_identity_complete_count: 2
+observed_build_linkage_complete_count: 2
+source_provenance_complete_count: 2
+observed_build_provenance_complete_count: 2
+character_count: 52
+snapshot_count: 70
+talent_entry_count: 3558
+gear_slot_observation_count: 1195
+observed_timestamp_coverage_complete_count: 0
+selected_reference_present: false
+selected_reference_report_scoped_player_identity_complete: false
+selected_reference_observed_build_provenance_complete: false
+selected_reference_same_report_build_binding_proven: false
+current_build_freshness_verified: false
+latest_snapshot_semantics_verified: false
+cross_report_identity_verified: false
 mechanic_semantics_verified: false
-site_tier_list_algorithm_verified: false
 planner_scoring_allowed: false
 public_release_safe: true
 ```
 
-The binding command used zero network requests. It reused the archived first-party report encounter catalog and existing official `/statistics` persistence. No Browser/HAR, `events:read` or historical difficulty heuristic was involved.
+This closes **report-scoped identity + observed build provenance for all persisted report scopes only**. It does not close selected-report linkage, cross-report identity or freshness.
 
-## Current exact gate — player/current-build identity
+The operator run used existing current-report persistence only, with `network_request_count = 0`, no Browser/HAR and no `events:read`.
 
-Encounter scope provenance is closed. The next independent gate is to establish deterministic player identity and build freshness/provenance before capability reasoning.
+## Current exact gate — selected encounter report -> roster/build same-report binding
 
-Requirements:
+The selected encounter report is absent from persisted roster/build report scopes. Do not silently substitute one of the two proven persisted reports.
+
+Next sequence:
 
 ```text
-start from already persisted current-report roster/actor evidence when available
-keep current-report identity separate from cross-report identity
-name equality alone never proves cross-report identity
-cross-report identity requires explicit corroboration or remains false
-build/talent/gear observations need a reviewed source and freshness marker
-missing/stale build evidence fails closed
-population aggregates do not establish individual capability
-mechanic semantics remain a separate later gate
-planner scoring remains blocked
+1. inspect existing local persisted/raw first-party evidence for the selected report
+2. if roster/build evidence is already archived, normalize/persist it deterministically
+3. otherwise inspect official documented site semantics and pinned executable Companion source for the narrow acquisition contract
+4. acquire only the missing selected-report evidence if required
+5. Browser/HAR only for an exact undocumented gap
+6. prove selected encounter report -> roster/build same-report binding
+7. only then establish current/latest build freshness semantics
 ```
 
-Prefer persisted first-party report evidence and pinned executable Companion source before Browser/HAR. Do not request API keys/new scopes merely to repeat existing local facts.
-
-Public review must remain scalar-safe and exclude player/report/encounter IDs, names, private build values, raw IDs/paths and fingerprints.
+Freshness remains separately blocked because `observed_timestamp_coverage_complete_count = 0`. Never infer latest/current from row order or name equality.
 
 ## Historical report evidence
 
@@ -160,7 +160,9 @@ query/profile values
 report/encounter IDs in public receipts
 boss/location/difficulty values in public receipts
 player names/IDs in public receipts unless separately approved
-private build values
+private build/talent/gear values
+snapshot hashes
+source capture ids
 class/spec names
 metric/parse-share scalars
 raw IDs/paths
