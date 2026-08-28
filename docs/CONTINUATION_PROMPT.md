@@ -1,119 +1,186 @@
-# Continuation prompt — CoA Raid Intelligence Workbench
+# Continuation prompt — current project state
 
-Continue development of `GunsPojoshe/coa-raid-intelligence-workbench`.
+Updated: **2026-08-28**.
 
-## Start
+## Repository
 
-Perform GitHub/PR/CI/repository work directly. Use the user only for inaccessible Windows/browser/private boundaries and bundle those operations into one action whenever possible.
+```text
+GunsPojoshe/coa-raid-intelligence-workbench
+local: C:\Users\Simpa\source\repos\coa-raid-intelligence-workbench
+canonical workstream: e4/interactive-har-discovery
+Draft PR #9 -> e3/real-log-capture
+```
 
-Read:
+Perform live GitHub branch HEAD, PR #9 mergeability and exact-head CI checks first. Stored SHAs/run numbers are checkpoints only.
+
+## Read in order
 
 ```text
 AGENTS.md
+docs/DOCUMENTATION_INDEX.md
+docs/CURRENT_PARADIGM.md
 docs/PROJECT_MASTER_CONTEXT.md
 docs/PROJECT_STATE.md
-docs/SOURCE_OBSERVABILITY_AND_REANALYSIS.md
-docs/SOURCE_OBSERVATORY_BASELINE.md
-docs/E3_GUILD_PROGRESSION_EVIDENCE_STATUS.md
-docs/CI_OPERATIONS.md
+docs/OFFICIAL_PUBLIC_API.md
+docs/CONTINUATION_PROMPT.md
+docs/NEXT_CHAT_HANDOFF.md
 ```
 
-Live GitHub and current local evidence override historical checkpoint text.
+## Product question
 
-## Network-first rule
+> **Почему конкретный человек нужен именно текущему составу?**
+
+Maintain fail-closed semantics: observation, field, UI label, name equality or population metric is not automatic identity/mechanic/planner proof.
+
+## Source priority
 
 ```text
-real browser/network request
--> sanitized API inventory
--> reviewed contract
--> immutable capture
--> schema/dimension observation
--> source change
--> dependency
--> scoped reanalysis
+official documented public API
+-> official documented site semantics
+-> pinned executable Companion source
+-> persisted first-party report/API evidence
+-> narrow browser/network fallback
+-> structural inference last
 ```
 
-SPA/static analysis is supporting evidence, not the first choice when runtime network traffic is available.
-
-## Current local baseline
-
-The user's local immutable corpus already contains successful browser-HAR observations for:
+## Closed real encounter/population chain
 
 ```text
-phases_api
-guild_phase_progression_api
+/phases + /bosses catalog
+exact /statistics normalization
+DuckDB persistence + idempotence
+population-prior read model
+Source Observatory integration
+source_endpoint_profile dependencies
+profile-scoped reanalysis
+bounded population coverage v1: 4/4
+bounded encounter context v1: 4/4
+matched encounter/location comparator v1: 4/4
+report encounter boss/difficulty source correlation v2: proven
+machine-correlated encounter population binding v1: proven
 ```
 
-Do not ask the user to rediscover/re-export this baseline just to continue development.
-
-Public structural receipt:
+Canonical scalar-safe receipts:
 
 ```text
-evidence/real-data/source-observatory-network-baseline-2026-08-14.json
+evidence/real-data/coa-public-api-encounter-comparator-real.json
+evidence/real-data/coa-report-encounter-source-correlation-real.json
+evidence/real-data/coa-report-encounter-population-binding-real.json
 ```
 
-## Operational tooling
+Do not repeat population coverage, encounter-context, comparator, report-correlation or binding proof merely because a session restarted.
+
+## Persisted roster/build provenance — proven real
+
+Receipt:
 
 ```text
-scripts/inventory_network_har.py
-scripts/observe_source.py
-scripts/observe_network_cycle.py
-scripts/rebuild_source_dimensions.py
-scripts/source_health.py
+evidence/real-data/coa-current-roster-build-provenance-real.json
 ```
 
-`observe_network_cycle.py` is the normal whole-HAR ingestion path. It now also rebuilds the approved source dimension index after capture.
-
-## Source dimension index
-
-Migration `0011` adds `source_dimension_index_value`.
-
-The index is a real derived artifact with `artifact_dependency` rows bound to Observatory-ready registry routes that declare `dimension_keys`.
-
-Approved automatic chain:
+Real checkpoint:
 
 ```text
-source change
--> reanalysis_request
--> deterministic dimension-index rebuild
--> analysis_run completed
--> matching reanalysis_request completed
+catalog_version: current-roster-build-provenance-catalog-v1
+persisted_report_count: 2
+reviewed_report_scope_count: 2
+report_scope_with_roster_count: 2
+report_scoped_player_identity_complete_count: 2
+observed_build_linkage_complete_count: 2
+source_provenance_complete_count: 2
+observed_build_provenance_complete_count: 2
+character_count: 52
+snapshot_count: 70
+talent_entry_count: 3558
+gear_slot_observation_count: 1195
+observed_timestamp_coverage_complete_count: 0
+selected_reference_present: false
+selected_reference_report_scoped_player_identity_complete: false
+selected_reference_observed_build_provenance_complete: false
+selected_reference_same_report_build_binding_proven: false
+current_build_freshness_verified: false
+latest_snapshot_semantics_verified: false
+cross_report_identity_verified: false
+mechanic_semantics_verified: false
+planner_scoring_allowed: false
+public_release_safe: true
 ```
 
-This automatic processing does not promote mechanic trust or planner scoring.
+This closes **report-scoped identity + observed build provenance for all persisted report scopes only**. It does not close selected-report linkage, cross-report identity or freshness.
 
-## Source & Analysis Health
+The operator run used existing current-report persistence only, with `network_request_count = 0`, no Browser/HAR and no `events:read`.
+
+## Current exact gate — selected encounter report -> roster/build same-report binding
+
+The selected encounter report is absent from persisted roster/build report scopes. Do not silently substitute one of the two proven persisted reports.
+
+Next sequence:
 
 ```text
-/source-health
-/api/source-health
+1. inspect existing local persisted/raw first-party evidence for the selected report
+2. if roster/build evidence is already archived, normalize/persist it deterministically
+3. otherwise inspect official documented site semantics and pinned executable Companion source for the narrow acquisition contract
+4. acquire only the missing selected-report evidence if required
+5. Browser/HAR only for an exact undocumented gap
+6. prove selected encounter report -> roster/build same-report binding
+7. only then establish current/latest build freshness semantics
 ```
 
-The localhost health view shows sources, captures, acquisition outcomes, dimension counts, source changes, dependencies, pending reanalysis and analysis runs. It must never expose HAR, cookies, request headers, raw payloads or dimension values.
+Freshness remains separately blocked because `observed_timestamp_coverage_complete_count = 0`. Never infer latest/current from row order or name equality.
 
-## Progression correction
+## Historical report evidence
 
-Do not resume the old helper/owner investigation and do not use guessed `POST /api/guilds/progression`.
+E3 report persistence/analytics/generalization remains proven on two reports. Historical two-report difficulty equivalence remains `insufficient_evidence`; numeric comparison of that pair stays blocked.
 
-Current runtime evidence is based on `/api/phases` and `/api/guilds/phase-progression`. Archived SPA `progression/rankings*` routes remain alternate reviewed GET contracts only.
-
-## Next path
+## Upstream source
 
 ```text
-verify exact-head CI
--> initialize source_dimension_index against the user's existing baseline in one bundled local action
--> later run one new browser/network capture cycle
--> verify real no-change/change and scoped reanalysis behavior
--> reduce manual browser capture work
--> expand reviewed Network-first coverage
+FangYuanWoW/AscensionLogsCompanion
+main @ 0f63fe9c50b470402e3a29fba2e0322095856fd4
+version 0.67.2
 ```
 
-Expansion targets: reports, encounters, rankings/statistics, characters, Armory/talent-grid, BisBeard.
+Use executable code for client behavior; comments/backend claims remain hypotheses.
 
-## Safety
+## Browser/HAR
 
-- Never rewrite published migrations.
-- Never delete `.gitkeep`.
-- Private/raw files are valid analysis inputs but are not public by default.
-- Never promote new source fields/dimensions into trusted mechanics or scoring automatically.
-- Never infer runtime use from static frontend presence alone.
+Fallback only for an exact undocumented gap. No anti-bot evasion.
+
+## Local workspace
+
+The historical helper patch is private incomplete WIP because `guild_progression_js_lexical` is absent. Preserve it and do not apply it as-is.
+
+## Privacy boundary
+
+Keep local/private:
+
+```text
+API key
+query/profile values
+report/encounter IDs in public receipts
+boss/location/difficulty values in public receipts
+player names/IDs in public receipts unless separately approved
+private build/talent/gear values
+snapshot hashes
+source capture ids
+class/spec names
+metric/parse-share scalars
+raw IDs/paths
+request/schema/profile fingerprints
+DuckDB/raw payloads
+```
+
+## Verification
+
+```powershell
+uv sync --frozen --extra dev --no-build-package ruff
+uv run --no-sync python scripts/verify_repo.py
+```
+
+Then verify exact pushed HEAD CI:
+
+```text
+public-release-audit
+ubuntu
+windows
+```

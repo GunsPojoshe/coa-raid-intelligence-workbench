@@ -1,4 +1,5 @@
 .venv/
+.venv-capture/
 __pycache__/
 .pytest_cache/
 *.py[cod]
@@ -14,8 +15,11 @@ __pycache__/
 /data/exchange/out/**
 /data/backups/**
 /data/logs/**
+/data/private/**
 /exports/**
 /artifacts/**
+/playwright-report/**
+/test-results/**
 !/data/**/.gitkeep
 .env
 .env.*

@@ -1,0 +1,42 @@
+version: upstream-evidence-sources-v1
+sources:
+  - source_code: ascension_logs_companion
+    repository: FangYuanWoW/AscensionLogsCompanion
+    branch: main
+    revision: 0f63fe9c50b470402e3a29fba2e0322095856fd4
+    license: MIT
+    source_kind: executable_client_capture_reference
+    trust:
+      executable_behavior: strong_source_evidence
+      inline_comments: corroboration_required
+      backend_claims: independent_corroboration_required
+    evidence_roles:
+      - client_api_surface
+      - combatant_info_shape
+      - encounter_context
+      - difficulty_observation
+      - gear_and_build_capture
+      - pet_and_guardian_ownership
+      - telemetry_capture
+      - keystone_lifecycle
+      - manastorm_lifecycle
+      - log_transport_format
+  - source_code: ascension_logs_uploader_docs
+    repository: FangYuanWoW/ascension-logs-uploader
+    branch: master
+    revision: 52e25780ade0c0b3ea954d649a875ea2f7d8c9bd
+    source_kind: public_uploader_documentation
+    trust:
+      documented_architecture: source_documented
+      concrete_http_contract: unavailable
+      server_parser_semantics: unavailable
+    evidence_roles:
+      - uploader_architecture
+      - realm_site_boundary
+      - server_side_processing_boundary
+rules:
+  upstream_revision_must_be_rechecked_before_refresh: true
+  executable_source_does_not_prove_backend_semantics: true
+  comments_do_not_auto_promote_semantics: true
+  gameplay_semantics_require_corroboration: true
+  private_network_configuration_must_not_be_published: true

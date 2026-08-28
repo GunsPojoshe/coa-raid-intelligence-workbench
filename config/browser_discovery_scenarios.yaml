@@ -1,0 +1,45 @@
+schema_version: 1
+source_code: coa_ascension_logs
+scenarios:
+  - scenario_code: reports.discovery
+    surface_family: reports
+    objective: Discover report catalog navigation, filters, pagination and request families.
+  - scenario_code: report.overview
+    surface_family: report
+    objective: Observe one report overview and stable report-level request families.
+  - scenario_code: report.difficulty
+    surface_family: report
+    objective: Correlate repeated difficulty control transitions with browser network evidence.
+  - scenario_code: report.encounters
+    surface_family: report
+    objective: Correlate encounter selection with request scope and response structure.
+  - scenario_code: report.roster
+    surface_family: report
+    objective: Observe roster, specialization, build and gear source families without mechanic inference.
+  - scenario_code: report.throughput
+    surface_family: report
+    objective: Observe throughput controls, profiles and response-shaping request keys.
+  - scenario_code: report.damage_taken
+    surface_family: report
+    objective: Observe damage-taken analytical controls and request families.
+  - scenario_code: report.healing
+    surface_family: report
+    objective: Observe healing analytical controls and request families.
+  - scenario_code: report.subpages
+    surface_family: report
+    objective: Discover neighbouring analytical tabs and classify network-backed versus silent transitions.
+  - scenario_code: characters.discovery
+    surface_family: characters
+    objective: Discover character profile, history, statistics and ranking source families.
+  - scenario_code: guild.discovery
+    surface_family: guild
+    objective: Discover guild identity, reports, membership and navigation source families.
+  - scenario_code: guild.progression
+    surface_family: guild
+    objective: Observe progression controls and source families across reviewed states.
+  - scenario_code: rankings.discovery
+    surface_family: rankings
+    objective: Discover ranking dimensions, filters, pagination and result source families.
+  - scenario_code: statistics.discovery
+    surface_family: statistics
+    objective: Discover statistics dimensions, filters and result source families.

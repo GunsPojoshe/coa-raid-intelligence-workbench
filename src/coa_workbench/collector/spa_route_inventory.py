@@ -123,7 +123,7 @@ def build_spa_route_inventory(
 
     for manifest_path in manifests:
         manifest = _load_object(manifest_path, "SPA asset content manifest")
-        if manifest.get("schema_version") != 1:
+        if manifest.get("schema_version") not in {1, 2}:
             raise ValueError("unsupported SPA asset content-manifest schema version")
         if manifest.get("endpoint_code") not in {None, endpoint_code}:
             raise ValueError("SPA asset content manifest endpoint mismatch")
