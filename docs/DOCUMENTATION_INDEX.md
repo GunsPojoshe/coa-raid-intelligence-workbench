@@ -71,6 +71,14 @@ evidence/real-data/coa-public-api-encounter-comparator-real.json
   matched same-location/no-boss comparator 4/4 and scalar-safe differential summary
 ```
 
+Retained implementation anchors:
+
+```text
+migrations/0013_public_api_statistics.sql
+scripts/capture_public_api_population_coverage.py
+Source Observatory/Health
+```
+
 `evidence/real-data/*.json` is an evidence ledger, not permanent configuration. Observed counts are not universal contracts.
 
 ## Current aggregate operating state
