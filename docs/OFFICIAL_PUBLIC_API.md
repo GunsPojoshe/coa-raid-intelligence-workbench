@@ -1,6 +1,6 @@
 # Official CoA Ascension Logs Public API
 
-Status date: **2026-08-27**.
+Status date: **2026-08-28**.
 
 Reviewed source:
 
@@ -195,7 +195,7 @@ evidence/real-data/coa-public-api-statistics-shape-real.json
 
 They proved a valid response shape but the older capture did not retain the requested non-echoed `role` value, so it could not support fully scoped normalization.
 
-A new bounded provenance-aware capture closed that gap:
+A later bounded provenance-aware capture closed that gap:
 
 ```text
 HTTP 200
@@ -213,7 +213,7 @@ Receipt:
 evidence/real-data/coa-public-api-statistics-provenance-capture-real.json
 ```
 
-Real exact normalization/persistence then proved:
+Real exact normalization/persistence proved:
 
 ```text
 class summaries: 21
@@ -238,7 +238,7 @@ Receipt:
 evidence/real-data/coa-public-api-statistics-persistence-real.json
 ```
 
-The later local no-network replay proved the source-health/profile dependency layer:
+The local no-network replay then proved the source-health/profile dependency layer:
 
 ```text
 archived capture replayed: true
@@ -259,7 +259,7 @@ Receipt:
 evidence/real-data/coa-public-api-statistics-profile-reanalysis-real.json
 ```
 
-No receipt publishes dynamic class/spec names, request values, difficulty/phase values, metric values, raw IDs, profile fingerprints or credentials.
+No receipt publishes dynamic class/spec names, request values, difficulty/phase/metric/role values, raw IDs, profile fingerprints or credentials.
 
 ## Request-scope provenance rule
 
@@ -349,9 +349,9 @@ The legacy broad aggregate `source_endpoint` dependency is deactivated when an e
 
 Profile-local changes match only dependencies with the same private `observation_profile_key`. `request_contract_changed` remains endpoint-global and intentionally fans out to every active profile dependency. Events older than dependency registration cannot back-trigger the new artifact.
 
-The first Source Observatory registration may leave an informational `endpoint_added`. Dedicated aggregate health distinguishes informational baseline events from actionable warning/error changes.
+The first Source Observatory registration may leave informational baseline/profile events. Dedicated aggregate health distinguishes informational provenance from actionable warning/error changes.
 
-## Bounded population coverage v1
+## Bounded population coverage v1 — real proven
 
 Implementation:
 
@@ -360,7 +360,7 @@ src/coa_workbench/analytics/public_api_population_coverage.py
 scripts/capture_public_api_population_coverage.py
 ```
 
-V1 is deliberately not a bulk crawl. It defines a small current-phase set:
+V1 deliberately avoids a cartesian crawl. It defines a small current-phase set:
 
 ```text
 required slices: 4
@@ -386,19 +386,45 @@ reconcile profile-scoped reanalysis
 emit scalar-safe counts/booleans only
 ```
 
-The command is resumable:
+Real run result:
+
+```text
+covered before: 1/4
+missing before: 3
+network requests: 3
+successful captures: 3
+inserted batches: 3
+persisted profiles: 3
+deterministic second replays: 3
+covered after: 4/4
+missing after: 0
+coverage complete: true
+aggregate class summaries: 60
+aggregate spec records: 162
+aggregate percentile values: 2106
+source_endpoint_profile dependencies: 4
+legacy broad aggregate dependency: 0
+pending reanalysis: 0
+actionable source changes: 0
+health attention required: false
+planner scoring allowed: false
+```
+
+The three newly observed source events were eligible for reconciliation but created zero reanalysis requests; aggregate health reports zero actionable open changes.
+
+Scalar-safe receipt:
+
+```text
+evidence/real-data/coa-public-api-population-coverage-real.json
+```
+
+The coverage command remains resumable:
 
 ```powershell
 uv run --no-sync python scripts/capture_public_api_population_coverage.py
 ```
 
-Default public-safe receipt:
-
-```text
-data/exchange/out/coa-public-api-population-coverage-review.json
-```
-
-Real multi-profile coverage execution remains pending until the operator runs this bounded workflow on the local RawArchive/DuckDB.
+A replay should intentionally reuse provenance-complete matching slices rather than recapture them.
 
 ## Event-level semantics documented by the API
 
@@ -445,14 +471,17 @@ Historical two-report difficulty equivalence remains `insufficient_evidence` and
 
 ## Current next gate
 
+The generic aggregate acquisition/provenance/health chain is now real-proven across multiple profiles. The next API step is not broad enumeration.
+
+Use a product-driven encounter cohort:
+
 ```text
-real normalization/persistence/idempotence: proven
-real Source Observatory/Health: proven
-real profile-scoped dependency migration: proven
--> run bounded population coverage v1
--> prove missing-only capture + multi-profile persistence + health on real local data
--> store one scalar-safe real coverage receipt
--> decide any next dimension expansion from product need rather than cartesian completeness
+choose one concrete planned encounter
+-> select its reviewed official boss/difficulty/location dimensions locally
+-> request only the minimal missing aggregate slices needed for that encounter
+-> preserve RawArchive + exact normalization + profile dependency + health behavior
+-> expose a descriptive encounter population context
+-> do not convert that context into planner scoring yet
 ```
 
-Do not request `events:read`, capture a HAR or run Playwright for this gate.
+Do not crawl all bosses, weeks, realms, classes or specs merely for completeness. Do not request `events:read`, capture a HAR or run Playwright unless a separate documented-data gap specifically requires them.
