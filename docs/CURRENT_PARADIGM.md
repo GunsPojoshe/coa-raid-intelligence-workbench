@@ -1,15 +1,13 @@
 # Current paradigm — CoA Raid Intelligence Workbench
 
 Status: **canonical operating model**  
-Updated: **2026-08-27**
-
-If an older milestone/handoff describes a different acquisition priority or next gate, this document and `docs/PROJECT_STATE.md` take precedence.
+Updated: **2026-08-28**
 
 ## Product question
 
 > **Почему конкретный человек нужен именно текущему составу?**
 
-The answer must combine actual composition state, player/build evidence, encounter needs, population context and corroborated mechanics. It must not collapse into a raw DPS ranking.
+The answer must combine actual composition state, player/build evidence, encounter needs, population context and corroborated mechanics. It must not collapse into a DPS ranking.
 
 ## Evidence-first architecture
 
@@ -46,17 +44,13 @@ population metric -> planner recommendation
 2. official documented site semantics
 3. pinned executable AscensionLogsCompanion source
 4. persisted first-party report/API responses
-5. narrow browser/network observation for undocumented gaps
+5. narrow browser/network observation for exact undocumented gaps
 6. structural inference only after stronger sources are exhausted
 ```
 
-This is a priority order, not a single-source architecture.
+## Official aggregate lane — proven state
 
-## Evidence lanes
-
-### A. Official aggregate statistics — primary population lane
-
-Self-service `stats:read`:
+Self-service `stats:read` routes:
 
 ```text
 GET /phases
@@ -64,174 +58,119 @@ GET /bosses
 GET /statistics
 ```
 
-The first aggregate vertical slice is fully real-proven:
+Real-proven gates:
 
 ```text
-phase/boss catalog: proven
-current-phase statistics capture: proven
-private request-scope provenance: proven
-exact StatisticsResponse normalization: proven
-DuckDB persistence: proven
-second-pass replay idempotence: proven
-population-prior read model: proven
-Source Observatory replay: proven
-Source & Analysis Health: proven
-profile-scoped source dependency migration: proven
-legacy broad aggregate dependency: inactive
-pending reanalysis after migration: zero
+phase/boss catalog
+provenance-aware /statistics capture
+exact StatisticsResponse normalization
+DuckDB persistence + deterministic replay
+population-prior read model
+Source Observatory + Source & Analysis Health
+source_endpoint_profile dependency migration
+bounded population coverage v1: 4/4
+bounded encounter context v1: 4/4
+matched encounter/location comparator v1: 4/4
 ```
 
-Real normalized checkpoint:
+Comparator real result:
 
 ```text
-21 class summaries
-62 spec records
-806 percentile scalar values
-62 population-prior records
-62 records with local_parse_share
+encounter context: 59 class summaries / 148 spec records / 1924 percentile values
+location comparator: 59 class summaries / 150 spec records / 1950 percentile values
+matched records: 148
+encounter-only records: 0
+location-only records: 2
+records with avg/median/parse-share delta+ratio: 148
+dimension match verified: true
+temporal day_number match verified: true
+missing spec treated as zero: false
+source_endpoint_profile dependencies: 12
+pending reanalysis: 0
+actionable source changes: 0
+health attention_required: false
+planner scoring allowed: false
 ```
 
-The current gate is no longer Source Observatory plumbing. It is bounded multi-profile population coverage over documented `/statistics` dimensions.
+The comparator holds phase, concrete difficulty, location, metric, role, bracket, damage mode and capture day fixed and removes only `bossId`.
 
-### B. First-party report evidence — private report-specific lane
+`local_parse_share`, avg/median deltas and ratios are descriptive population context. They are not the site's Tier List algorithm, mechanic proof, composition-fit proof or planner scoring.
 
-The E3 report pipeline remains valid for report-specific evidence, deterministic analytics and source observability. Historical two-report difficulty equivalence remains `insufficient_evidence`, so numeric comparison of that historical pair remains blocked.
-
-### C. Pinned Companion source — client-state lane
-
-`FangYuanWoW/AscensionLogsCompanion` is strong executable evidence for client-observed/build/gear/capture/telemetry structures that public API v1 does not expose.
-
-Executable code establishes client behavior; comments/backend notes require corroboration.
-
-### D. Browser/HAR — fallback gap lane
-
-Browser Observatory/HAR remains a provider-neutral forensic fallback for an exact undocumented gap. It is not the default way to learn Ascension Logs contracts.
-
-No stealth, fingerprint spoofing, challenge bypass or anti-bot evasion.
-
-## Official API privacy/provenance boundary
-
-Credential:
+Scalar-safe evidence:
 
 ```text
-data/private/coa-logs-api-key.txt
+evidence/real-data/coa-public-api-population-coverage-real.json
+evidence/real-data/coa-public-api-encounter-context-real.json
+evidence/real-data/coa-public-api-encounter-comparator-real.json
 ```
 
-The API key never enters Git, RawArchive metadata, request URLs, CLI values, logs, screenshots or public receipts.
+## Encounter binding trust boundary
 
-Exact request dimension values are not credentials but remain private source scalars. They may be retained in ignored RawArchive observation metadata because reproducible `/statistics` normalization requires the true request scope. Public receipts do not contain them.
-
-## Aggregate model and Source Observatory
-
-The official `/statistics` path is now:
+Currently proven:
 
 ```text
-reviewed OpenAPI contract
--> bounded authenticated capture
--> immutable RawArchive + private request scope
--> exact fail-closed parser
--> normalized batch/class/spec persistence
--> analysis_run
--> raw_object dependency
--> source_endpoint_profile dependency
--> population-prior read model
--> Source Observatory replay
--> profile-scoped reanalysis resolver
--> Source & Analysis Health
+valid report/encounter URL shape
+operator-reviewed concrete boss/location/difficulty
+exact boss name + location -> unique official /bosses record
+exact encounter-scoped aggregate capture
+exact same-location/no-boss comparator capture
 ```
 
-Request-shaping `/statistics` dimensions are private schema-profile keys. This prevents different phase/difficulty/metric/role/filter scopes from being compared as if they were one schema baseline.
-
-The artifact declares:
+Not yet proven:
 
 ```text
-raw_object dependency
-  exact source payload provenance
-
-source_endpoint_profile dependency
-  private query-profile source-change / reanalysis provenance
+report encounter -> selected boss identity from independent report source
+report encounter -> selected difficulty from independent report source
 ```
 
-Profile-local schema changes target only artifacts built from the same private reviewed query profile. `request_contract_changed` remains endpoint-global and intentionally fans out to every active profile dependency.
+The current binding is operator-reviewed + official-catalog-bound, not independently machine source-correlated.
 
-Old source events cannot back-trigger a dependency registered later. The real local migration replay proved this on the existing informational baseline event.
+## Current next gate
 
-## Population-prior semantics
+Independently correlate the already selected report encounter to boss and difficulty using the strongest available report source.
 
-Documented metric fields are preserved exactly by the normalized model. The read model may derive:
+Priority:
 
 ```text
-local_parse_share = spec total_parses / sum(spec total_parses within the same persisted batch)
+official documented report API if available with existing access
+-> official site semantics / first-party persisted report response
+-> pinned executable Companion source if it establishes the relevant structure
+-> Browser/HAR only for the exact remaining undocumented gap
 ```
 
-This is descriptive participation within one explicit API scope. It is not evidence of the site's Tier List algorithm and not planner scoring.
+Do not request a new API scope merely to repeat facts already available in persisted first-party report evidence. Do not resume historical difficulty-v4 heuristics.
 
-## Bounded coverage v1
+The source-correlation gate must fail closed if boss/difficulty cannot be independently established.
 
-`public-api-population-coverage-v1` deliberately avoids a cartesian crawl.
+## Other retained lanes
 
-It defines a small current-phase profile set that:
+E3 report persistence/analytics/generalization remains proven on two reports. Historical two-report difficulty equivalence remains `insufficient_evidence`; numeric comparison of that historical pair stays blocked.
+
+Pinned Companion source remains:
 
 ```text
-contains 4 required slices
-represents 3 documented metric families
-uses 3 role-qualified slices and 1 role-omitted slice
-holds broader dimensions stable
-reuses already persisted matching profiles
-requests only missing slices
-stops after the first incomplete network capture
-persists every successful slice with deterministic replay
-reconciles profile-scoped reanalysis after collection
-keeps boss/location/week/realm/class/spec expansion out of v1
+FangYuanWoW/AscensionLogsCompanion
+main @ 0f63fe9c50b470402e3a29fba2e0322095856fd4
+version 0.67.2
 ```
 
-The coverage receipt publishes counts/booleans only. It does not publish selected profile values, query values, class/spec names, raw IDs or profile fingerprints.
+Browser/HAR remains fallback only. No stealth, challenge bypass or anti-bot evasion.
 
-This is evidence collection, not bulk dataset redistribution and not Tier List reconstruction.
+## Privacy boundary
 
-## Planner trust states
+Keep private/local:
 
 ```text
-population aggregate collection: proven for first slice
-population aggregate normalization: proven
-population aggregate persistence/idempotence: proven
-population-prior read model: proven
-aggregate Source Observatory/Health: proven
-profile-scoped aggregate invalidation: proven
-bounded multi-profile population coverage: implementation ready; real run pending
-historical two-report numeric comparison: blocked
-cross-report player identity: blocked
-mechanic semantics: evidence-specific / not globally proven
-site Tier List algorithm: undocumented
-planner scoring: blocked
+API key
+query/profile values
+report/encounter ids in public receipts
+boss/location/difficulty values in public receipts
+phase/metric/role values in public receipts
+class/spec names
+metric/parse-share scalar values
+raw IDs/paths
+request/schema/profile fingerprints
+DuckDB/raw payloads
 ```
 
-Official source status does not validate a derived scoring formula by itself.
-
-## Branch/workstream topology
-
-```text
-e3/real-log-capture
-  stable report-evidence baseline
-
-e4/interactive-har-discovery
-  active official-API / upstream-source branch
-  Draft PR #9 -> e3/real-log-capture
-```
-
-The E4 branch name is historical.
-
-## Current next sequence
-
-```text
-real aggregate capture/normalization/persistence/idempotence: complete
-real Source Observatory/Health: complete
-real profile-scoped dependency migration: complete
--> run bounded population coverage v1
--> verify missing-only acquisition + multi-profile persistence + health
--> record scalar-safe real coverage receipt
--> then decide whether a second bounded dimension expansion is product-necessary
--> combine population context with separately verified player/build/encounter evidence
-```
-
-No new HAR, Playwright, difficulty-v4 heuristic or `events:read` permission is required for the current gate.
+Planner scoring remains fail-closed.
