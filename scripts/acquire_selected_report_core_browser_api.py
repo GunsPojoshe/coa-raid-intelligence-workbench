@@ -56,9 +56,7 @@ def _arguments() -> argparse.Namespace:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path(
-            "data/exchange/out/coa-selected-report-browser-api-acquisition-review.json"
-        ),
+        default=Path("data/exchange/out/coa-selected-report-browser-api-acquisition-review.json"),
     )
     return parser.parse_args()
 
