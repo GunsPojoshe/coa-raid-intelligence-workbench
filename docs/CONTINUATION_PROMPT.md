@@ -1,6 +1,6 @@
 # Continuation prompt — current project state
 
-Updated: **2026-08-27**.
+Updated: **2026-08-28**.
 
 ## Repository
 
@@ -52,24 +52,29 @@ structural inference last
 
 ## Official aggregate API — completed real gates
 
-The first aggregate vertical slice and its source-health/dependency layer are real-proven:
+The aggregate vertical slice, source-health/dependency migration and bounded multi-profile coverage are real-proven:
 
 ```text
 /phases + /bosses: archived/reviewed
 provenance-aware /statistics: HTTP 200, archived
 request context complete: true
-exact normalization: 21 classes / 62 specs / 806 percentile values
-first persistence: 21 class + 62 spec rows inserted
-second persistence: 21 class + 62 spec rows matched, zero inserts
-idempotent: true
+single-slice exact normalization: 21 class summaries / 62 specs / 806 percentile values
+single-slice persistence replay: idempotent
 population-prior records: 62
-records with local_parse_share: 62
 Source Observatory integrated: true
-raw dependency registered: true
-source_endpoint_profile dependency registered: true
 legacy broad source_endpoint dependency active: false
-profile dependency count: 1
-old eligible events after dependency registration: 0
+bounded coverage required slices: 4
+covered before real run: 1
+missing before real run: 3
+network requests: 3
+successful new captures: 3
+persisted new profiles: 3
+deterministic second replays: 3
+covered after: 4
+missing after: 0
+coverage complete: true
+aggregate coverage: 60 class summaries / 162 specs / 2106 percentile values
+source_endpoint_profile dependency count: 4
 created reanalysis requests: 0
 pending reanalysis: 0
 actionable open source changes: 0
@@ -84,75 +89,70 @@ Canonical real receipts:
 evidence/real-data/coa-public-api-statistics-provenance-capture-real.json
 evidence/real-data/coa-public-api-statistics-persistence-real.json
 evidence/real-data/coa-public-api-statistics-profile-reanalysis-real.json
+evidence/real-data/coa-public-api-population-coverage-real.json
 ```
 
-Do **not** repeat these single-slice capture/persistence/profile-migration proofs on restart.
+Do **not** repeat the generic single-slice or coverage-v1 proofs merely to reconfirm them.
 
-## Current exact gate — bounded population coverage v1
+## Current exact gate — product-driven encounter population context
 
-Implementation:
+Generic aggregate collection is sufficient for now. Do not turn the public API into a cartesian dataset crawl.
+
+Next design/implementation target:
 
 ```text
-src/coa_workbench/analytics/public_api_population_coverage.py
-scripts/capture_public_api_population_coverage.py
+one concrete planned encounter
+-> reviewed official boss/difficulty/location scope selected locally
+-> minimal required metric-family slices only
+-> reuse existing provenance-complete batches when possible
+-> capture only missing encounter-scoped slices
+-> RawArchive
+-> Source Observatory
+-> exact normalization/persistence
+-> deterministic replay
+-> source_endpoint_profile dependency
+-> profile-scoped reanalysis reconciliation
+-> Source & Analysis Health
+-> descriptive encounter population context
 ```
 
-V1 deliberately defines a small set rather than a cartesian crawl:
+This encounter context remains non-scoring. It may describe participation/throughput/survivability distributions for a relevant cohort, but it does not by itself prove player utility, mechanics, composition fit or the site's Tier List logic.
+
+Do not bulk-expand:
 
 ```text
-required slices: 4
-metric families represented: 3
-role-qualified slices: 3
-role-omitted slices: 1
-boss/location/week/realm/class/spec expansion: excluded
-bulk dataset mode: false
+all bosses
+all locations
+all weeks
+all realms
+all classes/specs
 ```
 
-The workflow selects the current phase privately from the archived `/phases` catalog, reviews the local DuckDB first, reuses any already persisted matching profiles and makes network requests only for missing slices.
-
-For every new successful slice:
-
-```text
-capture -> RawArchive -> Source Observatory -> exact normalization
--> persistence -> deterministic second replay -> source_endpoint_profile dependency
-```
-
-Then it reconciles profile-scoped reanalysis and Source & Analysis Health.
-
-Operator command after syncing canonical E4:
-
-```powershell
-uv run --no-sync python scripts/capture_public_api_population_coverage.py
-```
-
-The command is resumable. It stops on the first incomplete network response; a later rerun intentionally skips already completed matching slices.
-
-Review only the generated scalar-safe receipt:
-
-```text
-data/exchange/out/coa-public-api-population-coverage-review.json
-```
-
-Do not ask for RawArchive, DuckDB, API key, query values, profile fingerprints or raw response.
-
-Success gate:
-
-```text
-coverage_after.complete = true
-missing_slice_count = 0
-profile-scoped dependency count >= required covered batches
-legacy broad dependency count = 0
-pending reanalysis = 0
-actionable source changes = 0
-attention_required = false
-planner_scoring_allowed = false
-```
+Start with one explicitly selected encounter from a real raid-planning need.
 
 ## Source-health semantics
 
 Informational `endpoint_added` / `observation_profile_added` events are retained as provenance and are not automatically attention-required. Warning/error changes or pending reanalysis do require attention.
 
 Profile-local schema events invalidate only matching private query profiles. `request_contract_changed` remains endpoint-global. Events older than dependency registration cannot back-trigger newer artifacts.
+
+## Privacy boundary
+
+Keep local/private:
+
+```text
+API key
+query values
+phase/difficulty/metric/role values in public receipts
+boss/location/realm/week filter values in public receipts
+class/spec dynamic names
+raw IDs and paths
+request/schema/profile fingerprints
+metric and percentile scalar values
+DuckDB and raw payloads
+```
+
+Public real receipts remain counts/booleans/version markers only.
 
 ## Historical report evidence
 
