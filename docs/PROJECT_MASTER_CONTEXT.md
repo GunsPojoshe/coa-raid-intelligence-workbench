@@ -82,6 +82,7 @@ catalog
 -> bounded encounter context
 -> matched same-location comparator
 -> first-party report encounter boss/difficulty correlation
+-> machine-correlated encounter population binding
 ```
 
 Retained implementation anchors:
@@ -120,51 +121,59 @@ Public receipts:
 ```text
 evidence/real-data/coa-public-api-encounter-comparator-real.json
 evidence/real-data/coa-report-encounter-source-correlation-real.json
+evidence/real-data/coa-report-encounter-population-binding-real.json
 ```
 
-## 7. Encounter binding boundary — real proven through boss/difficulty correlation
+## 7. Encounter provenance boundary — real proven through population binding
 
-The current encounter workflow now establishes:
+The current encounter workflow establishes:
 
 ```text
 valid report/encounter reference shape
 operator-reviewed concrete boss/location/difficulty
 unique official boss catalog match by reviewed boss+location
-exact encounter-scoped aggregate context
-exact matched same-location comparator
 exact report + encounter identity from first-party encounter catalog
 report encounter -> selected boss identity
 report encounter -> selected difficulty
 boss encounter flag = true
+exact encounter-scoped aggregate context 4/4
+exact matched same-location comparator 4/4
+same private selected scope inputs reused
+exact comparator dimension match
+temporal day_number match
+machine-correlated encounter population binding complete
 ```
 
-Real source-correlation checkpoint:
+Real binding checkpoint:
 
 ```text
-schema_version: 2
-correlation_version: report-encounter-source-correlation-v2
-parser_version: report-encounter-catalog-parser-v1
-source_kind: live_first_party_encounter_catalog
-network_request_count: 1
-persisted_observation_used: false
-normalized_encounter_count: 1
-reject_count: 0
-verified_field_contract_count: 5
-exact_reference_identity_verified: true
-boss_name_field_verified: true
-boss_encounter_flag_verified: true
-difficulty_field_verified: true
-report_encounter_boss_source_correlated: true
-report_encounter_difficulty_source_correlated: true
-complete: true
-encounter_detail_used: false
-events_read_used: false
-browser_har_used: false
+binding_version: report-encounter-population-binding-v1
+report_catalog_source_kind: archived_first_party_encounter_catalog
+archived_report_catalog_reused: true
+report_catalog_observation_count: 1
+existing_public_api_persistence_reused: true
+network_request_count: 0
+source_correlation_complete: true
+encounter_context_complete: true
+encounter_context_slice_count: 4
+location_comparator_complete: true
+location_comparator_slice_count: 4
+differential_built: true
+matched_record_count: 148
+encounter_only_record_count: 0
+location_only_record_count: 2
+exact_dimension_match_verified: true
+temporal_scope_match_verified: true
+same_private_scope_inputs_reused: true
+machine_correlated_encounter_population_binding_complete: true
+player_identity_verified: false
+mechanic_semantics_verified: false
+site_tier_list_algorithm_verified: false
 planner_scoring_allowed: false
 public_release_safe: true
 ```
 
-The earlier heavy encounter-detail timeout remains transport evidence only. It is not part of the successful proof.
+The binding reused archived first-party report evidence and persisted official `/statistics` data in one zero-network local operation. No Browser/HAR or `events:read` was required.
 
 ## 8. First-party report lane
 
@@ -181,9 +190,7 @@ GET /api/reports/{reportId}/character_damage_taken_abilities?...
 GET /api/reports/{reportId}/character_spell_healing?...
 ```
 
-The current-report encounter catalog is real-observed and now also real-proven as the source used for the boss/difficulty correlation gate. Its scalar-free structural review records fields including `id`, `name`, `boss_id`, `difficulty`, `is_boss_encounter` and `zone`.
-
-Historical cross-report difficulty equivalence remains `insufficient_evidence`; numeric comparison of that historical pair stays blocked.
+The current-report encounter catalog is real-observed, real-correlated and archived for offline replay. Historical cross-report difficulty equivalence remains `insufficient_evidence`; numeric comparison of that historical pair stays blocked.
 
 ## 9. Pinned Companion source
 
@@ -199,41 +206,41 @@ Executable code can establish client behavior and emitted structure. Comments/ba
 
 Reusable fallback only for an exact undocumented gap after stronger sources are exhausted. No stealth, challenge bypass or anti-bot evasion.
 
-## 11. Current next gate
+## 11. Current next gate — player/current-build identity
 
-Bind the machine-correlated report encounter to the already-proven encounter population context and matched location comparator as one deterministic local provenance result.
+Encounter scope provenance is no longer the active blocker. The next gate must establish deterministic player identity and current-build evidence before capability reasoning.
 
 Required local checks:
 
 ```text
-source correlation complete
-encounter context complete
-matched comparator complete
-same private selected report/encounter scope
-same reviewed boss/difficulty scope
+current-report player/actor observation identified deterministically
+identity evidence carries explicit source provenance
+cross-report identity is corroborated separately or remains unproven
+build/talent/gear evidence carries source + freshness
+missing/stale build evidence fails closed
+no player capability inferred only from population aggregates
 ```
 
-Required public output:
+Required public output remains scalar/privacy-safe:
 
 ```text
+player names/ids excluded unless explicitly approved
+report/encounter ids excluded
+private build values excluded
 counts/booleans/version markers only
-report/encounter IDs excluded
-boss/location/difficulty values excluded
-query values excluded
-metric/share scalars excluded
+cross-report identity verified only when explicitly proven
 mechanic semantics verified = false
 planner scoring allowed = false
 public release safe = true
 ```
 
-Do not rerun already-proven population/context/comparator/correlation acquisitions merely to make this binding. Reuse local artifacts and private provenance.
+Prefer already persisted first-party report evidence and pinned executable source before Browser/HAR. Do not acquire new external scope merely to repeat existing local facts.
 
-After this gate:
+After player/build identity:
 
 ```text
-separately prove current/cross-report player identity and build evidence
 separately prove encounter mechanics / requirements
-build player capability model
+build player capability model from independently sourced build/behavior evidence
 combine actual attendance + requirements + capabilities + descriptive population context
 only then permit explainable roster recommendations
 ```
@@ -242,7 +249,7 @@ only then permit explainable roster recommendations
 
 Raw/private data is local by default. Public-safe receipts may expose static field names, endpoint codes, route templates, scalar-free structures, counts, booleans and version names.
 
-Do not publish private report/encounter/player identities, query values, dynamic class/spec keys, private dimension values, raw payloads, raw IDs/paths or low-entropy hashes of private scalars.
+Do not publish private report/encounter/player identities, query values, dynamic class/spec keys, private build/dimension values, raw payloads, raw IDs/paths or low-entropy hashes of private scalars.
 
 ## 13. Local workspace boundary
 
@@ -269,9 +276,9 @@ bounded population coverage: proven
 encounter-scoped population context: proven
 matched location comparator: proven
 report encounter boss/difficulty source correlation: proven
--> machine-correlated encounter + population-context provenance binding
--> separately prove player identity/build evidence
--> separately prove mechanic/requirement semantics
+machine-correlated encounter + population-context provenance binding: proven
+-> player/current-build identity evidence
+-> mechanic/requirement semantics
 -> encounter requirement/capability model
 -> attendance-aware explainable roster recommendations
 ```

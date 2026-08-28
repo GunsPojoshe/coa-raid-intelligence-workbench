@@ -30,7 +30,7 @@ docs/NEXT_CHAT_HANDOFF.md
 
 > **Почему конкретный человек нужен именно текущему составу?**
 
-Maintain fail-closed semantics: observation, field, UI label or population metric is not automatic mechanic/planner proof.
+Maintain fail-closed semantics: observation, field, UI label, name equality or population metric is not automatic identity/mechanic/planner proof.
 
 ## Source priority
 
@@ -43,7 +43,7 @@ official documented public API
 -> structural inference last
 ```
 
-## Closed real aggregate gates
+## Closed real encounter/population chain
 
 ```text
 /phases + /bosses catalog
@@ -57,25 +57,7 @@ bounded population coverage v1: 4/4
 bounded encounter context v1: 4/4
 matched encounter/location comparator v1: 4/4
 report encounter boss/difficulty source correlation v2: proven
-```
-
-Comparator real result:
-
-```text
-encounter context: 59 class summaries / 148 specs / 1924 percentile values
-location comparator: 59 class summaries / 150 specs / 1950 percentile values
-matched records: 148
-encounter-only records: 0
-location-only records: 2
-avg/median/parse-share delta+ratio records: 148 each
-exact dimension match verified: true
-temporal day_number match verified: true
-missing spec treated as zero: false
-source_endpoint_profile dependency count: 12
-pending reanalysis: 0
-actionable source changes: 0
-source health attention_required: false
-planner scoring allowed: false
+machine-correlated encounter population binding v1: proven
 ```
 
 Canonical scalar-safe receipts:
@@ -83,79 +65,68 @@ Canonical scalar-safe receipts:
 ```text
 evidence/real-data/coa-public-api-encounter-comparator-real.json
 evidence/real-data/coa-report-encounter-source-correlation-real.json
+evidence/real-data/coa-report-encounter-population-binding-real.json
 ```
 
-Do not repeat generic population coverage, encounter-context, comparator or report-correlation capture merely because a session restarted.
+Do not repeat population coverage, encounter-context, comparator, report-correlation or binding proof merely because a session restarted.
 
-## Encounter binding boundary — machine correlation proven
+## Machine-correlated encounter population binding — proven
 
-Proven:
+Real binding checkpoint:
 
 ```text
-report/encounter URL shape
-operator-reviewed boss/location/difficulty
-unique official /bosses binding
-encounter-scoped population context
-matched same-location comparator
-exact first-party report + encounter identity
-report encounter -> selected boss identity
-report encounter -> selected difficulty
-boss encounter flag = true
+binding_version: report-encounter-population-binding-v1
+report_catalog_source_kind: archived_first_party_encounter_catalog
+archived_report_catalog_reused: true
+report_catalog_observation_count: 1
+existing_public_api_persistence_reused: true
+network_request_count: 0
+source_correlation_complete: true
+exact_reference_identity_verified: true
+report_encounter_boss_source_correlated: true
+report_encounter_difficulty_source_correlated: true
+encounter_context_complete: true
+encounter_context_slice_count: 4
+location_comparator_complete: true
+location_comparator_slice_count: 4
+differential_built: true
+matched_record_count: 148
+encounter_only_record_count: 0
+location_only_record_count: 2
+exact_dimension_match_verified: true
+temporal_scope_match_verified: true
+same_private_scope_inputs_reused: true
+machine_correlated_encounter_population_binding_complete: true
+player_identity_verified: false
+mechanic_semantics_verified: false
+site_tier_list_algorithm_verified: false
+planner_scoring_allowed: false
+public_release_safe: true
 ```
 
-Real source correlation:
+The binding command used zero network requests. It reused the archived first-party report encounter catalog and existing official `/statistics` persistence. No Browser/HAR, `events:read` or historical difficulty heuristic was involved.
+
+## Current exact gate — player/current-build identity
+
+Encounter scope provenance is closed. The next independent gate is to establish deterministic player identity and build freshness/provenance before capability reasoning.
+
+Requirements:
 
 ```text
-correlation version: report-encounter-source-correlation-v2
-parser version: report-encounter-catalog-parser-v1
-source kind: live_first_party_encounter_catalog
-network request count: 1
-persisted observation used: false
-normalized encounter count: 1
-reject count: 0
-verified field contract count: 5
-exact reference identity verified: true
-boss source correlated: true
-difficulty source correlated: true
-complete: true
-encounter detail used: false
-events:read used: false
-Browser/HAR used: false
-no historical difficulty heuristic: true
-planner scoring allowed: false
-public release safe: true
+start from already persisted current-report roster/actor evidence when available
+keep current-report identity separate from cross-report identity
+name equality alone never proves cross-report identity
+cross-report identity requires explicit corroboration or remains false
+build/talent/gear observations need a reviewed source and freshness marker
+missing/stale build evidence fails closed
+population aggregates do not establish individual capability
+mechanic semantics remain a separate later gate
+planner scoring remains blocked
 ```
 
-The old heavy `/api/reports/{reportId}/encounters/{encounterId}` timeout remains transport evidence only and must not be retried merely by raising timeout.
+Prefer persisted first-party report evidence and pinned executable Companion source before Browser/HAR. Do not request API keys/new scopes merely to repeat existing local facts.
 
-## Current exact gate — correlated encounter population binding
-
-Create a deterministic local proof that the machine-correlated encounter identity and the already-proven encounter-context/comparator evidence refer to the same locally selected scope.
-
-Target:
-
-```text
-source-correlation complete = true
-encounter-context complete = true
-matched comparator complete = true
-same private selected scope verified locally
-private IDs/dimensions remain excluded from public output
-mechanic semantics verified = false
-planner scoring allowed = false
-```
-
-The output should be a scalar-safe receipt with counts/booleans/version markers only.
-
-Do not ask the operator for API key, RawArchive, DuckDB, private query values, class/spec names, metric scalars or additional report/encounter IDs. Reuse local state and existing receipts/evidence.
-
-After this gate:
-
-```text
-separately prove current/cross-report player identity + build evidence
-separately prove encounter mechanic/requirement semantics
-then build capability/composition-fit reasoning
-planner scoring remains blocked until those gates close
-```
+Public review must remain scalar-safe and exclude player/report/encounter IDs, names, private build values, raw IDs/paths and fingerprints.
 
 ## Historical report evidence
 
@@ -188,6 +159,8 @@ API key
 query/profile values
 report/encounter IDs in public receipts
 boss/location/difficulty values in public receipts
+player names/IDs in public receipts unless separately approved
+private build values
 class/spec names
 metric/parse-share scalars
 raw IDs/paths

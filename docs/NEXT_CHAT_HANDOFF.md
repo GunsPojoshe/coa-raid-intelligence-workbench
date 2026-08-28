@@ -21,7 +21,7 @@ official documented public API
 -> structural inference last
 ```
 
-## Real aggregate proof complete through machine report correlation
+## Real encounter/population proof complete through binding
 
 ```text
 /phases + /bosses catalog: proven
@@ -32,24 +32,7 @@ bounded population coverage: 4/4
 encounter context: 4/4
 location comparator: 4/4
 report encounter boss/difficulty source correlation v2: proven
-```
-
-Comparator checkpoint:
-
-```text
-encounter: 59 class summaries / 148 specs / 1924 percentile values
-location: 59 class summaries / 150 specs / 1950 percentile values
-matched records: 148
-encounter-only: 0
-location-only: 2
-exact dimension match: true
-temporal day_number match: true
-missing spec treated as zero: false
-profile dependencies: 12
-pending reanalysis: 0
-actionable source changes: 0
-attention_required: false
-planner scoring: false
+machine-correlated encounter population binding v1: proven
 ```
 
 Real receipts:
@@ -57,71 +40,59 @@ Real receipts:
 ```text
 evidence/real-data/coa-public-api-encounter-comparator-real.json
 evidence/real-data/coa-report-encounter-source-correlation-real.json
+evidence/real-data/coa-report-encounter-population-binding-real.json
 ```
 
-Do not rerun population coverage, encounter context, comparator or source correlation just to reconfirm them.
+Do not rerun population coverage, encounter context, comparator, source correlation or binding just to reconfirm them.
 
-## Binding boundary — boss/difficulty correlation closed
-
-```text
-report URL shape: proven
-boss/location -> unique official boss record: proven
-report encounter exact identity from first-party catalog: proven
-report encounter -> boss from independent report source: proven
-report encounter -> difficulty from independent report source: proven
-boss encounter flag: proven true
-```
-
-Source-correlation real checkpoint:
+## Binding checkpoint
 
 ```text
-correlation_version: report-encounter-source-correlation-v2
-parser_version: report-encounter-catalog-parser-v1
-source_kind: live_first_party_encounter_catalog
-network_request_count: 1
-persisted_observation_used: false
-normalized_encounter_count: 1
-reject_count: 0
-verified_field_contract_count: 5
-exact_reference_identity_verified: true
-report_encounter_boss_source_correlated: true
-report_encounter_difficulty_source_correlated: true
-complete: true
-encounter_detail_used: false
-events_read_used: false
-browser_har_used: false
-planner_scoring_allowed: false
-public_release_safe: true
-```
-
-The old heavy encounter-detail timeout is transport evidence only; do not retry that route by increasing timeout.
-
-## Current gate — correlated encounter population binding
-
-Create a deterministic local proof that the newly machine-correlated encounter identity and the already-proven encounter population context + matched comparator refer to the same locally selected scope.
-
-Required public outcome:
-
-```text
+report catalog source: archived_first_party_encounter_catalog
+archived catalog reused: true
+network requests: 0
 source correlation complete: true
-encounter context complete: true
-matched comparator complete: true
-same private selected scope verified locally: true
-private identifiers/dimensions included: false
+encounter context: 4/4 complete
+location comparator: 4/4 complete
+differential built: true
+matched records: 148
+encounter-only: 0
+location-only: 2
+exact dimension match: true
+temporal scope match: true
+same private scope inputs reused: true
+machine-correlated encounter population binding complete: true
+player identity verified: false
 mechanic semantics verified: false
-planner scoring allowed: false
+planner scoring: false
 public release safe: true
 ```
 
-Reuse existing local state. Do not request API key, RawArchive, DuckDB, private query values, class/spec names, metric scalars or additional report IDs from the operator.
+## Current gate — player/current-build identity
 
-After this gate, proceed independently to player/build identity and encounter mechanic/requirement semantics. Do not jump directly to planner scoring.
+Encounter scope provenance is closed. Next, establish deterministic player identity and current-build provenance.
+
+Trust rules:
+
+```text
+name equality alone is not cross-report identity proof
+current-report roster/actor identity is scoped to that report evidence
+cross-report identity needs independent corroboration or remains false
+build/talent/gear evidence requires reviewed source + freshness
+missing/stale build evidence fails closed
+population metrics do not establish individual capability
+mechanic semantics remain a separate later gate
+planner scoring remains blocked
+```
+
+Prefer persisted first-party report evidence and pinned Companion executable source before Browser/HAR. Do not request new API scope simply to repeat locally available facts.
 
 ## Retained blockers
 
 ```text
 historical two-report difficulty equivalence: insufficient_evidence
 cross-report player identity: unproven
+current-build evidence: unproven
 encounter mechanic semantics: unproven
 site Tier List algorithm: undocumented
 planner scoring: blocked

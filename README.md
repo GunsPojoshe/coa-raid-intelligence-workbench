@@ -32,7 +32,7 @@ The E4 branch name is historical. Browser/HAR is fallback only.
 6. structural inference only after stronger sources are exhausted
 ```
 
-## Official aggregate API — real proven through report correlation
+## Encounter/population evidence — real proven through binding
 
 Self-service `stats:read` routes:
 
@@ -55,6 +55,7 @@ bounded population coverage v1: 4/4
 bounded encounter context v1: 4/4
 matched encounter/location comparator v1: 4/4
 report encounter boss/difficulty source correlation v2: proven
+machine-correlated encounter population binding v1: proven
 ```
 
 Retained implementation anchors:
@@ -68,21 +69,24 @@ second-pass replay:            idempotent
 legacy broad endpoint dependency: inactive
 ```
 
-Comparator real checkpoint:
+Binding checkpoint:
 
 ```text
-encounter context: 59 class summaries / 148 specs / 1924 percentile values
-location comparator: 59 class summaries / 150 specs / 1950 percentile values
+report catalog source: archived_first_party_encounter_catalog
+network requests: 0
+source correlation complete: true
+encounter context complete: true
+location comparator complete: true
+differential built: true
 matched records: 148
 encounter-only: 0
 location-only: 2
-exact dimension match verified: true
-temporal day_number match verified: true
-missing spec treated as zero: false
-source_endpoint_profile dependencies: 12
-pending reanalysis: 0
-actionable source changes: 0
-health attention_required: false
+exact dimension match: true
+temporal scope match: true
+same private scope inputs reused: true
+machine-correlated encounter population binding complete: true
+player identity verified: false
+mechanic semantics verified: false
 planner scoring allowed: false
 ```
 
@@ -91,9 +95,10 @@ Scalar-safe evidence:
 ```text
 evidence/real-data/coa-public-api-encounter-comparator-real.json
 evidence/real-data/coa-report-encounter-source-correlation-real.json
+evidence/real-data/coa-report-encounter-population-binding-real.json
 ```
 
-Comparator dimensions are identical except that the location cohort omits `bossId`. Metric/share values remain local/private. Missing specs are not zero-filled.
+The binding workflow reused the archived first-party report encounter catalog plus already-persisted official `/statistics` data and made zero network requests.
 
 ## Current trust boundary
 
@@ -103,26 +108,25 @@ Proven:
 report/encounter URL shape
 operator-reviewed boss/location/difficulty
 unique official /bosses binding
-encounter-scoped population context
-same-location matched comparator
-exact report + encounter identity from first-party encounter catalog
+exact report + encounter identity from first-party catalog
 report encounter -> boss identity
 report encounter -> difficulty
-boss encounter flag = true
+encounter-scoped population context 4/4
+same-location matched comparator 4/4
+machine-correlated encounter -> population-context provenance binding
 ```
 
-Report source-correlation implementation:
+Not yet proven:
 
 ```text
-src/coa_workbench/analytics/report_encounter_source_correlation.py
-scripts/capture_report_encounter_source_correlation.py
+cross-report player identity
+current player build provenance/freshness
+encounter mechanic/requirement semantics
+player capability / composition fit
+planner recommendation
 ```
 
-Real correlation used the compact reviewed first-party encounter catalog. It completed with one selected encounter row, zero rejects, exact identity, boss and difficulty matches, no HAR, no `events:read`, no historical difficulty heuristic and no planner scoring.
-
-The previous heavy encounter-detail read timeout remains transport evidence only and is not part of the successful proof.
-
-Current next gate: bind the machine-correlated encounter identity to the already-proven encounter population context + matched comparator as one scalar-safe provenance result. Do not infer mechanics or planner recommendations from population statistics.
+Current next gate: player/current-build identity. Name equality is not cross-report identity proof, and population metrics are not individual capability evidence.
 
 ## Privacy
 
@@ -133,6 +137,8 @@ API key
 query/profile values
 report/encounter IDs in public receipts
 boss/location/difficulty values in public receipts
+player names/IDs in public receipts unless separately approved
+private build values
 class/spec names
 metric/parse-share scalars
 raw IDs/paths

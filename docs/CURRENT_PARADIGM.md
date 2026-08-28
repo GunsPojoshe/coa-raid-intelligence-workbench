@@ -72,6 +72,7 @@ bounded population coverage v1: 4/4
 bounded encounter context v1: 4/4
 matched encounter/location comparator v1: 4/4
 report encounter boss/difficulty source correlation v2: proven
+machine-correlated encounter population binding v1: proven
 ```
 
 Retained canonical status markers:
@@ -113,84 +114,88 @@ evidence/real-data/coa-public-api-population-coverage-real.json
 evidence/real-data/coa-public-api-encounter-context-real.json
 evidence/real-data/coa-public-api-encounter-comparator-real.json
 evidence/real-data/coa-report-encounter-source-correlation-real.json
+evidence/real-data/coa-report-encounter-population-binding-real.json
 ```
 
 ## Encounter binding trust boundary — real proven
 
-The selected report encounter is now independently machine-correlated from reviewed first-party report evidence:
+The selected report encounter is now independently machine-correlated and deterministically bound to the exact persisted population context used by the comparator:
 
 ```text
 valid report/encounter URL shape: proven
-operator-reviewed concrete boss/location/difficulty: retained input scope
+operator-reviewed concrete boss/location/difficulty: retained private input scope
 exact boss name + location -> unique official /bosses record: proven
-exact encounter-scoped aggregate capture: proven
-exact same-location/no-boss comparator capture: proven
 exact report + encounter identity from first-party encounter catalog: proven
 report encounter -> selected boss identity: proven
 report encounter -> selected difficulty: proven
 boss encounter flag: proven true
+encounter-scoped aggregate context: proven 4/4
+same-location/no-boss comparator: proven 4/4
+same private selected scope inputs reused: proven
+exact comparator dimensions: proven
+comparator temporal day_number match: proven
+machine-correlated encounter population binding: proven
 ```
 
-Real source-correlation receipt:
+Binding receipt:
 
 ```text
-evidence/real-data/coa-report-encounter-source-correlation-real.json
+evidence/real-data/coa-report-encounter-population-binding-real.json
 ```
 
-Real correlation result:
+Real binding result:
 
 ```text
-correlation version: report-encounter-source-correlation-v2
-parser version: report-encounter-catalog-parser-v1
-source kind: live_first_party_encounter_catalog
-normalized encounter count: 1
-reject count: 0
-verified field contract count: 5
-exact reference identity: true
-boss field match: true
-boss encounter flag: true
-difficulty field match: true
-boss source correlation: true
-difficulty source correlation: true
-complete: true
-network requests: 1
-persisted observation used: false
-heavy encounter-detail used: false
-events:read used: false
-Browser/HAR used: false
-historical difficulty-v4 heuristic used: false
+binding version: report-encounter-population-binding-v1
+report catalog source: archived_first_party_encounter_catalog
+archived report catalog reused: true
+report catalog observations: 1
+existing public API persistence reused: true
+network requests: 0
+source correlation complete: true
+encounter context complete: true
+encounter context slices: 4
+location comparator complete: true
+location comparator slices: 4
+differential built: true
+matched records: 148
+encounter-only records: 0
+location-only records: 2
+exact dimension match: true
+temporal scope match: true
+same private scope inputs reused: true
+machine-correlated encounter population binding complete: true
+player identity verified: false
+mechanic semantics verified: false
+site Tier List algorithm verified: false
 planner scoring allowed: false
 public release safe: true
 ```
 
-The earlier heavy `/api/reports/{reportId}/encounters/{encounterId}` timeout remains transport evidence only. The successful proof used the compact reviewed encounter catalog instead.
+The binding path was offline. It reused the successful archived first-party encounter catalog plus already-persisted official `/statistics` data. No Browser/HAR, `events:read`, historical difficulty heuristic or repeat acquisition was used.
 
-## Current next gate
+## Current next gate — player/current-build identity
 
-Bind the now machine-correlated report encounter to the already-proven encounter-scoped population context as one deterministic local trust result.
+Encounter scope provenance is no longer the blocker. The next independent trust lane is to establish who the selected/current player is and what build evidence is current enough to support capability reasoning.
 
-Target semantics:
-
-```text
-same locally selected report/encounter scope
-+ source-correlation complete
-+ encounter population context complete
-+ matched same-location comparator complete
--> scalar-safe encounter-context binding receipt
-```
-
-This gate must not infer mechanics, player identity, capability or roster value. It exists only to close provenance between machine-correlated encounter identity and the descriptive population context already collected for that scope.
-
-After that:
+Required semantics:
 
 ```text
-separately prove player identity / current build evidence
-separately prove encounter mechanic / requirement semantics
-only then construct capability and composition-fit reasoning
+same concrete player observation can be identified deterministically
+current-report actor/roster identity remains separate from cross-report identity
+build/talent/gear evidence must carry its own source + freshness/provenance
+name equality alone is not cross-report identity proof
+absence of build evidence must fail closed
+no population metric is promoted to player capability
+mechanic semantics remain unproven
 planner scoring remains blocked
 ```
 
-Do not repeat population coverage, encounter-context, comparator or report-correlation captures merely because a session restarted.
+Prefer already persisted first-party report evidence and pinned executable source before Browser/HAR. Do not request new external scope merely to repeat facts already available locally.
+
+After player/build identity, independently prove encounter mechanic/requirement semantics. Only then combine capabilities, requirements, actual attendance and descriptive population context.
+
+Do not repeat population coverage, encounter-context, comparator, report-correlation or binding proof merely because a session restarted.
 
 ## Other retained lanes
 
@@ -216,6 +221,7 @@ query/profile values
 report/encounter ids in public receipts
 boss/location/difficulty values in public receipts
 phase/metric/role values in public receipts
+player identities in public receipts unless separately approved
 class/spec names
 metric/parse-share scalar values
 raw IDs/paths

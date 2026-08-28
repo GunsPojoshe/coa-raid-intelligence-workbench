@@ -137,7 +137,7 @@ total_parses
 percentiles
 ```
 
-## Real-proven aggregate chain
+## Real-proven aggregate / encounter chain
 
 Closed real gates:
 
@@ -152,6 +152,7 @@ bounded population coverage v1
 bounded encounter context v1
 matched encounter/location comparator v1
 report encounter boss/difficulty source correlation v2
+machine-correlated encounter population binding v1
 ```
 
 Retained implementation anchors:
@@ -174,6 +175,7 @@ evidence/real-data/coa-public-api-population-coverage-real.json
 evidence/real-data/coa-public-api-encounter-context-real.json
 evidence/real-data/coa-public-api-encounter-comparator-real.json
 evidence/real-data/coa-report-encounter-source-correlation-real.json
+evidence/real-data/coa-report-encounter-population-binding-real.json
 ```
 
 ## Request-scope provenance
@@ -216,8 +218,6 @@ health attention required: false
 planner scoring allowed: false
 ```
 
-The workflow validates the report/encounter URL shape and separately binds the operator-reviewed exact boss name + location to one official `/bosses` record. That stage alone did not independently prove report encounter identity; the later first-party catalog correlation now closes that identity gate.
-
 ## Matched encounter/location comparator v1 — real proven
 
 Implementation:
@@ -246,22 +246,12 @@ Real result:
 ```text
 encounter context complete: true
 location comparator covered: 4/4
-location comparator class summaries: 59
-location comparator spec records: 150
-location comparator percentile values: 1950
 matched records: 148
 encounter-only records: 0
 location-only records: 2
-avg delta/ratio records: 148
-median delta/ratio records: 148
-parse-share delta/ratio records: 148
 exact dimension match verified: true
 temporal scope match verified: true
 missing spec treated as zero: false
-source_endpoint_profile dependencies: 12
-pending reanalysis: 0
-actionable source changes: 0
-attention required: false
 planner scoring allowed: false
 mechanic semantics verified: false
 site Tier List algorithm verified: false
@@ -272,8 +262,6 @@ Receipt:
 ```text
 evidence/real-data/coa-public-api-encounter-comparator-real.json
 ```
-
-The public receipt excludes report/encounter IDs, boss/location/difficulty values, class/spec names, metric values, parse-share values, query values, raw IDs/paths and fingerprints.
 
 ## Comparator trust rules
 
@@ -286,8 +274,6 @@ metric/share scalars remain private
 planner scoring remains blocked
 ```
 
-The two location-only records are evidence of population membership differences, not zero-valued encounter records.
-
 ## Report encounter source correlation v2 — real proven
 
 Implementation:
@@ -297,96 +283,90 @@ src/coa_workbench/analytics/report_encounter_source_correlation.py
 scripts/capture_report_encounter_source_correlation.py
 ```
 
-Successful real source path:
+Successful proof used the compact first-party encounter catalog and verified exact report/encounter identity, selected boss identity/boss flag and difficulty independently.
 
-```text
-live first-party /api/reports/{reportId}/encounters?includeTrash=false catalog
--> exact report identity
--> exactly one selected encounter row
--> boss name + is_boss_encounter
--> exact difficulty
--> scalar-safe review
-```
-
-Real receipt:
+Receipt:
 
 ```text
 evidence/real-data/coa-report-encounter-source-correlation-real.json
 ```
 
+The earlier heavier `/api/reports/{reportId}/encounters/{encounterId}` site request timed out while reading the response. That remains transport evidence only and was not used for proof.
+
+## Machine-correlated encounter population binding v1 — real proven
+
+Implementation:
+
+```text
+src/coa_workbench/analytics/report_encounter_population_binding.py
+scripts/build_report_encounter_population_binding.py
+```
+
+The binding recomputes the report-side source correlation and the exact persisted encounter-context/comparator selection from the same private operator inputs, without new acquisition.
+
+Real source path:
+
+```text
+archived first-party report encounter catalog
++ existing persisted official /statistics batches
+-> exact source correlation
+-> encounter context 4/4
+-> matched location comparator 4/4
+-> exact dimension/day-number validation
+-> scalar-safe binding review
+```
+
+Real receipt:
+
+```text
+evidence/real-data/coa-report-encounter-population-binding-real.json
+```
+
 Real result:
 
 ```text
-schema version: 2
-correlation version: report-encounter-source-correlation-v2
-parser version: report-encounter-catalog-parser-v1
-source kind: live_first_party_encounter_catalog
-network request count: 1
-persisted observation preferred: true
-persisted observation used: false
-raw capture written: true
-normalized encounter count: 1
-reject count: 0
-verified field contract count: 5
-exact reference identity verified: true
-boss name field verified: true
-boss encounter flag verified: true
-difficulty field verified: true
-report encounter boss source correlated: true
-report encounter difficulty source correlated: true
-complete: true
-encounter detail used: false
-events:read used: false
-Browser/HAR used: false
-no historical difficulty heuristic: true
+binding version: report-encounter-population-binding-v1
+archived report catalog reused: true
+report catalog observation count: 1
+existing public API persistence reused: true
+network request count: 0
+source correlation complete: true
+encounter context complete: true
+location comparator complete: true
+differential built: true
+matched records: 148
+encounter-only records: 0
+location-only records: 2
+exact dimension match verified: true
+temporal scope match verified: true
+same private scope inputs reused: true
+machine-correlated encounter population binding complete: true
+player identity verified: false
+mechanic semantics verified: false
+site Tier List algorithm verified: false
 planner scoring allowed: false
 public release safe: true
 ```
 
-The earlier heavier `/api/reports/{reportId}/encounters/{encounterId}` site request timed out while reading the response. That remains transport evidence only; it was not used for the successful proof.
+This closes encounter identity/population provenance. It does not establish player identity, build evidence, mechanic semantics or roster value.
 
-The successful catalog route is first-party site evidence, not the experimental external `events:read` scope. No new API key or scope was required.
+## Current next gate — player/current-build identity
 
-## Binding trust boundary — closed for boss/difficulty identity
+The next trust lane should first reuse persisted first-party report roster/actor evidence where possible, then use pinned executable source or other stronger reviewed evidence for build semantics/freshness.
 
-Currently proven:
-
-```text
-reference URL shape
-operator-reviewed concrete boss/location/difficulty
-unique official boss catalog binding
-exact encounter aggregate context
-exact same-location comparator
-exact first-party report + encounter identity
-report encounter -> selected boss identity
-report encounter -> selected difficulty
-```
-
-Still not proven by this chain:
+Requirements:
 
 ```text
-encounter mechanic semantics
-player cross-report identity
-player capability / requirement fit
-site Tier List algorithm
-planner recommendation
+name equality is not cross-report identity proof
+current-report identity remains report-scoped unless corroborated
+build observations require source + freshness/provenance
+missing/stale build evidence fails closed
+population aggregates do not establish individual capability
+mechanic semantics remain separate
+planner scoring remains blocked
 ```
 
-## Current next gate
-
-Create one deterministic local provenance binding between the now machine-correlated report encounter and the already-proven encounter population context + matched location comparator.
-
-Required outcome:
-
-```text
-source correlation complete
-+ encounter context complete
-+ comparator complete
-+ same private selected scope verified locally
--> scalar-safe binding receipt
-```
-
-This next gate must not expose private identifiers or scalar values and must keep `mechanic_semantics_verified=false` and `planner_scoring_allowed=false`.
+No new `events:read` scope should be requested merely to reconfirm identity facts already available in persisted first-party report evidence.
 
 ## Event-level semantics documented by the API
 

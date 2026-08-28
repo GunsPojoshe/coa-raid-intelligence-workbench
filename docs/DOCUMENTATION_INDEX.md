@@ -46,7 +46,7 @@ docs/NEXT_CHAT_HANDOFF.md
 - `docs/LOCAL_WORKSPACE_BOUNDARY.md` / `docs/LOCAL_WORKSPACE_AUDIT.md` — local/private state rules.
 - `docs/CI_OPERATIONS.md` — verification and exact-head CI policy.
 
-## Current official-API / report-correlation real evidence ledger
+## Current official-API / encounter real evidence ledger
 
 ```text
 evidence/real-data/coa-public-api-catalog-real.json
@@ -72,6 +72,9 @@ evidence/real-data/coa-public-api-encounter-comparator-real.json
 
 evidence/real-data/coa-report-encounter-source-correlation-real.json
   exact first-party report/encounter identity + independent boss/difficulty source correlation
+
+evidence/real-data/coa-report-encounter-population-binding-real.json
+  zero-network binding of machine-correlated encounter identity to persisted encounter context/comparator
 ```
 
 Retained implementation anchors:
@@ -94,13 +97,14 @@ bounded population coverage v1: proven 4/4
 bounded encounter context v1: proven 4/4
 matched encounter/location comparator v1: proven 4/4
 report encounter boss/difficulty source correlation v2: proven
+machine-correlated encounter population binding v1: proven
 planner scoring: blocked
 ```
 
 Current next gate:
 
 ```text
-machine-correlated report encounter -> existing encounter population-context/comparator provenance binding
+player/current-build identity + provenance/freshness
 ```
 
 Do not cartesian-expand population collection and do not rerun already closed proofs merely because a session restarted.
