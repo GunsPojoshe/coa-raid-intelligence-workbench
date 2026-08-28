@@ -137,7 +137,11 @@ def _check_required_paths() -> dict[str, Any]:
 
 def _check_documentation_index() -> dict[str, Any]:
     index = _read("docs/DOCUMENTATION_INDEX.md")
-    missing = [path for path in _CANONICAL_DOCS if path not in index and path != "docs/DOCUMENTATION_INDEX.md"]
+    missing = [
+        path
+        for path in _CANONICAL_DOCS
+        if path not in index and path != "docs/DOCUMENTATION_INDEX.md"
+    ]
     return {"name": "documentation_index", "passed": not missing, "missing": missing}
 
 
@@ -230,7 +234,9 @@ def build_report() -> dict[str, Any]:
 def main() -> int:
     report = build_report()
     REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    REPORT_PATH.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    REPORT_PATH.write_text(
+        json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
     print(json.dumps(report, indent=2, ensure_ascii=False))
     return 0 if report["summary"]["status"] == "passed" else 1
 
