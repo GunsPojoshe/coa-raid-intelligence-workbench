@@ -53,9 +53,7 @@ def main() -> int:
         },
         "review": summary,
         "verification": {
-            "all_persisted_report_scopes_reviewed": summary[
-                "all_persisted_report_scopes_reviewed"
-            ],
+            "all_persisted_report_scopes_reviewed": summary["all_persisted_report_scopes_reviewed"],
             "all_persisted_report_build_provenance_complete": summary[
                 "all_persisted_report_build_provenance_complete"
             ],
