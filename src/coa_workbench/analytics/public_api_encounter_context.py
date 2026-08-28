@@ -146,8 +146,8 @@ def resolve_public_api_boss_id(
         raw_id = raw_boss.get("boss_id")
         raw_name = raw_boss.get("name")
         raw_location = raw_boss.get("location")
-        if isinstance(raw_id, bool) or not isinstance(raw_id, int) or raw_id < 1:
-            raise ValueError(f"bosses[{index}].boss_id must be a positive integer")
+        if isinstance(raw_id, bool) or not isinstance(raw_id, int):
+            raise ValueError(f"bosses[{index}].boss_id must be an integer")
         if not isinstance(raw_name, str) or not raw_name:
             raise ValueError(f"bosses[{index}].name must be a non-empty string")
         if raw_location is not None and not isinstance(raw_location, str):
@@ -272,8 +272,8 @@ def review_public_api_encounter_context(
         raise ValueError("difficulty must be one concrete documented difficulty")
     if not location:
         raise ValueError("location must be non-empty")
-    if isinstance(boss_id, bool) or not isinstance(boss_id, int) or boss_id < 1:
-        raise ValueError("boss_id must be a positive integer")
+    if isinstance(boss_id, bool) or not isinstance(boss_id, int):
+        raise ValueError("boss_id must be an integer")
 
     apply_migrations(database_path, migrations_path)
     import duckdb
