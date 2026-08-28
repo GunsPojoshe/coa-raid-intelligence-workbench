@@ -13,10 +13,10 @@ from coa_workbench.analytics.public_api_encounter_context import (
 
 def test_encounter_reference_accepts_exact_report_encounter_shape() -> None:
     reference = parse_encounter_reference_url(
-        "https://coa.ascensionlogs.gg/reports/31135/encounters?encounters=703971"
+        "https://coa.ascensionlogs.gg/reports/12345/encounters?encounters=67890"
     )
-    assert reference.report_id == 31135
-    assert reference.encounter_id == 703971
+    assert reference.report_id == 12345
+    assert reference.encounter_id == 67890
 
 
 @pytest.mark.parametrize(
@@ -97,11 +97,11 @@ def test_public_encounter_summary_is_scalar_safe() -> None:
 
     rendered = json.dumps(public, sort_keys=True)
     for private_value in (
-        "Basalthane",
-        "Onyxia's Lair",
-        "ascended",
+        "Private Boss",
+        "Private Raid",
+        "heroic",
         "avg_dps",
         "support",
-        "703971",
+        "67890",
     ):
         assert private_value not in rendered
