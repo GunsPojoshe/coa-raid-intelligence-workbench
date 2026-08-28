@@ -46,7 +46,7 @@ docs/NEXT_CHAT_HANDOFF.md
 - `docs/LOCAL_WORKSPACE_BOUNDARY.md` / `docs/LOCAL_WORKSPACE_AUDIT.md` — local/private state rules.
 - `docs/CI_OPERATIONS.md` — verification and exact-head CI policy.
 
-## Current official-API real evidence ledger
+## Current official-API / report-correlation real evidence ledger
 
 ```text
 evidence/real-data/coa-public-api-catalog-real.json
@@ -69,6 +69,9 @@ evidence/real-data/coa-public-api-encounter-context-real.json
 
 evidence/real-data/coa-public-api-encounter-comparator-real.json
   matched same-location/no-boss comparator 4/4 and scalar-safe differential summary
+
+evidence/real-data/coa-report-encounter-source-correlation-real.json
+  exact first-party report/encounter identity + independent boss/difficulty source correlation
 ```
 
 Retained implementation anchors:
@@ -81,7 +84,7 @@ Source Observatory/Health
 
 `evidence/real-data/*.json` is an evidence ledger, not permanent configuration. Observed counts are not universal contracts.
 
-## Current aggregate operating state
+## Current operating state
 
 ```text
 single-slice capture/persistence: proven
@@ -90,13 +93,14 @@ source_endpoint_profile migration: proven
 bounded population coverage v1: proven 4/4
 bounded encounter context v1: proven 4/4
 matched encounter/location comparator v1: proven 4/4
+report encounter boss/difficulty source correlation v2: proven
 planner scoring: blocked
 ```
 
 Current next gate:
 
 ```text
-independent report encounter -> boss/difficulty source correlation
+machine-correlated report encounter -> existing encounter population-context/comparator provenance binding
 ```
 
 Do not cartesian-expand population collection and do not rerun already closed proofs merely because a session restarted.

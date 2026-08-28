@@ -70,6 +70,7 @@ source_endpoint_profile dependency migration
 bounded population coverage v1: 4/4
 bounded encounter context v1: 4/4
 matched encounter/location comparator v1: 4/4
+report encounter boss/difficulty source correlation v2: proven
 ```
 
 Retained canonical status markers:
@@ -131,11 +132,12 @@ evidence/real-data/coa-public-api-statistics-profile-reanalysis-real.json
 evidence/real-data/coa-public-api-population-coverage-real.json
 evidence/real-data/coa-public-api-encounter-context-real.json
 evidence/real-data/coa-public-api-encounter-comparator-real.json
+evidence/real-data/coa-report-encounter-source-correlation-real.json
 ```
 
 All public receipts exclude query values, report/encounter IDs, boss/location/difficulty values, class/spec names, metric scalars, raw IDs/paths/fingerprints and credentials.
 
-## Encounter binding trust boundary
+## Encounter binding trust boundary — closed real gate
 
 Proven:
 
@@ -145,57 +147,77 @@ operator-reviewed concrete boss/location/difficulty scope
 unique official /bosses binding for reviewed boss+location
 encounter-scoped aggregate context
 same-location matched comparator
-```
-
-Not proven yet:
-
-```text
+exact report + encounter identity from first-party encounter catalog
 report encounter -> selected boss machine correlation
 report encounter -> selected difficulty machine correlation
+boss encounter flag = true
 ```
 
-Do not describe the current binding as machine-verified encounter identity.
+Real correlation receipt:
+
+```text
+evidence/real-data/coa-report-encounter-source-correlation-real.json
+```
+
+Real result:
+
+```text
+schema version: 2
+correlation version: report-encounter-source-correlation-v2
+parser version: report-encounter-catalog-parser-v1
+source kind: live_first_party_encounter_catalog
+network request count: 1
+persisted observation count: 0
+persisted observation used: false
+raw capture written this run: true
+normalized encounter count: 1
+reject count: 0
+verified field contract count: 5
+exact reference identity verified: true
+boss name field verified: true
+boss encounter flag verified: true
+difficulty field verified: true
+report encounter boss source correlated: true
+report encounter difficulty source correlated: true
+complete: true
+encounter detail used: false
+events:read used: false
+Browser/HAR used: false
+historical difficulty-v4 heuristic used: false
+planner scoring allowed: false
+public release safe: true
+```
+
+The earlier heavy encounter-detail read timeout remains transport evidence only and is not part of the successful proof.
 
 ## Current implementation gate
 
-The next gate is independent report encounter -> boss/difficulty source correlation.
+Next gate: deterministic binding of machine-correlated encounter identity to the already-proven encounter population context and matched location comparator.
 
-Implementation:
-
-```text
-src/coa_workbench/analytics/report_encounter_source_correlation.py
-scripts/capture_report_encounter_source_correlation.py
-```
-
-Current execution order:
+Required result:
 
 ```text
-1. read exact persisted current_encounter_observation catalog evidence from local DuckDB
-2. if absent, request /api/reports/{reportId}/encounters?includeTrash=false
-3. correlate exact report + encounter identity, boss name/boss flag and difficulty
-4. publish scalar-safe review only
+same locally selected report/encounter scope
+source-correlation complete = true
+encounter-context complete = true
+matched location comparator complete = true
+no private identity/value leakage
+mechanic semantics remain false
+planner scoring remains false
 ```
 
-The initial real implementation used `/api/reports/{reportId}/encounters/{encounterId}`. The operator run reached response reading but timed out after two 30-second attempts. This proves only that the heavy endpoint was unsuitable for this operator path; it does not change boss/difficulty trust state.
+This is a provenance gate only. It must not convert population metrics into encounter mechanics or composition recommendations.
 
-The compact current-report encounter catalog is already real-observed/reviewed and contains the relevant field family. `evidence/real-data/coa-current-report-private-structure-review.json` records its scalar-free structure.
-
-The gate must:
+After it closes, the next independent trust lanes are:
 
 ```text
-consume the already selected report/encounter locally
-prefer already persisted first-party catalog evidence
-require exactly one selected encounter row
-correlate boss identity independently
-correlate difficulty independently or leave it unproven
-fail closed on conflicting persisted observations
-never let a network response override persisted conflicts
-publish only scalar-safe booleans/counts/version markers
-not request API key/raw archive/DuckDB/private values from the operator
-not use events:read
-not use Browser/HAR
-not revive historical difficulty-v4 heuristics
+cross/current player identity + build evidence
+encounter mechanics / requirement semantics
+capability model
+attendance-aware composition fit
 ```
+
+Do not rerun population coverage, encounter context, comparator or source correlation merely to reconfirm them.
 
 ## Aggregate implementation
 
@@ -259,7 +281,8 @@ matched encounter/location comparator v1: proven 4/4
 exact comparator dimensions: proven
 comparator temporal day match: proven
 missing-spec zero coercion: prohibited/proven false
-report encounter -> selected boss/difficulty machine correlation: not yet proven
+report encounter -> selected boss/difficulty machine correlation: proven
+machine-correlated encounter -> population-context provenance binding: pending
 historical difficulty equivalence: insufficient evidence
 cross-report identity: unproven
 site Tier List algorithm: undocumented

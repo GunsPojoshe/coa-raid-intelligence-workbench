@@ -151,6 +151,7 @@ Source Observatory + profile-scoped reanalysis
 bounded population coverage v1
 bounded encounter context v1
 matched encounter/location comparator v1
+report encounter boss/difficulty source correlation v2
 ```
 
 Retained implementation anchors:
@@ -172,6 +173,7 @@ evidence/real-data/coa-public-api-statistics-profile-reanalysis-real.json
 evidence/real-data/coa-public-api-population-coverage-real.json
 evidence/real-data/coa-public-api-encounter-context-real.json
 evidence/real-data/coa-public-api-encounter-comparator-real.json
+evidence/real-data/coa-report-encounter-source-correlation-real.json
 ```
 
 ## Request-scope provenance
@@ -214,7 +216,7 @@ health attention required: false
 planner scoring allowed: false
 ```
 
-The workflow validates the report/encounter URL shape and separately binds the operator-reviewed exact boss name + location to one official `/bosses` record. That does not independently prove report encounter identity.
+The workflow validates the report/encounter URL shape and separately binds the operator-reviewed exact boss name + location to one official `/bosses` record. That stage alone did not independently prove report encounter identity; the later first-party catalog correlation now closes that identity gate.
 
 ## Matched encounter/location comparator v1 — real proven
 
@@ -286,7 +288,66 @@ planner scoring remains blocked
 
 The two location-only records are evidence of population membership differences, not zero-valued encounter records.
 
-## Binding trust boundary
+## Report encounter source correlation v2 — real proven
+
+Implementation:
+
+```text
+src/coa_workbench/analytics/report_encounter_source_correlation.py
+scripts/capture_report_encounter_source_correlation.py
+```
+
+Successful real source path:
+
+```text
+live first-party /api/reports/{reportId}/encounters?includeTrash=false catalog
+-> exact report identity
+-> exactly one selected encounter row
+-> boss name + is_boss_encounter
+-> exact difficulty
+-> scalar-safe review
+```
+
+Real receipt:
+
+```text
+evidence/real-data/coa-report-encounter-source-correlation-real.json
+```
+
+Real result:
+
+```text
+schema version: 2
+correlation version: report-encounter-source-correlation-v2
+parser version: report-encounter-catalog-parser-v1
+source kind: live_first_party_encounter_catalog
+network request count: 1
+persisted observation preferred: true
+persisted observation used: false
+raw capture written: true
+normalized encounter count: 1
+reject count: 0
+verified field contract count: 5
+exact reference identity verified: true
+boss name field verified: true
+boss encounter flag verified: true
+difficulty field verified: true
+report encounter boss source correlated: true
+report encounter difficulty source correlated: true
+complete: true
+encounter detail used: false
+events:read used: false
+Browser/HAR used: false
+no historical difficulty heuristic: true
+planner scoring allowed: false
+public release safe: true
+```
+
+The earlier heavier `/api/reports/{reportId}/encounters/{encounterId}` site request timed out while reading the response. That remains transport evidence only; it was not used for the successful proof.
+
+The successful catalog route is first-party site evidence, not the experimental external `events:read` scope. No new API key or scope was required.
+
+## Binding trust boundary — closed for boss/difficulty identity
 
 Currently proven:
 
@@ -296,63 +357,36 @@ operator-reviewed concrete boss/location/difficulty
 unique official boss catalog binding
 exact encounter aggregate context
 exact same-location comparator
+exact first-party report + encounter identity
+report encounter -> selected boss identity
+report encounter -> selected difficulty
 ```
 
-Still unproven:
+Still not proven by this chain:
 
 ```text
-report encounter -> selected boss identity from an independent report source
-report encounter -> selected difficulty from an independent report source
+encounter mechanic semantics
+player cross-report identity
+player capability / requirement fit
+site Tier List algorithm
+planner recommendation
 ```
 
 ## Current next gate
 
-Independently source-correlate the selected report encounter to boss and difficulty.
+Create one deterministic local provenance binding between the now machine-correlated report encounter and the already-proven encounter population context + matched location comparator.
 
-Implementation:
-
-```text
-src/coa_workbench/analytics/report_encounter_source_correlation.py
-scripts/capture_report_encounter_source_correlation.py
-```
-
-The current report-side source is not the experimental external `events:read` API. It uses already reviewed first-party site evidence in this order:
+Required outcome:
 
 ```text
-persisted current_encounter_observation catalog evidence
--> GET /api/reports/{reportId}/encounters?includeTrash=false
--> fail closed
+source correlation complete
++ encounter context complete
++ comparator complete
++ same private selected scope verified locally
+-> scalar-safe binding receipt
 ```
 
-The initial operator implementation used the heavier `/api/reports/{reportId}/encounters/{encounterId}` site payload. Its first real run timed out during body reading after two 30-second attempts. No boss/difficulty conclusion may be drawn from that transport result, and the heavy route is no longer the operator path.
-
-The scalar-free current-report structural receipt already records the encounter catalog field family, including:
-
-```text
-id
-name
-boss_id
-difficulty
-is_boss_encounter
-zone
-```
-
-Current correlation requirements:
-
-```text
-exact report identity
-exactly one selected encounter row
-boss name match + is_boss_encounter = true
-difficulty exact match
-persisted conflicts fail closed
-network never overrides persisted conflicts
-no events:read
-no Browser/HAR
-no historical difficulty-v4 heuristic
-planner scoring blocked
-```
-
-Do not request a new API key/scope merely to reconfirm facts already present in persisted first-party report evidence. The correlation remains unproven until a successful real scalar-safe receipt is versioned.
+This next gate must not expose private identifiers or scalar values and must keep `mechanic_semantics_verified=false` and `planner_scoring_allowed=false`.
 
 ## Event-level semantics documented by the API
 

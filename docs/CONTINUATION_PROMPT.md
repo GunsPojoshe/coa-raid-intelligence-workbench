@@ -56,6 +56,7 @@ profile-scoped reanalysis
 bounded population coverage v1: 4/4
 bounded encounter context v1: 4/4
 matched encounter/location comparator v1: 4/4
+report encounter boss/difficulty source correlation v2: proven
 ```
 
 Comparator real result:
@@ -77,31 +78,16 @@ source health attention_required: false
 planner scoring allowed: false
 ```
 
-Canonical scalar-safe comparator receipt:
+Canonical scalar-safe receipts:
 
 ```text
 evidence/real-data/coa-public-api-encounter-comparator-real.json
+evidence/real-data/coa-report-encounter-source-correlation-real.json
 ```
 
-Do not repeat generic population coverage, encounter-context proof or comparator capture merely because a session restarted.
+Do not repeat generic population coverage, encounter-context, comparator or report-correlation capture merely because a session restarted.
 
-## Comparator semantics
-
-```text
-same phase
-+ same concrete difficulty
-+ same location
-+ same metric
-+ same role
-+ same bracket
-+ same damage mode
-+ same capture day_number
-+ bossId omitted only
-```
-
-Missing specs are not zero. A zero denominator yields no ratio. Metric/share scalars remain private. The differential is descriptive only.
-
-## Encounter binding boundary
+## Encounter binding boundary — machine correlation proven
 
 Proven:
 
@@ -111,81 +97,65 @@ operator-reviewed boss/location/difficulty
 unique official /bosses binding
 encounter-scoped population context
 matched same-location comparator
-```
-
-Not independently proven:
-
-```text
+exact first-party report + encounter identity
 report encounter -> selected boss identity
 report encounter -> selected difficulty
+boss encounter flag = true
 ```
 
-Do not claim machine-verified encounter identity yet.
-
-## Current exact gate — independent report correlation
-
-Implementation:
+Real source correlation:
 
 ```text
-src/coa_workbench/analytics/report_encounter_source_correlation.py
-scripts/capture_report_encounter_source_correlation.py
+correlation version: report-encounter-source-correlation-v2
+parser version: report-encounter-catalog-parser-v1
+source kind: live_first_party_encounter_catalog
+network request count: 1
+persisted observation used: false
+normalized encounter count: 1
+reject count: 0
+verified field contract count: 5
+exact reference identity verified: true
+boss source correlated: true
+difficulty source correlated: true
+complete: true
+encounter detail used: false
+events:read used: false
+Browser/HAR used: false
+no historical difficulty heuristic: true
+planner scoring allowed: false
+public release safe: true
 ```
 
-Execution order:
+The old heavy `/api/reports/{reportId}/encounters/{encounterId}` timeout remains transport evidence only and must not be retried merely by raising timeout.
+
+## Current exact gate — correlated encounter population binding
+
+Create a deterministic local proof that the machine-correlated encounter identity and the already-proven encounter-context/comparator evidence refer to the same locally selected scope.
+
+Target:
 
 ```text
-persisted current_encounter_observation catalog evidence
--> reviewed /api/reports/{reportId}/encounters?includeTrash=false response
--> fail closed
+source-correlation complete = true
+encounter-context complete = true
+matched comparator complete = true
+same private selected scope verified locally
+private IDs/dimensions remain excluded from public output
+mechanic semantics verified = false
+planner scoring allowed = false
 ```
 
-The previous operator implementation used the heavier `/api/reports/{reportId}/encounters/{encounterId}` payload. The first real run timed out during body reading after two 30-second attempts. Treat that as transport evidence only. Do not retry the heavy route merely by increasing timeout.
+The output should be a scalar-safe receipt with counts/booleans/version markers only.
 
-The compact encounter catalog is already real-observed in the E3 current-report runtime. Scalar-free structural evidence shows fields including:
+Do not ask the operator for API key, RawArchive, DuckDB, private query values, class/spec names, metric scalars or additional report/encounter IDs. Reuse local state and existing receipts/evidence.
+
+After this gate:
 
 ```text
-id
-name
-boss_id
-difficulty
-is_boss_encounter
-zone
+separately prove current/cross-report player identity + build evidence
+separately prove encounter mechanic/requirement semantics
+then build capability/composition-fit reasoning
+planner scoring remains blocked until those gates close
 ```
-
-Requirements:
-
-```text
-use the already selected local report/encounter
-prefer persisted first-party catalog evidence
-require exact report identity
-require exactly one selected encounter row
-boss correlation and difficulty correlation are separate booleans
-conflicting persisted observations fail closed
-network never overrides persisted conflicts
-publish counts/booleans/version markers only
-no API key/raw archive/DuckDB/private values requested from operator
-no events:read
-no Browser/HAR
-no historical difficulty-v4 heuristic
-planner remains blocked
-```
-
-Operator command after fast-forwarding canonical E4:
-
-```powershell
-uv run --no-sync python scripts/capture_report_encounter_source_correlation.py `
-    --reference-url "https://coa.ascensionlogs.gg/reports/31135/encounters?encounters=703971" `
-    --boss-name "Basalthane" `
-    --difficulty ascended
-```
-
-Review only:
-
-```text
-data/exchange/out/coa-report-encounter-source-correlation-review.json
-```
-
-Do not request RawArchive, DuckDB, private source values or additional report/encounter IDs from the operator.
 
 ## Historical report evidence
 

@@ -32,7 +32,7 @@ The E4 branch name is historical. Browser/HAR is fallback only.
 6. structural inference only after stronger sources are exhausted
 ```
 
-## Official aggregate API — real proven through comparator
+## Official aggregate API — real proven through report correlation
 
 Self-service `stats:read` routes:
 
@@ -54,6 +54,7 @@ Source Observatory + profile-scoped reanalysis
 bounded population coverage v1: 4/4
 bounded encounter context v1: 4/4
 matched encounter/location comparator v1: 4/4
+report encounter boss/difficulty source correlation v2: proven
 ```
 
 Retained implementation anchors:
@@ -89,6 +90,7 @@ Scalar-safe evidence:
 
 ```text
 evidence/real-data/coa-public-api-encounter-comparator-real.json
+evidence/real-data/coa-report-encounter-source-correlation-real.json
 ```
 
 Comparator dimensions are identical except that the location cohort omits `bossId`. Metric/share values remain local/private. Missing specs are not zero-filled.
@@ -103,33 +105,24 @@ operator-reviewed boss/location/difficulty
 unique official /bosses binding
 encounter-scoped population context
 same-location matched comparator
-```
-
-Not yet independently proven:
-
-```text
+exact report + encounter identity from first-party encounter catalog
 report encounter -> boss identity
 report encounter -> difficulty
+boss encounter flag = true
 ```
 
-Current gate: source-correlate those report-side facts independently, fail closed, and keep planner scoring blocked.
-
-Implementation:
+Report source-correlation implementation:
 
 ```text
 src/coa_workbench/analytics/report_encounter_source_correlation.py
 scripts/capture_report_encounter_source_correlation.py
 ```
 
-Current execution path:
+Real correlation used the compact reviewed first-party encounter catalog. It completed with one selected encounter row, zero rejects, exact identity, boss and difficulty matches, no HAR, no `events:read`, no historical difficulty heuristic and no planner scoring.
 
-```text
-persisted current_encounter_observation catalog evidence
--> reviewed /api/reports/{reportId}/encounters?includeTrash=false fallback
--> fail closed
-```
+The previous heavy encounter-detail read timeout remains transport evidence only and is not part of the successful proof.
 
-The previous heavy encounter-detail operator request was retired after a real read timeout. That timeout is transport evidence only. The compact encounter catalog is already part of the reviewed E3 current-report runtime and contains the required report-side field family.
+Current next gate: bind the machine-correlated encounter identity to the already-proven encounter population context + matched comparator as one scalar-safe provenance result. Do not infer mechanics or planner recommendations from population statistics.
 
 ## Privacy
 
