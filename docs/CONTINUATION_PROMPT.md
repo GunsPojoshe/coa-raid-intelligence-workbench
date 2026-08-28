@@ -52,7 +52,7 @@ structural inference last
 
 ## Official aggregate API — completed real gates
 
-The aggregate vertical slice, source-health/dependency migration and bounded multi-profile coverage are real-proven:
+The aggregate vertical slice, source-health/dependency migration, bounded multi-profile coverage and one encounter-scoped context are real-proven:
 
 ```text
 /phases + /bosses: archived/reviewed
@@ -63,18 +63,11 @@ single-slice persistence replay: idempotent
 population-prior records: 62
 Source Observatory integrated: true
 legacy broad source_endpoint dependency active: false
-bounded coverage required slices: 4
-covered before real run: 1
-missing before real run: 3
-network requests: 3
-successful new captures: 3
-persisted new profiles: 3
-deterministic second replays: 3
-covered after: 4
-missing after: 0
-coverage complete: true
+bounded population coverage: 4/4 complete
 aggregate coverage: 60 class summaries / 162 specs / 2106 percentile values
-source_endpoint_profile dependency count: 4
+one bounded encounter context: 4/4 complete
+encounter aggregate: 59 class summaries / 148 specs / 1924 percentile values
+source_endpoint_profile dependency count after encounter run: 8
 created reanalysis requests: 0
 pending reanalysis: 0
 actionable open source changes: 0
@@ -90,45 +83,67 @@ evidence/real-data/coa-public-api-statistics-provenance-capture-real.json
 evidence/real-data/coa-public-api-statistics-persistence-real.json
 evidence/real-data/coa-public-api-statistics-profile-reanalysis-real.json
 evidence/real-data/coa-public-api-population-coverage-real.json
+evidence/real-data/coa-public-api-encounter-context-real.json
 ```
 
-Do **not** repeat the generic single-slice or coverage-v1 proofs merely to reconfirm them.
+Do **not** repeat the generic single-slice, population-coverage or first encounter-context proofs merely to reconfirm them.
 
-## Current exact gate — product-driven encounter population context
+## Encounter binding trust boundary
 
-Generic aggregate collection is sufficient for now. Do not turn the public API into a cartesian dataset crawl.
-
-Next design/implementation target:
+The real encounter-context workflow proved:
 
 ```text
-one concrete planned encounter
--> reviewed official boss/difficulty/location scope selected locally
--> minimal required metric-family slices only
--> reuse existing provenance-complete batches when possible
--> capture only missing encounter-scoped slices
+valid Ascension Logs report/encounter URL shape
+operator-reviewed concrete boss/location/difficulty selection
+exact boss name + location -> one official /bosses record
+four exact /statistics profiles for that reviewed scope
+full RawArchive/persistence/profile-health chain
+```
+
+It did **not** independently correlate the selected report encounter to that boss/difficulty through a report API response. Treat the binding as operator-reviewed + official-catalog-bound, not machine source-correlated.
+
+Do not claim `concrete_encounter_reference_validated=true` means the report payload independently verified boss/difficulty; it means the reference shape was validated and the selected scope was then bound separately.
+
+## Current exact gate — matched encounter comparator
+
+Do not cartesian-expand the public API.
+
+For the already selected concrete raid-planning need, build a same-scope location comparator:
+
+```text
+same current phase
++ same concrete reviewed difficulty
++ same reviewed location
++ same four metric/role slices
++ bossId omitted
+-> review DuckDB first
+-> reuse provenance-complete exact location profiles
+-> capture only missing slices
 -> RawArchive
 -> Source Observatory
 -> exact normalization/persistence
 -> deterministic replay
 -> source_endpoint_profile dependency
--> profile-scoped reanalysis reconciliation
--> Source & Analysis Health
--> descriptive encounter population context
+-> profile-scoped reanalysis + health
+-> compare boss-scoped vs location-scoped records only on matching dimensions
 ```
 
-This encounter context remains non-scoring. It may describe participation/throughput/survivability distributions for a relevant cohort, but it does not by itself prove player utility, mechanics, composition fit or the site's Tier List logic.
-
-Do not bulk-expand:
+The comparison may produce descriptive local signals such as:
 
 ```text
-all bosses
-all locations
-all weeks
-all realms
-all classes/specs
+spec parse-share difference / ratio
+metric median/average delta or ratio
+sample-size availability
+missing/zero-baseline flags
 ```
 
-Start with one explicitly selected encounter from a real raid-planning need.
+These remain descriptive encounter-population context. They are **not** planner scores, mechanic proofs, composition-fit proofs or the site's Tier List algorithm.
+
+Do not use the existing generic `difficulty=all` population coverage as the comparator because it does not match the concrete encounter difficulty.
+
+## Separate future source-correlation gate
+
+At a later bounded step, independently bind the selected report encounter to boss/difficulty through reviewed first-party report evidence or another documented source. Do not reopen historical difficulty-v4 heuristics merely to force this.
 
 ## Source-health semantics
 
@@ -143,8 +158,9 @@ Keep local/private:
 ```text
 API key
 query values
-phase/difficulty/metric/role values in public receipts
-boss/location/realm/week filter values in public receipts
+report/encounter ids in public receipts
+boss/location/difficulty values in public receipts
+phase/metric/role values in public receipts
 class/spec dynamic names
 raw IDs and paths
 request/schema/profile fingerprints
