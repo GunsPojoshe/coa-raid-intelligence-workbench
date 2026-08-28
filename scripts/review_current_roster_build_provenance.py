@@ -57,12 +57,8 @@ def main() -> int:
             ],
             "observed_build_linkage_complete": summary["observed_build_linkage_complete"],
             "source_provenance_complete": summary["source_provenance_complete"],
-            "observed_build_provenance_complete": summary[
-                "observed_build_provenance_complete"
-            ],
-            "observed_timestamp_coverage_complete": summary[
-                "observed_timestamp_coverage_complete"
-            ],
+            "observed_build_provenance_complete": summary["observed_build_provenance_complete"],
+            "observed_timestamp_coverage_complete": summary["observed_timestamp_coverage_complete"],
             "current_build_freshness_verified": False,
             "latest_snapshot_semantics_verified": False,
             "cross_report_identity_verified": False,
