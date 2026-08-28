@@ -1,6 +1,6 @@
 # Фактическое состояние проекта
 
-Дата актуализации: **2026-08-27**.
+Дата актуализации: **2026-08-28**.
 
 Canonical restart order:
 
@@ -46,7 +46,7 @@ official documented public API
 -> structural inference last
 ```
 
-## Official API — real-proven aggregate vertical slice
+## Official API — real-proven aggregate vertical slice and bounded coverage
 
 Reviewed contract:
 
@@ -56,7 +56,7 @@ API version 1.0.0
 stats:read: /phases, /bosses, /statistics
 ```
 
-Real scalar-safe evidence:
+Real scalar-safe catalog and single-slice evidence:
 
 ```text
 phase records: 3
@@ -73,41 +73,45 @@ population-prior records: 62
 records with local_parse_share: 62
 ```
 
-Real persistence proof:
+Real bounded population coverage v1:
 
 ```text
-first pass:
-  batch inserted: true
-  class rows inserted: 21
-  spec rows inserted: 62
-
-second pass:
-  batch matched: true
-  class rows inserted: 0
-  class rows matched: 21
-  spec rows inserted: 0
-  spec rows matched: 62
-  idempotent: true
+required slices: 4
+covered before run: 1
+missing before run: 3
+network requests: 3
+successful new captures: 3
+new persisted profiles: 3
+deterministic second replays: 3
+covered after run: 4
+missing after run: 0
+coverage complete: true
+aggregate class summaries: 60
+aggregate spec records: 162
+aggregate percentile scalar values: 2106
+metric families represented: 3
+role-qualified required slices: 3
+role-omitted required slices: 1
+bulk dataset mode: false
+events:read used: false
 ```
 
-Real Source Observatory / profile-reanalysis proof:
+Real Source Observatory / profile-reanalysis state after coverage:
 
 ```text
-archived capture replayed: true
-source acquisition outcome: schema_candidate
 source observatory integrated: true
-raw dependency registered: true
-source_endpoint_profile dependency registered: true
-legacy unscoped source_endpoint dependency active: false
-profile dependency count: 1
-eligible historical events after dependency registration: 0
+source_endpoint_profile dependency count: 4
+legacy unscoped source_endpoint dependency count: 0
+eligible source events examined: 3
 created reanalysis requests: 0
 pending reanalysis requests: 0
 actionable open source changes: 0
 source health attention required: false
+planner scoring allowed: false
+site Tier List algorithm verified: false
 ```
 
-The one remaining open baseline source-change event is informational provenance, not an actionable health failure.
+The observed profile/source events from the new acquisitions are provenance, not actionable source-health failures.
 
 Canonical real receipts:
 
@@ -118,9 +122,10 @@ evidence/real-data/coa-public-api-statistics-shape-real.json
 evidence/real-data/coa-public-api-statistics-provenance-capture-real.json
 evidence/real-data/coa-public-api-statistics-persistence-real.json
 evidence/real-data/coa-public-api-statistics-profile-reanalysis-real.json
+evidence/real-data/coa-public-api-population-coverage-real.json
 ```
 
-All receipts remain scalar-safe: no query values, class/spec names, private dimensions, raw IDs/paths/fingerprints or API credentials.
+All receipts remain scalar-safe: no query values, class/spec names, private dimensions, raw IDs/paths/fingerprints, metric scalar values or API credentials.
 
 ## Aggregate implementation
 
@@ -160,34 +165,30 @@ bounded missing-only population coverage workflow
 
 ### Current real gate
 
-The former Source Observatory and dependency-migration gates are closed.
-
-Current gate:
+The following aggregate gates are closed on real local data:
 
 ```text
-existing real population batch
--> bounded coverage-v1 review
--> reuse any already persisted matching profile
--> capture only missing reviewed profiles
--> RawArchive + exact normalization/persistence for each successful slice
--> deterministic second replay for each new slice
--> profile-scoped reanalysis reconciliation
--> Source & Analysis Health
--> scalar-safe coverage receipt
+single-slice capture + exact normalization
+DuckDB persistence + deterministic replay
+Source Observatory integration
+profile-scoped dependency migration
+bounded population coverage v1
 ```
 
-Coverage v1 is intentionally small:
+The next aggregate step must be **product-driven**, not cartesian completeness. Do not crawl all boss/location/week/realm/class/spec combinations.
+
+Preferred next design gate:
 
 ```text
-required slices: 4
-documented metric families represented: 3
-role-qualified slices: 3
-role-omitted slices: 1
-boss/location/week/realm/class/spec expansion: excluded from v1
-bulk dataset mode: false
+choose one concrete encounter/cohort need from the raid-planning workflow
+-> bind it to reviewed official dimensions locally
+-> capture only the minimal missing encounter-scoped aggregate slices
+-> preserve the same RawArchive/provenance/profile-reanalysis/health chain
+-> expose the result only as descriptive encounter population context
+-> keep planner scoring blocked until player/encounter/composition semantics are separately proven
 ```
 
-Real multi-profile coverage execution is pending.
+This should start with one explicitly selected encounter rather than all 285 bosses.
 
 ## Official API credential boundary
 
@@ -289,7 +290,7 @@ population-prior read model: proven
 aggregate Source Observatory/Health integration: proven real
 profile-scoped aggregate invalidation: proven real
 legacy broad aggregate dependency: inactive
-bounded multi-profile population coverage v1: implemented/tested; real run pending
+bounded multi-profile population coverage v1: proven real, 4/4 complete
 report pipeline generalization: proven on two reports
 report analytics persistence: proven + idempotent
 historical difficulty equivalence: insufficient evidence
