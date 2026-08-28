@@ -7,11 +7,11 @@ Updated: **2026-08-28**.
 ```text
 GunsPojoshe/coa-raid-intelligence-workbench
 local: C:\Users\Simpa\source\repos\coa-raid-intelligence-workbench
-active canonical workstream: e4/interactive-har-discovery
+canonical workstream: e4/interactive-har-discovery
 Draft PR #9 -> e3/real-log-capture
 ```
 
-Perform live GitHub HEAD/PR/CI checks first. Stored SHAs/run numbers are checkpoints only.
+Perform live GitHub branch HEAD, PR #9 mergeability and exact-head CI checks first. Stored SHAs/run numbers are checkpoints only.
 
 ## Read in order
 
@@ -19,160 +19,137 @@ Perform live GitHub HEAD/PR/CI checks first. Stored SHAs/run numbers are checkpo
 AGENTS.md
 docs/DOCUMENTATION_INDEX.md
 docs/CURRENT_PARADIGM.md
-docs/COA_DOMAIN_BOUNDARY.md
-docs/COA_TARGET_PRODUCT_DEFINITION.md
 docs/PROJECT_MASTER_CONTEXT.md
 docs/PROJECT_STATE.md
 docs/OFFICIAL_PUBLIC_API.md
-docs/SOURCE_OBSERVABILITY_AND_REANALYSIS.md
-docs/UPSTREAM_ASCENSION_LOGS_EVIDENCE.md
-docs/LOCAL_WORKSPACE_BOUNDARY.md
-docs/CI_OPERATIONS.md
-docs/WINDOWS_DEVELOPMENT_ENVIRONMENT.md
+docs/CONTINUATION_PROMPT.md
+docs/NEXT_CHAT_HANDOFF.md
 ```
-
-Historical handoffs/experiments do not override this order.
 
 ## Product question
 
 > **Почему конкретный человек нужен именно текущему составу?**
 
-Maintain fail-closed semantics: observation/field/UI label/population metric is not automatic mechanic or planner proof.
+Maintain fail-closed semantics: observation, field, UI label or population metric is not automatic mechanic/planner proof.
 
-## Source order
+## Source priority
 
 ```text
 official documented public API
-official documented site semantics
-pinned executable Companion source
-persisted first-party report/API evidence
-narrow browser/network fallback
-structural inference last
+-> official documented site semantics
+-> pinned executable Companion source
+-> persisted first-party report/API evidence
+-> narrow browser/network fallback
+-> structural inference last
 ```
 
-## Official aggregate API — completed real gates
-
-The aggregate vertical slice, source-health/dependency migration, bounded multi-profile coverage and one encounter-scoped context are real-proven:
+## Closed real aggregate gates
 
 ```text
-/phases + /bosses: archived/reviewed
-provenance-aware /statistics: HTTP 200, archived
-request context complete: true
-single-slice exact normalization: 21 class summaries / 62 specs / 806 percentile values
-single-slice persistence replay: idempotent
-population-prior records: 62
-Source Observatory integrated: true
-legacy broad source_endpoint dependency active: false
-bounded population coverage: 4/4 complete
-aggregate coverage: 60 class summaries / 162 specs / 2106 percentile values
-one bounded encounter context: 4/4 complete
-encounter aggregate: 59 class summaries / 148 specs / 1924 percentile values
-source_endpoint_profile dependency count after encounter run: 8
-created reanalysis requests: 0
+/phases + /bosses catalog
+exact /statistics normalization
+DuckDB persistence + idempotence
+population-prior read model
+Source Observatory integration
+source_endpoint_profile dependencies
+profile-scoped reanalysis
+bounded population coverage v1: 4/4
+bounded encounter context v1: 4/4
+matched encounter/location comparator v1: 4/4
+```
+
+Comparator real result:
+
+```text
+encounter context: 59 class summaries / 148 specs / 1924 percentile values
+location comparator: 59 class summaries / 150 specs / 1950 percentile values
+matched records: 148
+encounter-only records: 0
+location-only records: 2
+avg/median/parse-share delta+ratio records: 148 each
+exact dimension match verified: true
+temporal day_number match verified: true
+missing spec treated as zero: false
+source_endpoint_profile dependency count: 12
 pending reanalysis: 0
-actionable open source changes: 0
-source health attention required: false
-planner scoring: false
-site Tier List algorithm: unverified
+actionable source changes: 0
+source health attention_required: false
+planner scoring allowed: false
 ```
 
-Canonical real receipts:
+Canonical scalar-safe comparator receipt:
 
 ```text
-evidence/real-data/coa-public-api-statistics-provenance-capture-real.json
-evidence/real-data/coa-public-api-statistics-persistence-real.json
-evidence/real-data/coa-public-api-statistics-profile-reanalysis-real.json
-evidence/real-data/coa-public-api-population-coverage-real.json
-evidence/real-data/coa-public-api-encounter-context-real.json
+evidence/real-data/coa-public-api-encounter-comparator-real.json
 ```
 
-Do **not** repeat the generic single-slice, population-coverage or first encounter-context proofs merely to reconfirm them.
+Do not repeat generic population coverage, encounter-context proof or comparator capture merely because a session restarted.
 
-## Encounter binding trust boundary
-
-The real encounter-context workflow proved:
+## Comparator semantics
 
 ```text
-valid Ascension Logs report/encounter URL shape
-operator-reviewed concrete boss/location/difficulty selection
-exact boss name + location -> one official /bosses record
-four exact /statistics profiles for that reviewed scope
-full RawArchive/persistence/profile-health chain
+same phase
++ same concrete difficulty
++ same location
++ same metric
++ same role
++ same bracket
++ same damage mode
++ same capture day_number
++ bossId omitted only
 ```
 
-It did **not** independently correlate the selected report encounter to that boss/difficulty through a report API response. Treat the binding as operator-reviewed + official-catalog-bound, not machine source-correlated.
+Missing specs are not zero. A zero denominator yields no ratio. Metric/share scalars remain private. The differential is descriptive only.
 
-Do not claim `concrete_encounter_reference_validated=true` means the report payload independently verified boss/difficulty; it means the reference shape was validated and the selected scope was then bound separately.
+## Encounter binding boundary
 
-## Current exact gate — matched encounter comparator
-
-Do not cartesian-expand the public API.
-
-For the already selected concrete raid-planning need, build a same-scope location comparator:
+Proven:
 
 ```text
-same current phase
-+ same concrete reviewed difficulty
-+ same reviewed location
-+ same four metric/role slices
-+ bossId omitted
--> review DuckDB first
--> reuse provenance-complete exact location profiles
--> capture only missing slices
--> RawArchive
--> Source Observatory
--> exact normalization/persistence
--> deterministic replay
--> source_endpoint_profile dependency
--> profile-scoped reanalysis + health
--> compare boss-scoped vs location-scoped records only on matching dimensions
+report/encounter URL shape
+operator-reviewed boss/location/difficulty
+unique official /bosses binding
+encounter-scoped population context
+matched same-location comparator
 ```
 
-The comparison may produce descriptive local signals such as:
+Not independently proven:
 
 ```text
-spec parse-share difference / ratio
-metric median/average delta or ratio
-sample-size availability
-missing/zero-baseline flags
+report encounter -> selected boss identity
+report encounter -> selected difficulty
 ```
 
-These remain descriptive encounter-population context. They are **not** planner scores, mechanic proofs, composition-fit proofs or the site's Tier List algorithm.
+Do not claim machine-verified encounter identity yet.
 
-Do not use the existing generic `difficulty=all` population coverage as the comparator because it does not match the concrete encounter difficulty.
+## Current exact gate — independent report correlation
 
-## Separate future source-correlation gate
+Correlate the selected report encounter to boss and difficulty from an independent report-side source.
 
-At a later bounded step, independently bind the selected report encounter to boss/difficulty through reviewed first-party report evidence or another documented source. Do not reopen historical difficulty-v4 heuristics merely to force this.
-
-## Source-health semantics
-
-Informational `endpoint_added` / `observation_profile_added` events are retained as provenance and are not automatically attention-required. Warning/error changes or pending reanalysis do require attention.
-
-Profile-local schema events invalidate only matching private query profiles. `request_contract_changed` remains endpoint-global. Events older than dependency registration cannot back-trigger newer artifacts.
-
-## Privacy boundary
-
-Keep local/private:
+Source order:
 
 ```text
-API key
-query values
-report/encounter ids in public receipts
-boss/location/difficulty values in public receipts
-phase/metric/role values in public receipts
-class/spec dynamic names
-raw IDs and paths
-request/schema/profile fingerprints
-metric and percentile scalar values
-DuckDB and raw payloads
+official documented report API if already accessible
+-> official site semantics / persisted first-party report response
+-> pinned executable Companion source
+-> Browser/HAR only for the exact unresolved undocumented gap
 ```
 
-Public real receipts remain counts/booleans/version markers only.
+Requirements:
+
+```text
+use the already selected local report/encounter
+fail closed on ambiguity
+boss correlation and difficulty correlation are separate booleans
+publish counts/booleans/version markers only
+no API key/raw archive/DuckDB/private values requested from operator
+no historical difficulty-v4 heuristic
+planner remains blocked
+```
 
 ## Historical report evidence
 
-E3 report persistence/analytics/generalization remains valid on two reports. Historical difficulty equivalence remains `insufficient_evidence`; numeric comparison for that pair remains blocked. Do not resume a difficulty-v4 heuristic.
+E3 report persistence/analytics/generalization remains proven on two reports. Historical two-report difficulty equivalence remains `insufficient_evidence`; numeric comparison of that pair stays blocked.
 
 ## Upstream source
 
@@ -182,23 +159,31 @@ main @ 0f63fe9c50b470402e3a29fba2e0322095856fd4
 version 0.67.2
 ```
 
-Use executable code for client behavior; treat comments/backend claims as hypotheses.
+Use executable code for client behavior; comments/backend claims remain hypotheses.
 
 ## Browser/HAR
 
 Fallback only for an exact undocumented gap. No anti-bot evasion.
 
-## Local workspace audit
+## Local workspace
 
-Already completed. The historical helper patch is valuable but incomplete because it depends on missing `coa_workbench.collector.guild_progression_js_lexical`. Preserve privately; do not apply as-is and do not re-request the same patch/inventory on restart.
+The historical helper patch is private incomplete WIP because `guild_progression_js_lexical` is absent. Preserve it and do not apply it as-is.
 
-## Branch/integration debt
+## Privacy boundary
+
+Keep local/private:
 
 ```text
-main <- e2 (#3) <- e3 (#7) <- e4 (#9)
+API key
+query/profile values
+report/encounter IDs in public receipts
+boss/location/difficulty values in public receipts
+class/spec names
+metric/parse-share scalars
+raw IDs/paths
+request/schema/profile fingerprints
+DuckDB/raw payloads
 ```
-
-Resolve lower-chain integration debt deliberately; do not blindly choose older canonical document versions.
 
 ## Verification
 
@@ -207,7 +192,7 @@ uv sync --frozen --extra dev --no-build-package ruff
 uv run --no-sync python scripts/verify_repo.py
 ```
 
-Then verify exact-head GitHub jobs:
+Then verify exact pushed HEAD CI:
 
 ```text
 public-release-audit
