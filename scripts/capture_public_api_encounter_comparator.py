@@ -348,7 +348,9 @@ def main() -> int:
             "location_comparator_complete": after.complete,
             "encounter_location_differential_built": comparator_complete,
             "exact_dimension_match_required": True,
+            "exact_dimension_match_verified": comparator_complete,
             "temporal_scope_match_required": True,
+            "temporal_scope_match_verified": comparator_complete,
             "missing_spec_treated_as_zero": False,
             "no_pending_reanalysis": health["analysis"]["pending_reanalysis_request_count"] == 0,
             "no_actionable_open_source_change": health["source_observatory"][
