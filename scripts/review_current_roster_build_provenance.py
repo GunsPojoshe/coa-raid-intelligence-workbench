@@ -4,8 +4,8 @@ import argparse
 import json
 from pathlib import Path
 
-from coa_workbench.analytics.current_roster_build_provenance import (
-    review_current_roster_build_provenance,
+from coa_workbench.analytics.current_roster_build_provenance_catalog import (
+    review_current_roster_build_provenance_catalog,
 )
 from coa_workbench.analytics.public_api_encounter_context import parse_encounter_reference_url
 
@@ -13,8 +13,9 @@ from coa_workbench.analytics.public_api_encounter_context import parse_encounter
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
-            "Review report-scoped player identity and observed build provenance from already "
-            "persisted current-report roster observations. This command performs no network I/O."
+            "Review report-scoped player identity and observed build provenance across already "
+            "persisted current-report roster observations. The selected reference is checked "
+            "separately. This command performs no network I/O."
         )
     )
     parser.add_argument("--reference-url", required=True)
@@ -32,7 +33,7 @@ def main() -> int:
 
     reference = parse_encounter_reference_url(args.reference_url)
     try:
-        review = review_current_roster_build_provenance(
+        review = review_current_roster_build_provenance_catalog(
             args.database,
             reference=reference,
         )
@@ -41,8 +42,8 @@ def main() -> int:
 
     summary = review.public_summary()
     receipt = {
-        "schema_version": 1,
-        "review_kind": "current_roster_build_provenance",
+        "schema_version": 2,
+        "review_kind": "current_roster_build_provenance_catalog",
         "source": {
             "existing_current_report_persistence_reused": True,
             "canonical_entity_observation_reused": True,
@@ -52,13 +53,22 @@ def main() -> int:
         },
         "review": summary,
         "verification": {
-            "report_scoped_player_identity_complete": summary[
-                "report_scoped_player_identity_complete"
+            "all_persisted_report_scopes_reviewed": summary[
+                "all_persisted_report_scopes_reviewed"
             ],
-            "observed_build_linkage_complete": summary["observed_build_linkage_complete"],
-            "source_provenance_complete": summary["source_provenance_complete"],
-            "observed_build_provenance_complete": summary["observed_build_provenance_complete"],
-            "observed_timestamp_coverage_complete": summary["observed_timestamp_coverage_complete"],
+            "all_persisted_report_build_provenance_complete": summary[
+                "all_persisted_report_build_provenance_complete"
+            ],
+            "selected_reference_present": summary["selected_reference_present"],
+            "selected_reference_report_scoped_player_identity_complete": summary[
+                "selected_reference_report_scoped_player_identity_complete"
+            ],
+            "selected_reference_observed_build_provenance_complete": summary[
+                "selected_reference_observed_build_provenance_complete"
+            ],
+            "selected_reference_same_report_build_binding_proven": summary[
+                "selected_reference_same_report_build_binding_proven"
+            ],
             "current_build_freshness_verified": False,
             "latest_snapshot_semantics_verified": False,
             "cross_report_identity_verified": False,
@@ -88,7 +98,11 @@ def main() -> int:
     args.output.write_text(text, encoding="utf-8")
     print(text, end="")
 
-    return 0 if review.observed_build_provenance_complete else 4
+    if review.selected_reference_same_report_build_binding_proven:
+        return 0
+    if review.all_persisted_report_build_provenance_complete:
+        return 4
+    return 5
 
 
 if __name__ == "__main__":
