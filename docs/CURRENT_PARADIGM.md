@@ -73,6 +73,15 @@ bounded encounter context v1: 4/4
 matched encounter/location comparator v1: 4/4
 ```
 
+Retained canonical status markers:
+
+```text
+population aggregate persistence/idempotence: proven
+aggregate Source Observatory/Health: proven
+profile-scoped aggregate invalidation: proven
+bounded multi-profile population coverage: proven 4/4
+```
+
 Comparator real result:
 
 ```text
