@@ -1,0 +1,334 @@
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+from urllib.parse import urlsplit
+
+from coa_workbench.collector.har_dynamic_resolution import (
+    observe_resolved_dynamic_har,
+    resolve_correlated_dynamic_har_routes,
+)
+from coa_workbench.collector.har_route_resolution import (
+    generic_har_ingest_ready,
+    route_requires_explicit_dynamic_resolution,
+)
+from coa_workbench.collector.har_source_discovery import (
+    inventory_network_har,
+    select_latest_relevant_har,
+)
+from coa_workbench.collector.profile_schema_cycle import (
+    PROFILE_SCHEMA_CYCLE_VERSION,
+    aggregate_profile_schema_observations,
+)
+from coa_workbench.collector.raw_archive import RawArchive
+from coa_workbench.collector.scope_schema_cycle import (
+    SCOPE_SCHEMA_CYCLE_VERSION,
+    aggregate_scope_schema_observations,
+)
+from coa_workbench.collector.source_acquisition import observe_reviewed_har
+from coa_workbench.collector.source_dimension_index import rebuild_source_dimension_index
+from coa_workbench.collector.source_health import build_source_health
+from coa_workbench.collector.source_observatory import ReviewedGetContract
+from coa_workbench.collector.source_registry import load_source_registry
+from coa_workbench.collector.source_scope import resolve_scoped_reanalysis_requests
+from coa_workbench.storage.migrations import apply_migrations
+
+
+def _contract(registry, route):
+    return ReviewedGetContract(
+        source_code=registry.source_code,
+        endpoint_code=route.endpoint_code,
+        base_url=registry.base_url,
+        route_template=str(route.route_template),
+        parameter_keys=route.parameter_keys,
+        schema_profile_keys=route.schema_profile_keys,
+        auth_state=route.auth_mode,
+        discovery_source=route.discovery_source,
+        review_state=route.review_state,
+        logical_name=route.use,
+    )
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Run one Network-first Source Observatory cycle from a browser HAR: "
+            "inventory traffic, ingest matching reviewed static GET contracts, safely resolve "
+            "correlated reviewed dynamic paths, aggregate schemas across reviewed response "
+            "profiles and reviewed path scopes, reconcile scoped dependencies, rebuild "
+            "approved derived dimensions, and report health. If HAR is omitted, use the newest "
+            "relevant .har from --har-dir."
+        )
+    )
+    parser.add_argument("har", nargs="?", type=Path)
+    parser.add_argument(
+        "--har-dir",
+        type=Path,
+        default=Path.home() / "Downloads",
+        help=(
+            "Directory searched for the newest relevant .har when the positional HAR path "
+            "is omitted. Default: ~/Downloads"
+        ),
+    )
+    parser.add_argument(
+        "--registry",
+        type=Path,
+        default=Path("config/ascension_logs_sources.yaml"),
+    )
+    parser.add_argument("--raw-root", type=Path, default=Path("data/raw"))
+    parser.add_argument("--database", type=Path, default=Path("data/warehouse/coa.duckdb"))
+    parser.add_argument("--migrations", type=Path, default=Path("migrations"))
+    parser.add_argument("--output", type=Path)
+    args = parser.parse_args()
+
+    registry = load_source_registry(args.registry)
+    allowed_host = urlsplit(registry.base_url).hostname or ""
+    selection_mode = "explicit"
+    if args.har is not None:
+        har_path = args.har
+        if not har_path.is_file():
+            parser.error(f"HAR file does not exist: {har_path}")
+    else:
+        selection_mode = "latest_relevant_in_directory"
+        try:
+            har_path = select_latest_relevant_har(
+                args.har_dir,
+                allowed_host=allowed_host,
+                api_prefix="/api/",
+            )
+        except FileNotFoundError as exc:
+            parser.error(str(exc))
+
+    apply_migrations(args.database, args.migrations)
+    archive = RawArchive(
+        args.raw_root,
+        database_path=args.database,
+        migrations_dir=args.migrations,
+    )
+
+    inventory = inventory_network_har(
+        har_path,
+        allowed_host=allowed_host,
+        api_prefix="/api/",
+    )
+
+    dynamic_routes = [
+        route
+        for route in registry.routes
+        if route.observatory_ready
+        and route_requires_explicit_dynamic_resolution(route.route_template)
+    ]
+    dynamic_templates = {
+        route.endpoint_code: str(route.route_template)
+        for route in dynamic_routes
+        if route.route_template
+    }
+    static_paths = [
+        str(route.route_template)
+        for route in registry.routes
+        if route.route_template
+        and route.method.upper() == "GET"
+        and not route_requires_explicit_dynamic_resolution(route.route_template)
+    ]
+    dynamic_resolution = resolve_correlated_dynamic_har_routes(
+        har_path,
+        allowed_host=allowed_host,
+        dynamic_route_templates=dynamic_templates,
+        static_paths=static_paths,
+    )
+    resolved_dynamic_codes = set(dynamic_resolution.resolved_endpoint_codes)
+
+    observed_routes: list[dict[str, object]] = []
+    profile_schema_cycles: list[dict[str, object]] = []
+    scope_schema_cycles: list[dict[str, object]] = []
+    for route in registry.routes:
+        if not route.observatory_ready:
+            continue
+
+        contract = _contract(registry, route)
+        observations = ()
+        if generic_har_ingest_ready(route.route_template):
+            observations = observe_reviewed_har(
+                har_path,
+                archive=archive,
+                database_path=args.database,
+                migrations_dir=args.migrations,
+                contract=contract,
+                dimension_keys=route.dimension_keys,
+            )
+        elif route.endpoint_code in resolved_dynamic_codes:
+            observations = observe_resolved_dynamic_har(
+                har_path,
+                allowed_host=allowed_host,
+                concrete_paths=dynamic_resolution.paths_for(route.endpoint_code),
+                archive=archive,
+                database_path=args.database,
+                migrations_dir=args.migrations,
+                contract=contract,
+                dimension_keys=route.dimension_keys,
+            )
+
+        if not observations:
+            continue
+
+        scope_cycle_summary = None
+        profile_cycle_summary = None
+        if route.scope_path_keys:
+            scope_cycle_summary = aggregate_scope_schema_observations(
+                args.database,
+                args.migrations,
+                contract=contract,
+                scope_path_keys=route.scope_path_keys,
+                observations=observations,
+                metadata={"capture_mode": "browser_har"},
+            )
+            scope_schema_cycles.append(scope_cycle_summary.public_summary())
+        elif route.schema_profile_keys:
+            profile_cycle_summary = aggregate_profile_schema_observations(
+                args.database,
+                args.migrations,
+                contract=contract,
+                observations=observations,
+                metadata={"capture_mode": "browser_har"},
+            )
+            profile_schema_cycles.append(profile_cycle_summary.public_summary())
+
+        route_summary: dict[str, object] = {
+            "endpoint_code": route.endpoint_code,
+            "matching_entry_count": len(observations),
+            "observations": [item.public_summary() for item in observations],
+        }
+        if scope_cycle_summary is not None:
+            route_summary["scope_schema_cycle"] = scope_cycle_summary.public_summary()
+        if profile_cycle_summary is not None:
+            route_summary["profile_schema_cycle"] = profile_cycle_summary.public_summary()
+        observed_routes.append(route_summary)
+
+    observed_endpoint_codes = {str(item["endpoint_code"]) for item in observed_routes}
+    scoped_reanalysis = resolve_scoped_reanalysis_requests(
+        args.database,
+        args.migrations,
+        registry=registry,
+        endpoint_codes=observed_endpoint_codes,
+    )
+
+    dimension_endpoints = [
+        route.endpoint_code
+        for route in registry.routes
+        if route.observatory_ready
+        and route.dimension_keys
+        and (
+            generic_har_ingest_ready(route.route_template)
+            or route.endpoint_code in resolved_dynamic_codes
+        )
+    ]
+    dimension_index = rebuild_source_dimension_index(
+        args.database,
+        args.migrations,
+        source_code=registry.source_code,
+        endpoint_codes=dimension_endpoints,
+    )
+
+    deferred_dynamic_routes = sorted(
+        route.endpoint_code
+        for route in dynamic_routes
+        if route.endpoint_code not in resolved_dynamic_codes
+    )
+    resolution_summary = dynamic_resolution.public_summary()
+    resolution_summary["deferred_endpoint_codes"] = deferred_dynamic_routes
+    resolution_summary["deferred_route_count"] = len(deferred_dynamic_routes)
+
+    schema_profile_routes = {
+        route.endpoint_code: list(route.schema_profile_keys)
+        for route in registry.routes
+        if route.observatory_ready and route.schema_profile_keys
+    }
+    scoped_schema_routes = {
+        route.endpoint_code: list(route.scope_path_keys)
+        for route in registry.routes
+        if route.observatory_ready and route.scope_path_keys
+    }
+
+    health = build_source_health(args.database)
+    result = {
+        "cycle_version": "network-source-cycle-v9",
+        "capture_mode": "browser_har",
+        "network_requests_performed": False,
+        "har_selection": {
+            "mode": selection_mode,
+            "selected_path_included": False,
+        },
+        "network_inventory": inventory,
+        "reviewed_routes_observed": observed_routes,
+        "reviewed_route_observation_count": sum(
+            int(item["matching_entry_count"]) for item in observed_routes
+        ),
+        "dynamic_route_resolution": resolution_summary,
+        "schema_observation_profiles": {
+            "strategy": "reviewed_response_shaping_query_keys",
+            "endpoint_keys": schema_profile_routes,
+            "profile_values_included": False,
+            "profile_hashes_included": False,
+        },
+        "scope_schema_cycle_aggregation": {
+            "strategy": SCOPE_SCHEMA_CYCLE_VERSION,
+            "endpoint_count": len(scope_schema_cycles),
+            "endpoint_keys": scoped_schema_routes,
+            "endpoints": scope_schema_cycles,
+            "member_level_schema_events_are_superseded": True,
+            "legacy_profile_cycle_events_are_superseded_when_reaggregated": True,
+            "raw_captures_preserved": True,
+            "exact_member_schema_snapshots_preserved": True,
+            "scope_values_included": False,
+            "scope_hashes_included": False,
+            "profile_values_included": False,
+            "profile_hashes_included": False,
+            "member_capture_ids_included": False,
+            "schema_fingerprints_included": False,
+        },
+        "profile_schema_cycle_aggregation": {
+            "strategy": PROFILE_SCHEMA_CYCLE_VERSION,
+            "endpoint_count": len(profile_schema_cycles),
+            "endpoints": profile_schema_cycles,
+            "scope_partitioned_endpoints_use_scope_schema_cycle": True,
+            "member_level_schema_events_are_superseded": True,
+            "raw_captures_preserved": True,
+            "exact_member_schema_snapshots_preserved": True,
+            "profile_values_included": False,
+            "profile_hashes_included": False,
+            "member_capture_ids_included": False,
+            "schema_fingerprints_included": False,
+        },
+        "scoped_reanalysis_resolution": scoped_reanalysis.public_summary(),
+        "source_dimension_index": dimension_index,
+        "source_health": health,
+        "privacy": {
+            "har_body_included": False,
+            "har_path_included": False,
+            "cookies_included": False,
+            "headers_included": False,
+            "query_values_included": False,
+            "dimension_values_included": False,
+            "dynamic_path_values_included": False,
+            "schema_profile_values_included": False,
+            "schema_profile_hashes_included": False,
+            "schema_scope_values_included": False,
+            "schema_scope_hashes_included": False,
+            "schema_cycle_member_capture_ids_included": False,
+            "schema_cycle_fingerprints_included": False,
+            "source_scope_values_included": False,
+            "source_scope_fingerprints_included": False,
+        },
+    }
+
+    rendered = json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    if args.output:
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(rendered, encoding="utf-8")
+    print(rendered, end="")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

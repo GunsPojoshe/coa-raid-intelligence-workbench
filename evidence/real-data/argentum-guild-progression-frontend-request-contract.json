@@ -1,0 +1,68 @@
+{
+  "decision_boundary": {
+    "completeness_verified": false,
+    "guild_api_route_semantics_verified": false,
+    "historical_helper_chain_superseded": true,
+    "pagination_semantics_verified": false,
+    "planner_scoring_allowed": false,
+    "ready_for_bounded_legacy_progression_prefix_probe": false,
+    "ready_for_bounded_progression_rankings_probe": true,
+    "ready_for_full_guild_crawl": false,
+    "status": "frontend_progression_request_contract_reviewed",
+    "termination_semantics_verified": false
+  },
+  "frontend_contract": {
+    "api_base_url": "https://coa.ascensionlogs.gg/api",
+    "api_client_binding_observed": true,
+    "bounded_rankings_get_contract_observed": true,
+    "direct_progression_methods": ["GET"],
+    "direct_progression_request_count": 4,
+    "direct_requests": [
+      {
+        "explicit_empty_parameter_branch_observed": false,
+        "method": "GET",
+        "occurrence_count": 1,
+        "parameter_key_sets": [["bracket", "difficulty", "location", "page", "phaseId", "realm"]],
+        "route_template": "/api/guilds/progression/full-clears"
+      },
+      {
+        "explicit_empty_parameter_branch_observed": true,
+        "method": "GET",
+        "occurrence_count": 2,
+        "parameter_key_sets": [["bracket"], ["bracket", "difficulty", "location", "phaseId", "realm"]],
+        "route_template": "/api/guilds/progression/rankings"
+      },
+      {
+        "explicit_empty_parameter_branch_observed": false,
+        "method": "GET",
+        "occurrence_count": 1,
+        "parameter_key_sets": [["bracket", "difficulty", "page", "phaseId", "realm"]],
+        "route_template": "/api/guilds/progression/rankings/{bossId}"
+      }
+    ],
+    "legacy_prefix_cache_exclusion_occurrence_count": 1,
+    "legacy_prefix_direct_request_occurrence_count": 0,
+    "legacy_prefix_literal_occurrence_count": 1,
+    "post_request_observed": false
+  },
+  "generated_at": "2026-08-13T15:18:15.224471Z",
+  "review_kind": "guild_progression_frontend_request_contract",
+  "review_version": "guild-progression-frontend-request-contract-v1",
+  "schema_version": 1,
+  "source_asset_sha256": "da381a27e44be6cad3f60c4326251c7cbdd1ea8b31c5ccd5d8be03331855dacc",
+  "source_private_recovery_name": "argentum-guild-asset-profiled-recovery.private.json",
+  "source_private_recovery_sha256": "96ec831521da9481c2e67ebd08ee23cbdcf33824bfec2911711ff50b91416acc",
+  "summary": {
+    "bounded_rankings_get_contract_observed": true,
+    "contains_private_source_scalar_values": false,
+    "contains_raw_javascript": false,
+    "direct_progression_methods": ["GET"],
+    "direct_progression_request_count": 4,
+    "legacy_progression_prefix_is_cache_exclusion_only": true,
+    "legacy_progression_prefix_is_direct_endpoint": false,
+    "network_requests_performed": false,
+    "post_request_observed": false,
+    "ready_for_bounded_legacy_progression_prefix_probe": false,
+    "ready_for_bounded_progression_rankings_probe": true
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "decision_boundary": {
+    "guild_api_route_candidates_observed": false,
+    "guild_api_route_semantics_verified": false,
+    "guild_identity_verified": false,
+    "independent_source_identity_verified": false,
+    "planner_scoring_allowed": false,
+    "ready_for_bis25_scoring": false,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_guild_api_route_review": false,
+    "ready_for_guild_filtering": false,
+    "ready_for_multi_report_character_graph": false,
+    "ready_for_performance_model": false,
+    "snapshot_internal_identity_consistent": true,
+    "status": "guild_asset_recovery_incomplete"
+  },
+  "generated_at": "2026-07-31T08:07:11.480304Z",
+  "integrity_checks": {
+    "asset_url_https": true,
+    "asset_url_same_origin": true,
+    "credentials_not_supplied": true,
+    "download_size_bounded": true,
+    "private_route_discovery_sha256_verified": true,
+    "public_receipt_scalar_boundary_preserved": true,
+    "public_route_discovery_verified": true,
+    "public_route_shapes_redact_candidate_id": true,
+    "redirects_disabled": true,
+    "single_timeout_asset_selected": true
+  },
+  "recovery_kind": "guild_identity_asset_recovery",
+  "recovery_version": "guild-identity-asset-recovery-v1",
+  "route_inventory": {
+    "all_api_route_shape_count": 0,
+    "guild_api_route_shape_count": 0,
+    "guild_api_route_shapes": []
+  },
+  "schema_version": 1,
+  "source_private_recovery_name": "argentum-guild-asset-recovery.private.json",
+  "source_private_recovery_sha256": "3f41700943af231b1c296f18675a159763338d55aee476b13c45db7a3b94645e",
+  "source_private_route_discovery_name": "argentum-guild-route-discovery.private.json",
+  "source_private_route_discovery_sha256": "587be5e160974df477d04b98b29bfb16e3f7bdb6ea9f4a8299ea9d80f7e35640",
+  "source_public_route_discovery_name": "argentum-guild-route-discovery-timeout.json",
+  "source_public_route_discovery_sha256": "bcac262eacc8e540b7ec4f4458c9b2e31bc6b1b93f341242dfefe13b34f0e03a",
+  "summary": {
+    "all_integrity_checks_passed": true,
+    "api_route_candidate_count": 0,
+    "asset_bytes": 0,
+    "asset_download_completed": false,
+    "contains_source_scalar_values": false,
+    "guild_api_route_candidate_count": 0,
+    "integrity_check_count": 10
+  },
+  "target": {
+    "asset_url_published": false,
+    "guild_label": "Argentum",
+    "source_guild_id_published": false
+  },
+  "transport": {
+    "contains_error_text": false,
+    "credentials_supplied": false,
+    "failure_class": "network_or_tls_failure",
+    "http_status": 0,
+    "kind": "curl",
+    "max_bytes": 67108864,
+    "redirects_allowed": false,
+    "return_code": 35,
+    "timeout_seconds": 300.0
+  }
+}

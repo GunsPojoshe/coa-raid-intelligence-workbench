@@ -1,0 +1,116 @@
+{
+  "mapping_schema_version": 1,
+  "mapping_id": "coa-public-report-discovery-v1",
+  "source_code": "coa_ascension_logs",
+  "mapping_version": "1",
+  "status": "verified",
+  "route_template": "/api/reports/public",
+  "schema_fingerprint": "4f47885820e6931cd76db538cabd68405b4969778c1bede9dee53a7f1e005ed4",
+  "reviewed_payload_hash": "2203e52709fad4fbc8d5235bc3699abeec6b85cf1e13b9df3e24091ddf8775c2",
+  "review_summary_schema_version": 1,
+  "provenance_type": "upstream_derived",
+  "required_top_level": [
+    "pagination",
+    "reports",
+    "success"
+  ],
+  "collection": {
+    "path": "/reports/*",
+    "observed_occurrences": 5,
+    "required_keys": [
+      "created_at",
+      "end_time",
+      "guild_id",
+      "guild_name",
+      "highest_difficulty",
+      "id",
+      "locations",
+      "start_time",
+      "title",
+      "uploader_username",
+      "visibility"
+    ],
+    "fields": {
+      "source_report_id": {
+        "selector": "/id",
+        "review_path": "/reports/*/id",
+        "types": [
+          "integer"
+        ],
+        "nullable": false,
+        "required": true
+      },
+      "title": {
+        "selector": "/title",
+        "review_path": "/reports/*/title",
+        "types": [
+          "string"
+        ],
+        "nullable": false,
+        "required": true
+      },
+      "created_at": {
+        "selector": "/created_at",
+        "review_path": "/reports/*/created_at",
+        "types": [
+          "string"
+        ],
+        "nullable": false,
+        "required": true
+      },
+      "start_time": {
+        "selector": "/start_time",
+        "review_path": "/reports/*/start_time",
+        "types": [
+          "string"
+        ],
+        "nullable": false,
+        "required": true
+      },
+      "end_time": {
+        "selector": "/end_time",
+        "review_path": "/reports/*/end_time",
+        "types": [
+          "string"
+        ],
+        "nullable": false,
+        "required": true
+      },
+      "visibility": {
+        "selector": "/visibility",
+        "review_path": "/reports/*/visibility",
+        "types": [
+          "string"
+        ],
+        "nullable": false,
+        "required": true
+      },
+      "uploader_username": {
+        "selector": "/uploader_username",
+        "review_path": "/reports/*/uploader_username",
+        "types": [
+          "string"
+        ],
+        "nullable": false,
+        "required": true
+      }
+    }
+  },
+  "deferred_scopes": [
+    "/pagination",
+    "/reports/*/guild_id",
+    "/reports/*/guild_name",
+    "/reports/*/highest_difficulty",
+    "/reports/*/locations"
+  ],
+  "review_notes": [
+    "Verified parser/schema mapping derived from one exact immutable page=1, limit=5 public-report payload.",
+    "The collection selector /reports/* is the only report-like collection in the reviewed payload.",
+    "All eleven source keys were present in all five reviewed report objects.",
+    "guild_id and guild_name were observed only as null and remain deferred.",
+    "highest_difficulty, locations and pagination remain deferred because their source semantics are not yet independently reviewed.",
+    "Verification confirms exact selector/type compatibility only; it does not establish category, pagination, limit-enforcement or gameplay semantics."
+  ],
+  "reviewed_by": "GunsPojoshe (operator), OpenAI-assisted review",
+  "reviewed_at": "2026-07-29T16:41:00+03:00"
+}

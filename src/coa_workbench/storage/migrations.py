@@ -8,12 +8,40 @@ class DuckDBUnavailableError(RuntimeError):
     pass
 
 
+_MIGRATION_0005_ID = "0005_canonical_normalization"
+_MIGRATION_0005_UNSUPPORTED_SQL = (
+    "ALTER TABLE aura_state_interval ADD COLUMN refresh_count INTEGER NOT NULL DEFAULT 0;"
+)
+_MIGRATION_0005_COMPATIBLE_SQL = """ALTER TABLE aura_state_interval
+ADD COLUMN refresh_count INTEGER DEFAULT 0;
+UPDATE aura_state_interval SET refresh_count = 0 WHERE refresh_count IS NULL;
+ALTER TABLE aura_state_interval ALTER COLUMN refresh_count SET NOT NULL;"""
+
+
 def _sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
         for block in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def _sql_for_execution(migration_id: str, source_sql: str) -> str:
+    """Return the SQL DuckDB can execute without changing the migration source."""
+    if migration_id != _MIGRATION_0005_ID:
+        return source_sql
+
+    occurrence_count = source_sql.count(_MIGRATION_0005_UNSUPPORTED_SQL)
+    if occurrence_count != 1:
+        raise RuntimeError(
+            f"Migration {_MIGRATION_0005_ID} compatibility expression expected exactly once; "
+            f"found {occurrence_count}"
+        )
+    return source_sql.replace(
+        _MIGRATION_0005_UNSUPPORTED_SQL,
+        _MIGRATION_0005_COMPATIBLE_SQL,
+        1,
+    )
 
 
 def apply_migrations(database_path: Path, migrations_dir: Path) -> list[str]:
@@ -54,7 +82,8 @@ def apply_migrations(database_path: Path, migrations_dir: Path) -> list[str]:
                         f"Applied migration {migration_id} changed: {existing[migration_id]} != {checksum}"
                     )
                 continue
-            sql = migration.read_text(encoding="utf-8")
+            source_sql = migration.read_text(encoding="utf-8")
+            sql = _sql_for_execution(migration_id, source_sql)
             connection.execute("BEGIN TRANSACTION")
             try:
                 connection.execute(sql)

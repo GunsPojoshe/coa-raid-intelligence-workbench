@@ -1,0 +1,79 @@
+{
+  "attempts": [
+    {
+      "failure_class": null,
+      "http_status": 200,
+      "probe_bytes": 3881146,
+      "profile": "http1_1",
+      "return_code": 0,
+      "transport_reached": true
+    }
+  ],
+  "baseline": {
+    "failure_class": "network_or_tls_failure",
+    "http_status": 0,
+    "return_code": 35,
+    "transport": "curl"
+  },
+  "decision_boundary": {
+    "guild_api_route_candidates_observed": false,
+    "guild_api_route_semantics_verified": false,
+    "guild_identity_verified": false,
+    "independent_source_identity_verified": false,
+    "planner_scoring_allowed": false,
+    "ready_for_bis25_scoring": false,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_guild_api_route_review": false,
+    "ready_for_guild_filtering": false,
+    "ready_for_multi_report_character_graph": false,
+    "ready_for_performance_model": false,
+    "ready_for_profiled_asset_recovery": false,
+    "snapshot_internal_identity_consistent": true,
+    "status": "guild_asset_transport_diagnostic_incomplete",
+    "transport_profile_candidate_observed": true
+  },
+  "diagnostic_kind": "guild_identity_asset_transport_diagnostic",
+  "diagnostic_version": "guild-identity-asset-transport-diagnostic-v1",
+  "generated_at": "2026-07-31T08:59:18.285758Z",
+  "integrity_checks": {
+    "asset_url_https": true,
+    "asset_url_same_origin": true,
+    "baseline_tls_failure_verified": true,
+    "credentials_not_supplied": true,
+    "private_asset_recovery_sha256_verified": true,
+    "probe_size_bounded": false,
+    "profile_attempt_count_bounded": true,
+    "public_asset_recovery_verified": true,
+    "public_receipt_scalar_boundary_preserved": true,
+    "range_probe_used": true,
+    "redirects_disabled": true
+  },
+  "probe": {
+    "credentials_supplied": false,
+    "max_probe_bytes": 2097152,
+    "range_request": "0-0",
+    "redirects_allowed": false,
+    "timeout_seconds_per_profile": 60.0
+  },
+  "schema_version": 1,
+  "source_private_diagnostic_name": "argentum-guild-asset-transport-diagnostic.private.json",
+  "source_private_diagnostic_sha256": "6edeb6b956734dbe5b5b18ec065426389c023c170d17ffb4d46716163dc180fd",
+  "source_private_recovery_name": "argentum-guild-asset-recovery.private.json",
+  "source_private_recovery_sha256": "3f41700943af231b1c296f18675a159763338d55aee476b13c45db7a3b94645e",
+  "source_public_recovery_name": "argentum-guild-asset-recovery-tls-failure.json",
+  "source_public_recovery_sha256": "bf635a9e148a5002fc735536f5b115dbd152df732b9de18a01eb61d168fe140d",
+  "summary": {
+    "all_integrity_checks_passed": false,
+    "attempt_count": 1,
+    "contains_error_text": false,
+    "contains_source_scalar_values": false,
+    "integrity_check_count": 11,
+    "selected_profile": "http1_1",
+    "transport_profile_candidate_observed": true
+  },
+  "target": {
+    "asset_url_published": false,
+    "guild_label": "Argentum",
+    "source_guild_id_published": false
+  }
+}

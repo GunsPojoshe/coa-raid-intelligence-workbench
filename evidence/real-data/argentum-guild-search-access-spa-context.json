@@ -1,0 +1,138 @@
+{
+  "attempts": [
+    {
+      "body_bytes": 56,
+      "body_captured": true,
+      "capture": {
+        "bytes_uncompressed": 56,
+        "observation_id": "bfaa4e07fc420be166e882e79f6d581d2811b0bfafdadd16f3c467671125fd5c",
+        "payload_hash": "0f088f03f69d7a8e6d34d206b87db3cd50364a9dea31e21e229d0089bd4d66b7",
+        "raw_id": "12e72efcd6007e3714bba3b27182180f67b19da3a628a901a316dfb6c7de402d",
+        "schema_fingerprint": "2a723ec67ac782c43e553ded70b9c2d7f636cf0765687d9d5dbfe137421b847c"
+      },
+      "contains_error_text": false,
+      "contains_source_scalar_values": false,
+      "content_type": "application/json; charset=utf-8",
+      "denial_category": "access_denied",
+      "error_field_names": [
+        "error",
+        "message"
+      ],
+      "failure_class": null,
+      "http_status": 403,
+      "json_valid": true,
+      "profile": "minimal_http1_1",
+      "response_candidate": false,
+      "return_code": 0,
+      "top_level_keys": [
+        "error",
+        "message"
+      ],
+      "top_level_kind": "object"
+    },
+    {
+      "body_bytes": 93,
+      "body_captured": true,
+      "capture": {
+        "bytes_uncompressed": 93,
+        "observation_id": "94e02a08a6010935a7dbb0c86dfc62dcf38e6614c1b5f04d0d91f9927a83498b",
+        "payload_hash": "3af0c236bbf2e012112be101f09b4d91a100fafd40adbb9aace76300f9a84186",
+        "raw_id": "51f04098b08d58af0708c34ab6197e11aae667fe47fb1f542abee5efb6425d9d",
+        "schema_fingerprint": "591a876403b641d0e834357beb50a7dfe7dfb2181f81d811334fd1b8493b04af"
+      },
+      "contains_error_text": false,
+      "contains_source_scalar_values": false,
+      "content_type": "application/json; charset=utf-8",
+      "denial_category": null,
+      "error_field_names": [],
+      "failure_class": null,
+      "http_status": 200,
+      "json_valid": true,
+      "profile": "spa_fetch_context",
+      "response_candidate": true,
+      "return_code": 0,
+      "top_level_keys": [
+        "guilds",
+        "success"
+      ],
+      "top_level_kind": "object"
+    }
+  ],
+  "decision_boundary": {
+    "guild_api_route_candidates_observed": true,
+    "guild_api_route_semantics_verified": false,
+    "guild_identity_verified": false,
+    "guild_search_access_profile_candidate_observed": true,
+    "guild_search_denial_category_observed": true,
+    "guild_search_http_403_baseline_observed": true,
+    "independent_source_identity_verified": false,
+    "planner_scoring_allowed": false,
+    "ready_for_bis25_scoring": false,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_guild_filtering": false,
+    "ready_for_multi_report_character_graph": false,
+    "ready_for_performance_model": false,
+    "ready_for_profiled_guild_search_probe": true,
+    "selected_access_profile": "spa_fetch_context",
+    "status": "guild_search_access_profile_candidate_observed"
+  },
+  "diagnostic_kind": "guild_identity_search_access_diagnostic",
+  "diagnostic_version": "guild-identity-search-access-diagnostic-v1",
+  "generated_at": "2026-07-31T10:22:04.107027Z",
+  "integrity_checks": {
+    "attempt_count_bounded": true,
+    "captured_bodies_archived": true,
+    "credentials_not_supplied": true,
+    "error_text_not_published": true,
+    "http_403_baseline_verified": true,
+    "private_search_probe_sha256_verified": true,
+    "profile_order_bounded": true,
+    "public_receipt_scalar_boundary_preserved": true,
+    "public_search_probe_verified": true,
+    "redirects_disabled": true,
+    "request_url_https": true,
+    "request_url_same_origin": true,
+    "response_size_bounded": true
+  },
+  "request": {
+    "credentials_supplied": false,
+    "max_attempt_count": 3,
+    "max_bytes_per_profile": 262144,
+    "profile_order": [
+      "minimal_http1_1",
+      "spa_fetch_context",
+      "spa_fetch_context_origin"
+    ],
+    "query_keys": [
+      "q",
+      "limit"
+    ],
+    "redirects_allowed": false,
+    "route_template": "/api/guilds/search",
+    "timeout_seconds_per_profile": 60.0,
+    "transport": "curl_http1_1"
+  },
+  "schema_version": 1,
+  "source_private_diagnostic_name": "argentum-guild-search-access-diagnostic.private.json",
+  "source_private_diagnostic_sha256": "035601a11614cfd61030c4846c42213c5f4436ad72fb98282644de5b308132c4",
+  "source_public_probe_name": "argentum-guild-search-probe-http403.json",
+  "source_public_probe_sha256": "e8ca1ff182a0daba36eb67ea1c9a0067304a51c973ba61a1106fea3ce54afe0f",
+  "summary": {
+    "access_profile_candidate_observed": true,
+    "all_integrity_checks_passed": true,
+    "attempt_count": 2,
+    "contains_error_text": false,
+    "contains_source_scalar_values": false,
+    "denial_categories": [
+      "access_denied"
+    ],
+    "denial_category_count": 1,
+    "integrity_check_count": 13,
+    "selected_access_profile": "spa_fetch_context"
+  },
+  "target": {
+    "guild_label": "Argentum",
+    "request_url_published": false,
+    "source_guild_id_published": false
+  }
+}

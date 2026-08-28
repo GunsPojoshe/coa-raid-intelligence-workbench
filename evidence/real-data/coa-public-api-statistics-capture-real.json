@@ -1,0 +1,61 @@
+{
+  "capture_kind": "official_public_api_stats",
+  "request": {
+    "access_scope": "stats:read",
+    "credential_header_name": "Authorization",
+    "endpoint_code": "public_api_statistics",
+    "http_profile_version": "coa-public-api-http-v1",
+    "query_keys": [
+      "phase",
+      "difficulty",
+      "metric",
+      "bracket",
+      "damageMode",
+      "role"
+    ],
+    "route_template": "/statistics"
+  },
+  "response": {
+    "archived": true,
+    "bytes_uncompressed": 21281,
+    "content_type": "application/json",
+    "duplicate_observation": false,
+    "duplicate_payload": false,
+    "error": null,
+    "schema_fingerprint_observed": true,
+    "status": 200,
+    "top_level_keys": [
+      "board",
+      "boss_id",
+      "bosses",
+      "bracket",
+      "damage_mode",
+      "day_number",
+      "difficulty",
+      "location",
+      "metric",
+      "phase",
+      "phase_name",
+      "statistics",
+      "success",
+      "week_number"
+    ],
+    "top_level_kind": "object"
+  },
+  "schema_version": 1,
+  "selection": {
+    "phase_selector": "unique_is_active_true_and_end_date_null",
+    "phase_source_endpoint": "public_api_phases",
+    "phase_value_included": false,
+    "query_values_included": false
+  },
+  "summary": {
+    "complete": true,
+    "contains_api_key": false,
+    "contains_query_values": false,
+    "contains_source_scalar_values": false,
+    "events_read_used": false,
+    "planner_scoring_allowed": false,
+    "raw_capture_ids_included": false
+  }
+}

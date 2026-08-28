@@ -1,0 +1,93 @@
+{
+  "capture_failure_contract": {
+    "automatic_retry_must_be_bounded": true,
+    "failed_requests_preserved_as_observations": true,
+    "partial_results_must_not_be_marked_complete": true,
+    "resume_requires_exact_contract_and_checkpoint_binding": true
+  },
+  "contract_kind": "guild_full_crawl_collection_contract",
+  "contract_version": "guild-full-crawl-contract-v1",
+  "decision_boundary": {
+    "automatic_full_guild_crawl_allowed": false,
+    "full_crawl_collection_contract_reviewed": true,
+    "guild_api_route_semantics_verified": false,
+    "guild_filtering_completed": true,
+    "guild_identity_verified": true,
+    "guild_report_manifest_deduplicated": true,
+    "planner_scoring_allowed": false,
+    "ready_for_bis25_scoring": false,
+    "ready_for_bounded_route_semantics_capture": true,
+    "ready_for_full_guild_crawl": false,
+    "ready_for_multi_report_character_graph": false,
+    "ready_for_performance_model": false,
+    "status": "full_crawl_collection_contract_reviewed"
+  },
+  "integrity_checks": {
+    "full_crawl_remains_disabled": true,
+    "guild_manifest_identity_decision_sha256_verified": true,
+    "guild_manifest_privacy_boundary_verified": true,
+    "guild_manifest_public_manifest_sha256_verified": true,
+    "guild_manifest_selected_report_ids_unique": true,
+    "guild_manifest_verified": true,
+    "identity_decision_public_manifest_sha256_verified": true,
+    "identity_decision_verified": true,
+    "planner_scoring_remains_disabled": true,
+    "public_manifest_report_ids_unique": true,
+    "public_manifest_verified": true,
+    "route_semantics_remain_unverified": true
+  },
+  "route_semantics_requirements": [
+    "verify_exact_route_template_and_query_parameters",
+    "archive_complete_raw_response_before_interpretation",
+    "bind_response_to_exact_payload_sha256_and_schema_fingerprint",
+    "review_response_field_types_nullability_and_collection_shape",
+    "verify_pagination_offset_limit_and_page_relations_if_present",
+    "verify_deterministic_termination_and_successor_behavior",
+    "verify_completeness_boundary_and_capture_time_scope",
+    "publish_explicit_scalar_free_route_semantics_decision"
+  ],
+  "schema_version": 1,
+  "set_comparison_contract": {
+    "baseline": "verified_public_manifest_filter",
+    "candidate": "future_guild_api_report_set",
+    "contradicting_evidence_preserved": true,
+    "deduplication_key": "source_report_id",
+    "report_ids_published": false,
+    "required_partitions": [
+      "matching_reports",
+      "missing_from_guild_api",
+      "extra_in_guild_api",
+      "conflicting_report_records"
+    ]
+  },
+  "source_guild_manifest_name": "argentum-guild-report-manifest.json",
+  "source_guild_manifest_sha256": "1b4a10878dfe42562fe060d0bcf96856d8302589377884d9849c59d2104aacf5",
+  "source_identity_decision_name": "argentum-guild-identity-decision.json",
+  "source_identity_decision_sha256": "f4643b523622da98b19c034cb278d615dabc0b7cda50ed4ca84a28c6a0cc7785",
+  "source_public_manifest_name": "argentum-public-report-manifest.json",
+  "source_public_manifest_sha256": "aaad2a9301bdb6a8e2af62a04fc74083a3d1fcd255c293b72dba3d4953b49e57",
+  "summary": {
+    "all_integrity_checks_passed": true,
+    "contains_source_scalar_values": false,
+    "full_crawl_collection_contract_reviewed": true,
+    "guild_api_route_semantics_verified": false,
+    "integrity_check_count": 12,
+    "planner_scoring_allowed": false,
+    "ready_for_bounded_route_semantics_capture": true,
+    "ready_for_full_guild_crawl": false,
+    "selected_guild_report_count": 17,
+    "source_public_report_count": 6454
+  },
+  "target": {
+    "guild_label": "Argentum",
+    "report_ids_published": false,
+    "source_guild_id_published": false
+  },
+  "verified_baseline": {
+    "selected_guild_report_count": 17,
+    "selected_report_ids_unique": true,
+    "selection_order": "source_manifest_order",
+    "selection_source": "verified_public_manifest_filter",
+    "source_public_report_count": 6454
+  }
+}

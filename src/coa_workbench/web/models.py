@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, model_validator
 
 from coa_workbench.planner import MAX_RAID_SLOTS, RaidFormat, active_slot_flags, resolve_target_size
 from coa_workbench.web.catalog import resolve_role
-from coa_workbench.web.effects import analyze_composition
+from coa_workbench.web.trusted_effects import analyze_composition
 
 
 class RaidSlotInput(BaseModel):

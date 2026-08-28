@@ -1,0 +1,39 @@
+{
+  "decision_boundary": {
+    "browser_origin_har_observation_is_next_acquisition_mode": true,
+    "full_crawl_ready": false,
+    "pagination_semantics_verified": false,
+    "plain_direct_http_schema_capture_ready": false,
+    "route_semantics_verified": false,
+    "termination_semantics_verified": false
+  },
+  "endpoint_code": "guild_progression_rankings_api",
+  "observation": {
+    "blocker_class": "managed_edge_challenge",
+    "body_kind": "html",
+    "content_type_family": "html",
+    "http_status": 403,
+    "json_schema_observed": false,
+    "outcome": "blocked",
+    "raw_body_archived_privately": true
+  },
+  "observed_at": "2026-08-14T08:06:45.394074Z",
+  "privacy": {
+    "challenge_tokens_published": false,
+    "cookies_published": false,
+    "headers_published": false,
+    "payload_hashes_published": false,
+    "raw_ids_published": false,
+    "raw_response_body_published": false,
+    "request_fingerprints_published": false
+  },
+  "receipt_kind": "source_acquisition_boundary",
+  "request_contract": {
+    "contract_source": "archived_spa_frontend_request_contract_v1",
+    "method": "GET",
+    "query_parameters_present": false,
+    "route_template": "/api/guilds/progression/rankings"
+  },
+  "schema_version": 1,
+  "source_code": "coa_ascension_logs"
+}

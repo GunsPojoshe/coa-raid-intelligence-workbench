@@ -1,93 +1,116 @@
-# CoA Raid Intelligence
+# CoA Raid Leader Companion
 
-Локальное браузерное приложение для подготовки рейдовых составов FLEX / 10 / 25 / 40.
+Local-first raid planning and analytics workbench for **Conquest of Azeroth**.
 
-## Архитектурный статус
+The product is designed for a raid leader who needs to answer practical questions about the current roster: who to bring, what the composition is missing, how a player or specialization compares with relevant population context, and what evidence supports a recommendation.
 
-Excel, Power Query и VBA больше не являются частью рабочего продукта. Историческая книга v9 используется только как источник миграции правил и проверочных данных; приложение не открывает, не изменяет и не требует Excel.
+It is not a scraper clone of Ascension Logs and it is not a static DPS tier list. Ascension Logs is one source of evidence; the workbench keeps its own normalized data and builds independent analytics in DuckDB.
+
+## Architecture
 
 ```text
-Browser → FastAPI → Planner / Catalog / Analytics → DuckDB / Parquet
+Browser
+  -> FastAPI
+  -> Planner / Catalog / Analytics
+  -> DuckDB
+
+External evidence
+  -> official CoA Ascension Logs public API
+  -> pinned AscensionLogsCompanion source where needed
+  -> persisted first-party observations for documented gaps
+  -> narrow browser/network fallback only for exact undocumented gaps
 ```
 
-## Запуск
-
-```powershell
-uv sync --extra dev
-uv run coa-workbench serve
-```
-
-По умолчанию приложение доступно только на этом компьютере:
+The application is localhost-only by default:
 
 ```text
 http://127.0.0.1:8000
 ```
 
-OpenAPI:
+## Current capabilities
+
+- local raid-plan persistence and composition UI;
+- class/spec catalog and effect-coverage model;
+- official Ascension Logs `stats:read` integration for phases, bosses and class/spec statistics;
+- deterministic normalization and DuckDB persistence of bounded population slices;
+- population priors and encounter-vs-location comparison models;
+- Source Observatory, scoped dependency tracking and deterministic reanalysis;
+- persisted report-scoped roster/build observations with explicit provenance;
+- public-safe evidence receipts for real verification runs.
+
+Planner scoring remains fail-closed: aggregate statistics, a field name, one combat result or one report are never promoted automatically into a roster recommendation.
+
+## Official Ascension Logs API
+
+Primary documented base:
 
 ```text
-http://127.0.0.1:8000/docs
+https://coa.ascensionlogs.gg/api/public/v1
 ```
 
-## Реализованный вертикальный срез
-
-- локальная FastAPI-служба;
-- браузерный конструктор до 40 слотов;
-- FLEX / 10 / 25 / 40;
-- ActiveSlot рассчитывается в Python;
-- проверка повторного игрока и полноты class/spec;
-- каталог из 70 пар класс–спек–роль;
-- сохранение, открытие, обновление и удаление планов в DuckDB;
-- каталог из 45 эффектов, мигрированный из замороженной выгрузки v9;
-- расчёт покрытия эффектов текущим составом;
-- разрез покрытия по категориям и приоритетам;
-- объяснимый Top-3 советник специализаций;
-- localhost-only по умолчанию.
-
-## Аналитика покрытия
-
-Канонический источник первого среза:
+Self-service `stats:read`:
 
 ```text
-baseline/tables/EffectsReferenceTable.csv
+GET /phases
+GET /bosses
+GET /statistics
 ```
 
-Файл является замороженной CSV-выгрузкой из v9. Рабочее приложение не открывает Excel.
+The public contract also documents experimental/on-request `events:read` report, actor and combat-event routes. Event-level data is an optional future input for independent encounter analytics; the aggregate product does not depend on that scope.
 
-Советник ранжирует специализации по новым отсутствующим эффектам:
+API keys stay local in:
 
 ```text
-Критично     = 100
-Важно        = 10
-Опционально  = 1
+data/private/coa-logs-api-key.txt
 ```
 
-Алгоритм `missing-effect-priority-v1` не использует ролевые квоты, потому что целевые ограничения ролей ещё не утверждены. Каждая рекомендация показывает новые эффекты и разложение результата по приоритетам.
+or `COA_LOGS_API_KEY`. Keys, cookies, raw payloads and private report/player values are never committed.
 
-API:
+## Quick start
 
-```text
-GET  /api/catalog/effects
-POST /api/plans/preview
+```powershell
+uv sync --extra dev
+uv run coa-workbench init-db --database data/warehouse/coa.duckdb --migrations migrations
+uv run coa-workbench serve
 ```
 
-## Команды
+Useful checks:
 
 ```powershell
 uv run coa-workbench doctor --project-root .
-uv run coa-workbench validate-config --path config/raid_profiles.yaml
-uv run coa-workbench init-db --database data/warehouse/coa.duckdb --migrations migrations
-uv run coa-workbench serve
-uv run pytest
+uv run --no-sync python scripts/verify_repo.py
 ```
 
-## Что больше не входит в runtime
+## Repository map
 
-- Excel workbook как интерфейс;
-- формулы Excel как расчётное ядро;
-- Power Query;
-- VBA;
-- изменение `.xlsx` из Python;
-- обязательное наличие Microsoft Excel.
+```text
+src/coa_workbench/web/          localhost application/API
+src/coa_workbench/planner/      composition/planner primitives
+src/coa_workbench/analytics/    deterministic analytics and trust-gated reviews
+src/coa_workbench/collector/    source contracts, acquisition and observability
+src/coa_workbench/normalizer/   deterministic normalization
+src/coa_workbench/storage/      DuckDB persistence/read models
+config/                         reviewed source and mapping contracts
+migrations/                     forward-only migrations 0001-0013
+scripts/                        maintained operators and verification tools
+tests/                          unit/integration/golden coverage
+evidence/real-data/             public-safe scalar receipts only
+baseline/                       frozen migration/reference exports from the original workbook
+```
 
-Архивные workbook-материалы сохраняются только как evidence миграции и не являются частью пользовательского контура.
+The original Excel workbook is not part of runtime. Its extracted baseline/reference artifacts remain only to preserve migration tests and historical rule provenance.
+
+## Source and trust policy
+
+The current source order is:
+
+```text
+official documented public API
+-> official documented semantics
+-> pinned executable Companion source
+-> persisted first-party evidence
+-> narrow browser/network fallback
+-> structural inference last
+```
+
+See `docs/DOCUMENTATION_INDEX.md`, `docs/CURRENT_PARADIGM.md` and `docs/OFFICIAL_PUBLIC_API.md` for the maintained architecture and evidence boundaries.

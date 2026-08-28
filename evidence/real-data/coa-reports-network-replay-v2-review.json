@@ -1,0 +1,45 @@
+{
+  "capture_mode": "browser_har_replay",
+  "decision_boundary": {
+    "dynamic_generic_har_ingestion_allowed": false,
+    "filter_options_persisted": true,
+    "planner_scoring_allowed": false,
+    "queue_status_persisted": true,
+    "report_detail_runtime_observed": false,
+    "report_detail_false_positive_requires_local_derived_cleanup": true,
+    "reports_public_persisted": true
+  },
+  "derived_result": {
+    "active_dependency_count": 3,
+    "dimension_name_count": 5,
+    "dimension_value_count": 49,
+    "observed_dimension_endpoint_count": 3,
+    "pending_reanalysis_request_count": 0
+  },
+  "route_collision_review": {
+    "colliding_static_route": "/api/reports/queue-status",
+    "false_endpoint_code": "report_detail_api",
+    "generic_placeholder_behavior": "matched_any_non_slash_segment",
+    "network_inventory_contained_actual_report_detail_route": false,
+    "runtime_observation_valid": false,
+    "safe_policy": "generic_har_ingestion_accepts_exact_static_routes_only"
+  },
+  "runtime_observations": {
+    "reports_public_api": true,
+    "reports_public_filter_options_api": true,
+    "reports_queue_status_api": true
+  },
+  "privacy": {
+    "cookies_published": false,
+    "dimension_values_published": false,
+    "har_published": false,
+    "query_values_published": false,
+    "raw_response_bodies_published": false,
+    "report_ids_published": false,
+    "request_headers_published": false,
+    "user_identity_published": false
+  },
+  "receipt_kind": "reports_network_replay_v2_review",
+  "schema_version": 1,
+  "source_code": "coa_ascension_logs"
+}
