@@ -83,6 +83,14 @@ catalog
 -> matched same-location comparator
 ```
 
+Retained implementation anchors:
+
+```text
+forward-only migrations 0001-0013
+public_api_population_prior_v1
+bounded public population coverage model/workflow
+```
+
 Current real comparator checkpoint:
 
 ```text
@@ -167,6 +175,13 @@ Reusable fallback only for an exact undocumented gap after stronger sources are 
 ## 11. Current next gate
 
 Independently correlate the selected report encounter to boss and difficulty.
+
+Implementation present, real proof pending:
+
+```text
+src/coa_workbench/analytics/report_encounter_source_correlation.py
+scripts/capture_report_encounter_source_correlation.py
+```
 
 Priority:
 
