@@ -1,141 +1,101 @@
-# Next chat handoff — 2026-08-27
-
-Authoritative detailed state:
-
-```text
-docs/CURRENT_PARADIGM.md
-docs/PROJECT_STATE.md
-docs/CONTINUATION_PROMPT.md
-```
+# Next chat handoff — 2026-08-28
 
 ## Resume
 
 ```text
 repo: GunsPojoshe/coa-raid-intelligence-workbench
-canonical active branch: e4/interactive-har-discovery
+canonical branch: e4/interactive-har-discovery
 Draft PR #9 -> e3/real-log-capture
 ```
 
-Perform live GitHub HEAD/PR/CI checks first.
+Perform live GitHub HEAD / PR #9 / exact-head CI audit first.
 
-## Current paradigm
-
-```text
-official public API first
--> official semantics
--> pinned Companion source
--> persisted first-party evidence
--> browser/HAR only for exact gaps
--> inference last
-```
-
-## Aggregate API proof complete
+## Current source priority
 
 ```text
-3 phases / 1 active-current candidate
-285 bosses / 285 unique stable boss_id
-provenance-aware /statistics: HTTP 200, archived, 21306 bytes
-21 normalized classes
-62 normalized specs
-806 percentile values
-first persistence inserted 21/62
-second persistence matched 21/62 with zero inserts
-idempotent = true
-62 population-prior records
-62 records with local_parse_share
-Source Observatory integrated = true
-source_endpoint_profile dependency = registered
-legacy broad source_endpoint dependency = inactive
-pending reanalysis = 0
-actionable source changes = 0
-health attention_required = false
-planner scoring = false
-site Tier List algorithm = unverified
+official documented public API
+-> official documented site semantics
+-> pinned Companion executable source
+-> persisted first-party report/API evidence
+-> Browser/HAR only for exact gaps
+-> structural inference last
 ```
 
-Real receipts:
+## Real aggregate proof complete through comparator
 
 ```text
-evidence/real-data/coa-public-api-statistics-provenance-capture-real.json
-evidence/real-data/coa-public-api-statistics-persistence-real.json
-evidence/real-data/coa-public-api-statistics-profile-reanalysis-real.json
+/phases + /bosses catalog: proven
+/statistics exact normalization: proven
+DuckDB persistence/idempotence: proven
+Source Observatory/profile-scoped reanalysis: proven
+bounded population coverage: 4/4
+encounter context: 4/4
+location comparator: 4/4
 ```
 
-Do not repeat those real proofs.
-
-## Current gate — bounded multi-profile population coverage
-
-Implementation:
+Comparator checkpoint:
 
 ```text
-src/coa_workbench/analytics/public_api_population_coverage.py
-scripts/capture_public_api_population_coverage.py
+encounter: 59 class summaries / 148 specs / 1924 percentile values
+location: 59 class summaries / 150 specs / 1950 percentile values
+matched records: 148
+encounter-only: 0
+location-only: 2
+exact dimension match: true
+temporal day_number match: true
+missing spec treated as zero: false
+profile dependencies: 12
+pending reanalysis: 0
+actionable source changes: 0
+attention_required: false
+planner scoring: false
 ```
 
-Coverage v1:
+Receipt:
 
 ```text
-4 required slices
-3 documented metric families
-3 role-qualified slices
-1 role-omitted slice
-boss/location/week/realm/class/spec expansion excluded
-bulk mode false
+evidence/real-data/coa-public-api-encounter-comparator-real.json
 ```
 
-The command checks DuckDB first and only calls the API for missing slices. It stops on the first incomplete response and is safe to rerun because completed matching profiles are reused.
+Do not rerun population coverage, encounter context or comparator proof just to reconfirm them.
 
-Operator command:
+## Binding boundary
 
-```powershell
-uv run --no-sync python scripts/capture_public_api_population_coverage.py
-```
-
-Review only:
+Current aggregate proof still relies on an operator-reviewed encounter scope.
 
 ```text
-data/exchange/out/coa-public-api-population-coverage-review.json
+report URL shape: proven
+boss/location -> unique official boss record: proven
+report encounter -> boss from independent report source: not proven
+report encounter -> difficulty from independent report source: not proven
 ```
 
-Do not request RawArchive, DuckDB, API key, private query values or profile fingerprints.
+## Current gate
 
-Expected success shape:
+Implement independent report encounter -> boss/difficulty source correlation.
+
+Use this order:
 
 ```text
-coverage_after.complete = true
-missing_slice_count = 0
-legacy unscoped dependency count = 0
-pending reanalysis = 0
-actionable source changes = 0
-attention_required = false
-planner_scoring_allowed = false
+official documented report API if already accessible
+-> official site semantics / persisted first-party report response
+-> pinned Companion executable source
+-> Browser/HAR only if the exact gap remains undocumented
 ```
 
-## Profile reanalysis semantics
+Fail closed. Keep boss correlation and difficulty correlation separate. Publish only scalar-safe booleans/counts/version markers.
 
-Profile-local schema changes target only matching private query profiles. `request_contract_changed` is endpoint-global. Events older than dependency registration do not back-trigger newer aggregate artifacts.
-
-The real migration replay already proved the historical baseline event did not create a reanalysis request.
+Do not request API key, RawArchive, DuckDB, private query values, class/spec names, metric scalars or additional report IDs from the operator.
 
 ## Retained blockers
 
 ```text
 historical two-report difficulty equivalence: insufficient_evidence
-numeric historical cross-report scoring: blocked
 cross-report player identity: unproven
-fight-duration comparison semantics: unproven
 site Tier List algorithm: undocumented
 planner scoring: blocked
 ```
 
-## Local audit
+## Local WIP boundary
 
-Already complete. Preserve the historical helper patch privately; it is incomplete due missing `guild_progression_js_lexical` and must not be applied as-is. Do not re-request the same inventory/patch unless the workspace materially changes.
-
-## Branch chain
-
-```text
-main <- e2 (#3) <- e3 (#7) <- e4 (#9)
-```
-
-Resolve lower-chain integration debt deliberately and preserve the newest canonical documentation.
+Historical helper patch remains private incomplete WIP because `guild_progression_js_lexical` is absent. Preserve it; do not apply as-is.
