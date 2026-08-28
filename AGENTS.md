@@ -1,53 +1,61 @@
-# CoA Raid Intelligence — Agent Instructions
+# CoA Raid Intelligence — repository instructions
 
-These instructions apply to the whole repository.
+These rules apply to the whole repository.
 
 ## Mission
 
-Build a localhost-first, evidence-first system **only for Conquest of Azeroth** that can eventually explain:
+Build a localhost-first **Raid Leader Companion for Conquest of Azeroth** that combines roster state, verified player/build observations, encounter evidence and population context into explainable raid-leading decisions.
 
-> Why is this specific player needed by this exact current roster?
+The product owns its analytical model. External sites and APIs are evidence sources, not the product architecture.
 
-Planner scoring is fail-closed. Only separately corroborated mechanics and reviewed analytical semantics may enter canonical recommendations.
-
-## Documentation authority
+## Read first
 
 Before substantial work read:
 
 ```text
+README.md
 docs/DOCUMENTATION_INDEX.md
 docs/CURRENT_PARADIGM.md
 docs/PROJECT_STATE.md
+docs/OFFICIAL_PUBLIC_API.md
 ```
 
-Dated milestone/experiment documents are history unless the documentation index explicitly marks them current.
+Dated experiments and old branch handoffs are history; they are not operating instructions.
 
-## Responsibility split
+## Truth model
 
-Use connected tooling for GitHub repository/branch/PR/CI inspection, source/config/migration/evidence review, documentation and safe repository changes. Ask the operator only for the exact local/private Windows boundary that remote tooling cannot see.
+Never promote automatically:
 
-Private/raw files are valid analysis inputs. Privacy constrains publication/versioning, not private deterministic processing.
+```text
+field name -> gameplay meaning
+UI label -> backend contract
+character name -> cross-report identity
+one report -> universal mechanic
+population metric -> player capability
+population metric -> planner recommendation
+```
+
+Planner scoring is fail-closed.
 
 ## Source priority
 
 ```text
 1. official documented CoA Ascension Logs public API
-2. official documented site semantics
+2. official documented semantics
 3. pinned executable AscensionLogsCompanion source
-4. persisted first-party report/API responses
-5. narrow browser/network observation for undocumented gaps
+4. persisted first-party report/API observations
+5. narrow browser/network observation for an exact undocumented gap
 6. structural inference only after stronger sources are exhausted
 ```
 
-Do not use Browser Observatory/HAR to rediscover an already documented contract.
+Do not use Browser Observatory/HAR to rediscover a documented public contract.
 
-## Official public API lane
+## Official public API
 
-Reviewed source:
+Reviewed base:
 
 ```text
-https://coa.ascensionlogs.gg/api/public/v1/openapi.json
-source_code = coa_ascension_logs_public_api
+https://coa.ascensionlogs.gg/api/public/v1
 ```
 
 Self-service `stats:read`:
@@ -58,147 +66,62 @@ GET /bosses
 GET /statistics
 ```
 
-Experimental/on-request `events:read` is separate and must not be assumed available.
+The contract also documents experimental/on-request `events:read` report/actor/event routes. Treat scope availability as a runtime capability; never assume it from documentation alone.
 
-Default credential file:
+Credential boundary:
 
 ```text
 data/private/coa-logs-api-key.txt
+fallback: COA_LOGS_API_KEY
 ```
 
-The API key must never enter Git, RawArchive metadata, query strings, CLI values, logs, screenshots, public receipts or public hashes.
+The API key must never enter Git, request URLs, RawArchive metadata, public receipts, logs, screenshots or hashes.
 
-Exact `/statistics` request dimension values may be retained only in ignored/private RawArchive observation metadata because the normalizer must prove its request scope. Never publish those values or low-entropy hashes of them.
-
-Current real aggregate state:
-
-```text
-provenance-aware capture: proven
-exact normalization: proven
-DuckDB persistence: proven
-second-pass idempotence: proven
-population-prior read model: proven
-Source Observatory/Health replay: proven
-profile-scoped source dependency migration: proven
-legacy broad aggregate source dependency: inactive
-pending reanalysis after migration: zero
-planner scoring: blocked
-```
-
-Do not repeat the already completed single-slice capture/persistence or profile-migration proofs merely because a session restarted.
-
-## Source Observatory lane
-
-The generic evidence loop is:
+## Evidence architecture
 
 ```text
 reviewed contract
 -> immutable RawArchive
 -> acquisition observation
 -> schema/profile/scope observation
--> source change event
--> artifact dependency
+-> deterministic normalization
+-> provenance + dependency tracking
+-> source change detection
 -> scoped reanalysis
--> deterministic analysis
+-> reproducible analytics
 -> Source & Analysis Health
 ```
 
-For official `/statistics`, request dimensions are schema-profile keys: source-shape comparison occurs only within a compatible private request scope.
-
-Aggregate artifacts declare:
-
-```text
-raw_object
-  exact payload provenance
-
-source_endpoint_profile
-  private reviewed query-profile dependency for schema/profile-local changes
-```
-
-`request_contract_changed` remains endpoint-global and intentionally fans out across active profile dependencies. Old source events must not back-trigger dependencies registered later.
-
-Profile fingerprints and query values are local-only and must never appear in public receipts.
-
-Generic dynamic-template ingestion is prohibited. Unknown semantics stay unknown.
-
-## Bounded population coverage lane
-
-`public-api-population-coverage-v1` is intentionally small. It expands the proven single aggregate profile across a fixed set of reviewed metric/role profiles while holding broader dimensions stable.
-
-Rules:
-
-```text
-reuse already persisted matching profiles
-network I/O only for missing coverage slices
-stop on the first incomplete capture
-archive before interpretation
-normalize and persist every successful slice deterministically
-reconcile profile-scoped reanalysis after persistence
-never turn coverage collection into bulk dataset redistribution
-never expose dimension/profile values in public receipts
-```
-
-Boss/location/week/realm/class/spec cartesian expansion is **not** part of v1. Expand only when a product question requires it and the source contract/evidence boundary is explicit.
-
-## Historical report lane
-
-The E3 report pipeline remains canonical for report-specific evidence. Historical two-report difficulty equivalence remains `insufficient_evidence`; do not manufacture a v4 heuristic or perform blocked numeric comparison.
-
-## Upstream source lane
-
-Pinned executable source:
-
-```text
-FangYuanWoW/AscensionLogsCompanion
-main @ 0f63fe9c50b470402e3a29fba2e0322095856fd4
-version 0.67.2
-```
-
-Executable code can establish client behavior and emitted structure. Comments/backend claims remain hypotheses until independently corroborated.
-
-## Browser/HAR fallback
-
-Use only for a specific unresolved gap after stronger sources are exhausted. Do not implement or advise stealth, fingerprint spoofing, challenge solving, proxy rotation for evasion or anti-bot bypass.
+Private/raw files are valid local analysis inputs. Privacy constrains publication, not deterministic local processing.
 
 ## Local workspace safety
 
-Never:
+Never destroy unknown operator state with `git clean`, recursive ignored-tree deletion or reset/checkout commands that discard untracked files.
 
-```text
-git clean unknown state
-reset/checkout to destroy untracked files
-recursively delete ignored/private trees
-stage data/private, raw HAR, raw payloads or secrets
-```
+Private paths remain ignored, including `data/private`, RawArchive, DuckDB, HAR/browser state, exchange outputs and artifacts.
 
-For exact local inventory:
+For a local inventory:
 
 ```powershell
 uv run --no-sync python scripts/inventory_local_workspace.py
 ```
 
-The historical local helper patch is already classified as valuable incomplete WIP; preserve it privately and do not apply it as-is.
+## Migrations
 
-## Branch topology
+Migrations are forward-only. Never rewrite a published migration. Current tracked series is `0001` through `0013`.
 
-```text
-main
-└── e2/log-evidence-refactor        Draft PR #3
-    └── e3/real-log-capture         Draft PR #7
-        └── e4/interactive-har-discovery  Draft PR #9
-```
+## Branch model
 
-Always inspect live mergeability. Resolve lower-chain integration debt deliberately; do not merge Draft PRs merely to clear warnings.
+`main` is the canonical integrated branch. Use short-lived feature branches and PRs for coherent changes. Do not maintain stacked long-lived stage branches as project state.
 
-Never rewrite published migrations.
+Always verify the exact pushed HEAD before merge or publication.
 
 ## Verification
 
 ```text
 focused tests
--> coherent change
+-> coherent commit
 -> uv run --no-sync python scripts/verify_repo.py
--> push
 -> exact-head GitHub CI
 ```
 
@@ -209,5 +132,3 @@ public-release-audit
 ubuntu
 windows
 ```
-
-Never claim a pass without checking the exact pushed HEAD.

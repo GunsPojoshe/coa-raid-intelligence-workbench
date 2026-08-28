@@ -4,8 +4,7 @@ on:
   pull_request:
   push:
     branches:
-      - e2/log-evidence-refactor
-      - e3/real-log-capture
+      - main
   workflow_dispatch:
 
 permissions:

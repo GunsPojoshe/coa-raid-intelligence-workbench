@@ -1,18 +1,16 @@
 # Changelog
 
-## Unreleased — 2026-08-26 documentation/integrity overhaul
+## 0.2.0 — repository consolidation
 
-- Established `docs/CURRENT_PARADIGM.md` as the current evidence/source-priority model.
-- Added `docs/DOCUMENTATION_INDEX.md` with explicit documentation authority and historical classification.
-- Rewrote canonical README/project-state/master-context/handoff/agent instructions around the official-API + upstream-source-first paradigm.
-- Promoted the real current-phase official `/statistics` structural review into public-safe evidence.
-- Documented four acquisition lanes: official aggregate API, report-specific evidence, pinned Companion source, browser/HAR fallback.
-- Reclassified Browser Observatory and interactive HAR as fallback tools rather than the active Ascension Logs roadmap.
-- Added a read-only local workspace inventory and documented the distinction between tracked-repository audit and local-only audit.
-- Updated migration documentation to the tracked `0001-0012` series, including `source_profile_schema_cycle`.
-- Added a machine repository-integrity audit to normal verification/CI.
-- Recorded lower staged-branch integration conflict debt separately from the active E4→E3 workstream.
-- Preserved fail-closed planner/mechanic/identity semantics; documentation changes do not promote previously blocked evidence.
+- Consolidated the previously stacked evidence/research work into a main-oriented product architecture.
+- Reframed the project explicitly as a local Raid Leader Companion / independent BI system rather than a site-parser roadmap.
+- Made the official CoA Ascension Logs public API the primary integration path.
+- Kept `stats:read` aggregate capture/normalization/persistence and Source Observatory as maintained proven infrastructure.
+- Documented experimental/on-request `events:read` as an optional event-level BI capability rather than an assumed dependency.
+- Retained first-party report/build and Browser/HAR tooling only as evidence/gap fallback lanes.
+- Removed stale chat handoffs, dated workstream plans, one-off diagnostics and the archived Excel workbook from the current tree; Git history preserves them.
+- Simplified CI to canonical `main` plus pull-request verification.
+- Preserved forward-only migrations, privacy boundaries and fail-closed planner semantics.
 
 ## 0.1.0 — evidence-first platform expansion
 
@@ -21,7 +19,7 @@
 - Proved two-report generalization and scope-aware schema repair with public-safe real receipts.
 - Added official CoA Ascension Logs public API contract/capture/review tooling.
 - Added pinned AscensionLogsCompanion source-evidence tooling.
-- Added Browser Observatory/provider-neutral network interaction tooling.
+- Added Browser Observatory/provider-neutral network observation tooling.
 
 ## 0.0.1 — initial implementation slice
 
@@ -29,4 +27,3 @@
 - Added workbook inventory, table exports and observed-state fixture.
 - Added CLI/project skeleton, format/ActiveSlot logic and draft config.
 - Added initial DuckDB schema migration contract.
-- Added tests and implementation notes.

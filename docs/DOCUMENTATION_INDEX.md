@@ -13,167 +13,104 @@ When documents disagree:
 3. docs/PROJECT_STATE.md
 4. docs/PROJECT_MASTER_CONTEXT.md
 5. stable product/domain documents
-6. active technical contract documents
-7. historical milestone / experiment documents
+6. maintained technical contracts
+7. historical Git history
 ```
-
-Always verify live GitHub branch/PR/CI state rather than trusting stored SHAs/run numbers.
 
 ## Read first
 
 ```text
+README.md
 AGENTS.md
-docs/DOCUMENTATION_INDEX.md
 docs/CURRENT_PARADIGM.md
-docs/PROJECT_MASTER_CONTEXT.md
 docs/PROJECT_STATE.md
 docs/OFFICIAL_PUBLIC_API.md
-docs/CONTINUATION_PROMPT.md
-docs/NEXT_CHAT_HANDOFF.md
 ```
 
-## Canonical current operating documents
+## Canonical product/architecture documents
 
-- `AGENTS.md` — evidence/privacy/development rules.
-- `README.md` — repository entry point.
-- `docs/CURRENT_PARADIGM.md` — current source priority and evidence architecture.
-- `docs/PROJECT_MASTER_CONTEXT.md` — durable product/architecture context.
-- `docs/PROJECT_STATE.md` — current proven/blocked/next state.
-- `docs/OFFICIAL_PUBLIC_API.md` — official aggregate contract and real proofs.
-- `docs/SOURCE_OBSERVABILITY_AND_REANALYSIS.md` — source profile/change/dependency architecture.
-- `docs/CONTINUATION_PROMPT.md` — full restart instructions.
-- `docs/NEXT_CHAT_HANDOFF.md` — compact restart card.
+- `README.md` — repository/product entry point.
+- `AGENTS.md` — trust, privacy and development rules.
+- `docs/CURRENT_PARADIGM.md` — current source hierarchy and analytical architecture.
+- `docs/PROJECT_STATE.md` — proven capabilities, open gaps and product boundary.
+- `docs/PROJECT_MASTER_CONTEXT.md` — durable product/domain context.
+- `docs/COA_TARGET_PRODUCT_DEFINITION.md` — target product definition.
+- `docs/COA_DOMAIN_BOUNDARY.md` — CoA-only domain rules.
+- `docs/ADR_011_LOCALHOST_ONLY.md` — localhost boundary.
+- `docs/ADR_012_LOG_EVIDENCE_TRUTH_MODEL.md` — evidence/truth policy.
+
+## Maintained source/data contracts
+
+- `docs/OFFICIAL_PUBLIC_API.md` — official Ascension Logs public API role and contract.
+- `docs/SOURCE_OBSERVABILITY_AND_REANALYSIS.md` — Source Observatory, dependencies and reanalysis.
+- `docs/UPSTREAM_ASCENSION_LOGS_EVIDENCE.md` — pinned Companion evidence boundary.
+- `docs/REAL_LOG_CAPTURE.md` — retained first-party report evidence pipeline.
+- `docs/CURRENT_REPORT_RUNTIME_PARSER_STATUS.md` — current report parser/persistence status.
+- `docs/CURRENT_REPORT_ANALYTICS_READ_MODELS.md` — report analytics read models.
+- `docs/CURRENT_REPORT_ANALYTICS_API.md` — localhost report analytics API.
+- `docs/CURRENT_REPORT_COMPARISON_READ_MODEL.md` — comparison boundary.
 - `docs/LOCAL_WORKSPACE_BOUNDARY.md` / `docs/LOCAL_WORKSPACE_AUDIT.md` — local/private state rules.
-- `docs/CI_OPERATIONS.md` — verification and exact-head CI policy.
+- `docs/CI_OPERATIONS.md` — verification/CI policy.
+- `docs/WINDOWS_DEVELOPMENT_ENVIRONMENT.md` — Windows operator environment.
 
-## Current real evidence ledger
+## Fallback/reference documents
+
+Browser/HAR and older mapping documents are retained only when they still describe reusable fallback tooling or a verified historical contract. They never outrank the official public API.
+
+Examples:
+
+```text
+docs/BROWSER_OBSERVATORY.md
+docs/INTERACTIVE_HAR_DISCOVERY.md
+docs/ARMORY_MAPPING_REVIEW_V1.md
+docs/REPORT_DISCOVERY_MAPPING_REVIEW_V1.md
+docs/GUILD_WIDE_COLLECTION_CONTRACT.md
+```
+
+## Canonical real evidence ledger
+
+Current high-value receipts:
 
 ```text
 evidence/real-data/coa-public-api-catalog-real.json
-  phase/boss catalog
-
 evidence/real-data/coa-public-api-statistics-provenance-capture-real.json
-  provenance-aware bounded /statistics capture
-
 evidence/real-data/coa-public-api-statistics-persistence-real.json
-  exact normalization + DuckDB persistence + idempotence
-
 evidence/real-data/coa-public-api-statistics-profile-reanalysis-real.json
-  Source Observatory + source_endpoint_profile reanalysis proof
-
 evidence/real-data/coa-public-api-population-coverage-real.json
-  bounded generic population coverage 4/4
-
 evidence/real-data/coa-public-api-encounter-context-real.json
-  bounded encounter-scoped context 4/4
-
 evidence/real-data/coa-public-api-encounter-comparator-real.json
-  matched same-location/no-boss comparator 4/4 and scalar-safe differential summary
-
 evidence/real-data/coa-report-encounter-source-correlation-real.json
-  exact first-party report/encounter identity + independent boss/difficulty source correlation
-
 evidence/real-data/coa-report-encounter-population-binding-real.json
-  zero-network binding of machine-correlated encounter identity to persisted encounter context/comparator
-
 evidence/real-data/coa-current-roster-build-provenance-real.json
-  zero-network catalog proof that all persisted report scopes have report-scoped player identity + observed build provenance; selected encounter report remains absent and freshness remains unproven
 ```
 
-Retained implementation anchors:
+Receipts are scoped real-run evidence, not universal game contracts.
+
+## Repository families
 
 ```text
-migrations/0013_public_api_statistics.sql
-scripts/capture_public_api_population_coverage.py
-Source Observatory/Health
-```
-
-`evidence/real-data/*.json` is an evidence ledger, not permanent configuration. Observed counts are not universal contracts.
-
-## Current operating state
-
-```text
-single-slice capture/persistence: proven
-aggregate Source Observatory/Health: proven
-source_endpoint_profile migration: proven
-bounded population coverage v1: proven 4/4
-bounded encounter context v1: proven 4/4
-matched encounter/location comparator v1: proven 4/4
-report encounter boss/difficulty source correlation v2: proven
-machine-correlated encounter population binding v1: proven
-persisted report-scoped player identity: proven 2/2
-persisted observed build provenance: proven 2/2
-selected encounter report -> roster/build same-report binding: unproven
-current/latest build freshness: unproven
-planner scoring: blocked
-```
-
-Current next gate:
-
-```text
-selected encounter report -> roster/build same-report binding
--> current/latest build freshness semantics
-```
-
-Do not cartesian-expand population collection and do not rerun already closed proofs merely because a session restarted.
-
-## Stable product/domain documents
-
-- `docs/COA_TARGET_PRODUCT_DEFINITION.md`
-- `docs/COA_DOMAIN_BOUNDARY.md`
-- `docs/ADR_011_LOCALHOST_ONLY.md`
-- `docs/ADR_012_LOG_EVIDENCE_TRUTH_MODEL.md`
-
-## Active source/acquisition contracts
-
-- `docs/OFFICIAL_PUBLIC_API.md`
-- `docs/UPSTREAM_ASCENSION_LOGS_EVIDENCE.md`
-- `docs/SOURCE_OBSERVABILITY_AND_REANALYSIS.md`
-- `docs/REAL_LOG_CAPTURE.md`
-- `docs/CURRENT_REPORT_RUNTIME_PARSER_STATUS.md`
-- `docs/CURRENT_REPORT_ANALYTICS_READ_MODELS.md`
-- `docs/CURRENT_REPORT_ANALYTICS_API.md`
-- `docs/CURRENT_REPORT_COMPARISON_READ_MODEL.md`
-
-## Fallback/supporting discovery documents
-
-- `docs/BROWSER_OBSERVATORY.md`
-- `docs/INTERACTIVE_HAR_DISCOVERY.md`
-- `docs/ARMORY_MAPPING_REVIEW_V1.md`
-- `docs/REPORT_DISCOVERY_MAPPING_REVIEW_V1.md`
-- `docs/GUILD_WIDE_COLLECTION_CONTRACT.md`
-
-Browser/HAR documents describe fallback tooling, not current source priority.
-
-## Historical experiments
-
-Difficulty-binding experiments and dated milestone documents remain historical evidence. They do not authorize a new heuristic merely to force equivalence.
-
-## Repository implementation families
-
-```text
+src/coa_workbench/web/          product runtime/API/UI
+src/coa_workbench/planner/      composition/planner primitives
 src/coa_workbench/analytics/    deterministic analytics/review logic
 src/coa_workbench/collector/    source contracts/acquisition/observability
 src/coa_workbench/normalizer/   normalization
-src/coa_workbench/planner/      trust-gated planner/application layer
 src/coa_workbench/storage/      DuckDB persistence/read models
-src/coa_workbench/web/          localhost application API/UI
-scripts/                        durable operator/review commands
-config/                         reviewed source/mapping configuration
-migrations/                     forward-only migrations
+scripts/                        maintained operators/reviews/verification
+config/                         reviewed contracts/mappings
+migrations/                     forward-only storage migrations
 tests/                          deterministic coverage
-evidence/real-data/             public-safe real receipts only
+evidence/real-data/             public-safe receipts
+baseline/                       frozen workbook migration/reference exports
 ```
 
 ## Documentation maintenance rule
 
-A meaningful architecture/source-priority/proven-state shift must update at least:
+Architecture/source-priority/proven-state changes must update at least:
 
 ```text
+README.md
 docs/CURRENT_PARADIGM.md
 docs/PROJECT_STATE.md
-docs/CONTINUATION_PROMPT.md
-README.md
 ```
 
-If source/access/privacy behavior changes, also update `AGENTS.md` and the relevant technical contract.
+Update `AGENTS.md` when development/privacy/source rules change, and update the relevant technical contract when source semantics change.
