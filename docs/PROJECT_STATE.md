@@ -46,7 +46,7 @@ official documented public API
 -> structural inference last
 ```
 
-## Official API — real-proven aggregate vertical slice and bounded coverage
+## Official API — real-proven aggregate vertical slice, bounded coverage and one encounter context
 
 Reviewed contract:
 
@@ -96,13 +96,42 @@ bulk dataset mode: false
 events:read used: false
 ```
 
-Real Source Observatory / profile-reanalysis state after coverage:
+Real encounter-scoped population context v1:
+
+```text
+required slices: 4
+covered before run: 0
+missing before run: 4
+network requests: 4
+successful captures: 4
+inserted batches: 4
+persisted profiles: 4
+deterministic second replays: 4
+covered after run: 4
+missing after run: 0
+context complete: true
+aggregate class summaries: 59
+aggregate spec records: 148
+aggregate percentile scalar values: 1924
+metric families represented: 3
+source_endpoint_profile dependency count after run: 8
+legacy broad aggregate dependency count: 0
+created reanalysis requests: 0
+pending reanalysis requests: 0
+actionable open source changes: 0
+source health attention required: false
+planner scoring allowed: false
+```
+
+The encounter workflow validates the Ascension Logs reference URL shape and resolves exactly one official `/bosses` record by operator-supplied exact boss name + location. The selected boss/location/difficulty came from an operator-reviewed concrete encounter. The current v1 receipt does **not** independently prove from a report API response that that report encounter has those exact boss/difficulty values. Treat this as an operator-reviewed binding, not source-correlated encounter identity.
+
+Real Source Observatory / profile-reanalysis state after encounter capture:
 
 ```text
 source observatory integrated: true
-source_endpoint_profile dependency count: 4
+source_endpoint_profile dependency count: 8
 legacy unscoped source_endpoint dependency count: 0
-eligible source events examined: 3
+eligible source events examined: 7
 created reanalysis requests: 0
 pending reanalysis requests: 0
 actionable open source changes: 0
@@ -111,7 +140,7 @@ planner scoring allowed: false
 site Tier List algorithm verified: false
 ```
 
-The observed profile/source events from the new acquisitions are provenance, not actionable source-health failures.
+Observed profile/source events from new acquisitions are provenance, not actionable source-health failures.
 
 Canonical real receipts:
 
@@ -123,9 +152,10 @@ evidence/real-data/coa-public-api-statistics-provenance-capture-real.json
 evidence/real-data/coa-public-api-statistics-persistence-real.json
 evidence/real-data/coa-public-api-statistics-profile-reanalysis-real.json
 evidence/real-data/coa-public-api-population-coverage-real.json
+evidence/real-data/coa-public-api-encounter-context-real.json
 ```
 
-All receipts remain scalar-safe: no query values, class/spec names, private dimensions, raw IDs/paths/fingerprints, metric scalar values or API credentials.
+All receipts remain scalar-safe: no query values, report/encounter IDs, boss/location/difficulty values, class/spec names, raw IDs/paths/fingerprints, metric scalar values or API credentials.
 
 ## Aggregate implementation
 
@@ -139,9 +169,11 @@ src/coa_workbench/collector/source_profile_reanalysis.py
 src/coa_workbench/storage/public_api_statistics.py
 src/coa_workbench/analytics/public_api_population_priors.py
 src/coa_workbench/analytics/public_api_population_coverage.py
+src/coa_workbench/analytics/public_api_encounter_context.py
 migrations/0013_public_api_statistics.sql
 scripts/persist_public_api_statistics.py
 scripts/capture_public_api_population_coverage.py
+scripts/capture_public_api_encounter_context.py
 ```
 
 Capabilities:
@@ -159,6 +191,8 @@ population-prior read model
 Source Observatory replay from existing RawArchive
 scalar-safe aggregate Source & Analysis Health receipt
 bounded missing-only population coverage workflow
+bounded missing-only encounter population context workflow
+exact boss catalog binding by reviewed name + location
 ```
 
 `request_contract_changed` remains endpoint-global, while schema/profile-local changes target only matching private query profiles. Source events older than a dependency registration cannot back-trigger the new artifact.
@@ -173,22 +207,28 @@ DuckDB persistence + deterministic replay
 Source Observatory integration
 profile-scoped dependency migration
 bounded population coverage v1
+one bounded encounter-scoped population context v1
 ```
 
-The next aggregate step must be **product-driven**, not cartesian completeness. Do not crawl all boss/location/week/realm/class/spec combinations.
+Do not cartesian-crawl all boss/location/week/realm/class/spec combinations.
 
-Preferred next design gate:
+The next useful aggregate step is a **matched descriptive comparator**, not another generic population expansion:
 
 ```text
-choose one concrete encounter/cohort need from the raid-planning workflow
--> bind it to reviewed official dimensions locally
--> capture only the minimal missing encounter-scoped aggregate slices
--> preserve the same RawArchive/provenance/profile-reanalysis/health chain
--> expose the result only as descriptive encounter population context
--> keep planner scoring blocked until player/encounter/composition semantics are separately proven
+same current phase
++ same reviewed concrete difficulty
++ same reviewed location
++ same four metric/role slices
++ no bossId
+-> location-level comparator cohort
+-> compare encounter slice to location slice only on matching dimensions
+-> derive descriptive representation/metric deltas with sample-size provenance
+-> no planner score, no Tier List claim
 ```
 
-This should start with one explicitly selected encounter rather than all 285 bosses.
+This comparator controls the most obvious scope mismatch while staying bounded to the already selected raid-planning need. If the comparator cannot be formed exactly, fail closed instead of substituting the generic `difficulty=all` coverage.
+
+A separate future gate should source-correlate the report encounter to boss/difficulty through reviewed first-party report evidence or another documented source before claiming machine-verified encounter identity.
 
 ## Official API credential boundary
 
@@ -291,6 +331,10 @@ aggregate Source Observatory/Health integration: proven real
 profile-scoped aggregate invalidation: proven real
 legacy broad aggregate dependency: inactive
 bounded multi-profile population coverage v1: proven real, 4/4 complete
+bounded encounter population context v1: proven real, 4/4 complete
+encounter URL shape: validated
+boss catalog exact name+location binding: proven for operator-selected values
+report encounter -> selected boss/difficulty machine correlation: not yet proven
 report pipeline generalization: proven on two reports
 report analytics persistence: proven + idempotent
 historical difficulty equivalence: insufficient evidence
