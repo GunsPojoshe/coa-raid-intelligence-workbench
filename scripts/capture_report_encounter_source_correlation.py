@@ -9,6 +9,7 @@ from urllib.parse import urljoin
 from coa_workbench.analytics.public_api_encounter_context import parse_encounter_reference_url
 from coa_workbench.analytics.report_encounter_source_correlation import (
     correlate_report_encounter_catalog_payload,
+    load_archived_report_encounter_catalog,
     load_persisted_report_encounter_catalog,
 )
 from coa_workbench.collector import RawArchive, load_source_registry
@@ -25,8 +26,8 @@ def _arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Correlate one operator-selected report encounter to first-party boss/difficulty "
-            "evidence. Prefer already persisted current-report encounter-catalog evidence; "
-            "otherwise fetch only the small reviewed encounter catalog."
+            "evidence. Prefer persisted current-report observations, then exact RawArchive "
+            "catalog evidence, and only then fetch the small reviewed encounter catalog."
         )
     )
     parser.add_argument("--reference-url", required=True)
@@ -86,6 +87,7 @@ def _source_summary(
     *,
     source_kind: str,
     persisted_observation_count: int,
+    archived_observation_count: int,
     network_request_count: int,
     raw_capture_written_this_run: bool,
 ) -> dict[str, object]:
@@ -96,6 +98,9 @@ def _source_summary(
         "persisted_observation_preferred": True,
         "persisted_observation_used": source_kind == "persisted_first_party_encounter_catalog",
         "persisted_observation_count": persisted_observation_count,
+        "archived_observation_preferred_before_network": True,
+        "archived_observation_used": source_kind == "archived_first_party_encounter_catalog",
+        "archived_observation_count": archived_observation_count,
         "network_request_count": network_request_count,
         "raw_capture_written_this_run": raw_capture_written_this_run,
         "encounter_detail_used": False,
@@ -109,6 +114,7 @@ def _failure_review(
     failure_kind: str,
     source_kind: str,
     persisted_observation_count: int,
+    archived_observation_count: int,
     network_request_count: int,
     raw_capture_written_this_run: bool,
     http_status: int | None = None,
@@ -119,6 +125,7 @@ def _failure_review(
         "source": _source_summary(
             source_kind=source_kind,
             persisted_observation_count=persisted_observation_count,
+            archived_observation_count=archived_observation_count,
             network_request_count=network_request_count,
             raw_capture_written_this_run=raw_capture_written_this_run,
         ),
@@ -156,7 +163,9 @@ def main() -> int:
         raise SystemExit("--timeout-seconds must be greater than zero")
 
     reference = parse_encounter_reference_url(args.reference_url)
+    registry = load_source_registry(args.registry)
     persisted_count = 0
+    archived_count = 0
     network_request_count = 0
     raw_capture_written = False
 
@@ -170,6 +179,7 @@ def main() -> int:
             failure_kind="persisted_evidence_rejected",
             source_kind="persisted_first_party_encounter_catalog",
             persisted_observation_count=0,
+            archived_observation_count=0,
             network_request_count=0,
             raw_capture_written_this_run=False,
         )
@@ -182,80 +192,108 @@ def main() -> int:
         persisted_count = persisted.matching_observation_count
         source_kind = "persisted_first_party_encounter_catalog"
     else:
-        source_kind = "live_first_party_encounter_catalog"
-        registry = load_source_registry(args.registry)
-        session = SameOriginHttpSession(registry.base_url)
-        route = f"/api/reports/{reference.report_id}/encounters?includeTrash=false"
-        url = urljoin(f"{registry.base_url.rstrip('/')}/", route.lstrip("/"))
-        request = session.build_request(url)
-        network_request_count = 1
-        status, content_type, body, transport_error = read_response_resilient(
-            request,
-            timeout_seconds=args.timeout_seconds,
-            opener=session.open,
-            max_bytes=_MAX_JSON_BYTES,
-            retry_count=args.retry_count,
-        )
-
-        if status is not None and not 200 <= status < 300:
-            review = _failure_review(
-                failure_kind="http_error",
-                source_kind=source_kind,
-                persisted_observation_count=0,
-                network_request_count=network_request_count,
-                raw_capture_written_this_run=False,
-                http_status=status,
-            )
-            _write_json(args.output, review)
-            print(json.dumps(review, indent=2, sort_keys=True))
-            return 5
-        if body is None or transport_error is not None:
-            review = _failure_review(
-                failure_kind=_transport_failure_kind(transport_error),
-                source_kind=source_kind,
-                persisted_observation_count=0,
-                network_request_count=network_request_count,
-                raw_capture_written_this_run=False,
-            )
-            _write_json(args.output, review)
-            print(json.dumps(review, indent=2, sort_keys=True))
-            return 5
-
-        archive = RawArchive(
-            args.raw_root,
-            database_path=args.database,
-            migrations_dir=args.migrations,
-        )
-        archive.capture_bytes(
-            body,
-            source_code=registry.source_code,
-            endpoint_code=_ENDPOINT_CODE,
-            request_key=request_key_from_url("GET", url),
-            fetched_at=datetime.now(timezone.utc),
-            http_status=status,
-            content_type=content_type,
-            request_url=url,
-            metadata={
-                "capture_mode": "report_encounter_source_correlation",
-                "route_template": _ROUTE_TEMPLATE,
-                **session.safe_request_metadata(request),
-            },
-        )
-        raw_capture_written = True
-
         try:
-            payload = json.loads(body)
-        except (UnicodeDecodeError, json.JSONDecodeError):
+            archived = load_archived_report_encounter_catalog(
+                args.raw_root,
+                args.database,
+                reference=reference,
+                source_code=registry.source_code,
+                base_url=registry.base_url,
+            )
+        except (RuntimeError, ValueError) as exc:
             review = _failure_review(
-                failure_kind="invalid_json",
-                source_kind=source_kind,
+                failure_kind="archived_evidence_rejected",
+                source_kind="archived_first_party_encounter_catalog",
                 persisted_observation_count=0,
-                network_request_count=network_request_count,
-                raw_capture_written_this_run=raw_capture_written,
+                archived_observation_count=0,
+                network_request_count=0,
+                raw_capture_written_this_run=False,
             )
             _write_json(args.output, review)
             print(json.dumps(review, indent=2, sort_keys=True))
-            return 5
+            raise SystemExit(f"archived report evidence rejected: {exc}") from exc
+
+        if archived is not None:
+            payload = archived.payload
+            archived_count = archived.matching_observation_count
+            source_kind = "archived_first_party_encounter_catalog"
+        else:
+            source_kind = "live_first_party_encounter_catalog"
+            session = SameOriginHttpSession(registry.base_url)
+            route = f"/api/reports/{reference.report_id}/encounters?includeTrash=false"
+            url = urljoin(f"{registry.base_url.rstrip('/')}/", route.lstrip("/"))
+            request = session.build_request(url)
+            network_request_count = 1
+            status, content_type, body, transport_error = read_response_resilient(
+                request,
+                timeout_seconds=args.timeout_seconds,
+                opener=session.open,
+                max_bytes=_MAX_JSON_BYTES,
+                retry_count=args.retry_count,
+            )
+
+            if status is not None and not 200 <= status < 300:
+                review = _failure_review(
+                    failure_kind="http_error",
+                    source_kind=source_kind,
+                    persisted_observation_count=0,
+                    archived_observation_count=0,
+                    network_request_count=network_request_count,
+                    raw_capture_written_this_run=False,
+                    http_status=status,
+                )
+                _write_json(args.output, review)
+                print(json.dumps(review, indent=2, sort_keys=True))
+                return 5
+            if body is None or transport_error is not None:
+                review = _failure_review(
+                    failure_kind=_transport_failure_kind(transport_error),
+                    source_kind=source_kind,
+                    persisted_observation_count=0,
+                    archived_observation_count=0,
+                    network_request_count=network_request_count,
+                    raw_capture_written_this_run=False,
+                )
+                _write_json(args.output, review)
+                print(json.dumps(review, indent=2, sort_keys=True))
+                return 5
+
+            archive = RawArchive(
+                args.raw_root,
+                database_path=args.database,
+                migrations_dir=args.migrations,
+            )
+            archive.capture_bytes(
+                body,
+                source_code=registry.source_code,
+                endpoint_code=_ENDPOINT_CODE,
+                request_key=request_key_from_url("GET", url),
+                fetched_at=datetime.now(timezone.utc),
+                http_status=status,
+                content_type=content_type,
+                request_url=url,
+                metadata={
+                    "capture_mode": "report_encounter_source_correlation",
+                    "route_template": _ROUTE_TEMPLATE,
+                    **session.safe_request_metadata(request),
+                },
+            )
+            raw_capture_written = True
+
+            try:
+                payload = json.loads(body)
+            except (UnicodeDecodeError, json.JSONDecodeError):
+                review = _failure_review(
+                    failure_kind="invalid_json",
+                    source_kind=source_kind,
+                    persisted_observation_count=0,
+                    archived_observation_count=0,
+                    network_request_count=network_request_count,
+                    raw_capture_written_this_run=raw_capture_written,
+                )
+                _write_json(args.output, review)
+                print(json.dumps(review, indent=2, sort_keys=True))
+                return 5
 
     try:
         correlation = correlate_report_encounter_catalog_payload(
@@ -270,6 +308,7 @@ def main() -> int:
             failure_kind="source_contract_rejected",
             source_kind=source_kind,
             persisted_observation_count=persisted_count,
+            archived_observation_count=archived_count,
             network_request_count=network_request_count,
             raw_capture_written_this_run=raw_capture_written,
         )
@@ -284,6 +323,7 @@ def main() -> int:
         "source": _source_summary(
             source_kind=source_kind,
             persisted_observation_count=persisted_count,
+            archived_observation_count=archived_count,
             network_request_count=network_request_count,
             raw_capture_written_this_run=raw_capture_written,
         ),

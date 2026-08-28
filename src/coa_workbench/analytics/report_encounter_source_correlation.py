@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import gzip
 import json
 from dataclasses import dataclass
 from pathlib import Path
@@ -10,11 +11,13 @@ from coa_workbench.collector.compatible_normalization import (
     COMPATIBLE_NORMALIZATION_VERSION,
     normalize_verified_compatible_payload,
 )
+from coa_workbench.collector.raw_archive import request_key_from_url
 
 REPORT_ENCOUNTER_SOURCE_CORRELATION_VERSION = "report-encounter-source-correlation-v2"
 REPORT_ENCOUNTER_CATALOG_PARSER_VERSION = "report-encounter-catalog-parser-v1"
 _EXPECTED_MAPPING_ID = "coa-encounter-detail-v1"
 _EXPECTED_ROUTE_TEMPLATE = "/api/reports/{template}/encounters/{template}"
+_ENCOUNTER_CATALOG_ENDPOINT_CODE = "report_encounters_api"
 
 
 @dataclass(frozen=True, slots=True)
@@ -92,6 +95,42 @@ def _required_nonempty_string(value: Any, field: str) -> str:
     return value
 
 
+def _selected_catalog_payload(
+    payload: Any,
+    *,
+    reference: EncounterReference,
+    source_label: str,
+) -> dict[str, Any]:
+    if not isinstance(payload, dict):
+        raise ValueError(f"{source_label} encounter catalog response must be an object")
+    if payload.get("success") is not True:
+        raise ValueError(f"{source_label} encounter catalog response was not successful")
+    report = payload.get("report")
+    if not isinstance(report, dict):
+        raise ValueError(f"{source_label} encounter catalog must contain a report object")
+    source_report_id = _positive_integer(report.get("id"), f"{source_label} report.id")
+    encounters = payload.get("encounters")
+    if not isinstance(encounters, list):
+        raise ValueError(f"{source_label} encounter catalog must contain an encounters array")
+    matches: list[dict[str, Any]] = []
+    for index, raw_row in enumerate(encounters):
+        if not isinstance(raw_row, dict):
+            raise ValueError(f"{source_label} encounters[{index}] must be an object")
+        row_id = _positive_integer(raw_row.get("id"), f"{source_label} encounters[{index}].id")
+        if row_id == reference.encounter_id:
+            matches.append(raw_row)
+    if len(matches) != 1:
+        raise ValueError(
+            f"{source_label} encounter catalog requires exactly one selected encounter row; "
+            f"found {len(matches)}"
+        )
+    return {
+        "success": True,
+        "report": {"id": source_report_id},
+        "encounters": [matches[0]],
+    }
+
+
 def correlate_report_encounter_catalog_payload(
     payload: Any,
     *,
@@ -100,43 +139,15 @@ def correlate_report_encounter_catalog_payload(
     expected_difficulty: str,
     source_kind: str = "live_first_party_encounter_catalog",
 ) -> ReportEncounterSourceCorrelation:
-    """Correlate one report encounter through the reviewed current encounter catalog.
-
-    The catalog is the small first-party response already observed by the current report UI. Only
-    the selected row is promoted: report id, encounter id, name, difficulty and boss flag. Values
-    remain private and the public result exposes booleans/counts only.
-    """
+    """Correlate one report encounter through the reviewed current encounter catalog."""
     expected_name = _required_nonempty_string(expected_boss_name, "expected boss name")
     expected_mode = _required_nonempty_string(expected_difficulty, "expected difficulty")
-    if not isinstance(payload, dict):
-        raise ValueError("encounter catalog response must be an object")
-    if payload.get("success") is not True:
-        raise ValueError("encounter catalog response was not successful")
-
-    report = payload.get("report")
-    if not isinstance(report, dict):
-        raise ValueError("encounter catalog response must contain a report object")
-    source_report_id = _positive_integer(report.get("id"), "encounter catalog report.id")
-
-    encounters = payload.get("encounters")
-    if not isinstance(encounters, list):
-        raise ValueError("encounter catalog response must contain an encounters array")
-
-    matches: list[dict[str, Any]] = []
-    for index, raw_row in enumerate(encounters):
-        if not isinstance(raw_row, dict):
-            raise ValueError(f"encounters[{index}] must be an object")
-        row_id = _positive_integer(raw_row.get("id"), f"encounters[{index}].id")
-        if row_id == reference.encounter_id:
-            matches.append(raw_row)
-
-    if len(matches) != 1:
-        raise ValueError(
-            "encounter catalog requires exactly one selected encounter row; "
-            f"found {len(matches)}"
-        )
-
-    row = matches[0]
+    selected = _selected_catalog_payload(payload, reference=reference, source_label="selected")
+    report = selected["report"]
+    row = selected["encounters"][0]
+    assert isinstance(report, dict)
+    assert isinstance(row, dict)
+    source_report_id = _positive_integer(report.get("id"), "selected report.id")
     row_name = _required_nonempty_string(row.get("name"), "selected encounter name")
     row_difficulty = _required_nonempty_string(
         row.get("difficulty"),
@@ -171,11 +182,7 @@ def load_persisted_report_encounter_catalog(
     *,
     reference: EncounterReference,
 ) -> PersistedEncounterCatalogEvidence | None:
-    """Resolve exact current-report catalog evidence already persisted in local DuckDB.
-
-    The function reads only current encounter observations. If multiple observations exist, their
-    selected catalog rows must be byte-for-byte equivalent as JSON or the lookup fails closed.
-    """
+    """Resolve exact current-report catalog evidence already persisted in local DuckDB."""
     if not database_path.is_file():
         return None
 
@@ -240,6 +247,90 @@ def load_persisted_report_encounter_catalog(
     )
 
 
+def load_archived_report_encounter_catalog(
+    raw_root: Path,
+    database_path: Path,
+    *,
+    reference: EncounterReference,
+    source_code: str,
+    base_url: str,
+) -> PersistedEncounterCatalogEvidence | None:
+    """Reuse exact first-party catalog responses already captured in RawArchive."""
+    if not database_path.is_file():
+        return None
+    try:
+        import duckdb
+    except ImportError as exc:  # pragma: no cover
+        raise RuntimeError("DuckDB is required to inspect archived report evidence") from exc
+
+    request_url = (
+        f"{base_url.rstrip('/')}/api/reports/{reference.report_id}/encounters?includeTrash=false"
+    )
+    expected_request_key = request_key_from_url("GET", request_url)
+    with duckdb.connect(str(database_path), read_only=True) as connection:
+        tables = {str(row[0]) for row in connection.execute("SHOW TABLES").fetchall()}
+        if "raw_object" not in tables:
+            return None
+        rows = connection.execute(
+            """
+            SELECT storage_path, metadata_json
+            FROM raw_object
+            WHERE request_key = ?
+            ORDER BY fetched_at DESC, raw_id DESC
+            """,
+            [expected_request_key],
+        ).fetchall()
+
+    root = raw_root.resolve()
+    selected_payloads: list[dict[str, Any]] = []
+    for storage_path, raw_metadata in rows:
+        try:
+            metadata = json.loads(str(raw_metadata))
+        except json.JSONDecodeError as exc:
+            raise ValueError("archived report catalog metadata is not valid JSON") from exc
+        if not isinstance(metadata, dict):
+            raise ValueError("archived report catalog metadata must be an object")
+        if metadata.get("source_code") != source_code:
+            continue
+        if metadata.get("endpoint_code") != _ENCOUNTER_CATALOG_ENDPOINT_CODE:
+            continue
+        candidate = (raw_root / str(storage_path)).resolve()
+        try:
+            candidate.relative_to(root)
+        except ValueError as exc:
+            raise ValueError("archived report catalog path escapes raw root") from exc
+        if not candidate.is_file():
+            raise ValueError("archived report catalog payload file is missing")
+        try:
+            with gzip.open(candidate, "rb") as stream:
+                payload = json.loads(stream.read())
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise ValueError("archived report catalog payload is unreadable JSON") from exc
+        selected = _selected_catalog_payload(
+            payload,
+            reference=reference,
+            source_label="archived",
+        )
+        report = selected["report"]
+        assert isinstance(report, dict)
+        if report.get("id") != reference.report_id:
+            raise ValueError("archived encounter catalog report identity does not match request")
+        selected_payloads.append(selected)
+
+    if not selected_payloads:
+        return None
+    signatures = {
+        json.dumps(row, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        for row in selected_payloads
+    }
+    if len(signatures) != 1:
+        raise ValueError("archived report encounter catalog observations disagree")
+    return PersistedEncounterCatalogEvidence(
+        payload=selected_payloads[0],
+        matching_observation_count=len(selected_payloads),
+    )
+
+
 def correlate_report_encounter_payload(
     payload: Any,
     mapping_payload: Mapping[str, Any],
@@ -248,11 +339,7 @@ def correlate_report_encounter_payload(
     expected_boss_name: str,
     expected_difficulty: str,
 ) -> ReportEncounterSourceCorrelation:
-    """Retained v1 encounter-detail correlation for deterministic compatibility tests.
-
-    The operator path no longer uses this heavier endpoint; current execution prefers persisted
-    encounter-catalog evidence and otherwise fetches the small reviewed encounter catalog.
-    """
+    """Retained v1 encounter-detail correlation for deterministic compatibility tests."""
     if mapping_payload.get("mapping_id") != _EXPECTED_MAPPING_ID:
         raise ValueError(f"expected verified mapping {_EXPECTED_MAPPING_ID}")
     if mapping_payload.get("route_template") != _EXPECTED_ROUTE_TEMPLATE:
@@ -314,5 +401,6 @@ __all__ = [
     "ReportEncounterSourceCorrelation",
     "correlate_report_encounter_catalog_payload",
     "correlate_report_encounter_payload",
+    "load_archived_report_encounter_catalog",
     "load_persisted_report_encounter_catalog",
 ]
