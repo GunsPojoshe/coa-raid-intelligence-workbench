@@ -153,6 +153,15 @@ bounded encounter context v1
 matched encounter/location comparator v1
 ```
 
+Retained implementation anchors:
+
+```text
+Request-scope provenance rule
+migrations/0013_public_api_statistics.sql
+src/coa_workbench/collector/public_api_source_health.py
+scripts/capture_public_api_population_coverage.py
+```
+
 Scalar-safe receipts:
 
 ```text
@@ -299,6 +308,13 @@ report encounter -> selected difficulty from an independent report source
 ## Current next gate
 
 Independently source-correlate the selected report encounter to boss and difficulty.
+
+Implementation present, real proof pending:
+
+```text
+src/coa_workbench/analytics/report_encounter_source_correlation.py
+scripts/capture_report_encounter_source_correlation.py
+```
 
 Use source priority:
 
