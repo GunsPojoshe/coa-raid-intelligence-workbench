@@ -426,6 +426,72 @@ uv run --no-sync python scripts/capture_public_api_population_coverage.py
 
 A replay should intentionally reuse provenance-complete matching slices rather than recapture them.
 
+## Encounter-scoped population context v1 — real proven
+
+Implementation:
+
+```text
+src/coa_workbench/analytics/public_api_encounter_context.py
+scripts/capture_public_api_encounter_context.py
+```
+
+The workflow is bounded to one operator-selected encounter scope and uses the same four metric/role slices as the generic population coverage, now with concrete reviewed boss/location/difficulty dimensions.
+
+Real run result:
+
+```text
+covered before: 0/4
+missing before: 4
+network requests: 4
+successful captures: 4
+inserted batches: 4
+persisted profiles: 4
+deterministic second replays: 4
+covered after: 4/4
+missing after: 0
+context complete: true
+aggregate class summaries: 59
+aggregate spec records: 148
+aggregate percentile values: 1924
+source_endpoint_profile dependencies after run: 8
+legacy broad aggregate dependency: 0
+created reanalysis requests: 0
+pending reanalysis: 0
+actionable source changes: 0
+health attention required: false
+planner scoring allowed: false
+```
+
+Scalar-safe receipt:
+
+```text
+evidence/real-data/coa-public-api-encounter-context-real.json
+```
+
+The public receipt excludes report/encounter ids, boss name/id, location, difficulty, query values, class/spec names, metric scalars, raw ids/paths and fingerprints.
+
+### Binding semantics
+
+The encounter URL parser proves only that the operator supplied one valid Ascension Logs report/encounter reference shape. The boss catalog resolver separately proves that the operator-supplied exact boss name + location maps to exactly one official `/bosses` record.
+
+Current v1 therefore establishes:
+
+```text
+reference URL shape validated
++ operator-reviewed boss/location/difficulty scope
++ unique official boss catalog binding
++ exact statistics captures for that scope
+```
+
+It does **not** yet establish:
+
+```text
+report encounter -> selected boss identity from an independent report API response
+report encounter -> selected difficulty from an independent report API response
+```
+
+Do not collapse this distinction. The current encounter binding is operator-reviewed and catalog-bound, not independently source-correlated.
+
 ## Event-level semantics documented by the API
 
 The experimental schema documents, among other things:
@@ -471,17 +537,22 @@ Historical two-report difficulty equivalence remains `insufficient_evidence` and
 
 ## Current next gate
 
-The generic aggregate acquisition/provenance/health chain is now real-proven across multiple profiles. The next API step is not broad enumeration.
+Generic aggregate collection and one concrete encounter context are now real-proven. Do not expand to all bosses.
 
-Use a product-driven encounter cohort:
+The next bounded aggregate step is a dimension-matched comparator for the same raid-planning need:
 
 ```text
-choose one concrete planned encounter
--> select its reviewed official boss/difficulty/location dimensions locally
--> request only the minimal missing aggregate slices needed for that encounter
--> preserve RawArchive + exact normalization + profile dependency + health behavior
--> expose a descriptive encounter population context
--> do not convert that context into planner scoring yet
+same phase
++ same concrete reviewed difficulty
++ same reviewed location
++ same metric/role slices
++ bossId omitted
+-> capture/reuse only missing location-level slices
+-> compare boss-scoped vs location-scoped records on exactly matched dimensions
+-> expose descriptive representation and metric deltas with sample-size provenance
+-> no planner score
 ```
 
-Do not crawl all bosses, weeks, realms, classes or specs merely for completeness. Do not request `events:read`, capture a HAR or run Playwright unless a separate documented-data gap specifically requires them.
+Do not substitute the existing generic `difficulty=all` coverage as the comparator because that would confound scope. Do not request `events:read`, capture a HAR or run Playwright unless a separate documented-data gap specifically requires them.
+
+A separate future source-correlation gate should independently bind the selected report encounter to boss/difficulty through reviewed first-party report evidence or another documented source.
