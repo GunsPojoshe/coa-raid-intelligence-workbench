@@ -136,20 +136,42 @@ The current binding is operator-reviewed + official-catalog-bound, not independe
 
 ## Current next gate
 
-Independently correlate the already selected report encounter to boss and difficulty using the strongest available report source.
+Independently correlate the already selected report encounter to boss and difficulty using the reviewed current-report encounter catalog.
 
-Priority:
+Implementation:
 
 ```text
-official documented report API if available with existing access
--> official site semantics / first-party persisted report response
--> pinned executable Companion source if it establishes the relevant structure
--> Browser/HAR only for the exact remaining undocumented gap
+src/coa_workbench/analytics/report_encounter_source_correlation.py
+scripts/capture_report_encounter_source_correlation.py
 ```
 
-Do not request a new API scope merely to repeat facts already available in persisted first-party report evidence. Do not resume historical difficulty-v4 heuristics.
+Execution priority:
 
-The source-correlation gate must fail closed if boss/difficulty cannot be independently established.
+```text
+persisted current_encounter_observation catalog evidence
+-> small reviewed /api/reports/{reportId}/encounters?includeTrash=false response
+-> fail closed
+```
+
+The first real operator attempt against the heavier `/api/reports/{reportId}/encounters/{encounterId}` payload reached HTTP response reading but timed out after two 30-second attempts. That is a transport result only, not boss/difficulty evidence. The heavy route is no longer the operator path and remains only as deterministic compatibility coverage.
+
+The compact encounter catalog was already privately observed in the current-report runtime with `id`, `name`, `boss_id`, `difficulty`, `is_boss_encounter`, `zone` and related fields. Public structural evidence remains scalar-free.
+
+Trust rules:
+
+```text
+exact report identity required
+exactly one selected encounter row required
+boss name and boss flag checked independently
+difficulty checked independently
+conflicting persisted observations fail closed
+network does not override persisted conflicts
+no events:read
+no Browser/HAR
+no historical difficulty-v4 heuristic
+```
+
+Do not request a new API scope merely to repeat facts already available in persisted first-party report evidence. The source-correlation gate remains unproven until a successful real scalar-safe receipt is versioned.
 
 ## Other retained lanes
 

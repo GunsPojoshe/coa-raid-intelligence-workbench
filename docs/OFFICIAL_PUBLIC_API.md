@@ -309,23 +309,50 @@ report encounter -> selected difficulty from an independent report source
 
 Independently source-correlate the selected report encounter to boss and difficulty.
 
-Implementation present, real proof pending:
+Implementation:
 
 ```text
 src/coa_workbench/analytics/report_encounter_source_correlation.py
 scripts/capture_report_encounter_source_correlation.py
 ```
 
-Use source priority:
+The current report-side source is not the experimental external `events:read` API. It uses already reviewed first-party site evidence in this order:
 
 ```text
-official documented report API if already accessible
--> official site semantics / persisted first-party report response
--> pinned executable Companion source
--> Browser/HAR only for an exact unresolved undocumented gap
+persisted current_encounter_observation catalog evidence
+-> GET /api/reports/{reportId}/encounters?includeTrash=false
+-> fail closed
 ```
 
-Do not request a new API key/scope merely to reconfirm facts already present in persisted first-party report evidence. Do not revive historical difficulty-v4 inference. Fail closed if difficulty or boss identity cannot be independently established.
+The initial operator implementation used the heavier `/api/reports/{reportId}/encounters/{encounterId}` site payload. Its first real run timed out during body reading after two 30-second attempts. No boss/difficulty conclusion may be drawn from that transport result, and the heavy route is no longer the operator path.
+
+The scalar-free current-report structural receipt already records the encounter catalog field family, including:
+
+```text
+id
+name
+boss_id
+difficulty
+is_boss_encounter
+zone
+```
+
+Current correlation requirements:
+
+```text
+exact report identity
+exactly one selected encounter row
+boss name match + is_boss_encounter = true
+difficulty exact match
+persisted conflicts fail closed
+network never overrides persisted conflicts
+no events:read
+no Browser/HAR
+no historical difficulty-v4 heuristic
+planner scoring blocked
+```
+
+Do not request a new API key/scope merely to reconfirm facts already present in persisted first-party report evidence. The correlation remains unproven until a successful real scalar-safe receipt is versioned.
 
 ## Event-level semantics documented by the API
 

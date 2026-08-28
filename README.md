@@ -114,12 +114,22 @@ report encounter -> difficulty
 
 Current gate: source-correlate those report-side facts independently, fail closed, and keep planner scoring blocked.
 
-Implementation present, real proof pending:
+Implementation:
 
 ```text
 src/coa_workbench/analytics/report_encounter_source_correlation.py
 scripts/capture_report_encounter_source_correlation.py
 ```
+
+Current execution path:
+
+```text
+persisted current_encounter_observation catalog evidence
+-> reviewed /api/reports/{reportId}/encounters?includeTrash=false fallback
+-> fail closed
+```
+
+The previous heavy encounter-detail operator request was retired after a real read timeout. That timeout is transport evidence only. The compact encounter catalog is already part of the reviewed E3 current-report runtime and contains the required report-side field family.
 
 ## Privacy
 

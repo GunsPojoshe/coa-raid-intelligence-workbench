@@ -124,28 +124,68 @@ Do not claim machine-verified encounter identity yet.
 
 ## Current exact gate — independent report correlation
 
-Correlate the selected report encounter to boss and difficulty from an independent report-side source.
-
-Source order:
+Implementation:
 
 ```text
-official documented report API if already accessible
--> official site semantics / persisted first-party report response
--> pinned executable Companion source
--> Browser/HAR only for the exact unresolved undocumented gap
+src/coa_workbench/analytics/report_encounter_source_correlation.py
+scripts/capture_report_encounter_source_correlation.py
+```
+
+Execution order:
+
+```text
+persisted current_encounter_observation catalog evidence
+-> reviewed /api/reports/{reportId}/encounters?includeTrash=false response
+-> fail closed
+```
+
+The previous operator implementation used the heavier `/api/reports/{reportId}/encounters/{encounterId}` payload. The first real run timed out during body reading after two 30-second attempts. Treat that as transport evidence only. Do not retry the heavy route merely by increasing timeout.
+
+The compact encounter catalog is already real-observed in the E3 current-report runtime. Scalar-free structural evidence shows fields including:
+
+```text
+id
+name
+boss_id
+difficulty
+is_boss_encounter
+zone
 ```
 
 Requirements:
 
 ```text
 use the already selected local report/encounter
-fail closed on ambiguity
+prefer persisted first-party catalog evidence
+require exact report identity
+require exactly one selected encounter row
 boss correlation and difficulty correlation are separate booleans
+conflicting persisted observations fail closed
+network never overrides persisted conflicts
 publish counts/booleans/version markers only
 no API key/raw archive/DuckDB/private values requested from operator
+no events:read
+no Browser/HAR
 no historical difficulty-v4 heuristic
 planner remains blocked
 ```
+
+Operator command after fast-forwarding canonical E4:
+
+```powershell
+uv run --no-sync python scripts/capture_report_encounter_source_correlation.py `
+    --reference-url "https://coa.ascensionlogs.gg/reports/31135/encounters?encounters=703971" `
+    --boss-name "Basalthane" `
+    --difficulty ascended
+```
+
+Review only:
+
+```text
+data/exchange/out/coa-report-encounter-source-correlation-review.json
+```
+
+Do not request RawArchive, DuckDB, private source values or additional report/encounter IDs from the operator.
 
 ## Historical report evidence
 

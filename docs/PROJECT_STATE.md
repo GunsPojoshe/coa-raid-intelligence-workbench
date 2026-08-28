@@ -160,32 +160,40 @@ Do not describe the current binding as machine-verified encounter identity.
 
 The next gate is independent report encounter -> boss/difficulty source correlation.
 
-Implementation now present, real run still pending:
+Implementation:
 
 ```text
 src/coa_workbench/analytics/report_encounter_source_correlation.py
 scripts/capture_report_encounter_source_correlation.py
 ```
 
-Use the strongest available evidence in this order:
+Current execution order:
 
 ```text
-official documented report API if accessible without new assumptions
--> official site semantics / persisted first-party report response
--> pinned Companion executable source
--> Browser/HAR only for the exact remaining undocumented gap
+1. read exact persisted current_encounter_observation catalog evidence from local DuckDB
+2. if absent, request /api/reports/{reportId}/encounters?includeTrash=false
+3. correlate exact report + encounter identity, boss name/boss flag and difficulty
+4. publish scalar-safe review only
 ```
+
+The initial real implementation used `/api/reports/{reportId}/encounters/{encounterId}`. The operator run reached response reading but timed out after two 30-second attempts. This proves only that the heavy endpoint was unsuitable for this operator path; it does not change boss/difficulty trust state.
+
+The compact current-report encounter catalog is already real-observed/reviewed and contains the relevant field family. `evidence/real-data/coa-current-report-private-structure-review.json` records its scalar-free structure.
 
 The gate must:
 
 ```text
 consume the already selected report/encounter locally
-identify an independent report-side source record
+prefer already persisted first-party catalog evidence
+require exactly one selected encounter row
 correlate boss identity independently
 correlate difficulty independently or leave it unproven
+fail closed on conflicting persisted observations
+never let a network response override persisted conflicts
 publish only scalar-safe booleans/counts/version markers
-fail closed on ambiguity
 not request API key/raw archive/DuckDB/private values from the operator
+not use events:read
+not use Browser/HAR
 not revive historical difficulty-v4 heuristics
 ```
 
@@ -217,7 +225,7 @@ GET /api/reports/{reportId}/character_damage_taken_abilities?...
 GET /api/reports/{reportId}/character_spell_healing?...
 ```
 
-Two reports passed the generic persistence/analytics pipeline. Historical two-report difficulty equivalence remains `insufficient_evidence`; numeric comparison of that historical pair stays blocked.
+The current encounter catalog real structural review includes `id`, `name`, `boss_id`, `difficulty`, `is_boss_encounter`, `zone` and related fields. Two reports passed the generic persistence/analytics pipeline. Historical two-report difficulty equivalence remains `insufficient_evidence`; numeric comparison of that historical pair stays blocked.
 
 ## Upstream executable source
 
