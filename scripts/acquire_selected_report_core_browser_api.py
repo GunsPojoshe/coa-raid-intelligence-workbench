@@ -116,7 +116,8 @@ def main() -> int:
                     browser_navigation_performed=True,
                 )
         except (PlaywrightUnavailableError, TimeoutError) as exc:
-            raise SystemExit(str(exc)) from exc
+            print(str(exc))
+            return 5
 
     summary = {
         "schema_version": 1,
