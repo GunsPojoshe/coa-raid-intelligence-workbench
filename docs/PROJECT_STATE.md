@@ -72,6 +72,16 @@ bounded encounter context v1: 4/4
 matched encounter/location comparator v1: 4/4
 ```
 
+Retained canonical status markers:
+
+```text
+real statistics normalization: proven
+real DuckDB persistence/idempotence: proven
+aggregate Source Observatory/Health integration: proven real
+profile-scoped aggregate invalidation: proven real
+bounded multi-profile population coverage v1: proven 4/4
+```
+
 Real comparator checkpoint:
 
 ```text
@@ -149,6 +159,13 @@ Do not describe the current binding as machine-verified encounter identity.
 ## Current implementation gate
 
 The next gate is independent report encounter -> boss/difficulty source correlation.
+
+Implementation now present, real run still pending:
+
+```text
+src/coa_workbench/analytics/report_encounter_source_correlation.py
+scripts/capture_report_encounter_source_correlation.py
+```
 
 Use the strongest available evidence in this order:
 
