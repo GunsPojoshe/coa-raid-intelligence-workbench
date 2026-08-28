@@ -56,6 +56,17 @@ bounded encounter context v1: 4/4
 matched encounter/location comparator v1: 4/4
 ```
 
+Retained implementation anchors:
+
+```text
+scripts/inventory_local_workspace.py
+forward-only migrations 0001-0013
+scripts/persist_public_api_statistics.py
+scripts/capture_public_api_population_coverage.py
+second-pass replay:            idempotent
+legacy broad endpoint dependency: inactive
+```
+
 Comparator real checkpoint:
 
 ```text
@@ -102,6 +113,13 @@ report encounter -> difficulty
 ```
 
 Current gate: source-correlate those report-side facts independently, fail closed, and keep planner scoring blocked.
+
+Implementation present, real proof pending:
+
+```text
+src/coa_workbench/analytics/report_encounter_source_correlation.py
+scripts/capture_report_encounter_source_correlation.py
+```
 
 ## Privacy
 
