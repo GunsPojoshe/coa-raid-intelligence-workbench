@@ -132,14 +132,14 @@ exact encounter-scoped aggregate context
 exact matched same-location comparator
 ```
 
-It does not yet independently establish from a report-side source:
+It does not yet independently establish from a successful real report-side correlation run:
 
 ```text
 report encounter -> boss identity
 report encounter -> difficulty
 ```
 
-These are the next explicit trust gates.
+The correlation implementation is ready; a successful scalar-safe real receipt is still required before those claims become proven.
 
 ## 8. First-party report lane
 
@@ -155,6 +155,8 @@ GET /api/reports/{reportId}/encounters/{encounterId}/throughput-timeline?...
 GET /api/reports/{reportId}/character_damage_taken_abilities?...
 GET /api/reports/{reportId}/character_spell_healing?...
 ```
+
+The current-report encounter catalog is already real-observed. Its scalar-free structural review records fields including `id`, `name`, `boss_id`, `difficulty`, `is_boss_encounter` and `zone`.
 
 Historical cross-report difficulty equivalence remains `insufficient_evidence`; numeric comparison of that historical pair stays blocked.
 
@@ -176,30 +178,38 @@ Reusable fallback only for an exact undocumented gap after stronger sources are 
 
 Independently correlate the selected report encounter to boss and difficulty.
 
-Implementation present, real proof pending:
+Implementation:
 
 ```text
 src/coa_workbench/analytics/report_encounter_source_correlation.py
 scripts/capture_report_encounter_source_correlation.py
 ```
 
-Priority:
+Current execution order:
 
 ```text
-official documented report API if already accessible
--> official site semantics / persisted first-party report response
--> pinned Companion executable source
--> Browser/HAR only for the exact unresolved gap
+persisted current_encounter_observation catalog evidence
+-> reviewed /api/reports/{reportId}/encounters?includeTrash=false response
+-> fail closed
 ```
+
+The first real operator implementation used the heavier `/api/reports/{reportId}/encounters/{encounterId}` site payload. It timed out while reading the response after two 30-second attempts. This is transport evidence only and does not prove or disprove boss/difficulty. The heavy endpoint is no longer the operator path; increasing its timeout is not the next step.
 
 Gate requirements:
 
 ```text
 boss correlation and difficulty correlation are separate outcomes
-fail closed on ambiguity or absent semantics
+exact report identity required
+exactly one selected encounter row required
+boss name + is_boss_encounter checked independently
+difficulty exact match required for difficulty proof
+conflicting persisted observations fail closed
+network never overrides persisted conflicts
 reuse already selected local report/encounter
 publish scalar-safe booleans/counts/version markers only
 no operator request for API key, RawArchive, DuckDB or private scalars
+no events:read
+no Browser/HAR
 no historical difficulty-v4 heuristic
 planner scoring remains blocked
 ```
@@ -234,7 +244,8 @@ profile-scoped invalidation: proven
 bounded population coverage: proven
 encounter-scoped population context: proven
 matched location comparator: proven
--> independent report encounter boss/difficulty source correlation
+report-side catalog correlation implementation: ready; real proof pending
+-> independent report encounter boss/difficulty source correlation receipt
 -> combine correlated encounter identity with population context
 -> separately prove player identity and mechanic semantics
 -> encounter requirement/capability model
